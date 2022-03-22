@@ -41,7 +41,6 @@ This is a Bash CLI project for Playbooks.
 - "newBranch" = argument
 
 
-
 #### Fig
 - https://fig.io/docs/concepts/cli-skeleton
 - https://fig.io/docs/handbook/executing-shell-commands
@@ -49,7 +48,7 @@ This is a Bash CLI project for Playbooks.
 
 
 #### Links
-- 
+- https://dev.to/adiatma/build-a-simple-cli-with-bash-2d31#:~:text=Getting%20Started,file%20bash%2Dcli.sh%20.&text=%23!%2Fbin%2Fbash%20line%20of,make%20sure%20the%20scripts%20work
 
 
 ## Author
