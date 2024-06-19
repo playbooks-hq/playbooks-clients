@@ -1,33 +1,30 @@
+const boxen = require('boxen');
 const ora = require('ora');
 const os = require('os');
-import { ConfigService } from 'src/services/config-service';
+import { SuperagentService } from 'src/services/superagent-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
-export const pingCommand = async (url: string, options: any) => {
+export const pingCommand = async (options: any) => {
+	const spinner = ora('Pinging Playbooks...\n').start();
 	try {
-		// Options
-		const clone = options.c || options.clone || null;
-		const destination = options.d || options.destination || null;
-		const environment = options.e || options.env || `${os.homedir()}/.playbooksrc`;
-		const version = options.v || options.version || null;
-		Logger.log('options: ', { clone, destination, environment, version });
-
-		// Config
-		const configService = new ConfigService({ basePath: environment });
-		const configSpinner = ora('Setting up...\n').start();
+		// Setup
 		await timeout(300);
 
-		const configValid = await configService.checkEmpty();
-		if (!configValid) return configSpinner.fail('Please provide a valid config file.');
-		const config = await configService.readContents();
-		Logger.log('config: ', config);
+		// Options
+		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
+		Logger.log('options: ', { config });
 
-		// Cleanup
-		Logger.info('You are all done.');
+		// Ping
+		const client = new SuperagentService();
+		const response = await client.queryRecord({ endpoint: '/' });
+		await timeout(300);
+		spinner.succeed('Your connection is working.');
+		Logger.log(boxen(response.data.message, { padding: 1 }));
+		return response;
 	} catch (e) {
+		spinner.fail('Ping failed. Please contact support.');
 		Logger.log(e);
-		Logger.error('Transfer failed:', e);
 		process.exit();
 	}
 };

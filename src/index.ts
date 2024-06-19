@@ -5,7 +5,7 @@ import { configCommand, loginCommand, pingCommand } from 'src/commands';
 
 import { version } from '../package.json';
 
-const cli = sade('playbooks-cli');
+const cli = sade('playbooks');
 
 cli
 	.version(version)
@@ -14,15 +14,15 @@ cli
 
 cli
 	.command('login')
-	.describe('Log into your account and create a session in place of using an API Token.')
+	.describe('Log into your account in place of using a config file.')
 	.option('-e, --email', 'Your email address')
 	.option('-p, --password', 'Your password')
 	.example('playbooks login -e acme@example.com -p password')
 	.action(loginCommand);
 
 cli
-	.command('config')
-	.describe('Modify config file variables from the command line.')
+	.command('config get')
+	.describe('Get config file variables from the command line.')
 	.option('-e, --email', 'Your email address')
 	.option('-p, --password', 'Your password')
 	.option('-t, --token', 'Your API token')
@@ -32,8 +32,25 @@ cli
 	.action(configCommand);
 
 cli
+	.command('config set')
+	.describe('Set config file variables from the command line.')
+	.option('-e, --email', 'Your email address')
+	.option('-p, --password', 'Your password')
+	.option('-t, --token', 'Your API token')
+	.example('playbooks config -e acme@example.com')
+	.example('playbooks config -p password')
+	.example('playbooks config -t ********')
+	.action(configCommand);
+
+cli
+	.command('config ls')
+	.describe('Show config file variables from the command line.')
+	.example('playbooks config ls')
+	.action(configCommand);
+
+cli
 	.command('ping')
-	.describe('Ping Playbooks to make sure the connection is working and your session is active.')
+	.describe('Ping Playbooks to make sure the connection is working.')
 	.example('playbooks ping')
 	.action(pingCommand);
 
