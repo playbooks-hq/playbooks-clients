@@ -5,8 +5,8 @@ import { SuperagentService } from 'src/services/superagent-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
-export const pingCommand = async (options: any) => {
-	const spinner = ora('Pinging Playbooks...\n').start();
+export const reposCommand = async (options: any) => {
+	const spinner = ora('Fetching repos...\n').start();
 	try {
 		// Setup
 		await timeout(300);
@@ -15,14 +15,16 @@ export const pingCommand = async (options: any) => {
 		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
 		Logger.log('options: ', { config });
 
-		// Ping
+		// Fetch
 		const client = new SuperagentService();
-		const response = await client.queryRecord({ endpoint: '/' });
-		spinner.succeed('Your connection is working.');
-		console.log(boxen(response.data.message, { padding: 1 }));
+		const response = await client.query({ endpoint: '/repos' });
+		const formattedResponse = response.data.map(v => v.uuid).join('\n');
+
+		spinner.succeed('Repos fetched!', formattedResponse);
+		console.log(boxen(formattedResponse, { padding: 1 }));
 		return response;
 	} catch (e) {
-		spinner.fail('Ping failed!');
+		spinner.fail('Fetch failed!');
 		Logger.log(e);
 		process.exit();
 	}

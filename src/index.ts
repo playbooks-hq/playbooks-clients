@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const sade = require('sade');
-import { configCommand, loginCommand, pingCommand } from 'src/commands';
+import { configCommand, loginCommand, pingCommand, reposCommand } from 'src/commands';
 
 import { version } from '../package.json';
 
@@ -53,5 +53,17 @@ cli
 	.describe('Ping Playbooks to make sure the connection is working.')
 	.example('playbooks ping')
 	.action(pingCommand);
+
+cli
+	.command('repos')
+	.describe('Fetch repos from Playbooks.')
+	.option('-f, --framework', 'Fetch by framework identifer')
+	.option('-l, --language', 'Fetch by language identifier')
+	.option('-t, --tool', 'Fetch by tool identifier')
+	.example('playbooks repos')
+	.example('playbooks repos --framework react')
+	.example('playbooks repos --language typescript')
+	.example('playbooks repos --tool docker')
+	.action(reposCommand);
 
 cli.parse(process.argv);

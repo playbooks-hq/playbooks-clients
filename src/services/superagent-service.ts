@@ -3,6 +3,7 @@ const Superagent = require('superagent');
 const Debugger = require('superagent-debugger');
 import { serialize, serializeArray } from 'src/api/serializer';
 import { normalize, normalizeArray } from 'src/api/normalizer';
+import { queryType, mutateType } from 'src/types';
 
 import * as Logger from 'src/utils/logger';
 
@@ -10,24 +11,11 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 const VITE_SSL_KEY_FILE = import.meta.env.VITE_SSL_KEY_FILE;
 const VITE_SSL_CERT_FILE = import.meta.env.VITE_SSL_CERT_FILE;
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 interface SuperagentService {
 	token?: string;
 }
-
-type iQuery = {
-	endpoint: string;
-	headers?: any;
-	params?: any;
-};
-
-type iMutate = {
-	endpoint: string;
-	headers?: any;
-	params?: any;
-	data: any;
-};
 
 class SuperagentService {
 	constructor(token?) {
@@ -74,48 +62,48 @@ class SuperagentService {
 	/* ----- Serializers ----- */
 	normalizeArray(response) {
 		const format = JSON.parse(response.text);
-		const data = normalizeArray(format.data.data, format.data.included, format.data.meta);
+		const data = normalizeArray(format.data, format.included, format.meta);
 		// Logger.log(`normalizedArray: `, data);
 		return data;
 	}
 
 	normalizeData(response) {
 		const format = JSON.parse(response.text);
-		const data = normalize(format.data, format.data.included);
+		const data = normalize(format.data, format.included);
 		// Logger.log(`normalizedData: `, data);
 		return data;
 	}
 
 	/* ----- Methods ----- */
-	async query({ endpoint, headers, params = {} }: iQuery) {
+	async query({ endpoint, headers, params = {} }: queryType) {
 		const computedUrl = this.computeURL(endpoint);
 		const computedHeaders = this.computeHeaders(headers);
 		const response = await Superagent.get(computedUrl).set(computedHeaders).query(params);
 		return this.normalizeArray(response);
 	}
 
-	async queryRecord({ endpoint, headers, params }: iQuery) {
+	async queryRecord({ endpoint, headers, params }: queryType) {
 		const computedUrl = this.computeURL(endpoint);
 		const computedHeaders = this.computeHeaders(headers);
 		const response = await Superagent.get(computedUrl).set(computedHeaders).query(params);
 		return this.normalizeData(response);
 	}
 
-	async post({ endpoint, headers, params, data }: iMutate) {
+	async post({ endpoint, headers, params, data }: mutateType) {
 		const computedUrl = this.computeURL(endpoint);
 		const computedHeaders = this.computeHeaders(headers);
 		const response = await Superagent.post(computedUrl).set(computedHeaders).query(params).send(data);
 		return { status: response.status, data: JSON.parse(response.text) };
 	}
 
-	async update({ endpoint, headers, params, data }: iMutate) {
+	async update({ endpoint, headers, params, data }: mutateType) {
 		const computedUrl = this.computeURL(endpoint);
 		const computedHeaders = this.computeHeaders(headers);
 		const response = await Superagent.put(computedUrl).set(computedHeaders).query(params).send(data);
 		return { status: response.status, data: JSON.parse(response.text) };
 	}
 
-	async delete({ endpoint, headers, params }: iQuery) {
+	async delete({ endpoint, headers, params }: queryType) {
 		const computedUrl = this.computeURL(endpoint);
 		const computedHeaders = this.computeHeaders(headers);
 		const response = await Superagent.delete(computedUrl).set(computedHeaders).query(params);
