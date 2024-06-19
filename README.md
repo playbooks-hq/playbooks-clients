@@ -1,56 +1,42 @@
 ## Overview
-This is a Bash CLI project for Playbooks.
+A simple CLI to access the Playbooks platform.
 
 
 ## Prerequisites
-- Bash
+- Node
+- Playbooks
 
 
 ## Quick Start
-- git clone
-- add the appropriate export path to your shell profile
-- Source your updated shell profile
-- Change file permissions so it is executable
-- Add authToken to the config file
+- `npm i -g @playbooks-xyz/playbooks-cli`
+- `playbooks <repo_url>`
+- `playbooks <repo_url> --directory ~/repos`
 
 
-## Commands
-- playbooks
+## Description
+The commands above will install playbooks on your local machine and make the `playbooks` command globally available.
 
 
-## Sub Commands
-- init
-- auth
-- config
-- find
-- install
-- list
-- update
-- help
-- verbose
-- logout
+## Config
+Playbooks will look for a `.playbooksrc` file at the root of your file system `~/.playbooksrc` containing your API credentials or you can supply a custom path per command.
+Playbooks will then read the following variables from the `.playbooksrc` file using the indicated format:
 
-
-## Notes
-
-#### Terminal command anatomy
-- git checkout -b "newBranch"
-- git = command
-- checkout = subcommand
-- -b = option
-- "newBranch" = argument
-
-
-#### Fig
-- https://fig.io/docs/concepts/cli-skeleton
-- https://fig.io/docs/handbook/executing-shell-commands
-
-
-
-#### Links
-- https://dev.to/adiatma/build-a-simple-cli-with-bash-2d31#:~:text=Getting%20Started,file%20bash%2Dcli.sh%20.&text=%23!%2Fbin%2Fbash%20line%20of,make%20sure%20the%20scripts%20work
+```
+PLAYBOOKS_EMAIL=acme@example.com
+PLAYBOOKS_PASSWORD=******
+PLAYBOOKS_TOKEN=******
+```
 
 
 ## Author
-- Eric Hubbell
-- eric@erichubbell.com
+- Playbooks XYZ
+- support@playbooks.xyz
+
+
+## Inspiration
+- degit
+- gittar
+
+
+## Contributions
+Please open an issue describing the PR you want to submit before starting work.

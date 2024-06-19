@@ -1,0 +1,47 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:eqeqeq-fix/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "eqeqeq": [
+			"warn"
+		],
+		"no-empty": [
+			"warn"
+		],
+		"no-useless-escape": [
+			"warn"
+		],
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "no-mixed-spaces-and-tabs": [
+			"off"
+		],
+    "no-multi-spaces": "error",
+		"no-multiple-empty-lines": "error",
+		"object-curly-spacing": [
+			"warn",
+			"always"
+		],
+  },
+  "overrides": [
+		{
+			"files": [
+				"**/*.js",
+				"**/*.ts",
+				"**/*.tsx"
+			]
+    }
+  ]
+}
