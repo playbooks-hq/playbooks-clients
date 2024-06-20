@@ -1,7 +1,7 @@
 {
   "name": "playbooks-cli",
   "description": "A simple CLI for the Playbooks project.",
-  "homepage": "https://github.com/playbooks-xyz/playbooks-cli#readme",
+  "homepage": "https://docs.playbooks.xyz",
   "version": "0.0.0",
   "license": "ISC",
   "main": "dist/index.cjs.js",
