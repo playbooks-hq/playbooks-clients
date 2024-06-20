@@ -1,4 +1,7 @@
 import * as FileSystem from 'src/utils/file-system';
+import * as Logger from 'src/utils/logger';
+
+const MODE = import.meta.env.MODE;
 
 interface ConfigService {
 	basePath: string;
@@ -10,27 +13,62 @@ class ConfigService {
 	}
 
 	/* ----- Methods ----- */
-	async checkEmpty() {
-		// console.log("Checking path: ", this.basePath);
-		const pathExists = await FileSystem.checkPath(this.basePath);
-		if (pathExists) {
-			const path = await FileSystem.fileStats(this.basePath);
-			if (path.isDirectory()) return false;
-			return true;
-		}
-		return false;
+	async setup() {
+		const fragments = this.basePath.split('/');
+		const path = fragments.filter((v, i) => i < fragments.length - 1).join('/');
+		const file = fragments[fragments.length - 1];
+		return await FileSystem.checkOrCreateFile(path, file);
 	}
 
-	async readContents() {
-		const contents = await FileSystem.readFile(this.basePath);
-		const records = contents.split('\n');
-		return records
+	async readConfig() {
+		const config = await FileSystem.readFile(this.basePath);
+		const records = config.split('\n');
+		const formattedRecords = {};
+		records
 			.filter(v => v.length > 0)
 			.map(record => {
 				const key = record.split('=')[0];
 				const value = record.split('=')[1];
-				return { key, value };
+				return (formattedRecords[key] = value);
 			});
+		// Logger.info(`readConfig: `, formattedRecords);
+		return formattedRecords;
+	}
+
+	async writeConfig(records) {
+		Logger.info(`writeConfig: `, records);
+		const formattedContent = Object.keys(records)
+			.map(key => `${key}=${records[key]}`)
+			.join('\n');
+		return await FileSystem.writeFile(this.basePath, formattedContent);
+	}
+
+	async getValue(key) {
+		const contents = await this.readConfig();
+		return contents[key];
+	}
+
+	async getValues(keys) {
+		const config = await this.readConfig();
+		const formattedRecords = {};
+		Object.keys(config)
+			.filter(keyName => keys.includes(keyName))
+			.map(keyName => Object.assign(formattedRecords[keyName], config[keyName]));
+		return formattedRecords;
+	}
+
+	async storeValue(key, value) {
+		const config = await this.readConfig();
+		return await this.writeConfig({ ...config, [key]: value });
+	}
+
+	async storeValues(records) {
+		const config = await this.readConfig();
+		return await this.writeConfig({ ...config, ...records });
+	}
+
+	async clear() {
+		return await this.writeConfig({});
 	}
 }
 

@@ -1,14 +1,15 @@
-const boxen = require('boxen');
+const enquirer = require('enquirer');
 const ora = require('ora');
 const os = require('os');
 import { ConfigService } from 'src/services/config-service';
+import { SuperagentService } from 'src/services/superagent-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
-export const configCommand = async (options: any) => {
-	const spinner = ora('Fetching config...');
+export const logoutCommand = async (options: any) => {
+	const spinner = ora('Logging out...');
 	try {
-		// Setup
+		// Options
 		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
 		Logger.log('options: ', { config });
 
@@ -19,14 +20,12 @@ export const configCommand = async (options: any) => {
 		// Config
 		const service = new ConfigService({ basePath: config });
 		await service.setup();
-		const contents = await service.readConfig();
-		const formattedContents =
-			Object.keys(contents).length > 0 ? JSON.stringify(contents, null, 4) : 'Nothing to see yet.';
 
-		spinner.succeed('Config succeeded!');
-		console.log(boxen(formattedContents, { padding: 1 }));
+		// Logout
+		await service.clear();
+		spinner.succeed('Logout succeeded!');
 	} catch (e) {
-		spinner.fail('Config failed!');
+		spinner.fail('Logout failed!');
 		Logger.log(e);
 		process.exit();
 	}

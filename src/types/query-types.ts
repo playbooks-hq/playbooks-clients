@@ -1,10 +1,10 @@
-type queryType = {
+export type queryType = {
 	endpoint: string;
 	headers?: any;
 	params?: any;
 };
 
-type mutateType = {
+export type mutateType = {
 	endpoint: string;
 	headers?: any;
 	params?: any;

@@ -6,14 +6,15 @@ import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
 export const pingCommand = async (options: any) => {
-	const spinner = ora('Pinging Playbooks...\n').start();
+	const spinner = ora('Pinging Playbooks...');
 	try {
 		// Setup
-		await timeout(300);
-
-		// Options
 		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
 		Logger.log('options: ', { config });
+
+		// Start
+		spinner.start();
+		await timeout(300);
 
 		// Ping
 		const client = new SuperagentService();

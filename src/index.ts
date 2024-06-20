@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const sade = require('sade');
-import { configCommand, loginCommand, pingCommand, reposCommand } from 'src/commands';
+import { configCommand, loginCommand, logoutCommand, pingCommand, repoCommand, reposCommand } from 'src/commands';
 
 import { version } from '../package.json';
 
@@ -21,31 +21,14 @@ cli
 	.action(loginCommand);
 
 cli
-	.command('config get')
-	.describe('Get config file variables from the command line.')
+	.command('config')
+	.describe('View config file variables from the command line.')
 	.option('-e, --email', 'Your email address')
 	.option('-p, --password', 'Your password')
 	.option('-t, --token', 'Your API token')
 	.example('playbooks config -e acme@example.com')
 	.example('playbooks config -p password')
 	.example('playbooks config -t ********')
-	.action(configCommand);
-
-cli
-	.command('config set')
-	.describe('Set config file variables from the command line.')
-	.option('-e, --email', 'Your email address')
-	.option('-p, --password', 'Your password')
-	.option('-t, --token', 'Your API token')
-	.example('playbooks config -e acme@example.com')
-	.example('playbooks config -p password')
-	.example('playbooks config -t ********')
-	.action(configCommand);
-
-cli
-	.command('config ls')
-	.describe('Show config file variables from the command line.')
-	.example('playbooks config ls')
 	.action(configCommand);
 
 cli
@@ -55,8 +38,18 @@ cli
 	.action(pingCommand);
 
 cli
+	.command('repo <uuid>')
+	.describe('Fetch repo by uuid from Playbooks.')
+	.option('-s, --select', 'Select specific fields')
+	.option('-i, --include', 'Include associated data')
+	.example('playbooks repo react-official-starter')
+	.example('playbooks repo react-official-starter --include framework')
+	.action(repoCommand);
+
+cli
 	.command('repos')
 	.describe('Fetch repos from Playbooks.')
+	.option('-s, --select', 'Select specific fields')
 	.option('-f, --framework', 'Fetch by framework identifer')
 	.option('-l, --language', 'Fetch by language identifier')
 	.option('-t, --tool', 'Fetch by tool identifier')
@@ -65,5 +58,7 @@ cli
 	.example('playbooks repos --language typescript')
 	.example('playbooks repos --tool docker')
 	.action(reposCommand);
+
+cli.command('logout').describe('Logout of your Playbooks account.').example('playbooks logout').action(logoutCommand);
 
 cli.parse(process.argv);

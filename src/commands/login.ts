@@ -1,33 +1,47 @@
+const enquirer = require('enquirer');
 const ora = require('ora');
 const os = require('os');
 import { ConfigService } from 'src/services/config-service';
+import { SuperagentService } from 'src/services/superagent-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
-export const loginCommand = async (url: string, options: any) => {
+export const loginCommand = async (options: any) => {
+	const spinner = ora('Initiating login...');
 	try {
-		// Options
-		const clone = options.c || options.clone || null;
-		const destination = options.d || options.destination || null;
-		const environment = options.e || options.env || `${os.homedir()}/.playbooksrc`;
-		const version = options.v || options.version || null;
-		Logger.log('options: ', { clone, destination, environment, version });
+		// Setup
+		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
+		Logger.log('options: ', { config });
 
 		// Config
-		const configService = new ConfigService({ basePath: environment });
-		const configSpinner = ora('Setting up...\n').start();
+		const service = new ConfigService({ basePath: config });
+		await service.setup();
+
+		// Prompts
+		const emailPrompt = new enquirer.Input({ name: 'Login', message: 'Email Address:' });
+		const email = await emailPrompt.run();
+
+		const passwordPrompt = new enquirer.Password({ name: 'Password', message: 'Please enter your password.' });
+		const password = await passwordPrompt.run();
+		Logger.log('answers: ', email, password);
+
+		// API call
+		spinner.start();
 		await timeout(300);
+		const client = new SuperagentService();
+		const response = await client.post({ endpoint: '/auth/login', data: { email, password } });
 
-		const configValid = await configService.checkEmpty();
-		if (!configValid) return configSpinner.fail('Please provide a valid config file.');
-		const config = await configService.readContents();
-		Logger.log('config: ', config);
-
-		// Cleanup
-		Logger.info('You are all done.');
+		// Storage
+		await service.storeValues({
+			name: response.data.name,
+			uuid: response.data.uuid,
+			email: response.data.email,
+			token: response.data.token?.token,
+		});
+		spinner.succeed('Login succeeded!');
 	} catch (e) {
-		Logger.log(e);
-		Logger.error('Transfer failed:', e);
+		spinner.fail('Login failed!');
+		Logger.error(e);
 		process.exit();
 	}
 };

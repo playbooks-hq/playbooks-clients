@@ -5,8 +5,8 @@ import { SuperagentService } from 'src/services/superagent-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
-export const reposCommand = async (options: any) => {
-	const spinner = ora('Fetching repos...');
+export const repoCommand = async (uuid, options: any) => {
+	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
 		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
@@ -19,23 +19,19 @@ export const reposCommand = async (options: any) => {
 
 		// Fetch
 		const client = new SuperagentService();
-		const response = await client.query({ endpoint: '/repos' });
-		const formattedData = [];
+		const response = await client.queryRecord({ endpoint: `/repos/${uuid}` });
+		const formattedData = {};
 		const selects = select.split(',');
-		response.data.map(record => {
-			const formattedRecord = {};
-			Object.keys(record).map(key => {
-				if (selects.includes('*')) return (formattedRecord[key] = record[key]);
-				if (selects.includes(key)) return (formattedRecord[key] = record[key]);
-			});
-			return formattedData.push(formattedRecord);
+		Object.keys(response.data).map(key => {
+			if (selects.includes('*')) return (formattedData[key] = response.data[key]);
+			if (selects.includes(key)) return (formattedData[key] = response.data[key]);
 		});
-		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
+		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		spinner.succeed('Fetch succeeded!');
 		console.log(
 			boxen(formattedResponse, {
-				title: 'Repos',
+				title: 'Repo',
 				padding: 1,
 				borderColor: 'cyan',
 				dimBorder: true,
