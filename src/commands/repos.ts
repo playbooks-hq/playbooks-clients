@@ -1,6 +1,5 @@
-const boxen = require('boxen');
 const ora = require('ora');
-const os = require('os');
+import { DisplayBox } from 'src/components';
 import { serializeArray } from 'src/api';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
@@ -11,8 +10,8 @@ export const reposCommand = async (options: any) => {
 	const spinner = ora('Fetching repos...');
 	try {
 		// Setup
-		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
-		const select = options.s || options.select || `*`;
+		const config = options.c || options.config;
+		const select = options.s || options.select;
 		const framework = options.framework || null;
 		const language = options.language || null;
 		const platform = options.platform || null;
@@ -55,15 +54,7 @@ export const reposCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed('Fetch succeeded!');
-		console.log(
-			boxen(formattedResponse, {
-				title: 'Repos',
-				padding: 1,
-				borderColor: 'cyan',
-				dimBorder: true,
-			}),
-		);
-		return response;
+		DisplayBox('Repos', formattedResponse);
 	} catch (e) {
 		spinner.fail('Fetch failed!');
 		Logger.log(e);

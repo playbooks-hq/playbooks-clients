@@ -1,8 +1,5 @@
-const enquirer = require('enquirer');
 const ora = require('ora');
-const os = require('os');
 import { ConfigService } from 'src/services/config-service';
-import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
@@ -10,7 +7,7 @@ export const logoutCommand = async (options: any) => {
 	const spinner = ora('Logging out...');
 	try {
 		// Options
-		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
+		const config = options.c || options.config;
 		Logger.log('options: ', { config });
 
 		// Start

@@ -1,8 +1,7 @@
-const boxen = require('boxen');
 const enquirer = require('enquirer');
 const ora = require('ora');
-const os = require('os');
 import { serialize } from 'src/api';
+import { DisplayBox } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
@@ -12,8 +11,8 @@ export const toggleCommand = async (options: any) => {
 	const spinner = ora('Fetching teams...');
 	try {
 		// Setup
-		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
-		const select = options.s || options.select || `*`;
+		const config = options.c || options.config;
+		const select = options.s || options.select;
 		const uuid = options.u || options.uuid || null;
 		Logger.log('options: ', { config, uuid });
 
@@ -60,14 +59,7 @@ export const toggleCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed('Toggle succeeded!');
-		console.log(
-			boxen(formattedResponse, {
-				title: `Account Activated`,
-				padding: 1,
-				borderColor: 'cyan',
-				dimBorder: true,
-			}),
-		);
+		DisplayBox('Account Activated', formattedResponse);
 	} catch (e) {
 		spinner.fail('Toggle failed!');
 		Logger.log(e);

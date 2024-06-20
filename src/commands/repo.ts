@@ -1,7 +1,6 @@
-const boxen = require('boxen');
 const ora = require('ora');
-const os = require('os');
 import { serialize } from 'src/api';
+import { DisplayBox } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { timeout } from 'src/utils/helpers';
@@ -11,8 +10,9 @@ export const repoCommand = async (uuid, options: any) => {
 	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
-		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
-		const select = options.s || options.select || `*`;
+		const config = options.c || options.config;
+		const include = options.i || options.include;
+		const select = options.s || options.select;
 		Logger.log('options: ', { config, select });
 
 		// Start
@@ -27,7 +27,7 @@ export const repoCommand = async (uuid, options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({});
+		const params = client.serializeParams({ include });
 		const response = await client.queryRecord({ endpoint: `/repos/${uuid}`, headers, params });
 
 		// Selects
@@ -37,14 +37,7 @@ export const repoCommand = async (uuid, options: any) => {
 
 		// Display
 		spinner.succeed('Fetch succeeded!');
-		console.log(
-			boxen(formattedResponse, {
-				title: 'Repo',
-				padding: 1,
-				borderColor: 'cyan',
-				dimBorder: true,
-			}),
-		);
+		DisplayBox('Repo', formattedResponse);
 	} catch (e) {
 		spinner.fail('Fetch failed!');
 		Logger.log(e);

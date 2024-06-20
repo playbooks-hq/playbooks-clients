@@ -1,7 +1,6 @@
-const boxen = require('boxen');
 const ora = require('ora');
-const os = require('os');
 import { serializeArray } from 'src/api';
+import { DisplayBox } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
@@ -11,9 +10,9 @@ export const ordersCommand = async (options: any) => {
 	const spinner = ora('Fetching orders...');
 	try {
 		// Setup
-		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
+		const config = options.c || options.config;
 		const entity = options.e || options.entity || ``;
-		const select = options.s || options.select || `*`;
+		const select = options.s || options.select;
 		Logger.log('options: ', { config, entity, select });
 
 		// Start
@@ -39,14 +38,7 @@ export const ordersCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed('Fetch succeeded!');
-		console.log(
-			boxen(formattedResponse, {
-				title: 'Orders',
-				padding: 1,
-				borderColor: 'cyan',
-				dimBorder: true,
-			}),
-		);
+		DisplayBox('Orders', formattedResponse);
 	} catch (e) {
 		spinner.fail('Fetch failed!');
 		Logger.log(e);

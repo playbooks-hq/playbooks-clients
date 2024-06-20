@@ -1,5 +1,6 @@
 export * from 'src/commands/account';
 export * from 'src/commands/config';
+export * from 'src/commands/download';
 export * from 'src/commands/login';
 export * from 'src/commands/logout';
 export * from 'src/commands/orders';

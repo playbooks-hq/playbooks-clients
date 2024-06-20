@@ -1,6 +1,6 @@
 const enquirer = require('enquirer');
 const ora = require('ora');
-const os = require('os');
+import { DisplayBox } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
@@ -10,7 +10,7 @@ export const loginCommand = async (options: any) => {
 	const spinner = ora('Initiating login...');
 	try {
 		// Setup
-		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
+		const config = options.c || options.config;
 		Logger.log('options: ', { config });
 
 		// Config
@@ -40,7 +40,17 @@ export const loginCommand = async (options: any) => {
 			account: response.data.uuid,
 			accountType: 'User',
 		});
+		const contents = await service.readConfig();
+		const data = {};
+		Object.keys(contents).map(key => {
+			if (key === 'token') return (data[key] = '********');
+			data[key] = contents[key];
+		});
+		const formattedData = JSON.stringify(data, null, 2);
+
+		// Display
 		spinner.succeed('Login succeeded!');
+		DisplayBox('Login', formattedData);
 	} catch (e) {
 		spinner.fail('Login failed!');
 		Logger.error(e);

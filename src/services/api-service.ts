@@ -19,9 +19,9 @@ interface ApiService {
 
 class ApiService {
 	constructor(props?) {
-		this.account = props.account || '';
-		this.accountType = props.accountType || '';
-		this.token = props.token || '';
+		this.account = props?.account || '';
+		this.accountType = props?.accountType || '';
+		this.token = props?.token || '';
 	}
 
 	/* ----- Variables ----- */
@@ -79,7 +79,7 @@ class ApiService {
 	serializeParams(params) {
 		const formattedParams = {};
 		Object.keys(params || {})
-			.filter(key => params.key)
+			.filter(key => params[key])
 			.map(key => (formattedParams[key] = params[key]));
 		// Logger.log(`serializedParams: `, formattedParams);
 		return formattedParams;
@@ -167,6 +167,17 @@ class ApiService {
 			const computedHeaders = this.computeHeaders(headers);
 			const response = await Superagent.delete(computedUrl).set(computedHeaders).query(params);
 			return this.normalizeData(response);
+		} catch (e) {
+			await this.normalizeError(e);
+			throw new Error('API Error!');
+		}
+	}
+
+	async download({ endpoint, headers }: queryType) {
+		try {
+			const computedUrl = this.computeURL(endpoint);
+			const computedHeaders = this.computeHeaders(headers);
+			return await Superagent.get(computedUrl).set(computedHeaders);
 		} catch (e) {
 			await this.normalizeError(e);
 			throw new Error('API Error!');

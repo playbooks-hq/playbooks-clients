@@ -1,7 +1,6 @@
-const boxen = require('boxen');
 const ora = require('ora');
-const os = require('os');
 import { serializeArray } from 'src/api';
+import { DisplayBox } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
@@ -11,8 +10,8 @@ export const teamsCommand = async (options: any) => {
 	const spinner = ora('Fetching teams...');
 	try {
 		// Setup
-		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
-		const select = options.s || options.select || `*`;
+		const config = options.c || options.config;
+		const select = options.s || options.select;
 		Logger.log('options: ', { config, select });
 
 		// Start
@@ -27,7 +26,7 @@ export const teamsCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.query({ endpoint: '/teams', headers });
+		const response = await client.query({ endpoint: '/session/teams', headers });
 
 		// Selects
 		const selects = select !== '*' ? select.split(',') : [];
@@ -36,14 +35,7 @@ export const teamsCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed('Fetch succeeded!');
-		console.log(
-			boxen(formattedResponse, {
-				title: 'Teams',
-				padding: 1,
-				borderColor: 'cyan',
-				dimBorder: true,
-			}),
-		);
+		DisplayBox('Teams', formattedResponse);
 	} catch (e) {
 		spinner.fail('Fetch failed!');
 		Logger.log(e);
