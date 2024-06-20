@@ -11,10 +11,10 @@ export const downloadCommand = async (uuid, options: any) => {
 	try {
 		// Setup
 		const config = options.c || options.config;
-		const path = options.s || options.path || process.cwd();
+		const path = options.p || options.path || process.cwd();
 		const unzip = options.z || options.unzip;
-		const clean = options.z || options.clean;
-		Logger.log('options: ', { config, path, name, unzip });
+		const clean = options.c || options.clean;
+		Logger.log('options: ', { config, path, unzip, clean });
 
 		// Start
 		spinner.start();
@@ -31,7 +31,6 @@ export const downloadCommand = async (uuid, options: any) => {
 		const params = client.serializeParams({});
 		const response = await client.download({ endpoint: `/repos/${uuid}/download`, headers, params });
 		spinner.succeed('Download received!');
-		Logger.log('response: ', response);
 
 		// Storage
 		spinner.start('Storing zip...');
@@ -42,7 +41,7 @@ export const downloadCommand = async (uuid, options: any) => {
 		spinner.succeed('Storage complete!');
 
 		// Display
-		DisplayBox('Download', `${path}/${name}.zip`);
+		DisplayBox('Download', `${path}/${uuid}.zip`);
 	} catch (e) {
 		spinner.fail('Download failed!');
 		Logger.log(e);
