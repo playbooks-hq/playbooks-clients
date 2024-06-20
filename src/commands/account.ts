@@ -1,12 +1,13 @@
 const boxen = require('boxen');
 const ora = require('ora');
 const os = require('os');
+import { ConfigService } from 'src/services/config-service';
 import { SuperagentService } from 'src/services/superagent-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
-export const repoCommand = async (uuid, options: any) => {
-	const spinner = ora(`Fetching ${uuid}...`);
+export const accountCommand = async (options: any) => {
+	const spinner = ora('Fetching account...');
 	try {
 		// Setup
 		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
@@ -17,9 +18,14 @@ export const repoCommand = async (uuid, options: any) => {
 		spinner.start();
 		await timeout(300);
 
+		// Config
+		const service = new ConfigService({ basePath: config });
+		await service.setup();
+		const contents = await service.readConfig();
+
 		// Fetch
 		const client = new SuperagentService();
-		const response = await client.queryRecord({ endpoint: `/repos/${uuid}` });
+		const response = await client.queryRecord({ endpoint: `/session`, headers: { Authorization: contents.token } });
 
 		// Selects
 		const formattedData = {};
@@ -34,7 +40,7 @@ export const repoCommand = async (uuid, options: any) => {
 		spinner.succeed('Fetch succeeded!');
 		console.log(
 			boxen(formattedResponse, {
-				title: 'Repo',
+				title: 'Account',
 				padding: 1,
 				borderColor: 'cyan',
 				dimBorder: true,
@@ -42,7 +48,7 @@ export const repoCommand = async (uuid, options: any) => {
 			}),
 		);
 	} catch (e) {
-		spinner.fail('Fetch failed!');
+		spinner.fail('Config failed!');
 		Logger.log(e);
 		process.exit();
 	}

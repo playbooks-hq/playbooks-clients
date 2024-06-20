@@ -20,6 +20,8 @@ export const reposCommand = async (options: any) => {
 		// Fetch
 		const client = new SuperagentService();
 		const response = await client.query({ endpoint: '/repos' });
+
+		// Selects
 		const formattedData = [];
 		const selects = select.split(',');
 		response.data.map(record => {
@@ -32,6 +34,7 @@ export const reposCommand = async (options: any) => {
 		});
 		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
 
+		// Display
 		spinner.succeed('Fetch succeeded!');
 		console.log(
 			boxen(formattedResponse, {

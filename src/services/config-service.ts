@@ -20,7 +20,7 @@ class ConfigService {
 		return await FileSystem.checkOrCreateFile(path, file);
 	}
 
-	async readConfig() {
+	async readConfig(): Promise<any> {
 		const config = await FileSystem.readFile(this.basePath);
 		const records = config.split('\n');
 		const formattedRecords = {};

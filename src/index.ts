@@ -1,7 +1,15 @@
 #!/usr/bin/env node
 
 const sade = require('sade');
-import { configCommand, loginCommand, logoutCommand, pingCommand, repoCommand, reposCommand } from 'src/commands';
+import {
+	accountCommand,
+	configCommand,
+	loginCommand,
+	logoutCommand,
+	pingCommand,
+	repoCommand,
+	reposCommand,
+} from 'src/commands';
 
 import { version } from '../package.json';
 
@@ -12,6 +20,7 @@ cli
 	.describe('A simple CLI for the Playbooks project.')
 	.option('-c, --config', 'Path to config file. Defaults to `~/.playbooksrc`.');
 
+// Basics
 cli
 	.command('login')
 	.describe('Log into your account in place of using a config file.')
@@ -37,6 +46,7 @@ cli
 	.example('playbooks ping')
 	.action(pingCommand);
 
+// Marketplace
 cli
 	.command('repo <uuid>')
 	.describe('Fetch repo by uuid from Playbooks.')
@@ -58,6 +68,14 @@ cli
 	.example('playbooks repos --language typescript')
 	.example('playbooks repos --tool docker')
 	.action(reposCommand);
+
+// Account
+cli
+	.command('account')
+	.describe('View your Playbooks account.')
+	.option('-s, --select', 'Select specific fields')
+	.example('playbooks account')
+	.action(accountCommand);
 
 cli.command('logout').describe('Logout of your Playbooks account.').example('playbooks logout').action(logoutCommand);
 
