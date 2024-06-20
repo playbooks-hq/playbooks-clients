@@ -9,7 +9,7 @@ export const jsonApiNormalizeArray = (data = [], included = [], meta = {}) => {
 	return normalizedArray;
 };
 
-export const jsonApiNormalize = (data = {}, included = []) => {
+export const jsonApiNormalize = (data = {}, included = []): any => {
 	const normalizedData = { data: {} };
 	normalizedData.data = jsonApiNormalizeAttrs(data, included);
 	return normalizedData;

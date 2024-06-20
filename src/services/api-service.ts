@@ -11,13 +11,17 @@ const VITE_SSL_CERT_FILE = import.meta.env.VITE_SSL_CERT_FILE;
 
 if (MODE === 'development') process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-interface SuperagentService {
+interface ApiService {
+	account?: string;
+	accountType?: string;
 	token?: string;
 }
 
-class SuperagentService {
-	constructor(token?) {
-		this.token = token || '';
+class ApiService {
+	constructor(props?) {
+		this.account = props.account || '';
+		this.accountType = props.accountType || '';
+		this.token = props.token || '';
 	}
 
 	/* ----- Variables ----- */
@@ -44,6 +48,21 @@ class SuperagentService {
 		return { ...this.headers, ...headers };
 	}
 
+	/* ----- Auth ----- */
+	authUrl(endpoint) {
+		const baseUrl = this.accountType === 'Team' ? `/session/teams/${this.account}` : `/session`;
+		return baseUrl + endpoint;
+	}
+
+	authHeaders(headers?) {
+		return {
+			account: this.account || null,
+			accountType: this.accountType || null,
+			Authorization: this.token || null,
+			...headers,
+		};
+	}
+
 	/* ----- Serializers ----- */
 	serializeArray(data) {
 		const formattedData = jsonApiSerializeArray(data);
@@ -57,19 +76,27 @@ class SuperagentService {
 		return formattedData;
 	}
 
-	/* ----- Serializers ----- */
+	serializeParams(params) {
+		const formattedParams = {};
+		Object.keys(params || {})
+			.filter(key => params.key)
+			.map(key => (formattedParams[key] = params[key]));
+		// Logger.log(`serializedParams: `, formattedParams);
+		return formattedParams;
+	}
+
 	normalizeArray(response) {
 		const format = JSON.parse(response.text);
-		const data = jsonApiNormalizeArray(format.data, format.included, format.meta);
-		// Logger.log(`normalizedArray: `, data);
-		return data;
+		const formattedResponse = jsonApiNormalizeArray(format.data, format.included, format.meta);
+		// Logger.log(`normalizedArray: `, formattedResponse);
+		return formattedResponse;
 	}
 
 	normalizeData(response) {
 		const format = JSON.parse(response.text);
-		const data = jsonApiNormalize(format.data, format.included);
-		// Logger.log(`normalizedData: `, data);
-		return data;
+		const formattedResponse = jsonApiNormalize(format.data, format.included);
+		// Logger.log(`normalizedData: `, formattedResponse);
+		return formattedResponse;
 	}
 
 	normalizeError(e) {
@@ -147,6 +174,6 @@ class SuperagentService {
 	}
 }
 
-export { SuperagentService };
+export { ApiService };
 
 // https://github.com/ladjs/superagent

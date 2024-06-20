@@ -3,7 +3,7 @@ const ora = require('ora');
 const os = require('os');
 import { serializeArray } from 'src/api';
 import { ConfigService } from 'src/services/config-service';
-import { SuperagentService } from 'src/services/superagent-service';
+import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
@@ -12,7 +12,7 @@ export const ordersCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
-		const entity = options.e || options.entity || `Repo`;
+		const entity = options.e || options.entity || ``;
 		const select = options.s || options.select || `*`;
 		Logger.log('options: ', { config, entity, select });
 
@@ -26,12 +26,11 @@ export const ordersCommand = async (options: any) => {
 		const contents = await service.readConfig();
 
 		// Fetch
-		const client = new SuperagentService();
-		const response = await client.query({
-			endpoint: `/session/orders`,
-			headers: { Authorization: contents.token || null },
-			params: { entityType: entity },
-		});
+		const client = new ApiService(contents);
+		const endpoint = client.authUrl('/orders');
+		const headers = client.authHeaders();
+		const params = client.serializeParams({ entityType: entity });
+		const response = await client.query({ endpoint, headers, params });
 
 		// Selects
 		const selects = select !== '*' ? select.split(',') : [];
@@ -46,7 +45,6 @@ export const ordersCommand = async (options: any) => {
 				padding: 1,
 				borderColor: 'cyan',
 				dimBorder: true,
-				titleAlignment: 'center',
 			}),
 		);
 	} catch (e) {

@@ -10,7 +10,10 @@ import {
 	pingCommand,
 	repoCommand,
 	reposCommand,
+	sessionCommand,
 	subscriptionCommand,
+	teamsCommand,
+	toggleCommand,
 } from 'src/commands';
 
 import { version } from '../package.json';
@@ -67,8 +70,15 @@ cli
 
 // Account
 cli
+	.command('session')
+	.describe('View your Playbooks session.')
+	.option('-s, --select', 'Select specific fields')
+	.example('playbooks session')
+	.action(sessionCommand);
+
+cli
 	.command('account')
-	.describe('View your Playbooks account.')
+	.describe('View which Playbooks account is currently active.')
 	.option('-s, --select', 'Select specific fields')
 	.example('playbooks account')
 	.action(accountCommand);
@@ -79,6 +89,22 @@ cli
 	.option('-s, --select', 'Select specific fields')
 	.example('playbooks subscription')
 	.action(subscriptionCommand);
+
+cli
+	.command('teams')
+	.describe('View your Playbooks teams.')
+	.option('-s, --select', 'Select specific fields')
+	.example('playbooks teams')
+	.action(teamsCommand);
+
+cli
+	.command('toggle')
+	.describe('Toggle which Playbooks account is currently active.')
+	.option('-u, --uuid', 'Select specific fields')
+	.option('-s, --select', 'Select specific fields')
+	.example('playbooks toggle')
+	.example('playbooks toggle --uuid team-uuid')
+	.action(toggleCommand);
 
 cli
 	.command('orders')

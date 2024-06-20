@@ -2,7 +2,7 @@ const enquirer = require('enquirer');
 const ora = require('ora');
 const os = require('os');
 import { ConfigService } from 'src/services/config-service';
-import { SuperagentService } from 'src/services/superagent-service';
+import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
@@ -23,12 +23,12 @@ export const loginCommand = async (options: any) => {
 
 		const passwordPrompt = new enquirer.Password({ name: 'Password', message: 'Please enter your password.' });
 		const password = await passwordPrompt.run();
-		Logger.log('answers: ', email, password);
+		Logger.log('answers: ', { email, password });
 
 		// API call
 		spinner.start();
 		await timeout(300);
-		const client = new SuperagentService();
+		const client = new ApiService();
 		const response = await client.post({ endpoint: '/auth/login', data: { email, password } });
 
 		// Storage
@@ -37,6 +37,8 @@ export const loginCommand = async (options: any) => {
 			uuid: response.data.uuid,
 			email: response.data.email,
 			token: response.data.token?.token,
+			account: response.data.uuid,
+			accountType: 'User',
 		});
 		spinner.succeed('Login succeeded!');
 	} catch (e) {

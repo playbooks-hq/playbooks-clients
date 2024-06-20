@@ -2,7 +2,8 @@ const boxen = require('boxen');
 const ora = require('ora');
 const os = require('os');
 import { serialize } from 'src/api';
-import { SuperagentService } from 'src/services/superagent-service';
+import { ApiService } from 'src/services/api-service';
+import { ConfigService } from 'src/services/config-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
@@ -18,9 +19,16 @@ export const repoCommand = async (uuid, options: any) => {
 		spinner.start();
 		await timeout(300);
 
+		// Config
+		const service = new ConfigService({ basePath: config });
+		await service.setup();
+		const contents = await service.readConfig();
+
 		// Fetch
-		const client = new SuperagentService();
-		const response = await client.queryRecord({ endpoint: `/repos/${uuid}` });
+		const client = new ApiService(contents);
+		const headers = client.authHeaders();
+		const params = client.serializeParams({});
+		const response = await client.queryRecord({ endpoint: `/repos/${uuid}`, headers, params });
 
 		// Selects
 		const selects = select !== '*' ? select.split(',') : [];
@@ -35,7 +43,6 @@ export const repoCommand = async (uuid, options: any) => {
 				padding: 1,
 				borderColor: 'cyan',
 				dimBorder: true,
-				titleAlignment: 'center',
 			}),
 		);
 	} catch (e) {

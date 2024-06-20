@@ -2,7 +2,7 @@ const enquirer = require('enquirer');
 const ora = require('ora');
 const os = require('os');
 import { ConfigService } from 'src/services/config-service';
-import { SuperagentService } from 'src/services/superagent-service';
+import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 

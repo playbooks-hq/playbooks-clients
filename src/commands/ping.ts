@@ -1,7 +1,7 @@
 const boxen = require('boxen');
 const ora = require('ora');
 const os = require('os');
-import { SuperagentService } from 'src/services/superagent-service';
+import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
@@ -17,7 +17,7 @@ export const pingCommand = async (options: any) => {
 		await timeout(300);
 
 		// Ping
-		const client = new SuperagentService();
+		const client = new ApiService();
 		const response = await client.queryRecord({ endpoint: '/' });
 		spinner.succeed('Your connection is working.');
 		console.log(boxen(response.data.message, { padding: 1 }));

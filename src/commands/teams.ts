@@ -1,14 +1,14 @@
 const boxen = require('boxen');
 const ora = require('ora');
 const os = require('os');
-import { serialize } from 'src/api';
+import { serializeArray } from 'src/api';
 import { ConfigService } from 'src/services/config-service';
 import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
-export const accountCommand = async (options: any) => {
-	const spinner = ora('Fetching account...');
+export const teamsCommand = async (options: any) => {
+	const spinner = ora('Fetching teams...');
 	try {
 		// Setup
 		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
@@ -26,20 +26,19 @@ export const accountCommand = async (options: any) => {
 
 		// Fetch
 		const client = new ApiService(contents);
-		const endpoint = client.authUrl('');
 		const headers = client.authHeaders();
-		const response = await client.queryRecord({ endpoint, headers });
+		const response = await client.query({ endpoint: '/teams', headers });
 
 		// Selects
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serialize(response.data, selects);
-		const formattedResponse = JSON.stringify(formattedData, null, 2);
+		const formattedData = serializeArray(response.data, selects);
+		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
 
 		// Display
 		spinner.succeed('Fetch succeeded!');
 		console.log(
 			boxen(formattedResponse, {
-				title: 'Account',
+				title: 'Teams',
 				padding: 1,
 				borderColor: 'cyan',
 				dimBorder: true,

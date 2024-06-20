@@ -3,7 +3,7 @@ const ora = require('ora');
 const os = require('os');
 import { serialize } from 'src/api';
 import { ConfigService } from 'src/services/config-service';
-import { SuperagentService } from 'src/services/superagent-service';
+import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
@@ -25,11 +25,10 @@ export const subscriptionCommand = async (options: any) => {
 		const contents = await service.readConfig();
 
 		// Fetch
-		const client = new SuperagentService();
-		const response = await client.queryRecord({
-			endpoint: `/session/subscription`,
-			headers: { Authorization: contents.token || null },
-		});
+		const client = new ApiService(contents);
+		const endpoint = client.authUrl('/subscription');
+		const headers = client.authHeaders();
+		const response = await client.queryRecord({ endpoint, headers });
 
 		// Selects
 		const selects = select !== '*' ? select.split(',') : [];
@@ -44,7 +43,6 @@ export const subscriptionCommand = async (options: any) => {
 				padding: 1,
 				borderColor: 'cyan',
 				dimBorder: true,
-				titleAlignment: 'center',
 			}),
 		);
 	} catch (e) {

@@ -12,13 +12,13 @@ const formatLookup = type => {
 };
 
 // serialize
-export const serializeArray = (data = [], attrs = []) => {
+export const serializeArray = (data = [], attrs = []): any[] => {
 	const serializedData = [];
 	data.map(v => serializedData.push(serializeAttrs({ data: v, attrs })));
 	return serializedData;
 };
 
-export const serialize = (data = {}, attrs = []) => {
+export const serialize = (data = {}, attrs = []): any => {
 	const serializedData = {};
 	Object.assign(serializedData, serializeAttrs({ data, attrs }));
 	return serializedData;

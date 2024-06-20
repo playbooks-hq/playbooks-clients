@@ -7,8 +7,8 @@ import { ApiService } from 'src/services/api-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
-export const accountCommand = async (options: any) => {
-	const spinner = ora('Fetching account...');
+export const sessionCommand = async (options: any) => {
+	const spinner = ora('Fetching session...');
 	try {
 		// Setup
 		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
@@ -26,9 +26,8 @@ export const accountCommand = async (options: any) => {
 
 		// Fetch
 		const client = new ApiService(contents);
-		const endpoint = client.authUrl('');
 		const headers = client.authHeaders();
-		const response = await client.queryRecord({ endpoint, headers });
+		const response = await client.queryRecord({ endpoint: `/session`, headers });
 
 		// Selects
 		const selects = select !== '*' ? select.split(',') : [];
@@ -39,7 +38,7 @@ export const accountCommand = async (options: any) => {
 		spinner.succeed('Fetch succeeded!');
 		console.log(
 			boxen(formattedResponse, {
-				title: 'Account',
+				title: 'Session',
 				padding: 1,
 				borderColor: 'cyan',
 				dimBorder: true,
