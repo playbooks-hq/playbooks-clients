@@ -1,4 +1,5 @@
 export * from 'src/commands/account';
+export * from 'src/commands/clone';
 export * from 'src/commands/config';
 export * from 'src/commands/download';
 export * from 'src/commands/login';

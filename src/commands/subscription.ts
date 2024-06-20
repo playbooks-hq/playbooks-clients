@@ -12,7 +12,7 @@ export const subscriptionCommand = async (options: any) => {
 		// Setup
 		const config = options.c || options.config;
 		const select = options.s || options.select;
-		Logger.log('options: ', { config, select });
+		Logger.log('options: ', options, { config, select });
 
 		// Start
 		spinner.start();
