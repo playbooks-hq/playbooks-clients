@@ -7,8 +7,8 @@ import { SuperagentService } from 'src/services/superagent-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
 
-export const accountCommand = async (options: any) => {
-	const spinner = ora('Fetching account...');
+export const subscriptionCommand = async (options: any) => {
+	const spinner = ora('Fetching subscription...');
 	try {
 		// Setup
 		const config = options.c || options.config || `${os.homedir()}/.playbooksrc`;
@@ -27,7 +27,7 @@ export const accountCommand = async (options: any) => {
 		// Fetch
 		const client = new SuperagentService();
 		const response = await client.queryRecord({
-			endpoint: `/session`,
+			endpoint: `/session/subscription`,
 			headers: { Authorization: contents.token || null },
 		});
 
@@ -40,7 +40,7 @@ export const accountCommand = async (options: any) => {
 		spinner.succeed('Fetch succeeded!');
 		console.log(
 			boxen(formattedResponse, {
-				title: 'Account',
+				title: 'Subscription',
 				padding: 1,
 				borderColor: 'cyan',
 				dimBorder: true,

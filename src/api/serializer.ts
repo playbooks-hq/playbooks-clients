@@ -1,54 +1,58 @@
-import { isArray, isObject } from 'src/utils/helpers';
-import { camelToDash } from 'src/utils/transforms';
+import { isArray, isEmpty, isObject } from 'src/utils/helpers';
+import { camelToDash, dashToCamel } from 'src/utils/transforms';
 
-export const attrs = {
-	type: { normalize: false, serialize: false },
-	updatedAt: { serialize: false },
-	createdAt: { serialize: false },
-};
-
-export const relationships = {};
-
-// Methods
-export const checkAttrs = key => {
-	const keys = Object.keys(attrs);
-	return keys.includes(key) ? attrs[key] : {};
-};
-
-export const checkRelationships = key => {
-	const keys = Object.keys(relationships);
-	return keys.includes(key) ? relationships[key] : {};
+// Helpers
+const formatLookup = type => {
+	switch (type) {
+		case 'dash':
+			return camelToDash;
+		case 'camelcase':
+			return dashToCamel;
+	}
 };
 
 // serialize
-export const serializeArray = (data = []) => {
+export const serializeArray = (data = [], attrs = []) => {
 	const serializedData = [];
-	data.map(d => serializedData.push(serializeAttrs(d)));
-	return { data: { attributes: serializedData } };
+	data.map(v => serializedData.push(serializeAttrs({ data: v, attrs })));
+	return serializedData;
 };
 
-export const serialize = (data = {}) => {
-	const serializedData = serializeAttrs(data);
-	return { data: { attributes: serializedData } };
+export const serialize = (data = {}, attrs = []) => {
+	const serializedData = {};
+	Object.assign(serializedData, serializeAttrs({ data, attrs }));
+	return serializedData;
 };
 
-export const serializeAttrs = (data = {}) => {
-	const serializedAttrs = {};
+export const serializeAttrs = ({ type = 'dash', data = {}, attrs = [] }) => {
+	const formatter = formatLookup(type);
+	const serializedData = {};
+
 	Object.keys(data).map(key => {
-		if (checkAttrs(key).serialize === false) return;
+		if (attrs.length === 0) return (serializedData[formatter(key)] = data[key]);
 		if (isArray(data[key]) && isObject(data[key][0])) {
-			return (serializedAttrs[camelToDash(key)] = data[key].map(serializeAttrs));
+			const arrayData = data[key];
+			const arrayAttrs = attrs.filter(v => v.split('.')[0] === key).map(v => v.split('.')[1]);
+			const formattedAttrs = !isEmpty(arrayAttrs[0]) ? arrayAttrs : [];
+			if (!attrs.includes(key) && isEmpty(arrayAttrs)) return;
+			return (serializedData[formatter(key)] = arrayData.map(data => serializeAttrs({ data, attrs: formattedAttrs })));
 		}
 		if (isArray(data[key])) {
-			return (serializedAttrs[camelToDash(key)] = data[key]);
+			if (isEmpty(data[key])) return;
+			return (serializedData[formatter(key)] = data[key]);
 		}
 		if (isObject(data[key])) {
-			return (serializedAttrs[camelToDash(key)] = serializeAttrs(data[key]));
+			const objectData = data[key];
+			const objectAttrs = attrs.filter(v => v.split('.')[0] === key);
+			const formattedAttrs = objectAttrs.filter(v => v.includes('.')).map(v => v.split('.')[1]);
+			if (isEmpty(objectAttrs)) return;
+			return (serializedData[camelToDash(key)] = serializeAttrs({ data: objectData, attrs: formattedAttrs }));
 		}
-		return (serializedAttrs[camelToDash(key)] = data[key]);
+		if (attrs.includes(key)) return (serializedData[formatter(key)] = data[key]);
 	});
-	return serializedAttrs;
+
+	return serializedData;
 };
 
 // Docs
-// https://jsonapi-resources.com/
+//

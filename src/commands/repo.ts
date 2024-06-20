@@ -1,6 +1,7 @@
 const boxen = require('boxen');
 const ora = require('ora');
 const os = require('os');
+import { serialize } from 'src/api';
 import { SuperagentService } from 'src/services/superagent-service';
 import { timeout } from 'src/utils/helpers';
 import * as Logger from 'src/utils/logger';
@@ -22,12 +23,8 @@ export const repoCommand = async (uuid, options: any) => {
 		const response = await client.queryRecord({ endpoint: `/repos/${uuid}` });
 
 		// Selects
-		const formattedData = {};
-		const selects = select.split(',');
-		Object.keys(response.data).map(key => {
-			if (selects.includes('*')) return (formattedData[key] = response.data[key]);
-			if (selects.includes(key)) return (formattedData[key] = response.data[key]);
-		});
+		const selects = select !== '*' ? select.split(',') : [];
+		const formattedData = serialize(response.data, selects);
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display

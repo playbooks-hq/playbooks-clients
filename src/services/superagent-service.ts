@@ -1,7 +1,6 @@
 const Fs = require('fs-extra');
 const Superagent = require('superagent');
-import { serialize, serializeArray } from 'src/api/serializer';
-import { normalize, normalizeArray } from 'src/api/normalizer';
+import { jsonApiNormalize, jsonApiNormalizeArray, jsonApiSerialize, jsonApiSerializeArray } from 'src/api';
 import { queryType, mutateType } from 'src/types';
 import * as Logger from 'src/utils/logger';
 
@@ -47,13 +46,13 @@ class SuperagentService {
 
 	/* ----- Serializers ----- */
 	serializeArray(data) {
-		const formattedData = serializeArray(data);
+		const formattedData = jsonApiSerializeArray(data);
 		// Logger.log(`serializedArray: `, formattedData);
 		return formattedData;
 	}
 
 	serializeData(data) {
-		const formattedData = serialize(data);
+		const formattedData = jsonApiSerialize(data);
 		// Logger.log(`serializedData: `, formattedData);
 		return formattedData;
 	}
@@ -61,23 +60,27 @@ class SuperagentService {
 	/* ----- Serializers ----- */
 	normalizeArray(response) {
 		const format = JSON.parse(response.text);
-		const data = normalizeArray(format.data, format.included, format.meta);
+		const data = jsonApiNormalizeArray(format.data, format.included, format.meta);
 		// Logger.log(`normalizedArray: `, data);
 		return data;
 	}
 
 	normalizeData(response) {
 		const format = JSON.parse(response.text);
-		const data = normalize(format.data, format.included);
+		const data = jsonApiNormalize(format.data, format.included);
 		// Logger.log(`normalizedData: `, data);
 		return data;
 	}
 
 	normalizeError(e) {
-		const data = JSON.parse(e.response.text);
-		const error = data.errors[0];
-		const { status, title, message, framework } = error;
-		Logger.error('API Error: ', { status, title, message, framework: MODE === 'production' ? framework : '' });
+		if (e.response?.text) {
+			const data = JSON.parse(e.response.text);
+			const error = data.errors[0];
+			const { status, title, message, framework } = error;
+			Logger.error('API Error: ', { status, title, message, framework: MODE === 'production' ? framework : '' });
+		} else {
+			Logger.error('CLI Error: ', e);
+		}
 	}
 
 	/* ----- Methods ----- */

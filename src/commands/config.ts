@@ -20,11 +20,16 @@ export const configCommand = async (options: any) => {
 		const service = new ConfigService({ basePath: config });
 		await service.setup();
 		const contents = await service.readConfig();
-		const formattedContents =
-			Object.keys(contents).length > 0 ? JSON.stringify(contents, null, 4) : 'Nothing to see yet.';
+		const formattedData = {};
+		Object.keys(contents).map(key => {
+			if (key === 'token') return (formattedData[key] = '********');
+			formattedData[key] = contents[key];
+		});
 
 		spinner.succeed('Config succeeded!');
-		console.log(boxen(formattedContents, { padding: 1 }));
+		const formattedMsg =
+			Object.keys(formattedData).length > 0 ? JSON.stringify(formattedData, null, 4) : 'Nothing to see yet.';
+		console.log(boxen(formattedMsg, { padding: 1 }));
 	} catch (e) {
 		spinner.fail('Config failed!');
 		Logger.log(e);

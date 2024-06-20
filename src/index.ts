@@ -6,9 +6,11 @@ import {
 	configCommand,
 	loginCommand,
 	logoutCommand,
+	ordersCommand,
 	pingCommand,
 	repoCommand,
 	reposCommand,
+	subscriptionCommand,
 } from 'src/commands';
 
 import { version } from '../package.json';
@@ -17,10 +19,12 @@ const cli = sade('playbooks');
 
 cli
 	.version(version)
-	.describe('A simple CLI for the Playbooks project.')
-	.option('-c, --config', 'Path to config file. Defaults to `~/.playbooksrc`.');
+	.describe('A CLI for Playbooks (https://www.playbooks.xyz).')
+	.option('-c, --config', 'Path to your config file.', '~/.playbooksrc');
 
 // Basics
+cli.command('config').describe('View your config file.').example('playbooks config').action(configCommand);
+
 cli
 	.command('login')
 	.describe('Log into your account in place of using a config file.')
@@ -30,19 +34,8 @@ cli
 	.action(loginCommand);
 
 cli
-	.command('config')
-	.describe('View config file variables from the command line.')
-	.option('-e, --email', 'Your email address')
-	.option('-p, --password', 'Your password')
-	.option('-t, --token', 'Your API token')
-	.example('playbooks config -e acme@example.com')
-	.example('playbooks config -p password')
-	.example('playbooks config -t ********')
-	.action(configCommand);
-
-cli
 	.command('ping')
-	.describe('Ping Playbooks to make sure the connection is working.')
+	.describe('Check to make sure your connection is working.')
 	.example('playbooks ping')
 	.action(pingCommand);
 
@@ -60,9 +53,12 @@ cli
 	.command('repos')
 	.describe('Fetch repos from Playbooks.')
 	.option('-s, --select', 'Select specific fields')
-	.option('-f, --framework', 'Fetch by framework identifer')
-	.option('-l, --language', 'Fetch by language identifier')
-	.option('-t, --tool', 'Fetch by tool identifier')
+	.option('--framework', 'Fetch by framework identifer')
+	.option('--language', 'Fetch by language identifier')
+	.option('--platform', 'Fetch by platform identifer')
+	.option('--tool', 'Fetch by tool identifier')
+	.option('--topic', 'Fetch by topic identifier')
+	.option('--view', 'Fetch by view')
 	.example('playbooks repos')
 	.example('playbooks repos --framework react')
 	.example('playbooks repos --language typescript')
@@ -77,6 +73,22 @@ cli
 	.example('playbooks account')
 	.action(accountCommand);
 
+cli
+	.command('subscription')
+	.describe('View your Playbooks subscription.')
+	.option('-s, --select', 'Select specific fields')
+	.example('playbooks subscription')
+	.action(subscriptionCommand);
+
+cli
+	.command('orders')
+	.describe('View your Playbooks orders.')
+	.option('-e, --entity', 'Filter orders by entity', 'Repo')
+	.option('-s, --select', 'Select specific fields')
+	.example('playbooks order')
+	.action(ordersCommand);
+
+// Logout
 cli.command('logout').describe('Logout of your Playbooks account.').example('playbooks logout').action(logoutCommand);
 
 cli.parse(process.argv);
