@@ -2,7 +2,7 @@
   "name": "@playbooks-xyz/playbooks-cli",
   "description": "A simple CLI for the Playbooks project.",
   "homepage": "https://docs.playbooks.xyz",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "license": "MIT",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
