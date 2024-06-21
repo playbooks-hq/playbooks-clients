@@ -48,7 +48,7 @@ class StorageService {
 
 		await new Promise((resolve, reject) => {
 			Fs.createReadStream(this.zipFile)
-				.pipe(Unzip.Extract({ path: `${this.basePath}/${this.fileName}` }))
+				.pipe(Unzip.Extract({ path: this.basePath }))
 				.on('close', v => resolve(v))
 				.on('error', e => reject(e));
 		});

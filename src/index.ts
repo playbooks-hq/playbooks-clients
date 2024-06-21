@@ -56,7 +56,7 @@ cli
 cli
 	.command('download <uuid>')
 	.describe('Download a Playbooks repo to your local computer.')
-	.option('-p, --path', 'Path to a custom destination folder', '.')
+	.option('-p, --path', 'Path to destination folder', '.')
 	.option('-z, --unzip', 'Automatically unzip the binary file', false)
 	.option('-r, --remove', 'Automatically remove the binary file', false)
 	.example('playbooks download actix-official-starter')
