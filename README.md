@@ -30,10 +30,48 @@ account=eric-hubbell
 accountType=User
 ```
 
+## Table of Contentss
+- [global](#global)
+- [account](#account)
+- [clone](#clone)
+- [config](#config)
+- [download](#download)
+- [login](#login)
+- [logout](#logout)
+- [orders](#orders)
+- [ping](#ping)
+- [repo](#repo)
+- [repos](#repos)
+- [session](#session)
+- [subscription](#subscription)
+- [teams](#teams)
+- [toggle](#toggle)
+
+
+## Global
+A list of global commands and options.
+
+```bash
+playbooks --help
+
+playbooks login --help
+playbooks login --config ~/path/to/.playbooksrc
+
+playbooks download --help
+playbooks download --config ~/path/to/.playbooksrc
+```
+
+| Option | Type | Description |
+| --- | --- | --- |
+| --config | string | Path to a custom playbooks config file
+| --help | boolean | Display general info, examples, and a list of available options per command |
+
+
 ## Commands
+A list of Playbooks specific commands.
 
 
-### Account
+#### Account
 Display which account is currently active.
 
 ```bash
@@ -46,7 +84,8 @@ playbooks account --select 'id,name,email'
 | --select | string[] | A comma separated list of account fields you'd like to display |
 
 
-### Clone
+----
+#### Clone
 Clone a Playbooks repo to your Github account.
 
 ```bash
@@ -60,8 +99,8 @@ playbooks clone <repo_uuid> --account playbooks-community --name my-new-repo
 | --name | string | Rename the cloned repository |
 | --private | boolean | Mark the cloned repository as private |
 
-
-### Config
+----
+#### Config
 Display your config file.
 
 ```bash
@@ -74,7 +113,8 @@ playbooks config --select 'id,name,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-### Download
+----
+#### Download
 Download a Playbooks repo to your local computer.
 
 ```bash
@@ -89,7 +129,8 @@ playbooks download <repo_uuid> --unzip --remove
 | --remove | boolean | Automatically remove the binary file |
 
 
-### Login
+----
+#### Login
 Login to your Playbooks account from the command line.
 
 ```bash
@@ -103,14 +144,16 @@ playbooks login --email acme@example.com --password ******
 | --password | string | Your password |
 
 
-### Logout
+----
+#### Logout
 Logout of your Playbooks account.
 
 ```bash
 playbooks logout
 ```
 
-### Orders
+----
+#### Orders
 View your account orders.
 
 ```bash
@@ -124,7 +167,8 @@ playbooks orders --select 'id,amount,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-### Repo
+----
+#### Repo
 Fetch a specific repo
 
 ```bash
@@ -138,7 +182,8 @@ playbooks repo <uuid> --select 'id,name,uuid,tagline'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-### Repos
+----
+#### Repos
 Fetch a list of repos
 
 ```bash
@@ -159,7 +204,8 @@ playbooks repos --language 'typescript'
 | --view | enum | Fetch by view |
 
 
-### Session
+----
+#### Session
 View your current session
 
 ```bash
@@ -172,7 +218,8 @@ playbooks session --select 'id,name,uuid,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-### Subscription
+----
+#### Subscription
 View your account subscription
 
 ```bash
@@ -185,7 +232,8 @@ playbooks subscription --select 'id,name,uuid,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-### Teams
+----
+#### Teams
 View a list of your session teams
 
 ```bash
@@ -198,7 +246,8 @@ playbooks teams --select 'id,name,uuid,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-### Toggle
+----
+#### Toggle
 Toggle your active account.
 
 ```bash
