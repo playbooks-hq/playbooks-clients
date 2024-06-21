@@ -8,9 +8,11 @@ A simple CLI to access the Playbooks platform.
 
 
 ## Quick Start
-- `npm i -g @playbooks-xyz/playbooks-cli`
-- `playbooks download <repo_url>`
-- `playbooks download <repo_url> --path ~/repos --unzip --remove`
+```
+npm i -g @playbooks-xyz/playbooks-cli
+playbooks login
+playbooks download <repo_uuid>
+```
 
 
 ## Description
@@ -53,6 +55,7 @@ A list of global commands and options.
 
 ```bash
 playbooks --help
+playbooks --version
 
 playbooks login --help
 playbooks login --config ~/path/to/.playbooksrc
@@ -64,7 +67,8 @@ playbooks download --config ~/path/to/.playbooksrc
 | Option | Type | Description |
 | --- | --- | --- |
 | --config | string | Path to a custom playbooks config file
-| --help | boolean | Display general info, examples, and a list of available options per command |
+| --help | boolean | Display info, examples, and a list of available options per command |
+| --version | boolean | Display current library version |
 
 
 ## Commands
