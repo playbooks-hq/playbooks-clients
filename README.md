@@ -1,26 +1,26 @@
 ## Overview
-A simple CLI to access the Playbooks platform.
+A simple CLI to access the [Playbooks](https://www.playbooks.xyz) platform.
 
 
 ## Prerequisites
 - Node
-- Playbooks
+- A Playbooks account
 
 
 ## Quick Start
 ```
-npm i -g @playbooks-xyz/playbooks-cli
+npm install -g @playbooks-xyz/playbooks-cli
 playbooks login
 playbooks download <repo_uuid>
 ```
 
 
 ## Description
-The Playbooks CLI gives developers quick & easy terminal access to their Playbooks account so they can browse, purchase, download, and clone repositories on the go. Using the CLI, developers can also toggle in and out of their team accounts where they can perform similar actions. After installation, developers can use the `playbooks` prompt followed by various commands making it easy to access your Playbooks content from anywhere Node is available (ie your computer, remote server, containers, etc).
+The Playbooks CLI gives developers quick & easy terminal access to their Playbooks account so they can browse, purchase, download, and clone repositories from anywhere. Using the CLI, developers can also toggle in and out of their associated accounts making it a breeze to perform similar actions on behalf of those entities. After installation, simply use the `playbooks` prompt followed by the commands outlined below.
 
 
-## Config File
-Playbooks will look for (or create) a config file at the root of your file system `~/.playbooksrc` containing your platform secrets. Please keep it safe and keep it secret. As an alternative, you can provide a custom config file location per command using `--config ~/path/to/.playbooksrc`. The config file follows a standard `.env` file format like so:
+## Configuration
+Playbooks will look for (or create) a config file at the root of your file system `~/.playbooksrc` containing your platform secrets. Please keep it safe, keep it secret. As an alternative, you can provide a custom config file using `--config ~/path/to/.playbooksrc` as part of any command. The config file format is similar to an `.env` file like so:
 
 ```
 id=1
@@ -28,8 +28,7 @@ name=Eric Hubbell
 uuid=eric-hubbell
 email=eric@playbooks.xyz
 token=********
-account=eric-hubbell
-accountType=User
+...
 ```
 
 ## Table of Contentss
