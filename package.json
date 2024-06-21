@@ -1,5 +1,5 @@
 {
-  "name": "@playbooks-xyz/playbooks-cli",
+  "name": "@playbooks/playbooks-cli",
   "description": "A simple CLI for the Playbooks project.",
   "homepage": "https://docs.playbooks.xyz",
   "version": "0.0.11",
