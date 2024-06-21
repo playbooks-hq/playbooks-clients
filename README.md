@@ -2,11 +2,13 @@
 A simple CLI to access the [Playbooks](https://www.playbooks.xyz) platform.
 
 
+&ensp;
 ## Prerequisites
 - Node
 - A Playbooks account
 
 
+&ensp;
 ## Quick Start
 ```
 npm install -g @playbooks-xyz/playbooks-cli
@@ -14,11 +16,11 @@ playbooks login
 playbooks download <repo_uuid>
 ```
 
-
+&ensp;
 ## Description
 The Playbooks CLI gives developers quick & easy terminal access to their Playbooks account so they can browse, purchase, download, and clone repositories from anywhere. Using the CLI, developers can also toggle in and out of their associated accounts making it a breeze to perform similar actions on behalf of those entities. After installation, simply use the `playbooks` prompt followed by the commands outlined below.
 
-
+&ensp;
 ## Configuration
 Playbooks will look for (or create) a config file at the root of your file system `~/.playbooksrc` containing your platform secrets. Please keep it safe, keep it secret. As an alternative, you can provide a custom config file using `--config ~/path/to/.playbooksrc` as part of any command. The config file format is similar to an `.env` file like so:
 
@@ -31,7 +33,8 @@ token=********
 ...
 ```
 
-## Table of Contentss
+&ensp;
+## Table of Contents
 - [global](#global)
 - [account](#account)
 - [clone](#clone)
@@ -49,6 +52,7 @@ token=********
 - [toggle](#toggle)
 
 
+&ensp;
 ## Global
 A list of global commands and options.
 
@@ -70,10 +74,12 @@ playbooks download --config ~/path/to/.playbooksrc
 | --version | boolean | Display current library version |
 
 
+&ensp;
 ## Commands
 A list of Playbooks specific commands.
 
 
+&ensp;
 #### Account
 Display which account is currently active.
 
@@ -87,7 +93,7 @@ playbooks account --select 'id,name,email'
 | --select | string[] | A comma separated list of account fields you'd like to display |
 
 
-----
+&ensp;
 #### Clone
 Clone a Playbooks repo to your Github account.
 
@@ -102,7 +108,8 @@ playbooks clone <repo_uuid> --account playbooks-community --name my-new-repo
 | --name | string | Rename the cloned repository |
 | --private | boolean | Mark the cloned repository as private |
 
-----
+
+&ensp;
 #### Config
 Display your config file.
 
@@ -116,7 +123,7 @@ playbooks config --select 'id,name,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-----
+&ensp;
 #### Download
 Download a Playbooks repo to your local computer.
 
@@ -132,7 +139,7 @@ playbooks download <repo_uuid> --unzip --remove
 | --remove | boolean | Automatically remove the binary file |
 
 
-----
+&ensp;
 #### Login
 Login to your Playbooks account from the command line.
 
@@ -147,7 +154,7 @@ playbooks login --email acme@example.com --password ******
 | --password | string | Your password |
 
 
-----
+&ensp;
 #### Logout
 Logout of your Playbooks account.
 
@@ -155,7 +162,7 @@ Logout of your Playbooks account.
 playbooks logout
 ```
 
-----
+&ensp;
 #### Orders
 View your account orders.
 
@@ -170,7 +177,7 @@ playbooks orders --select 'id,amount,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-----
+&ensp;
 #### Repo
 Fetch a specific repo
 
@@ -185,7 +192,7 @@ playbooks repo <uuid> --select 'id,name,uuid,tagline'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-----
+&ensp;
 #### Repos
 Fetch a list of repos
 
@@ -207,7 +214,7 @@ playbooks repos --language 'typescript'
 | --view | enum | Fetch by view |
 
 
-----
+&ensp;
 #### Session
 View your current session
 
@@ -221,7 +228,7 @@ playbooks session --select 'id,name,uuid,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-----
+&ensp;
 #### Subscription
 View your account subscription
 
@@ -235,7 +242,7 @@ playbooks subscription --select 'id,name,uuid,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-----
+&ensp;
 #### Teams
 View a list of your session teams
 
@@ -249,7 +256,7 @@ playbooks teams --select 'id,name,uuid,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-----
+&ensp;
 #### Toggle
 Toggle your active account.
 
@@ -263,14 +270,17 @@ playbooks toggle --uuid 'playbooks-community'
 | --uuid | string | Account identifier
 
 
+&ensp;
 ## Questions
 Please reach out to support@playbooks.xyz with any technical questions and / or issues.
 
 
+&ensp;
 ## Author
 - Playbooks XYZ
 - support@playbooks.xyz
 
 
+&ensp;
 ## Contributions
 Please open a Github Issue describing the PR you want to submit before starting work.
