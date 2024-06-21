@@ -11,6 +11,8 @@ export const loginCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.c || options.config;
+		const email = options.e || options.email || '';
+		const password = options.p || options.password || '';
 		Logger.log('options: ', { config });
 
 		// Config
@@ -19,20 +21,24 @@ export const loginCommand = async (options: any) => {
 
 		// Prompts
 		const emailPrompt = new enquirer.Input({ name: 'Login', message: 'Email Address:' });
-		const email = await emailPrompt.run();
+		const formattedEmail = email || (await emailPrompt.run());
 
 		const passwordPrompt = new enquirer.Password({ name: 'Password', message: 'Please enter your password.' });
-		const password = await passwordPrompt.run();
-		Logger.log('answers: ', { email, password });
+		const formattedPassword = password || (await passwordPrompt.run());
+		Logger.log('answers: ', { formattedEmail, formattedPassword });
 
 		// API call
 		spinner.start();
 		await timeout(300);
 		const client = new ApiService();
-		const response = await client.post({ endpoint: '/auth/login', data: { email, password } });
+		const response = await client.post({
+			endpoint: '/auth/login',
+			data: { email: formattedEmail, password: formattedPassword },
+		});
 
 		// Storage
 		await service.storeValues({
+			id: response.data.id,
 			name: response.data.name,
 			uuid: response.data.uuid,
 			email: response.data.email,

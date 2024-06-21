@@ -31,7 +31,7 @@ cli
 // Commands
 cli
 	.command('account')
-	.describe('Display the account that is currently active')
+	.describe('View which account is currently active')
 	.option('-s, --select', 'Select specific fields', '*')
 	.example('playbooks account')
 	.action(accountCommand);
@@ -46,14 +46,19 @@ cli
 	.example('playbooks clone actix-official-starter --org mile-hi-labs --name my-new-repo --private')
 	.action(cloneCommand);
 
-cli.command('config').describe('View your config file.').example('playbooks config').action(configCommand);
+cli
+	.command('config')
+	.describe('Display your config file.')
+	.option('-s, --select', 'Select specific fields', '*')
+	.example('playbooks config')
+	.action(configCommand);
 
 cli
 	.command('download <uuid>')
 	.describe('Download a Playbooks repo to your local computer.')
-	.option('-p, --path', 'Path to destination folder', '.')
-	.option('-z, --unzip', 'Unzip download (Boolean)', false)
-	.option('-r, --remove', 'Remove zip after download (Boolean)', false)
+	.option('-p, --path', 'Path to a custom destination folder', '.')
+	.option('-z, --unzip', 'Automatically unzip the binary file', false)
+	.option('-r, --remove', 'Automatically remove the binary file', false)
 	.example('playbooks download actix-official-starter')
 	.example('playbooks download actix-official-starter --path `~/path/to/folder')
 	.action(downloadCommand);
@@ -119,7 +124,7 @@ cli
 
 cli
 	.command('teams')
-	.describe('View your teams.')
+	.describe('View a list of your session teams.')
 	.option('-s, --select', 'Select specific fields', '*')
 	.example('playbooks teams')
 	.action(teamsCommand);
@@ -128,7 +133,6 @@ cli
 	.command('toggle')
 	.describe('Toggle your active account.')
 	.option('-u, --uuid', 'Select specific fields', '*')
-	.option('-s, --select', 'Select specific fields', '*')
 	.example('playbooks toggle')
 	.example('playbooks toggle --uuid team-uuid')
 	.action(toggleCommand);
