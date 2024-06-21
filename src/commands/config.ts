@@ -1,7 +1,7 @@
 const ora = require('ora');
-import { DisplayBox } from 'src/components';
+import { DisplaySuccess, DisplayError } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
-import { timeout } from 'src/utils/helpers';
+import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const configCommand = async (options: any) => {
@@ -29,10 +29,10 @@ export const configCommand = async (options: any) => {
 		const formattedResponse = Object.keys(data).length > 0 ? JSON.stringify(data, null, 2) : 'Nothing to see yet.';
 
 		spinner.succeed('Config succeeded!');
-		DisplayBox('Config', formattedResponse);
+		DisplaySuccess('Config', formattedResponse);
 	} catch (e) {
 		spinner.fail('Config failed!');
-		Logger.log(e);
+		DisplayError(formatError(e));
 		process.exit();
 	}
 };

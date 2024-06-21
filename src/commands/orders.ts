@@ -1,9 +1,9 @@
 const ora = require('ora');
 import { serializeArray } from 'src/api';
-import { DisplayBox } from 'src/components';
+import { DisplaySuccess, DisplayError } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { ApiService } from 'src/services/api-service';
-import { timeout } from 'src/utils/helpers';
+import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const ordersCommand = async (options: any) => {
@@ -38,10 +38,10 @@ export const ordersCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed('Fetch succeeded!');
-		DisplayBox('Orders', formattedResponse);
+		DisplaySuccess('Orders', formattedResponse);
 	} catch (e) {
 		spinner.fail('Fetch failed!');
-		Logger.log(e);
+		DisplayError(formatError(e));
 		process.exit();
 	}
 };

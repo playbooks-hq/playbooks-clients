@@ -55,12 +55,12 @@ class ApiService {
 	}
 
 	authHeaders(headers?) {
-		return {
-			account: this.account || null,
-			accountType: this.accountType || null,
-			Authorization: this.token || null,
-			...headers,
-		};
+		const formattedHeaders = {};
+		if (this.account) formattedHeaders['account'] = this.account;
+		if (this.accountType) formattedHeaders['accountType'] = this.accountType;
+		if (this.token) formattedHeaders['authorization'] = this.token;
+		if (headers) Object.assign(formattedHeaders, headers);
+		return formattedHeaders;
 	}
 
 	/* ----- Serializers ----- */
@@ -99,89 +99,48 @@ class ApiService {
 		return formattedResponse;
 	}
 
-	normalizeError(e) {
-		if (e.response?.text) {
-			const data = JSON.parse(e.response.text);
-			const error = data.errors[0];
-			const { status, title, message, framework } = error;
-			Logger.error('API Error: ', { status, title, message, framework: MODE === 'production' ? framework : '' });
-		} else {
-			Logger.error('CLI Error: ', e);
-		}
-	}
-
 	/* ----- Methods ----- */
 	async query({ endpoint, headers, params = {} }: queryType) {
-		try {
-			const computedUrl = this.computeURL(endpoint);
-			const computedHeaders = this.computeHeaders(headers);
-			const response = await Superagent.get(computedUrl).set(computedHeaders).query(params);
-			return this.normalizeArray(response);
-		} catch (e) {
-			await this.normalizeError(e);
-			throw new Error('API Error!');
-		}
+		const computedUrl = this.computeURL(endpoint);
+		const computedHeaders = this.computeHeaders(headers);
+		const response = await Superagent.get(computedUrl).set(computedHeaders).query(params);
+		return this.normalizeArray(response);
 	}
 
 	async queryRecord({ endpoint, headers, params }: queryType) {
-		try {
-			const computedUrl = this.computeURL(endpoint);
-			const computedHeaders = this.computeHeaders(headers);
-			const response = await Superagent.get(computedUrl).set(computedHeaders).query(params);
-			return this.normalizeData(response);
-		} catch (e) {
-			await this.normalizeError(e);
-			throw new Error('API Error!');
-		}
+		const computedUrl = this.computeURL(endpoint);
+		const computedHeaders = this.computeHeaders(headers);
+		const response = await Superagent.get(computedUrl).set(computedHeaders).query(params);
+		return this.normalizeData(response);
 	}
 
 	async post({ endpoint, headers, params, data }: mutateType) {
-		try {
-			const computedUrl = this.computeURL(endpoint);
-			const computedHeaders = this.computeHeaders(headers);
-			const computedData = this.serializeData(data);
-			const response = await Superagent.post(computedUrl).set(computedHeaders).query(params).send(computedData);
-			return this.normalizeData(response);
-		} catch (e) {
-			await this.normalizeError(e);
-			throw new Error('API Error!');
-		}
+		const computedUrl = this.computeURL(endpoint);
+		const computedHeaders = this.computeHeaders(headers);
+		const computedData = this.serializeData(data);
+		const response = await Superagent.post(computedUrl).set(computedHeaders).query(params).send(computedData);
+		return this.normalizeData(response);
 	}
 
 	async update({ endpoint, headers, params, data }: mutateType) {
-		try {
-			const computedUrl = this.computeURL(endpoint);
-			const computedHeaders = this.computeHeaders(headers);
-			const computedData = this.serializeData(data);
-			const response = await Superagent.put(computedUrl).set(computedHeaders).query(params).send(computedData);
-			return this.normalizeData(response);
-		} catch (e) {
-			await this.normalizeError(e);
-			throw new Error('API Error!');
-		}
+		const computedUrl = this.computeURL(endpoint);
+		const computedHeaders = this.computeHeaders(headers);
+		const computedData = this.serializeData(data);
+		const response = await Superagent.put(computedUrl).set(computedHeaders).query(params).send(computedData);
+		return this.normalizeData(response);
 	}
 
 	async delete({ endpoint, headers, params }: queryType) {
-		try {
-			const computedUrl = this.computeURL(endpoint);
-			const computedHeaders = this.computeHeaders(headers);
-			const response = await Superagent.delete(computedUrl).set(computedHeaders).query(params);
-			return this.normalizeData(response);
-		} catch (e) {
-			await this.normalizeError(e);
-			throw new Error('API Error!');
-		}
+		const computedUrl = this.computeURL(endpoint);
+		const computedHeaders = this.computeHeaders(headers);
+		const response = await Superagent.delete(computedUrl).set(computedHeaders).query(params);
+		return this.normalizeData(response);
 	}
 
 	async download({ endpoint, headers }: queryType) {
-		try {
-			const computedUrl = this.computeURL(endpoint);
-			const computedHeaders = this.computeHeaders(headers);
-			return await Superagent.get(computedUrl).set(computedHeaders);
-		} catch (e) {
-			await this.normalizeError(e);
-			throw new Error('API Error!');
-		}
+		const computedUrl = this.computeURL(endpoint);
+		const computedHeaders = this.computeHeaders(headers);
+		return await Superagent.get(computedUrl).set(computedHeaders);
 	}
 }
 

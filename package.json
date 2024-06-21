@@ -37,6 +37,8 @@
     "docs:start": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "pregit": "git add .",
+    "git": "git push --tags",
     "test": "jest",
     "prepare": "husky install"
   },

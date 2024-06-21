@@ -1,7 +1,7 @@
 const ora = require('ora');
-import { DisplayBox } from 'src/components';
+import { DisplaySuccess, DisplayError } from 'src/components';
 import { ApiService } from 'src/services/api-service';
-import { timeout } from 'src/utils/helpers';
+import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const pingCommand = async (options: any) => {
@@ -21,10 +21,10 @@ export const pingCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed('Your connection is working.');
-		DisplayBox('Ping', response.data.message);
+		DisplaySuccess('Ping', response.data.message);
 	} catch (e) {
 		spinner.fail('Ping failed!');
-		Logger.log(e);
+		DisplayError(formatError(e));
 		process.exit();
 	}
 };

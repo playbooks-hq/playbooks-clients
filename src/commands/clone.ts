@@ -1,9 +1,9 @@
 const enquirer = require('enquirer');
 const ora = require('ora');
-import { DisplayBox } from 'src/components';
+import { DisplaySuccess, DisplayError } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { timeout } from 'src/utils/helpers';
+import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const cloneCommand = async (uuid, options: any) => {
@@ -63,10 +63,10 @@ export const cloneCommand = async (uuid, options: any) => {
 
 		// Display
 		spinner.succeed('Clone succeeded!');
-		DisplayBox('Clone', `https://github.com/${githubOwnerId}/${githubRepoId}`);
+		DisplaySuccess('Clone', `https://github.com/${githubOwnerId}/${githubRepoId}`);
 	} catch (e) {
 		spinner.fail('Clone failed!');
-		Logger.log(e);
+		DisplayError(formatError(e));
 		process.exit();
 	}
 };

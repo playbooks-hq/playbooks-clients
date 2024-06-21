@@ -1,9 +1,9 @@
 const enquirer = require('enquirer');
 const ora = require('ora');
-import { DisplayBox } from 'src/components';
+import { DisplaySuccess, DisplayError } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { ApiService } from 'src/services/api-service';
-import { timeout } from 'src/utils/helpers';
+import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const loginCommand = async (options: any) => {
@@ -50,10 +50,10 @@ export const loginCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed('Login succeeded!');
-		DisplayBox('Login', formattedData);
+		DisplaySuccess('Login', formattedData);
 	} catch (e) {
 		spinner.fail('Login failed!');
-		Logger.error(e);
+		DisplayError(formatError(e));
 		process.exit();
 	}
 };

@@ -1,6 +1,6 @@
 const boxen = require('boxen');
 
-export const DisplayBox = (title, message) => {
+export const DisplaySuccess = (title, message) => {
 	console.log(
 		boxen(message, {
 			title: title,

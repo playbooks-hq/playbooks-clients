@@ -1,10 +1,10 @@
 const enquirer = require('enquirer');
 const ora = require('ora');
 import { serialize } from 'src/api';
-import { DisplayBox } from 'src/components';
+import { DisplaySuccess, DisplayError } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { ApiService } from 'src/services/api-service';
-import { timeout } from 'src/utils/helpers';
+import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const toggleCommand = async (options: any) => {
@@ -59,10 +59,10 @@ export const toggleCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed('Toggle succeeded!');
-		DisplayBox('Account Activated', formattedResponse);
+		DisplaySuccess('Account Activated', formattedResponse);
 	} catch (e) {
 		spinner.fail('Toggle failed!');
-		Logger.log(e);
+		DisplayError(formatError(e));
 		process.exit();
 	}
 };

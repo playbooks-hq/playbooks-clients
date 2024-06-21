@@ -1,6 +1,7 @@
 const ora = require('ora');
+import { DisplaySuccess, DisplayError } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
-import { timeout } from 'src/utils/helpers';
+import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const logoutCommand = async (options: any) => {
@@ -23,7 +24,7 @@ export const logoutCommand = async (options: any) => {
 		spinner.succeed('Logout succeeded!');
 	} catch (e) {
 		spinner.fail('Logout failed!');
-		Logger.log(e);
+		DisplayError(formatError(e));
 		process.exit();
 	}
 };

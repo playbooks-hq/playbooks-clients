@@ -1,9 +1,9 @@
 const ora = require('ora');
-import { DisplayBox } from 'src/components';
+import { DisplaySuccess, DisplayError } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { StorageService } from 'src/services/storage-service';
-import { timeout } from 'src/utils/helpers';
+import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const downloadCommand = async (uuid, options: any) => {
@@ -13,8 +13,8 @@ export const downloadCommand = async (uuid, options: any) => {
 		const config = options.c || options.config;
 		const path = options.p || options.path || process.cwd();
 		const unzip = options.z || options.unzip;
-		const clean = options.c || options.clean;
-		Logger.log('options: ', { config, path, unzip, clean });
+		const remove = options.r || options.remove;
+		Logger.log('options: ', { config, path, unzip, remove });
 
 		// Start
 		spinner.start();
@@ -37,14 +37,14 @@ export const downloadCommand = async (uuid, options: any) => {
 		const storageService = new StorageService({ basePath: path, fileName: uuid });
 		await storageService.saveRepo(response.body);
 		if (unzip) await storageService.unzipRepo();
-		if (clean) await storageService.removeZip();
+		if (remove) await storageService.removeZip();
 		spinner.succeed('Storage complete!');
 
 		// Display
-		DisplayBox('Download', `${path}/${uuid}.zip`);
+		DisplaySuccess('Download', `${path}/${uuid}.zip`);
 	} catch (e) {
 		spinner.fail('Download failed!');
-		Logger.log(e);
+		DisplayError(formatError(e));
 		process.exit();
 	}
 };
