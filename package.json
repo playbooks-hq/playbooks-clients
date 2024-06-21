@@ -3,7 +3,7 @@
   "description": "A simple CLI for the Playbooks project.",
   "homepage": "https://docs.playbooks.xyz",
   "version": "0.0.1",
-  "license": "ISC",
+  "license": "MIT",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -37,8 +37,17 @@
     "docs:start": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "preversion": "npm run wipe",
+    "version": "npm run deploy",
+    "predeploy": "npm run build",
+    "deploy": "npm publish",
+    "postdeploy": "npm run git",
+    "pregit": "git add .",
+    "git": "git push --tags",
+    "postgit": "npm run wipe",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "wipe": "rm -rf dist"
   },
   "dependencies": {
     "archiver": "^7.0.1",
