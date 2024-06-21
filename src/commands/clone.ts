@@ -12,10 +12,10 @@ export const cloneCommand = async (uuid, options: any) => {
 		// Setup
 		const config = options.c || options.config;
 		const path = options.s || options.path || process.cwd();
-		const org = options.o || options.org || '';
+		const account = options.a || options.account || '';
 		const name = options.n || options.name || '';
 		const privateOption = options.p || options.private;
-		Logger.log('options: ', { config, path, org, name, private: privateOption });
+		Logger.log('options: ', { config, path, account, name, private: privateOption });
 
 		// Start
 		spinner.start();
@@ -53,7 +53,7 @@ export const cloneCommand = async (uuid, options: any) => {
 		});
 
 		// Formatting
-		const githubOwnerId = org || (await accountPrompt.run());
+		const githubOwnerId = account || (await accountPrompt.run());
 		const githubRepoId = name || (await namePrompt.run());
 		const isPrivate = privateOption || (await privatePrompt.run());
 

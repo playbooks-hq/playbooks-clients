@@ -31,7 +31,7 @@ cli
 // Commands
 cli
 	.command('account')
-	.describe('View your active account.')
+	.describe('Display the account that is currently active')
 	.option('-s, --select', 'Select specific fields', '*')
 	.example('playbooks account')
 	.action(accountCommand);
@@ -39,9 +39,9 @@ cli
 cli
 	.command('clone <uuid>')
 	.describe('Clone a Playbooks repo to your Github account.')
-	.option('-o, --org', 'Clone to an organization')
-	.option('-n, --name', 'Rename cloned repository')
-	.option('-p, --private', 'Mark repo as private')
+	.option('-a, --account', 'Clone to an organization')
+	.option('-n, --name', 'Rename the cloned repository')
+	.option('-p, --private', 'Mark the cloned repo as private')
 	.example('playbooks clone actix-official-starter')
 	.example('playbooks clone actix-official-starter --org mile-hi-labs --name my-new-repo --private')
 	.action(cloneCommand);
