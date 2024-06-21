@@ -34,9 +34,6 @@
     "format": "prettier src",
     "format:fix": "prettier --write src",
     "clean": "npm run lint:fix && npm run format:fix",
-    "docs:start": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
     "pregit": "git add .",
     "git": "git push --tags",
     "test": "jest",
@@ -52,7 +49,6 @@
     "ora": "^5.4.1",
     "sade": "^1.8.1",
     "superagent": "^9.0.2",
-    "superagent-debugger": "^1.2.9",
     "unzip-stream": "^0.3.4",
     "vite-plugin-dts": "^3.9.1"
   },
