@@ -82,7 +82,6 @@ A list of Playbooks specific commands.
 
 
 &ensp;
-----
 #### Account
 Display which account is currently active.
 
@@ -97,7 +96,6 @@ playbooks account --select 'id,name,email'
 
 
 &ensp;
-----
 #### Clone
 Clone a Playbooks repo to your Github account.
 
@@ -114,7 +112,6 @@ playbooks clone <repo_uuid> --account playbooks-community --name my-new-repo
 
 
 &ensp;
-----
 #### Config
 Display your config file.
 
@@ -129,7 +126,6 @@ playbooks config --select 'id,name,email'
 
 
 &ensp;
-----
 #### Download
 Download a Playbooks repo to your local computer.
 
@@ -146,7 +142,6 @@ playbooks download <repo_uuid> --unzip --remove
 
 
 &ensp;
-----
 #### Login
 Login to your Playbooks account from the command line.
 
@@ -162,7 +157,6 @@ playbooks login --email acme@example.com --password ******
 
 
 &ensp;
-----
 #### Logout
 Logout of your Playbooks account.
 
@@ -171,7 +165,6 @@ playbooks logout
 ```
 
 &ensp;
-----
 #### Orders
 View your account orders.
 
@@ -187,7 +180,6 @@ playbooks orders --select 'id,amount,createdAt'
 
 
 &ensp;
-----
 #### Repo
 Fetch a specific repo
 
@@ -203,7 +195,6 @@ playbooks repo <uuid> --select 'id,name,uuid,tagline'
 
 
 &ensp;
-----
 #### Repos
 Fetch a list of repos
 
@@ -226,7 +217,6 @@ playbooks repos --language 'typescript'
 
 
 &ensp;
-----
 #### Session
 View your current session
 
@@ -241,7 +231,6 @@ playbooks session --select 'id,name,uuid,email'
 
 
 &ensp;
-----
 #### Subscription
 View your account subscription
 
@@ -256,7 +245,6 @@ playbooks subscription --select 'id,name,uuid,email'
 
 
 &ensp;
-----
 #### Teams
 View a list of your session teams
 
@@ -271,7 +259,6 @@ playbooks teams --select 'id,name,uuid,email'
 
 
 &ensp;
-----
 #### Toggle
 Toggle your active account.
 
