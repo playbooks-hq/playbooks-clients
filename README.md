@@ -211,15 +211,14 @@ playbooks toggle --uuid 'playbooks-community'
 | --uuid | string | Account identifier
 
 
+## Questions
+Please reach out to support@playbooks.xyz with any technical questions and / or issues.
+
+
 ## Author
 - Playbooks XYZ
 - support@playbooks.xyz
 
 
-## Inspiration
-- degit
-- gittar
-
-
 ## Contributions
-Please open an issue describing the PR you want to submit before starting work.
+Please open a Github Issue describing the PR you want to submit before starting work.
