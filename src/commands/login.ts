@@ -44,7 +44,6 @@ export const loginCommand = async (options: any) => {
 			email: response.data.email,
 			token: response.data.token?.token,
 			account: response.data.uuid,
-			accountType: 'User',
 		});
 		const contents = await service.readConfig();
 		const data = {};

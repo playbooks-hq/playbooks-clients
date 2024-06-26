@@ -26,10 +26,9 @@ export const ordersCommand = async (options: any) => {
 
 		// Fetch
 		const client = new ApiService(contents);
-		const endpoint = client.authUrl('/orders');
 		const headers = client.authHeaders();
 		const params = client.serializeParams({ entityType: entity });
-		const response = await client.query({ endpoint, headers, params });
+		const response = await client.query({ endpoint: '/account/orders', headers, params });
 
 		// Selects
 		const selects = select !== '*' ? select.split(',') : [];

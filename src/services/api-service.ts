@@ -20,7 +20,6 @@ interface ApiService {
 class ApiService {
 	constructor(props?) {
 		this.account = props?.account || '';
-		this.accountType = props?.accountType || '';
 		this.token = props?.token || '';
 	}
 
@@ -49,15 +48,9 @@ class ApiService {
 	}
 
 	/* ----- Auth ----- */
-	authUrl(endpoint) {
-		const baseUrl = this.accountType === 'Team' ? `/session/teams/${this.account}` : `/session`;
-		return baseUrl + endpoint;
-	}
-
 	authHeaders(headers?) {
 		const formattedHeaders = {};
 		if (this.account) formattedHeaders['account'] = this.account;
-		if (this.accountType) formattedHeaders['accountType'] = this.accountType;
 		if (this.token) formattedHeaders['authorization'] = this.token;
 		if (headers) Object.assign(formattedHeaders, headers);
 		return formattedHeaders;

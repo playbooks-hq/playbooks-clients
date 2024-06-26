@@ -25,9 +25,8 @@ export const subscriptionCommand = async (options: any) => {
 
 		// Fetch
 		const client = new ApiService(contents);
-		const endpoint = client.authUrl('/subscription');
 		const headers = client.authHeaders();
-		const response = await client.queryRecord({ endpoint, headers });
+		const response = await client.queryRecord({ endpoint: '/account/subscription', headers });
 
 		// Selects
 		const selects = select !== '*' ? select.split(',') : [];

@@ -39,16 +39,15 @@ export const toggleCommand = async (options: any) => {
 			choices: choices.map(v => v.uuid),
 		});
 		const account = uuid || (await prompt.run());
-		const accountType = choices.map(v => v.uuid)[0] === account ? 'User' : 'Team';
 
-		Logger.log('answer: ', { account, accountType });
+		Logger.log('answer: ', { account });
 
 		// Start
 		spinner.start('Toggling account...');
 		await timeout(1000);
 
 		// Storage
-		await service.storeValues({ account, accountType });
+		await service.storeValues({ account });
 		const selectedAccount = choices.find(v => v.uuid === account);
 
 		// Display

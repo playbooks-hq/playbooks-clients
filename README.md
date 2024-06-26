@@ -18,14 +18,19 @@ playbooks download <repo_uuid>
 
 &ensp;
 ## Description
-The Playbooks CLI gives developers quick & easy terminal access to their Playbooks account so they can browse, purchase, download, and clone repositories from anywhere. Using the CLI, developers can also toggle in and out of their associated accounts making it a breeze to perform similar actions on behalf of those entities. After installation, simply use the `playbooks` prompt followed by the commands outlined below.
+The Playbooks CLI gives developers quick & easy terminal access to their Playbooks account so they can browse, purchase, download, and clone repositories from anywhere.
+Using the CLI, developers can also toggle in and out of their associated accounts making it a breeze to perform similar actions on behalf of those entities.
+After installation, simply use the `playbooks` prompt followed by the commands outlined below.
 
 &ensp;
 ## Configuration
-Playbooks will look for (or create) a config file at the root of your file system `~/.playbooksrc` containing your platform secrets. Keep it safe, keep it secret. As an alternative, you can provide a custom config file location using `--config ~/path/to/.playbooksrc` as part of any command. The config file format is similar to a `.env` file like so:
+Playbooks will look for a config file at the root of your file system `~/.playbooksrc` containing your platform secrets.
+If one does not exist, the Playbooks CLI will create one when you login.
+As an alternative, you can provide a custom config file location using the `--config` flag as part of any command.
+Here is a sample config file located at the default location on your file system:
 
 ```
-# Playbooks config file
+# ~/.playbooksrc
 
 id=1
 name=Eric Hubbell
@@ -58,7 +63,7 @@ token=********
 ## Global
 A list of global commands and options.
 
-```bash
+```sh
 playbooks --help
 playbooks --version
 
@@ -70,9 +75,9 @@ playbooks download --config ~/path/to/.playbooksrc
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --config | string | Path to a custom playbooks config file
-| --help | boolean | Display info, examples, and a list of available options per command |
+| --help | boolean | Display command info and available options |
 | --version | boolean | Display current library version |
 
 
@@ -85,13 +90,13 @@ A list of Playbooks specific commands.
 #### Account
 Display which account is currently active.
 
-```bash
+```sh
 playbooks account
 playbooks account --select 'id,name,email'
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --select | string[] | A comma separated list of account fields you'd like to display |
 
 
@@ -99,13 +104,13 @@ playbooks account --select 'id,name,email'
 #### Clone
 Clone a Playbooks repo to your Github account.
 
-```bash
+```sh
 playbooks clone <repo_uuid>
 playbooks clone <repo_uuid> --account playbooks-community --name my-new-repo
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --account | string | Clone to a specific account |
 | --name | string | Rename the cloned repository |
 | --private | boolean | Mark the cloned repository as private |
@@ -115,13 +120,13 @@ playbooks clone <repo_uuid> --account playbooks-community --name my-new-repo
 #### Config
 Display your config file.
 
-```bash
+```sh
 playbooks config
 playbooks config --select 'id,name,email'
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
@@ -129,13 +134,13 @@ playbooks config --select 'id,name,email'
 #### Download
 Download a Playbooks repo to your local computer.
 
-```bash
+```sh
 playbooks download <repo_uuid>
 playbooks download <repo_uuid> --unzip --remove
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --path | string | Path to custom destination folder |
 | --unzip | boolean | Automatically unzip the binary file |
 | --remove | boolean | Automatically remove the binary file |
@@ -145,13 +150,13 @@ playbooks download <repo_uuid> --unzip --remove
 #### Login
 Login to your Playbooks account from the command line.
 
-```bash
+```sh
 playbooks login
 playbooks login --email acme@example.com --password ******
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --email | string | Your email address |
 | --password | string | Your password |
 
@@ -160,7 +165,7 @@ playbooks login --email acme@example.com --password ******
 #### Logout
 Logout of your Playbooks account.
 
-```bash
+```sh
 playbooks logout
 ```
 
@@ -168,28 +173,36 @@ playbooks logout
 #### Orders
 View your account orders.
 
-```bash
+```sh
 playbooks orders
 playbooks orders --select 'id,amount,createdAt'
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --entity | enum | Filter by entityType |
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
 &ensp;
+#### Ping
+Test your connection to the Playbooks API.
+
+```sh
+playbooks ping
+```
+
+&ensp;
 #### Repo
 Fetch a specific repo
 
-```bash
+```sh
 playbooks repo <uuid>
 playbooks repo <uuid> --select 'id,name,uuid,tagline'
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --include | string | A comma separated list of relationships to include |
 | --select | string[] | A comma separated list of fields you'd like to display
 
@@ -198,7 +211,7 @@ playbooks repo <uuid> --select 'id,name,uuid,tagline'
 #### Repos
 Fetch a list of repos
 
-```bash
+```sh
 playbooks repos
 playbooks repos --select 'id,name,uuid,tagline'
 playbooks repos --framework 'react'
@@ -206,7 +219,7 @@ playbooks repos --language 'typescript'
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --select | string[] | A comma separated list of fields you'd like to display
 | --framework | string | Fetch by framework identifier |
 | --language | string | Fetch by language identifier |
@@ -218,29 +231,29 @@ playbooks repos --language 'typescript'
 
 &ensp;
 #### Session
-View your current session
+Fetch and display your current session
 
-```bash
+```sh
 playbooks session
 playbooks session --select 'id,name,uuid,email'
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
 &ensp;
 #### Subscription
-View your account subscription
+Fetch and display your account subscription
 
-```bash
+```sh
 playbooks subscription
 playbooks subscription --select 'id,name,uuid,email'
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
@@ -248,27 +261,28 @@ playbooks subscription --select 'id,name,uuid,email'
 #### Teams
 View a list of your session teams
 
-```bash
+```sh
 playbooks teams
 playbooks teams --select 'id,name,uuid,email'
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --select | string[] | A comma separated list of fields you'd like to display
 
+***Please note: this command is only available when a user account is activated.***
 
 &ensp;
 #### Toggle
 Toggle your active account.
 
-```bash
+```sh
 playbooks toggle
 playbooks toggle --uuid 'playbooks-community'
 ```
 
 | Option | Type | Description |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | --uuid | string | Account identifier
 
 
