@@ -28,7 +28,6 @@
   "scripts": {
     "start": "vite build --mode development --watch --sourcemap --minify false",
     "build": "vite build --mode production --minify false",
-    "build:typescript": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier src",
