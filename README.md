@@ -11,7 +11,7 @@ A simple CLI to access the [Playbooks](https://www.playbooks.xyz) platform.
 &ensp;
 ## Quick Start
 ```
-npm install -g @playbooks-xyz/playbooks-cli
+npm install -g @playbooks-xyz/cli
 playbooks login
 playbooks download <repo_uuid>
 ```
