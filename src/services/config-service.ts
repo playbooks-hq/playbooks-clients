@@ -1,8 +1,6 @@
 import * as FileSystem from 'src/utils/file-system';
 import * as Logger from 'src/utils/logger';
 
-const MODE = import.meta.env.MODE;
-
 interface ConfigService {
 	basePath: string;
 }

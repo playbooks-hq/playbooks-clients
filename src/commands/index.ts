@@ -5,6 +5,7 @@ export * from 'src/commands/charges';
 export * from 'src/commands/clone';
 export * from 'src/commands/config';
 export * from 'src/commands/download';
+export * from 'src/commands/downloads';
 export * from 'src/commands/login';
 export * from 'src/commands/logout';
 export * from 'src/commands/orders';

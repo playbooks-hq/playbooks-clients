@@ -191,6 +191,20 @@ playbooks download <repo_uuid> --unzip --remove
 
 
 &ensp;
+#### Downloads
+View your account downloads.
+
+```sh
+playbooks downloads
+playbooks downloads --select 'id,amount,createdAt'
+```
+
+| Option | Type | Description |
+| :--- | :--- | :--- |
+| --select | string[] | A comma separated list of fields you'd like to display
+
+
+&ensp;
 #### Login
 Login to your Playbooks account from the command line.
 

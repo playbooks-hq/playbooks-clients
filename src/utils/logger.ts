@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const mode = import.meta.env.MODE;
 
 export const log = (title, ...data) => {
-	if (mode === 'production') return;
+	if (mode !== 'development') return;
 	return console.log(title, ...data);
 };
 

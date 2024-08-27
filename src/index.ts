@@ -10,6 +10,7 @@ import {
 	cloneCommand,
 	configCommand,
 	downloadCommand,
+	downloadsCommand,
 	loginCommand,
 	logoutCommand,
 	ordersCommand,
@@ -88,6 +89,13 @@ cli
 	.example('playbooks download actix-official-starter')
 	.example('playbooks download actix-official-starter --path `~/path/to/folder')
 	.action(downloadCommand);
+
+cli
+	.command('downloads')
+	.describe('Fetch a list of your downloads.')
+	.option('-s, --select', 'Select specific fields', '*')
+	.example('playbooks downloads')
+	.action(downloadsCommand);
 
 cli
 	.command('login')
