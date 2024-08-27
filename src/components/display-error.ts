@@ -1,7 +1,7 @@
 const boxen = require('boxen');
 
-export const DisplayError = ({ status, title, message, framework }) => {
-	const formattedMessage = JSON.stringify({ status, title, message, framework }, null, 2);
+export const DisplayError = ({ status, title, detail, framework }) => {
+	const formattedMessage = JSON.stringify({ status, title, detail }, null, 2);
 
 	console.log(
 		boxen(formattedMessage, {

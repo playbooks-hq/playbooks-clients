@@ -20,12 +20,12 @@ export const formatError = e => {
 export const apiError = e => {
 	const data = JSON.parse(e.response.text);
 	const error = data.errors[0];
-	const { status, title, message, framework } = error;
-	// Logger.log(`apiError: `, { status, title, message, framework });
-	return { status, title, message, framework };
+	const { status, title, detail, framework } = error;
+	// Logger.log(`apiError: `, { status, title, detail, framework });
+	return { status, title, detail, framework };
 };
 
 export const cliError = e => {
 	// Logger.log(`cliError: `, e);
-	return { status: e.status || e.code || 500, title: e.name, message: e.message, framework: e.stack };
+	return { status: e.status || e.code || 500, title: e.name, detail: e.message, framework: e.stack };
 };

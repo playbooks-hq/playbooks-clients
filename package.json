@@ -26,7 +26,7 @@
     "url": "https://github.com/playbooks-xyz/playbooks-cli/issues"
   },
   "scripts": {
-    "start": "vite build --mode development --watch --sourcemap --minify false",
+    "start": "vite build --mode development --minify false --watch --sourcemap",
     "build": "vite build --mode production --minify false",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
