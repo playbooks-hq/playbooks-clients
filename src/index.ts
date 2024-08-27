@@ -4,12 +4,16 @@ const os = require('os');
 const sade = require('sade');
 import {
 	accountCommand,
+	banksCommand,
+	cardsCommand,
+	chargesCommand,
 	cloneCommand,
 	configCommand,
 	downloadCommand,
 	loginCommand,
 	logoutCommand,
 	ordersCommand,
+	payoutsCommand,
 	pingCommand,
 	repoCommand,
 	reposCommand,
@@ -17,6 +21,7 @@ import {
 	subscriptionCommand,
 	teamsCommand,
 	toggleCommand,
+	transfersCommand,
 } from 'src/commands';
 
 import { version } from '../package.json';
@@ -35,6 +40,27 @@ cli
 	.option('-s, --select', 'Select specific fields', '*')
 	.example('playbooks account')
 	.action(accountCommand);
+
+cli
+	.command('banks')
+	.describe('Fetch a list of your banks.')
+	.option('-s, --select', 'Select specific fields', '*')
+	.example('playbooks banks')
+	.action(banksCommand);
+
+cli
+	.command('cards')
+	.describe('Fetch a list of your cards.')
+	.option('-s, --select', 'Select specific fields', '*')
+	.example('playbooks cards')
+	.action(cardsCommand);
+
+cli
+	.command('charges')
+	.describe('Fetch a list of your charges.')
+	.option('-s, --select', 'Select specific fields', '*')
+	.example('playbooks charges')
+	.action(chargesCommand);
 
 cli
 	.command('clone <uuid>')
@@ -72,6 +98,13 @@ cli
 	.action(loginCommand);
 
 cli.command('logout').describe('Logout of your account.').example('playbooks logout').action(logoutCommand);
+
+cli
+	.command('payouts')
+	.describe('Fetch a list of your payouts.')
+	.option('-s, --select', 'Select specific fields', '*')
+	.example('playbooks payouts')
+	.action(payoutsCommand);
 
 cli
 	.command('orders')
@@ -136,5 +169,12 @@ cli
 	.example('playbooks toggle')
 	.example('playbooks toggle --uuid team-uuid')
 	.action(toggleCommand);
+
+cli
+	.command('transfers')
+	.describe('Fetch a list of your transfers.')
+	.option('-s, --select', 'Select specific fields', '*')
+	.example('playbooks transfers')
+	.action(transfersCommand);
 
 cli.parse(process.argv);

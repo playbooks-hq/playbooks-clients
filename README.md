@@ -44,6 +44,8 @@ token=********
 ## Table of Contents
 - [global](#global)
 - [account](#account)
+- [banks](#banks)
+- [cards](#cards)
 - [clone](#clone)
 - [config](#config)
 - [download](#download)
@@ -98,6 +100,48 @@ playbooks account --select 'id,name,email'
 | Option | Type | Description |
 | :--- | :--- | :--- |
 | --select | string[] | A comma separated list of account fields you'd like to display |
+
+
+&ensp;
+#### Banks
+View your account banks.
+
+```sh
+playbooks banks
+playbooks banks --select 'id,summary,createdAt'
+```
+
+| Option | Type | Description |
+| :--- | :--- | :--- |
+| --select | string[] | A comma separated list of fields you'd like to display
+
+
+&ensp;
+#### Cards
+View your account cards.
+
+```sh
+playbooks cards
+playbooks cards --select 'id,summary,createdAt'
+```
+
+| Option | Type | Description |
+| :--- | :--- | :--- |
+| --select | string[] | A comma separated list of fields you'd like to display
+
+
+&ensp;
+#### Charges
+View your account charges.
+
+```sh
+playbooks charges
+playbooks charges --select 'id,summary,createdAt'
+```
+
+| Option | Type | Description |
+| :--- | :--- | :--- |
+| --select | string[] | A comma separated list of fields you'd like to display
 
 
 &ensp;
@@ -181,6 +225,20 @@ playbooks orders --select 'id,amount,createdAt'
 | Option | Type | Description |
 | :--- | :--- | :--- |
 | --entity | enum | Filter by entityType |
+| --select | string[] | A comma separated list of fields you'd like to display
+
+
+&ensp;
+#### Payouts
+View your account payouts.
+
+```sh
+playbooks payouts
+playbooks payouts --select 'id,summary,createdAt'
+```
+
+| Option | Type | Description |
+| :--- | :--- | :--- |
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
@@ -284,6 +342,20 @@ playbooks toggle --uuid 'playbooks-community'
 | Option | Type | Description |
 | :--- | :--- | :--- |
 | --uuid | string | Account identifier
+
+
+&ensp;
+#### Transfers
+View your account transfers.
+
+```sh
+playbooks transfers
+playbooks transfers --select 'id,summary,createdAt'
+```
+
+| Option | Type | Description |
+| :--- | :--- | :--- |
+| --select | string[] | A comma separated list of fields you'd like to display
 
 
 &ensp;
