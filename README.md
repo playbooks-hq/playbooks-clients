@@ -136,7 +136,7 @@ View your account charges.
 
 ```sh
 playbooks charges
-playbooks charges --select 'id,summary,createdAt'
+playbooks charges --select 'id,amount,createdAt'
 ```
 
 | Option | Type | Description |
@@ -234,7 +234,7 @@ View your account payouts.
 
 ```sh
 playbooks payouts
-playbooks payouts --select 'id,summary,createdAt'
+playbooks payouts --select 'id,amount,createdAt'
 ```
 
 | Option | Type | Description |
@@ -350,7 +350,7 @@ View your account transfers.
 
 ```sh
 playbooks transfers
-playbooks transfers --select 'id,summary,createdAt'
+playbooks transfers --select 'id,amount,createdAt'
 ```
 
 | Option | Type | Description |
