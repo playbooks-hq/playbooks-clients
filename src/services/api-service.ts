@@ -2,7 +2,7 @@ const Fs = require('fs-extra');
 const Superagent = require('superagent');
 import { jsonApiNormalize, jsonApiNormalizeArray, jsonApiSerialize, jsonApiSerializeArray } from 'src/api';
 import { queryType, mutateType } from 'src/types';
-import * as Logger from 'src/utils/logger';
+import { name, version } from '../../package.json';
 
 const MODE = import.meta.env.MODE;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -35,6 +35,7 @@ class ApiService {
 		return {
 			accept: 'application/json',
 			['Content-Type']: 'application/json',
+			origin: `${name}@${version}`,
 		};
 	}
 
