@@ -65,9 +65,9 @@ cli
 
 cli
 	.command('clone <uuid>')
-	.describe('Clone a Playbooks repo to your Github account.')
+	.describe('Clone a Playbooks repo or submission to your Github account.')
 	.option('-a, --account', 'Clone to an organization')
-	.option('-n, --name', 'Rename the cloned repository')
+	.option('-n, --name', 'Name the cloned repository')
 	.option('-p, --private', 'Mark the cloned repo as private')
 	.example('playbooks clone actix-official-starter')
 	.example('playbooks clone actix-official-starter --org mile-hi-labs --name my-new-repo --private')
@@ -82,7 +82,7 @@ cli
 
 cli
 	.command('download <uuid>')
-	.describe('Download a Playbooks repo to your local computer.')
+	.describe('Download a Playbooks repo or submission to your local computer.')
 	.option('-p, --path', 'Path to destination folder', '.')
 	.option('-z, --unzip', 'Automatically unzip the binary file', false)
 	.option('-r, --remove', 'Automatically remove the binary file', false)

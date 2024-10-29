@@ -14,6 +14,7 @@ export * from 'src/commands/ping';
 export * from 'src/commands/repo';
 export * from 'src/commands/repos';
 export * from 'src/commands/session';
+export * from 'src/commands/submissions';
 export * from 'src/commands/subscription';
 export * from 'src/commands/teams';
 export * from 'src/commands/toggle';

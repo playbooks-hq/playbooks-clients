@@ -12,6 +12,7 @@ export const downloadCommand = async (uuid, options: any) => {
 		// Setup
 		const config = options.c || options.config;
 		const path = options.p || options.path || process.cwd();
+		const submission = options.s || options.submission;
 		const unzip = options.z || options.unzip;
 		const remove = options.r || options.remove;
 		Logger.log('options: ', { config, path, unzip, remove });
