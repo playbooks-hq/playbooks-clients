@@ -69,6 +69,7 @@ cli
 	.option('-a, --account', 'Clone to an organization')
 	.option('-n, --name', 'Name the cloned repository')
 	.option('-p, --private', 'Mark the cloned repo as private')
+	.option('-s, --submission', 'Conditional flag to clone a submission', false)
 	.example('playbooks clone actix-official-starter')
 	.example('playbooks clone actix-official-starter --org mile-hi-labs --name my-new-repo --private')
 	.action(cloneCommand);
@@ -84,6 +85,7 @@ cli
 	.command('download <uuid>')
 	.describe('Download a Playbooks repo or submission to your local computer.')
 	.option('-p, --path', 'Path to destination folder', '.')
+	.option('-s, --submission', 'Conditional flag to download a submission', false)
 	.option('-z, --unzip', 'Automatically unzip the binary file', false)
 	.option('-r, --remove', 'Automatically remove the binary file', false)
 	.example('playbooks download actix-official-starter')

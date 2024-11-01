@@ -30,7 +30,11 @@ export const downloadCommand = async (uuid, options: any) => {
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
 		const params = client.serializeParams({});
-		const response = await client.download({ endpoint: `/repos/${uuid}/download`, headers, params });
+		const response = await client.download({
+			endpoint: submission ? `/submissions/${uuid}/download` : `/repos/${uuid}/download`,
+			headers,
+			params,
+		});
 		spinner.succeed('Download received!');
 
 		// Storage

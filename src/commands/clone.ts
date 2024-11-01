@@ -15,6 +15,7 @@ export const cloneCommand = async (uuid, options: any) => {
 		const account = options.a || options.account || '';
 		const name = options.n || options.name || '';
 		const privateOption = options.p || options.private;
+		const submission = options.s || options.submission;
 		Logger.log('options: ', { config, path, account, name, private: privateOption });
 
 		// Start
@@ -59,7 +60,11 @@ export const cloneCommand = async (uuid, options: any) => {
 
 		// Clone
 		const params = client.serializeParams({ githubOwnerId, githubRepoId, private: isPrivate });
-		await client.queryRecord({ endpoint: `/repos/${uuid}/clone`, headers, params });
+		await client.queryRecord({
+			endpoint: submission ? `/submissions/${uuid}/clone` : `/repos/${uuid}/clone`,
+			headers,
+			params,
+		});
 
 		// Display
 		spinner.succeed('Clone succeeded!');
