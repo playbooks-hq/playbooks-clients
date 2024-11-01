@@ -11,15 +11,15 @@ A simple CLI to access the [Playbooks](https://www.playbooks.xyz) platform.
 &ensp;
 ## Quick Start
 ```
-npm install -g @playbooks-xyz/cli
+npm install -g @playbooks/cli
 playbooks login
 playbooks download <repo_uuid>
 ```
 
 &ensp;
 ## Description
-The Playbooks CLI gives developers quick & easy terminal access to their Playbooks account so they can browse, purchase, download, and clone repositories from anywhere.
-Using the CLI, developers can also toggle in and out of their associated accounts making it a breeze to perform similar actions on behalf of those entities.
+The Playbooks CLI gives developers easy terminal access to their Playbooks account so they can preview, purchase, download, and clone repositories from anywhere.
+Using the CLI, developers can toggle in and out of their associated accounts making it a breeze to perform similar actions on behalf of those entities.
 After installation, simply use the `playbooks` prompt followed by the commands outlined below.
 
 &ensp;
