@@ -67,10 +67,10 @@ export const cloneCommand = async (uuid, options: any) => {
 		});
 
 		// Display
-		spinner.succeed('Clone succeeded!');
+		spinner.succeed();
 		DisplaySuccess('Clone', `https://github.com/${githubOwnerId}/${githubRepoId}`);
 	} catch (e) {
-		spinner.fail('Clone failed!');
+		spinner.fail();
 		DisplayError(formatError(e));
 		process.exit();
 	}

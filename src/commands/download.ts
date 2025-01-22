@@ -35,7 +35,7 @@ export const downloadCommand = async (uuid, options: any) => {
 			headers,
 			params,
 		});
-		spinner.succeed('Download received!');
+		spinner.succeed();
 
 		// Storage
 		spinner.start('Storing zip...');
@@ -43,12 +43,12 @@ export const downloadCommand = async (uuid, options: any) => {
 		await storageService.saveRepo(response.body);
 		if (unzip) await storageService.unzipRepo();
 		if (remove) await storageService.removeZip();
-		spinner.succeed('Storage complete!');
+		spinner.succeed();
 
 		// Display
 		DisplaySuccess('Download', `${path}/${uuid}.zip`);
 	} catch (e) {
-		spinner.fail('Download failed!');
+		spinner.fail();
 		DisplayError(formatError(e));
 		process.exit();
 	}

@@ -36,10 +36,10 @@ export const ordersCommand = async (options: any) => {
 		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
 
 		// Display
-		spinner.succeed('Fetch succeeded!');
+		spinner.succeed();
 		DisplaySuccess('Orders', formattedResponse);
 	} catch (e) {
-		spinner.fail('Fetch failed!');
+		spinner.fail();
 		DisplayError(formatError(e));
 		process.exit();
 	}

@@ -28,10 +28,10 @@ export const configCommand = async (options: any) => {
 		});
 		const formattedResponse = Object.keys(data).length > 0 ? JSON.stringify(data, null, 2) : 'Nothing to see yet.';
 
-		spinner.succeed('Config succeeded!');
-		DisplaySuccess('Config', formattedResponse);
+		spinner.succeed();
+		DisplaySuccess(`Config [${config}]`, formattedResponse);
 	} catch (e) {
-		spinner.fail('Config failed!');
+		spinner.fail();
 		DisplayError(formatError(e));
 		process.exit();
 	}

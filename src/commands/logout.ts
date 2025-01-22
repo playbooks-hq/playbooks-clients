@@ -21,9 +21,9 @@ export const logoutCommand = async (options: any) => {
 
 		// Logout
 		await service.clear();
-		spinner.succeed('Logout succeeded!');
+		spinner.succeed();
 	} catch (e) {
-		spinner.fail('Logout failed!');
+		spinner.fail();
 		DisplayError(formatError(e));
 		process.exit();
 	}

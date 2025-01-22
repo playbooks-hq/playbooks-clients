@@ -34,10 +34,10 @@ export const downloadsCommand = async (options: any) => {
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display
-		spinner.succeed('Fetch succeeded!');
+		spinner.succeed();
 		DisplaySuccess('Downloads', formattedResponse);
 	} catch (e) {
-		spinner.fail('Fetch failed!');
+		spinner.fail();
 		DisplayError(formatError(e));
 		process.exit();
 	}

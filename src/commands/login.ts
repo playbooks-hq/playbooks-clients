@@ -54,10 +54,10 @@ export const loginCommand = async (options: any) => {
 		const formattedData = JSON.stringify(data, null, 2);
 
 		// Display
-		spinner.succeed('Login succeeded!');
+		spinner.succeed();
 		DisplaySuccess('Login', formattedData);
 	} catch (e) {
-		spinner.fail('Login failed!');
+		spinner.fail();
 		DisplayError(formatError(e));
 		process.exit();
 	}

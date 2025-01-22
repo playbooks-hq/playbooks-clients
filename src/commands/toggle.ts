@@ -51,10 +51,10 @@ export const toggleCommand = async (options: any) => {
 		const selectedAccount = choices.find(v => v.uuid === account);
 
 		// Display
-		spinner.succeed('Toggle succeeded!');
+		spinner.succeed();
 		DisplaySuccess('Account', selectedAccount.name);
 	} catch (e) {
-		spinner.fail('Toggle failed!');
+		spinner.fail();
 		DisplayError(formatError(e));
 		process.exit();
 	}

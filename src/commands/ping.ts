@@ -20,10 +20,10 @@ export const pingCommand = async (options: any) => {
 		const response = await client.queryRecord({ endpoint: '/' });
 
 		// Display
-		spinner.succeed('Your connection is working.');
+		spinner.succeed();
 		DisplaySuccess('Ping', response.data.message);
 	} catch (e) {
-		spinner.fail('Ping failed!');
+		spinner.fail();
 		DisplayError(formatError(e));
 		process.exit();
 	}
