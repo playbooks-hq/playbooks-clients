@@ -49,7 +49,7 @@ export const loginCommand = async (options: any) => {
 		const data = {};
 		Object.keys(contents).map(key => {
 			if (key === 'token') return (data[key] = '********');
-			data[key] = contents[key];
+			return (data[key] = contents[key]);
 		});
 		const formattedData = JSON.stringify(data, null, 2);
 

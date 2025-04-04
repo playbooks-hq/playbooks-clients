@@ -34,7 +34,7 @@ class ConfigService {
 	}
 
 	async writeConfig(records) {
-		Logger.info(`writeConfig: `, records);
+		Logger.log(`writeConfig: `, records);
 		const formattedContent = Object.keys(records)
 			.map(key => `${key}=${records[key]}`)
 			.join('\n');
