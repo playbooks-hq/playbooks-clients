@@ -19,6 +19,10 @@ class StorageService {
 		return `${this.basePath}/${this.fileName}.zip`;
 	}
 
+	get repoPath() {
+		return `${this.basePath}/${this.fileName}`;
+	}
+
 	/* ----- Methods ----- */
 	async checkEmpty() {
 		const pathExists = await FileSystem.checkPath(this.basePath);
@@ -44,11 +48,11 @@ class StorageService {
 	}
 
 	async unzipRepo() {
-		await FileSystem.checkOrCreatePath(this.basePath);
+		await FileSystem.checkOrCreatePath(this.repoPath);
 
 		await new Promise((resolve, reject) => {
 			Fs.createReadStream(this.zipFile)
-				.pipe(Unzip.Extract({ path: this.basePath }))
+				.pipe(Unzip.Extract({ path: this.repoPath }))
 				.on('close', v => resolve(v))
 				.on('error', e => reject(e));
 		});
