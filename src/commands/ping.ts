@@ -17,7 +17,7 @@ export const pingCommand = async (options: any) => {
 
 		// Ping
 		const client = new ApiService();
-		const response = await client.queryRecord({ endpoint: '/' });
+		const response = await client.request({ endpoint: '/' });
 
 		// Display
 		spinner.succeed();

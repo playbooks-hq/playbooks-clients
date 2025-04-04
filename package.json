@@ -33,7 +33,7 @@
     "format": "prettier src",
     "format:fix": "prettier --write src",
     "clean": "npm run lint:fix && npm run format:fix",
-    "pregit": "git add .",
+    "deploy": "scripts/deploy.sh",
     "git": "git push --tags",
     "test": "jest",
     "prepare": "husky install"

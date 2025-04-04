@@ -6,6 +6,7 @@ import { name, version } from '../../package.json';
 
 const MODE = import.meta.env.MODE;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+const CLI_DOMAIN = import.meta.env.VITE_CLI_DOMAIN;
 const VITE_SSL_KEY_FILE = import.meta.env.VITE_SSL_KEY_FILE;
 const VITE_SSL_CERT_FILE = import.meta.env.VITE_SSL_CERT_FILE;
 
@@ -35,7 +36,8 @@ class ApiService {
 		return {
 			accept: 'application/json',
 			['Content-Type']: 'application/json',
-			origin: `${name}@${version}`,
+			origin: CLI_DOMAIN,
+			client: `${name}@${version}`,
 		};
 	}
 
@@ -129,6 +131,14 @@ class ApiService {
 		const computedHeaders = this.computeHeaders(headers);
 		const response = await Superagent.delete(computedUrl).set(computedHeaders).query(params);
 		return this.normalizeData(response);
+	}
+
+	/* ----- Methods ----- */
+	async request({ endpoint, headers }: queryType) {
+		const computedUrl = this.computeURL(endpoint);
+		const computedHeaders = this.computeHeaders(headers);
+		const response = await Superagent.get(computedUrl).set(computedHeaders);
+		return { status: response.status, data: JSON.parse(response.text) };
 	}
 
 	async download({ endpoint, headers }: queryType) {
