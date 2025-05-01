@@ -28,7 +28,7 @@ export const teamsCommand = async (options: any) => {
 		const headers = client.authHeaders();
 		const response = await client.query({ endpoint: '/session/teams', headers });
 
-		// Selects
+		// Response
 		const selects = select !== '*' ? select.split(',') : [];
 		const formattedData = serializeArray(response.data, selects);
 		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');

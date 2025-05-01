@@ -28,7 +28,7 @@ export const sessionCommand = async (options: any) => {
 		const headers = client.authHeaders();
 		const response = await client.queryRecord({ endpoint: `/session`, headers });
 
-		// Selects
+		// Response
 		const selects = select !== '*' ? select.split(',') : [];
 		const formattedData = serialize(response.data, selects);
 		const formattedResponse = JSON.stringify(formattedData, null, 2);

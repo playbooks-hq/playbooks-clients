@@ -47,7 +47,7 @@ export const reposCommand = async (options: any) => {
 		const params = client.serializeParams({ view });
 		const response = await client.query({ endpoint, headers, params });
 
-		// Selects
+		// Response
 		const selects = select !== '*' ? select.split(',') : [];
 		const formattedData = serializeArray(response.data, selects);
 		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');

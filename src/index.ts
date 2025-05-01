@@ -32,62 +32,64 @@ const cli = sade('playbooks');
 cli
 	.version(version)
 	.describe('A CLI for Playbooks (https://www.playbooks.xyz).')
-	.option('-c, --config', 'Path to your config file.', `${os.homedir()}/.playbooksrc`);
+	.option('--config', 'Path to your config file.', `${os.homedir()}/.playbooksrc`);
 
 // Commands
 cli
 	.command('account')
 	.describe('View which account is currently active')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks account')
 	.action(accountCommand);
 
 cli
 	.command('banks')
 	.describe('Fetch a list of your banks.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks banks')
 	.action(banksCommand);
 
 cli
 	.command('cards')
 	.describe('Fetch a list of your cards.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks cards')
 	.action(cardsCommand);
 
 cli
 	.command('charges')
 	.describe('Fetch a list of your charges.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks charges')
 	.action(chargesCommand);
 
 cli
 	.command('clone <uuid>')
-	.describe('Clone a Playbooks repo or submission to your Github account.')
-	.option('-a, --account', 'Clone to an organization')
-	.option('-n, --name', 'Name the cloned repository')
-	.option('-p, --private', 'Mark the cloned repo as private')
-	.option('-s, --submission', 'Conditional flag to clone a submission', false)
+	.describe('Clone a Playbooks repo, submission, or stack to your Github account.')
+	.option('--account', 'Select your Github account')
+	.option('--name', 'Name the cloned repository')
+	.option('--private', 'Mark the cloned repo as private')
+	.option('--stack', 'Conditional flag to clone a stack', false)
+	.option('--submission', 'Conditional flag to clone a submission', false)
+	.option('--version', 'Specify the versionId', false)
 	.example('playbooks clone actix-official-starter')
-	.example('playbooks clone actix-official-starter --org mile-hi-labs --name my-new-repo --private')
+	.example('playbooks clone actix-official-starter --account mile-hi-labs --name my-new-repo --private')
 	.action(cloneCommand);
 
 cli
 	.command('config')
 	.describe('Display your config file.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks config')
 	.action(configCommand);
 
 cli
 	.command('download <uuid>')
-	.describe('Download a Playbooks repo or submission to your local computer.')
-	.option('-p, --path', 'Path to destination folder', '.')
-	.option('-s, --submission', 'Conditional flag to download a submission', false)
-	.option('-z, --unzip', 'Automatically unzip the binary file', false)
-	.option('-r, --remove', 'Automatically remove the binary file', false)
+	.describe('Download a Playbooks repo, submission, or stack to your local machine.')
+	.option('--path', 'Path to destination folder', '.')
+	.option('--stack', 'Conditional flag to download a stack', false)
+	.option('--submission', 'Conditional flag to download a submission', false)
+	.option('--version', 'Specify the versionId', false)
 	.example('playbooks download actix-official-starter')
 	.example('playbooks download actix-official-starter --path `~/path/to/folder')
 	.action(downloadCommand);
@@ -95,15 +97,15 @@ cli
 cli
 	.command('downloads')
 	.describe('Fetch a list of your downloads.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks downloads')
 	.action(downloadsCommand);
 
 cli
 	.command('login')
 	.describe('Login to your account.')
-	.option('-e, --email', 'Your email address')
-	.option('-p, --password', 'Your password')
+	.option('--email', 'Your email address')
+	.option('--password', 'Your password')
 	.example('playbooks login -e acme@example.com -p password')
 	.action(loginCommand);
 
@@ -112,15 +114,15 @@ cli.command('logout').describe('Logout of your account.').example('playbooks log
 cli
 	.command('payouts')
 	.describe('Fetch a list of your payouts.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks payouts')
 	.action(payoutsCommand);
 
 cli
 	.command('orders')
 	.describe('View your account orders.')
-	.option('-e, --entity', 'Filter orders by entity', 'Repo')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--entity', 'Filter orders by entity', 'Repo')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks order')
 	.action(ordersCommand);
 
@@ -129,8 +131,8 @@ cli.command('ping').describe('Check your API connection.').example('playbooks pi
 cli
 	.command('repo <uuid>')
 	.describe('Fetch a specific repo.')
-	.option('-s, --select', 'Select specific fields', '*')
-	.option('-i, --include', 'Include associated data')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
 	.example('playbooks repo actix-official-starter')
 	.example('playbooks repo actix-official-starter --include framework')
 	.action(repoCommand);
@@ -138,7 +140,7 @@ cli
 cli
 	.command('repos')
 	.describe('Fetch a list of repos.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.option('--framework', 'Fetch by framework identifer')
 	.option('--language', 'Fetch by language identifier')
 	.option('--platform', 'Fetch by platform identifer')
@@ -154,28 +156,28 @@ cli
 cli
 	.command('session')
 	.describe('View your current session.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks session')
 	.action(sessionCommand);
 
 cli
 	.command('subscription')
 	.describe('View your account subscription.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks subscription')
 	.action(subscriptionCommand);
 
 cli
 	.command('teams')
 	.describe('View a list of your session teams.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks teams')
 	.action(teamsCommand);
 
 cli
 	.command('toggle')
 	.describe('Toggle your active account.')
-	.option('-u, --uuid', 'Select specific fields', '*')
+	.option('--uuid', 'Select specific fields', '*')
 	.example('playbooks toggle')
 	.example('playbooks toggle --uuid team-uuid')
 	.action(toggleCommand);
@@ -183,7 +185,7 @@ cli
 cli
 	.command('transfers')
 	.describe('Fetch a list of your transfers.')
-	.option('-s, --select', 'Select specific fields', '*')
+	.option('--select', 'Select specific fields', '*')
 	.example('playbooks transfers')
 	.action(transfersCommand);
 

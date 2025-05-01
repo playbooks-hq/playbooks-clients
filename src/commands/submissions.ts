@@ -28,7 +28,7 @@ export const submissionsCommand = async (options: any) => {
 		const headers = client.authHeaders();
 		const response = await client.query({ endpoint: '/account/submissions', headers });
 
-		// Selects
+		// Response
 		const selects = select !== '*' ? select.split(',') : [];
 		const formattedData = serializeArray(response.data, selects);
 		const formattedResponse = JSON.stringify(formattedData, null, 2);

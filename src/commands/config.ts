@@ -20,7 +20,7 @@ export const configCommand = async (options: any) => {
 		await service.setup();
 		const contents = await service.readConfig();
 
-		// Selects
+		// Response
 		const data = {};
 		Object.keys(contents).map(key => {
 			if (key === 'token') return (data[key] = '********');

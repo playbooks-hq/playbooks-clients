@@ -30,7 +30,7 @@ export const repoCommand = async (uuid, options: any) => {
 		const params = client.serializeParams({ include });
 		const response = await client.queryRecord({ endpoint: `/repos/${uuid}`, headers, params });
 
-		// Selects
+		// Response
 		const selects = select !== '*' ? select.split(',') : [];
 		const formattedData = serialize(response.data, selects);
 		const formattedResponse = JSON.stringify(formattedData, null, 2);

@@ -11,11 +11,11 @@ export const downloadCommand = async (uuid, options: any) => {
 	try {
 		// Setup
 		const config = options.c || options.config;
-		const path = options.p || options.path || process.cwd();
-		const submission = options.s || options.submission;
-		const unzip = options.z || options.unzip;
-		const remove = options.r || options.remove;
-		Logger.log('options: ', { config, path, unzip, remove });
+		const path = options.path || process.cwd();
+		const stack = options.stack;
+		const submission = options.submission;
+		const version = options.version || '';
+		Logger.log('options: ', { config, path, version, stack, submission });
 
 		// Start
 		spinner.start();
@@ -26,27 +26,46 @@ export const downloadCommand = async (uuid, options: any) => {
 		await service.setup();
 		const contents = await service.readConfig();
 
-		// Fetch
+		// Session
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({});
-		const response = await client.download({
-			endpoint: submission ? `/submissions/${uuid}/download` : `/repos/${uuid}/download`,
+
+		// Prefetch
+		const entity = await client.queryRecord({
+			endpoint: stack ? `/stacks/${uuid}` : submission ? `/submissions/${uuid}` : `/repos/${uuid}`,
 			headers,
-			params,
+			params: { include: stack ? 'repos' : 'versions(preview)' },
 		});
+
+		// Preformatting
+		const repos = entity.data?.repos || [];
+		const versions = entity.data?.versions || [];
+
+		const matchedVersionId = versions.find(version => version.name === version);
+
+		// Fetch
+		const endpoint = stack
+			? `/stacks/${uuid}/download`
+			: submission
+			? `/submissions/${uuid}/download`
+			: `/repos/${uuid}/download`;
+		const params = client.serializeParams({ versionId: matchedVersionId });
+		const data = []; // config each stack repo (optional)
+		const response = await client.download({ method: stack ? 'post' : 'get', endpoint, headers, params, data });
 		spinner.succeed();
 
 		// Storage
 		spinner.start('Storing zip...');
 		const storageService = new StorageService({ basePath: path, fileName: uuid });
 		await storageService.saveRepo(response.body);
-		if (unzip) await storageService.unzipRepo();
-		if (remove) await storageService.removeZip();
 		spinner.succeed();
 
+		// Response
+		const formattedData = version ? { path: `${path}/${uuid}.zip` } : { path: `${path}/${uuid}.zip` };
+		const formattedResponse = JSON.stringify(formattedData, null, 2);
+
 		// Display
-		DisplaySuccess('Download', `${path}/${uuid}.zip`);
+		DisplaySuccess('Download', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(formatError(e));

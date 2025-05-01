@@ -30,7 +30,7 @@ export const ordersCommand = async (options: any) => {
 		const params = client.serializeParams({ entityType: entity });
 		const response = await client.query({ endpoint: '/account/orders', headers, params });
 
-		// Selects
+		// Response
 		const selects = select !== '*' ? select.split(',') : [];
 		const formattedData = serializeArray(response.data, selects);
 		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
