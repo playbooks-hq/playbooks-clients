@@ -19,6 +19,8 @@ import {
 	repoCommand,
 	reposCommand,
 	sessionCommand,
+	stackCommand,
+	stacksCommand,
 	subscriptionCommand,
 	teamsCommand,
 	toggleCommand,
@@ -144,13 +146,18 @@ cli
 	.option('--framework', 'Fetch by framework identifer')
 	.option('--language', 'Fetch by language identifier')
 	.option('--platform', 'Fetch by platform identifer')
+	.option('--team', 'Fetch by team identifier')
 	.option('--tool', 'Fetch by tool identifier')
 	.option('--topic', 'Fetch by topic identifier')
-	.option('--view', 'Fetch by view')
+	.option('--user', 'Fetch by user identifier')
+	.option('--view', 'Filter by view')
 	.example('playbooks repos')
 	.example('playbooks repos --framework react')
 	.example('playbooks repos --language typescript')
-	.example('playbooks repos --tool docker')
+	.example('playbooks repos --team mile-hi-labs')
+	.example('playbooks repos --tool stripe')
+	.example('playbooks repos --topic portfolio')
+	.example('playbooks repos --user ehubbell')
 	.action(reposCommand);
 
 cli
@@ -159,6 +166,27 @@ cli
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks session')
 	.action(sessionCommand);
+
+cli
+	.command('stack <uuid>')
+	.describe('Fetch a specific stack.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
+	.example('playbooks stack marketplace-stack')
+	.example('playbooks stack marketplace-stack --include framework')
+	.action(stackCommand);
+
+cli
+	.command('stacks')
+	.describe('Fetch a list of stacks.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--team', 'Fetch by user identifier')
+	.option('--user', 'Fetch by team identifer')
+	.option('--view', 'Filter by view')
+	.example('playbooks stacks')
+	.example('playbooks stacks --team mile-hi-labs')
+	.example('playbooks stacks --user ehubbell')
+	.action(stacksCommand);
 
 cli
 	.command('subscription')

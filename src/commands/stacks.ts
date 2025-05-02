@@ -6,37 +6,18 @@ import { ConfigService } from 'src/services/config-service';
 import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
-export const reposCommand = async (options: any) => {
-	const spinner = ora('Fetching repos...');
+export const stacksCommand = async (options: any) => {
+	const spinner = ora('Fetching stacks...');
 	try {
 		// Setup
 		const config = options.c || options.config;
 		const select = options.s || options.select;
-		const framework = options.framework || null;
-		const language = options.language || null;
-		const platform = options.platform || null;
 		const team = options.team || null;
-		const tool = options.tool || null;
-		const topic = options.topic || null;
 		const user = options.user || null;
 		const view = options.view || null;
-		Logger.log('options: ', { config, select, framework, language, platform, team, tool, topic, user, view });
+		Logger.log('options: ', { config, select, team, user, view });
 
-		const endpoint = framework
-			? `/frameworks/${framework}/repos`
-			: language
-			? `/languages/${language}/repos`
-			: platform
-			? `/platforms/${platform}/repos`
-			: team
-			? `/teams/${team}/repos`
-			: tool
-			? `/tools/${tool}/repos`
-			: topic
-			? `/topics/${topic}/repos`
-			: user
-			? `/users/${user}/repos`
-			: `/repos`;
+		const endpoint = team ? `/teams/${team}/stacks` : user ? `/users/${user}/stacks` : `/stacks`;
 
 		// Start
 		spinner.start();
@@ -60,7 +41,7 @@ export const reposCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Repos', formattedResponse);
+		DisplaySuccess('stacks', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(formatError(e));
