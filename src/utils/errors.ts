@@ -1,7 +1,5 @@
 import * as Logger from 'src/utils/logger';
 
-const MODE = import.meta.env.MODE;
-
 export const formatError = e => {
 	switch (e.status || e.code) {
 		case 401:
