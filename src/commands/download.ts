@@ -14,8 +14,10 @@ export const downloadCommand = async (uuid, options: any) => {
 		const path = options.path || process.cwd();
 		const stack = options.stack;
 		const submission = options.submission;
+		const unzip = options.unzip;
+		const remove = options.remove;
 		const version = options.version || '';
-		Logger.log('options: ', { config, path, version, stack, submission });
+		Logger.log('options: ', { config, path, unzip, remove, version, stack, submission });
 
 		// Start
 		spinner.start();
@@ -58,6 +60,8 @@ export const downloadCommand = async (uuid, options: any) => {
 		spinner.start('Storing zip...');
 		const storageService = new StorageService({ basePath: path, fileName: uuid });
 		await storageService.saveRepo(response.body);
+		if (unzip) await storageService.unzipRepo();
+		if (remove) await storageService.removeZip();
 		spinner.succeed();
 
 		// Response

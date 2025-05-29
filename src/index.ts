@@ -89,6 +89,8 @@ cli
 	.command('download <uuid>')
 	.describe('Download a Playbooks repo, submission, or stack to your local machine.')
 	.option('--path', 'Path to destination folder', '.')
+	.option('--unzip', 'Automatically unzip the binary file', false)
+	.option('--remove', 'Automatically remove the binary file', false)
 	.option('--repo', 'Conditional flag to download a repo', false)
 	.option('--stack', 'Conditional flag to download a stack', false)
 	.option('--submission', 'Conditional flag to download a submission', false)
