@@ -1,8 +1,8 @@
 const ora = require('ora');
 import { serialize } from 'src/api';
-import { DisplaySuccess, DisplayError } from 'src/components';
-import { ConfigService } from 'src/services/config-service';
+import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
+import { ConfigService } from 'src/services/config-service';
 import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 

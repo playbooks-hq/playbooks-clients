@@ -2,6 +2,7 @@
 
 const os = require('os');
 const sade = require('sade');
+import { version } from '../package.json';
 import {
 	accountCommand,
 	banksCommand,
@@ -26,8 +27,6 @@ import {
 	toggleCommand,
 	transfersCommand,
 } from 'src/commands';
-
-import { version } from '../package.json';
 
 const cli = sade('playbooks');
 

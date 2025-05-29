@@ -1,5 +1,5 @@
 const ora = require('ora');
-import { DisplaySuccess, DisplayError } from 'src/components';
+import { DisplayError, DisplaySuccess } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { formatError, timeout } from 'src/utils';
 import * as Logger from 'src/utils/logger';

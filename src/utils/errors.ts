@@ -1,5 +1,3 @@
-import * as Logger from 'src/utils/logger';
-
 export const formatError = e => {
 	switch (e.status || e.code) {
 		case 401:

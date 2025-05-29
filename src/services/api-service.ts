@@ -1,8 +1,8 @@
 const Fs = require('fs-extra');
 const Superagent = require('superagent');
-import { jsonApiNormalize, jsonApiNormalizeArray, jsonApiSerialize, jsonApiSerializeArray } from 'src/api';
-import { queryType, mutateType } from 'src/types';
 import { name, version } from '../../package.json';
+import { jsonApiNormalize, jsonApiNormalizeArray, jsonApiSerialize, jsonApiSerializeArray } from 'src/api';
+import { mutateType, queryType } from 'src/types';
 import { isArray } from 'src/utils';
 
 const MODE = import.meta.env.MODE;
