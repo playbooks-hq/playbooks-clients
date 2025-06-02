@@ -3,7 +3,7 @@ const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, timeout } from 'src/utils';
+import { formatError, sleep } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const loginCommand = async (options: any) => {
@@ -29,7 +29,7 @@ export const loginCommand = async (options: any) => {
 
 		// API call
 		spinner.start();
-		await timeout(300);
+		await sleep(300);
 		const client = new ApiService();
 		const response = await client.post({
 			endpoint: '/auth/login',

@@ -3,7 +3,7 @@ import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, timeout } from 'src/utils';
+import { formatError, sleep } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const ordersCommand = async (options: any) => {
@@ -17,7 +17,7 @@ export const ordersCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await timeout(300);
+		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ basePath: config });

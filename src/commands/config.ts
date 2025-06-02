@@ -1,7 +1,7 @@
 const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, timeout } from 'src/utils';
+import { formatError, sleep } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const configCommand = async (options: any) => {
@@ -13,7 +13,7 @@ export const configCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await timeout(300);
+		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ basePath: config });

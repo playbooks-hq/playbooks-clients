@@ -3,7 +3,7 @@ const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, timeout } from 'src/utils';
+import { formatError, sleep } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
 export const toggleCommand = async (options: any) => {
@@ -16,7 +16,7 @@ export const toggleCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await timeout(300);
+		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ basePath: config });
@@ -43,7 +43,7 @@ export const toggleCommand = async (options: any) => {
 
 		// Start
 		spinner.start('Toggling account...');
-		await timeout(1000);
+		await sleep(1000);
 
 		// Storage
 		await service.storeValues({ account });

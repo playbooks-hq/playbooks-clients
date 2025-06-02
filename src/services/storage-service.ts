@@ -1,4 +1,5 @@
 const Archiver = require('archiver');
+const path = require('node:path');
 const Fs = require('fs-extra');
 const Unzip = require('unzip-stream');
 import * as FileSystem from 'src/utils/file-system';
@@ -25,13 +26,14 @@ class StorageService {
 
 	/* ----- Methods ----- */
 	async checkEmpty() {
-		const pathExists = await FileSystem.checkPath(this.basePath);
+		const formattedPath = path.join(this.basePath, this.fileName);
+		const pathExists = await FileSystem.checkPath(formattedPath);
 		if (pathExists) {
-			const path = await FileSystem.fileStats(this.basePath);
+			const path = await FileSystem.fileStats(formattedPath);
 			if (path.isDirectory()) {
-				const entries = await Fs.readdir(this.basePath);
-				console.log('entries: ', entries);
-				return entries.length > 0 ? false : true;
+				const entries = await Fs.promises.readdir(formattedPath);
+				const filteredEntries = entries.filter(v => v.slice(0, 1) !== '.');
+				return filteredEntries.length > 0 ? false : true;
 			}
 			return true;
 		}
