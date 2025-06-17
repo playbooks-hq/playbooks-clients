@@ -1,7 +1,6 @@
 ## Overview
-A simple CLI to access the [Playbooks](https://www.playbooks.xyz) platform.
-The Playbooks CLI gives developers easy terminal access to their [Playbooks](https://www.playbooks.xyz)  account so they can preview, purchase, download, and clone repositories from anywhere.
-Using the CLI, developers can toggle in and out of their associated accounts making it a breeze to perform similar actions on behalf of those entities.
+The Playbooks CLI gives developers terminal access to their [Playbooks](https://www.playbooks.xyz) account.
+Using the CLI, developers can purchase, download, and clone Playbooks repositories from anywhere.
 After installation, simply use the `playbooks` prompt followed by the commands outlined below.
 
 &ensp;
