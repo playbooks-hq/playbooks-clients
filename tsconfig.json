@@ -1,32 +1,5 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "rootDir": ".",
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "jsx": "react-jsx",
-    "types": ["vite/client", "node", "react", "jest"],
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "useDefineForClassFields": true,
-    "strict": false,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "noEmit": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitReturns": false,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "src/*": ["./src/*"],
-      "tests/*": ["./tests/*"]
-    },
-  },
+  "extends": "@ehubbell/configs/ts-config-package",
   "include": ["src", "tests", "types", "vite.config.ts"],
   "exclude": ["node_modules"],
 }
