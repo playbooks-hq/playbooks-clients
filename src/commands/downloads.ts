@@ -10,7 +10,7 @@ export const downloadsCommand = async (options: any) => {
 	const spinner = ora('Fetching downloads...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const select = options.s || options.select;
 		Logger.log('options: ', options, { config, select });
 

@@ -10,7 +10,7 @@ export const subscriptionCommand = async (options: any) => {
 	const spinner = ora('Fetching subscription...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const select = options.s || options.select;
 		Logger.log('options: ', options, { config, select });
 

@@ -10,7 +10,7 @@ export const toggleCommand = async (options: any) => {
 	const spinner = ora('Fetching teams...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const uuid = options.u || options.uuid || null;
 		Logger.log('options: ', { config, uuid });
 

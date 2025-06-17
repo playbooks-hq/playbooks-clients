@@ -10,14 +10,13 @@ export const downloadCommand = async (uuid, options: any) => {
 	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const path = options.path || process.cwd();
+		const name = options.name || uuid;
 		const stack = options.stack;
 		const submission = options.submission;
-		const unzip = options.unzip;
-		const remove = options.remove;
 		const version = options.version || '';
-		Logger.log('options: ', { config, path, unzip, remove, version, stack, submission });
+		Logger.log('options: ', { config, path, name, version, stack, submission });
 
 		// Start
 		spinner.start();
@@ -58,10 +57,10 @@ export const downloadCommand = async (uuid, options: any) => {
 
 		// Storage
 		spinner.start('Storing zip...');
-		const storageService = new StorageService({ basePath: path, fileName: uuid });
+		const storageService = new StorageService({ basePath: path, fileName: name });
 		await storageService.saveRepo(response.body);
-		if (unzip) await storageService.unzipRepo();
-		if (remove) await storageService.removeZip();
+		await storageService.unzipRepo();
+		await storageService.removeZip();
 		spinner.succeed();
 
 		// Response

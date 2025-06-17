@@ -8,7 +8,7 @@ export const logoutCommand = async (options: any) => {
 	const spinner = ora('Logging out...');
 	try {
 		// Options
-		const config = options.c || options.config;
+		const config = options.config;
 		Logger.log('options: ', { config });
 
 		// Start

@@ -10,7 +10,7 @@ export const chargesCommand = async (options: any) => {
 	const spinner = ora('Fetching charges...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const select = options.s || options.select;
 		Logger.log('options: ', options, { config, select });
 

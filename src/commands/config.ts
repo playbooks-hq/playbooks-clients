@@ -8,7 +8,7 @@ export const configCommand = async (options: any) => {
 	const spinner = ora('Fetching config...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		Logger.log('options: ', { config });
 
 		// Start

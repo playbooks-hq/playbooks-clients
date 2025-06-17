@@ -10,7 +10,7 @@ export const loginCommand = async (options: any) => {
 	const spinner = ora('Initiating login...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const email = options.e || options.email || '';
 		const password = options.p || options.password || '';
 		Logger.log('options: ', { config });

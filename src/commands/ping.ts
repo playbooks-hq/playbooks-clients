@@ -8,7 +8,7 @@ export const pingCommand = async (options: any) => {
 	const spinner = ora('Pinging Playbooks...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		Logger.log('options: ', { config });
 
 		// Start

@@ -1,12 +1,10 @@
 ## Overview
 A simple CLI to access the [Playbooks](https://www.playbooks.xyz) platform.
 
-
 &ensp;
 ## Prerequisites
 - Node
 - A Playbooks account
-
 
 &ensp;
 ## Quick Start
@@ -186,8 +184,8 @@ playbooks download <repo_uuid> --unzip --remove
 | Option | Type | Description |
 | :--- | :--- | :--- |
 | --path | string | Path to custom destination folder |
-| --unzip | boolean | Automatically unzip the binary file |
-| --remove | boolean | Automatically remove the binary file |
+| --name | string | Provide a custom name for the download |
+| --version | string | Specify a specific version to download |
 
 
 &ensp;

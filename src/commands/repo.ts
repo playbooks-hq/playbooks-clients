@@ -10,7 +10,7 @@ export const repoCommand = async (uuid, options: any) => {
 	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const include = options.i || options.include;
 		const select = options.s || options.select;
 		Logger.log('options: ', { config, select });

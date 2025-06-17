@@ -10,7 +10,7 @@ export const accountCommand = async (options: any) => {
 	const spinner = ora('Fetching account...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const select = options.s || options.select;
 		Logger.log('options: ', { config, select });
 

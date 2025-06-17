@@ -10,7 +10,7 @@ export const ordersCommand = async (options: any) => {
 	const spinner = ora('Fetching orders...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const entity = options.e || options.entity || ``;
 		const select = options.s || options.select;
 		Logger.log('options: ', { config, entity, select });

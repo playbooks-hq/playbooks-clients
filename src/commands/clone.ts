@@ -10,7 +10,7 @@ export const cloneCommand = async (uuid, options: any) => {
 	const spinner = ora(`Cloning ${uuid}...`);
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const account = options.account || '';
 		const name = options.name || '';
 		const version = options.version || '';

@@ -10,7 +10,7 @@ export const stacksCommand = async (options: any) => {
 	const spinner = ora('Fetching stacks...');
 	try {
 		// Setup
-		const config = options.c || options.config;
+		const config = options.config;
 		const select = options.s || options.select;
 		const team = options.team || null;
 		const user = options.user || null;

@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -9,7 +10,7 @@ export default defineConfig({
 		lib: {
 			entry: 'src/index.ts',
 			name: 'playbooks',
-			formats: ['es', 'cjs', 'umd', 'iife'],
+			formats: ['es', 'cjs'],
 			fileName: format => `index.${format}.js`,
 		},
 		rollupOptions: {

@@ -26,8 +26,10 @@
     "url": "https://github.com/playbooks-xyz/playbooks-cli/issues"
   },
   "scripts": {
-    "start": "vite build --mode development --minify false --watch --sourcemap",
-    "build": "vite build --mode production --minify false",
+    "dev": "vite build --mode development --minify false --watch",
+    "start": "vite build --mode development --minify false",
+    "build": "vite build --mode production --minify true && npm run build:ts",
+    "build:ts": "dts-bundle-generator --config dts.config.ts",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier src",
