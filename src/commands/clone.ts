@@ -31,11 +31,11 @@ export const cloneCommand = async (uuid, options: any) => {
 		// Session
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const session = await client.queryRecord({ endpoint: `/session`, headers });
+		const session: any = await client.queryRecord({ endpoint: `/session`, headers });
 		const teams = await client.query({ endpoint: '/session/teams', headers });
 
 		// Prefetch
-		const entity = await client.queryRecord({
+		const entity: any = await client.queryRecord({
 			endpoint: stack ? `/stacks/${uuid}` : submission ? `/submissions/${uuid}` : `/repos/${uuid}`,
 			headers,
 			params: { include: stack ? 'repos' : 'versions(preview)' },
@@ -83,8 +83,8 @@ export const cloneCommand = async (uuid, options: any) => {
 		const endpoint = stack
 			? `/stacks/${uuid}/clone`
 			: submission
-			? `/submissions/${uuid}/clone`
-			: `/repos/${uuid}/clone`;
+				? `/submissions/${uuid}/clone`
+				: `/repos/${uuid}/clone`;
 		const params = client.serializeParams({ accountId, repoId, versionId, private: isPrivate });
 		const data = repos.map(repo => ({
 			uuid: repo.uuid,
@@ -101,10 +101,10 @@ export const cloneCommand = async (uuid, options: any) => {
 		const formattedData = stack
 			? data.map(record => ({
 					[record.repoId]: `https://github.com/${record.accountId}/${record.repoId}`,
-			  }))
+				}))
 			: {
 					[repoId]: `https://github.com/${accountId}/${repoId}`,
-			  };
+				};
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display

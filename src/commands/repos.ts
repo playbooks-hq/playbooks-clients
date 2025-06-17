@@ -25,18 +25,18 @@ export const reposCommand = async (options: any) => {
 		const endpoint = framework
 			? `/frameworks/${framework}/repos`
 			: language
-			? `/languages/${language}/repos`
-			: platform
-			? `/platforms/${platform}/repos`
-			: team
-			? `/teams/${team}/repos`
-			: tool
-			? `/tools/${tool}/repos`
-			: topic
-			? `/topics/${topic}/repos`
-			: user
-			? `/users/${user}/repos`
-			: `/repos`;
+				? `/languages/${language}/repos`
+				: platform
+					? `/platforms/${platform}/repos`
+					: team
+						? `/teams/${team}/repos`
+						: tool
+							? `/tools/${tool}/repos`
+							: topic
+								? `/topics/${topic}/repos`
+								: user
+									? `/users/${user}/repos`
+									: `/repos`;
 
 		// Start
 		spinner.start();
@@ -55,7 +55,7 @@ export const reposCommand = async (options: any) => {
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serializeArray(response.data, selects);
+		const formattedData = serializeArray('camel', response.data, selects);
 		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
 
 		// Display

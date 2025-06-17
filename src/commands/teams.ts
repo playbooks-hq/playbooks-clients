@@ -30,7 +30,7 @@ export const teamsCommand = async (options: any) => {
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serializeArray(response.data, selects);
+		const formattedData = serializeArray('camel', response.data, selects);
 		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
 
 		// Display

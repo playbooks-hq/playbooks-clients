@@ -31,7 +31,7 @@ export const loginCommand = async (options: any) => {
 		spinner.start();
 		await sleep(300);
 		const client = new ApiService();
-		const response = await client.post({
+		const response: any = await client.post({
 			endpoint: '/auth/login',
 			data: { email: formattedEmail, password: formattedPassword },
 		});

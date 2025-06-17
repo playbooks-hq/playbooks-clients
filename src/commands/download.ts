@@ -32,7 +32,7 @@ export const downloadCommand = async (uuid, options: any) => {
 		const headers = client.authHeaders();
 
 		// Prefetch
-		const entity = await client.queryRecord({
+		const entity: any = await client.queryRecord({
 			endpoint: stack ? `/stacks/${uuid}` : submission ? `/submissions/${uuid}` : `/repos/${uuid}`,
 			headers,
 			params: { include: stack ? 'repos' : 'versions(preview)' },
@@ -48,8 +48,8 @@ export const downloadCommand = async (uuid, options: any) => {
 		const endpoint = stack
 			? `/stacks/${uuid}/download`
 			: submission
-			? `/submissions/${uuid}/download`
-			: `/repos/${uuid}/download`;
+				? `/submissions/${uuid}/download`
+				: `/repos/${uuid}/download`;
 		const params = client.serializeParams({ versionId: matchedVersionId });
 		const data = []; // config each stack repo (optional)
 		const response = await client.download({ method: stack ? 'post' : 'get', endpoint, headers, params, data });
