@@ -64,7 +64,7 @@ export const downloadCommand = async (uuid, options: any) => {
 		spinner.succeed();
 
 		// Response
-		const formattedData = version ? { path: `${path}/${uuid}.zip` } : { path: `${path}/${uuid}.zip` };
+		const formattedData = version ? { path: `${path}/${name}` } : { path: `${path}/${name}` };
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display

@@ -1,13 +1,11 @@
 ## Overview
 A simple CLI to access the [Playbooks](https://www.playbooks.xyz) platform.
+The Playbooks CLI gives developers easy terminal access to their [Playbooks](https://www.playbooks.xyz)  account so they can preview, purchase, download, and clone repositories from anywhere.
+Using the CLI, developers can toggle in and out of their associated accounts making it a breeze to perform similar actions on behalf of those entities.
+After installation, simply use the `playbooks` prompt followed by the commands outlined below.
 
 &ensp;
-## Prerequisites
-- Node
-- A Playbooks account
-
-&ensp;
-## Quick Start
+## Installation
 ```
 npm install -g @playbooks/cli
 playbooks login
@@ -15,14 +13,8 @@ playbooks download <repo_uuid>
 ```
 
 &ensp;
-## Description
-The Playbooks CLI gives developers easy terminal access to their Playbooks account so they can preview, purchase, download, and clone repositories from anywhere.
-Using the CLI, developers can toggle in and out of their associated accounts making it a breeze to perform similar actions on behalf of those entities.
-After installation, simply use the `playbooks` prompt followed by the commands outlined below.
-
-&ensp;
 ## Configuration
-Playbooks will look for a config file at the root of your file system `~/.playbooksrc` containing your platform secrets.
+The Playbooks CLI will look for a config file at the root of your file system `~/.playbooksrc` containing your platform secrets.
 If one does not exist, the Playbooks CLI will create one when you login.
 As an alternative, you can provide a custom config file location using the `--config` flag as part of any command.
 Here is a sample config file located at the default location on your file system:
@@ -32,8 +24,8 @@ Here is a sample config file located at the default location on your file system
 
 id=1
 name=Eric Hubbell
-uuid=eric-hubbell
 email=eric@playbooks.xyz
+uuid=eric-hubbell
 token=********
 ...
 ```

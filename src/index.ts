@@ -95,7 +95,7 @@ cli
 	.option('--submission', 'Conditional flag to download a submission', false)
 	.option('--version', 'Specify the versionId', false)
 	.example('playbooks download actix-official-starter')
-	.example('playbooks download actix-official-starter --path `~/path/to/folder')
+	.example('playbooks download actix-official-starter --path ~/path/to/folder --name actix-project')
 	.action(downloadCommand);
 
 cli
