@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
 				entry: 'src/index.ts',
 				name: 'playbooks',
 				formats: ['es', 'cjs'],
-				fileName: format => `index.${format}.js`,
+				fileName: (format, entryName) => `${entryName}.${format}.js`,
 			},
 			rollupOptions: {
 				external: [],
