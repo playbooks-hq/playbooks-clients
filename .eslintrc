@@ -1,7 +1,7 @@
 {
 	"root": true,
 	"extends": [
-		"./node_modules/@ehubbell/configs/src/eslint-config-package.js"
+		"./node_modules/@playbooks/configs/src/eslint-config-package.js"
 	],
 	"rules": {
 		"@typescript-eslint/no-require-imports": "off"

@@ -22,14 +22,11 @@
     "type": "git",
     "url": "git+https://github.com/playbooks-xyz/playbooks-cli.git"
   },
-  "bugs": {
-    "url": "https://github.com/playbooks-xyz/playbooks-cli/issues"
-  },
   "scripts": {
     "dev": "vite build --mode development --minify false --watch",
     "start": "vite build --mode development --minify false",
     "build": "vite build --mode production --minify true && npm run build:ts",
-    "build:ts": "dts-bundle-generator --config dts.config.ts",
+    "build:ts": "tsc --project tsconfig.json --noEmit false && tsc-alias",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier src",
@@ -42,7 +39,8 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@ehubbell/serializers": "^0.0.12",
+    "@playbooks/normalizers": "^0.0.1",
+    "@playbooks/serializers": "^0.0.1",
     "archiver": "^7.0.1",
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",
@@ -56,19 +54,19 @@
     "vite-plugin-dts": "^3.9.1"
   },
   "devDependencies": {
-    "@ehubbell/configs": "^0.0.15",
+    "@playbooks/configs": "^0.0.2",
     "@types/jest": "^29.5.1",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
-    "dts-bundle-generator": "^7.1.0",
     "eslint": "^8.57.1",
     "husky": "^9.1.7",
     "jest": "^29.5.0",
     "prettier": "^3.5.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
+    "tsc-alias": "^1.8.16",
     "tslib": "^2.4.1",
     "typescript": "^5.8.3",
-    "vite": "^4.0.0"
+    "vite": "^7.0.0"
   }
 }

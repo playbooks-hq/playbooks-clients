@@ -1,5 +1,12 @@
 {
-  "extends": "@ehubbell/configs/ts-config-package",
-  "include": ["src", "tests", "types", "vite.config.ts"],
+  "extends": "@playbooks/configs/ts-config-package",
+  "compilerOptions": {
+		"baseUrl": ".",
+		"rootDir": "src",
+		"outDir": "dist",
+		"declaration": true,
+		"emitDeclarationOnly": true
+	},
+  "include": ["src"],
   "exclude": ["node_modules"],
 }

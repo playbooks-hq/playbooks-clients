@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const os = require('os');
 const sade = require('sade');
 import { version } from '../package.json';
@@ -93,7 +91,7 @@ cli
 	.option('--repo', 'Conditional flag to download a repo', false)
 	.option('--stack', 'Conditional flag to download a stack', false)
 	.option('--submission', 'Conditional flag to download a submission', false)
-	.option('--version', 'Specify the versionId', false)
+	.option('--version', 'Specify tarball version', false)
 	.example('playbooks download actix-official-starter')
 	.example('playbooks download actix-official-starter --path ~/path/to/folder --name actix-project')
 	.action(downloadCommand);

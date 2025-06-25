@@ -4,7 +4,7 @@ export default defineConfig(({ mode }) => {
 	return {
 		base: './',
 		build: {
-			sourcemap: mode !== 'production',
+			sourcemap: mode === 'development',
 			lib: {
 				entry: 'src/index.ts',
 				name: 'playbooks',
