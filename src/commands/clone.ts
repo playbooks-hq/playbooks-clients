@@ -3,10 +3,11 @@ const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, sleep } from 'src/utils';
+import { formatError, formatUUID, sleep } from 'src/utils';
 import * as Logger from 'src/utils/logger';
 
-export const cloneCommand = async (uuid, options: any) => {
+export const cloneCommand = async (entity, options: any) => {
+	const uuid = !/(http(s?)):\/\//i.test(entity) ? formatUUID(entity) : entity;
 	const spinner = ora(`Cloning ${uuid}...`);
 	try {
 		// Setup
