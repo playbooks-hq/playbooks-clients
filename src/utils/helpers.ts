@@ -1,9 +1,3 @@
-export const formatUUID = url => {
-	const paths = url.split('?')[0].split('#')[0].split('/');
-	const name = paths[paths.length - 1];
-	return name?.toLowerCase();
-};
-
 export const sleep = ms => {
 	return new Promise(resolve => setTimeout(resolve, ms));
 };
