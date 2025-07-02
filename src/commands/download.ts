@@ -3,8 +3,8 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { StorageService } from 'src/services/storage-service';
-import { formatError, formatUUID, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, formatUUID, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const downloadCommand = async (entity, options: any) => {
 	const uuid = /(http(s?)):\/\//i.test(entity) ? formatUUID(entity) : entity;
@@ -17,7 +17,7 @@ export const downloadCommand = async (entity, options: any) => {
 		const stack = options.stack;
 		const submission = options.submission;
 		const version = options.version || '';
-		Logger.log('options: ', { config, path, name, version, stack, submission });
+		logger.log('options: ', { config, path, name, version, stack, submission });
 
 		// Start
 		spinner.start();
@@ -72,7 +72,7 @@ export const downloadCommand = async (entity, options: any) => {
 		DisplaySuccess('Download', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };

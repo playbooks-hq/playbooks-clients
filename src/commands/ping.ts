@@ -1,15 +1,15 @@
 const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
-import { formatError, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const pingCommand = async (options: any) => {
 	const spinner = ora('Pinging Playbooks...');
 	try {
 		// Setup
 		const config = options.config;
-		Logger.log('options: ', { config });
+		logger.log('options: ', { config });
 
 		// Start
 		spinner.start();
@@ -24,7 +24,7 @@ export const pingCommand = async (options: any) => {
 		DisplaySuccess('Ping', response.data.message);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };

@@ -3,8 +3,8 @@ import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const stacksCommand = async (options: any) => {
 	const spinner = ora('Fetching stacks...');
@@ -15,7 +15,7 @@ export const stacksCommand = async (options: any) => {
 		const team = options.team || null;
 		const user = options.user || null;
 		const view = options.view || null;
-		Logger.log('options: ', { config, select, team, user, view });
+		logger.log('options: ', { config, select, team, user, view });
 
 		const endpoint = team ? `/teams/${team}/stacks` : user ? `/users/${user}/stacks` : `/stacks`;
 
@@ -44,7 +44,7 @@ export const stacksCommand = async (options: any) => {
 		DisplaySuccess('stacks', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };

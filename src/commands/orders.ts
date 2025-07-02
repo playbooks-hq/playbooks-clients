@@ -3,8 +3,8 @@ import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const ordersCommand = async (options: any) => {
 	const spinner = ora('Fetching orders...');
@@ -13,7 +13,7 @@ export const ordersCommand = async (options: any) => {
 		const config = options.config;
 		const entity = options.e || options.entity || ``;
 		const select = options.s || options.select;
-		Logger.log('options: ', { config, entity, select });
+		logger.log('options: ', { config, entity, select });
 
 		// Start
 		spinner.start();
@@ -40,7 +40,7 @@ export const ordersCommand = async (options: any) => {
 		DisplaySuccess('Orders', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };

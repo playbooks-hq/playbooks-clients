@@ -3,8 +3,8 @@ import { serialize } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const sessionCommand = async (options: any) => {
 	const spinner = ora('Fetching session...');
@@ -12,7 +12,7 @@ export const sessionCommand = async (options: any) => {
 		// Setup
 		const config = options.config;
 		const select = options.s || options.select;
-		Logger.log('options: ', { config, select });
+		logger.log('options: ', { config, select });
 
 		// Start
 		spinner.start();
@@ -38,7 +38,7 @@ export const sessionCommand = async (options: any) => {
 		DisplaySuccess('Session', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };

@@ -42,7 +42,7 @@
   "dependencies": {
     "@playbooks/normalizers": "^0.10.2",
     "@playbooks/serializers": "^0.10.2",
-    "@playbooks/utils": "^0.9.10",
+    "@playbooks/utils": "^0.9.11",
     "archiver": "^7.0.1",
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",

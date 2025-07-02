@@ -1,5 +1,5 @@
 import * as FileSystem from 'src/utils/file-system';
-import * as Logger from 'src/utils/logger';
+import { logger } from 'src/utils/logger';
 
 interface ConfigService {
 	basePath: string;
@@ -29,12 +29,12 @@ class ConfigService {
 				const value = record.split('=')[1];
 				return (formattedRecords[key] = value);
 			});
-		// Logger.info(`readConfig: `, formattedRecords);
+		// logger.info(`readConfig: `, formattedRecords);
 		return formattedRecords;
 	}
 
 	async writeConfig(records) {
-		Logger.log(`writeConfig: `, records);
+		logger.log(`writeConfig: `, records);
 		const formattedContent = Object.keys(records)
 			.map(key => `${key}=${records[key]}`)
 			.join('\n');

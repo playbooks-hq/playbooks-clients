@@ -1,15 +1,15 @@
 const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const configCommand = async (options: any) => {
 	const spinner = ora('Fetching config...');
 	try {
 		// Setup
 		const config = options.config;
-		Logger.log('options: ', { config });
+		logger.log('options: ', { config });
 
 		// Start
 		spinner.start();
@@ -32,7 +32,7 @@ export const configCommand = async (options: any) => {
 		DisplaySuccess(`Config [${config}]`, formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };

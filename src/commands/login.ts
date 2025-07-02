@@ -3,8 +3,8 @@ const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const loginCommand = async (options: any) => {
 	const spinner = ora('Initiating login...');
@@ -13,7 +13,7 @@ export const loginCommand = async (options: any) => {
 		const config = options.config;
 		const email = options.e || options.email || '';
 		const password = options.p || options.password || '';
-		Logger.log('options: ', { config });
+		logger.log('options: ', { config });
 
 		// Config
 		const service = new ConfigService({ basePath: config });
@@ -25,7 +25,7 @@ export const loginCommand = async (options: any) => {
 
 		const passwordPrompt = new enquirer.Password({ name: 'Password', message: 'Please enter your password.' });
 		const formattedPassword = password || (await passwordPrompt.run());
-		Logger.log('answers: ', { formattedEmail, formattedPassword });
+		logger.log('answers: ', { formattedEmail, formattedPassword });
 
 		// API call
 		spinner.start();
@@ -58,7 +58,7 @@ export const loginCommand = async (options: any) => {
 		DisplaySuccess('Login', formattedData);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };

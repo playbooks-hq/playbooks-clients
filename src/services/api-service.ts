@@ -63,13 +63,13 @@ class ApiService {
 	/* ----- Serializers ----- */
 	serializeArray(data) {
 		const formattedData = jsonApiSerializeArray(data);
-		// Logger.log(`serializedArray: `, formattedData);
+		// logger.log(`serializedArray: `, formattedData);
 		return formattedData;
 	}
 
 	serializeData(data) {
 		const formattedData = jsonApiSerialize(data);
-		// Logger.log(`serializedData: `, formattedData);
+		// logger.log(`serializedData: `, formattedData);
 		return formattedData;
 	}
 
@@ -78,21 +78,21 @@ class ApiService {
 		Object.keys(params || {})
 			.filter(key => params[key])
 			.map(key => (formattedParams[key] = params[key]));
-		// Logger.log(`serializedParams: `, formattedParams);
+		// logger.log(`serializedParams: `, formattedParams);
 		return formattedParams;
 	}
 
 	normalizeArray(response) {
 		const format = JSON.parse(response.text);
 		const formattedResponse = jsonApiNormalizeArray(format.data, format.included, format.meta);
-		// Logger.log(`normalizedArray: `, formattedResponse);
+		// logger.log(`normalizedArray: `, formattedResponse);
 		return formattedResponse;
 	}
 
 	normalizeData(response) {
 		const format = JSON.parse(response.text);
 		const formattedResponse = jsonApiNormalize(format.data, format.included);
-		// Logger.log(`normalizedData: `, formattedResponse);
+		// logger.log(`normalizedData: `, formattedResponse);
 		return formattedResponse;
 	}
 

@@ -3,8 +3,8 @@ import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const reposCommand = async (options: any) => {
 	const spinner = ora('Fetching repos...');
@@ -20,7 +20,7 @@ export const reposCommand = async (options: any) => {
 		const topic = options.topic || null;
 		const user = options.user || null;
 		const view = options.view || null;
-		Logger.log('options: ', { config, select, framework, language, platform, team, tool, topic, user, view });
+		logger.log('options: ', { config, select, framework, language, platform, team, tool, topic, user, view });
 
 		const endpoint = framework
 			? `/frameworks/${framework}/repos`
@@ -63,7 +63,7 @@ export const reposCommand = async (options: any) => {
 		DisplaySuccess('Repos', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };

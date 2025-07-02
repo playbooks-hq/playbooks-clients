@@ -3,8 +3,8 @@ const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, formatUUID, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, formatUUID, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const cloneCommand = async (entity, options: any) => {
 	const uuid = !/(http(s?)):\/\//i.test(entity) ? formatUUID(entity) : entity;
@@ -18,7 +18,7 @@ export const cloneCommand = async (entity, options: any) => {
 		const privateOption = options.private;
 		const stack = options.stack;
 		const submission = options.submission;
-		Logger.log('options: ', { config, account, name, private: privateOption, stack, submission, version });
+		logger.log('options: ', { config, account, name, private: privateOption, stack, submission, version });
 
 		// Start
 		spinner.start();
@@ -113,7 +113,7 @@ export const cloneCommand = async (entity, options: any) => {
 		DisplaySuccess('Clone', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };

@@ -3,8 +3,8 @@ const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatError, sleep } from 'src/utils';
-import * as Logger from 'src/utils/logger';
+import { serializeError, sleep } from 'src/utils';
+import { logger } from 'src/utils/logger';
 
 export const toggleCommand = async (options: any) => {
 	const spinner = ora('Fetching teams...');
@@ -12,7 +12,7 @@ export const toggleCommand = async (options: any) => {
 		// Setup
 		const config = options.config;
 		const uuid = options.u || options.uuid || null;
-		Logger.log('options: ', { config, uuid });
+		logger.log('options: ', { config, uuid });
 
 		// Start
 		spinner.start();
@@ -39,7 +39,7 @@ export const toggleCommand = async (options: any) => {
 		});
 		const account = uuid || (await prompt.run());
 
-		Logger.log('answer: ', { account });
+		logger.log('answer: ', { account });
 
 		// Start
 		spinner.start('Toggling account...');
@@ -54,7 +54,7 @@ export const toggleCommand = async (options: any) => {
 		DisplaySuccess('Account', selectedAccount.name);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(formatError(e));
+		DisplayError(serializeError(e));
 		process.exit();
 	}
 };
