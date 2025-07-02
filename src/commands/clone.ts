@@ -3,7 +3,7 @@ const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { serializeError, formatUUID, sleep } from 'src/utils';
+import { formatUUID, serializeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const cloneCommand = async (entity, options: any) => {
