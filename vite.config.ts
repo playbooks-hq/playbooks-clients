@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
 				fileName: (format, entryName) => `${entryName}.${format}.js`,
 			},
 			rollupOptions: {
-				external: [],
+				external: ['os'],
 				output: {
 					banner: '#!/usr/bin/env node',
 				},

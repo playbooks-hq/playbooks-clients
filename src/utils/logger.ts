@@ -1,7 +1,4 @@
-const errorStyles = 'color: crimson';
-const infoStyles = 'color: cadetblue';
-const warningStyles = 'color: amber';
-const successStyles = 'color: aquamarine';
+const chalk = require('chalk');
 
 const mode = import.meta.env.MODE;
 
@@ -12,28 +9,23 @@ class logger {
 	};
 
 	static error = (title, ...data) => {
-		// process.env.NODE_SERVER ? logNode.error(title, ...data) : logBrowser.error(title, ...data);
-		return console.error(`%c${title}`, errorStyles, ...data);
+		return console.log(chalk.red(title, ...data));
 	};
 
 	static warn = (title, ...data) => {
-		// process.env.NODE_SERVER ? logNode.warn(title, ...data) : logBrowser.warn(title, ...data);
-		return console.warn(`%c${title}`, warningStyles, ...data);
+		return console.log(chalk.yellow(title, ...data));
 	};
 
 	static info = (title, ...data) => {
-		// process.env.NODE_SERVER ? logNode.info(title, ...data) : logBrowser.info(title, ...data);
-		return console.info(`%c${title}`, infoStyles, ...data);
+		return console.log(chalk.blue(title, ...data));
 	};
 
 	static success = (title, ...data) => {
-		// process.env.NODE_SERVER ? logNode.info(title, ...data) : logBrowser.info(title, ...data);
-		return console.info(`%c${title}`, successStyles, ...data);
+		return console.log(chalk.green(title, ...data));
 	};
 
 	static debug = (title, ...data) => {
-		// process.env.NODE_SERVER ? logNode.debug(title, ...data) : logBrowser.debug(title, ...data);
-		return console.debug(`%c${title}`, infoStyles, ...data);
+		return console.log(chalk.red(title, ...data));
 	};
 }
 

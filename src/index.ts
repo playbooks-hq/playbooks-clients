@@ -12,6 +12,7 @@ import {
 	downloadsCommand,
 	loginCommand,
 	logoutCommand,
+	oauthCommand,
 	ordersCommand,
 	payoutsCommand,
 	pingCommand,
@@ -106,13 +107,15 @@ cli
 
 cli
 	.command('login')
-	.describe('Login to your account.')
+	.describe('Login via email / password.')
 	.option('--email', 'Your email address')
 	.option('--password', 'Your password')
 	.example('playbooks login -e acme@example.com -p password')
 	.action(loginCommand);
 
 cli.command('logout').describe('Logout of your account.').example('playbooks logout').action(logoutCommand);
+
+cli.command('oauth').describe('Loging via oauth.').example('playbooks oauth').action(oauthCommand);
 
 cli
 	.command('payouts')
