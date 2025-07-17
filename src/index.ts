@@ -21,6 +21,7 @@ import {
 	stackCommand,
 	stacksCommand,
 	subscriptionCommand,
+	syncCommand,
 	teamsCommand,
 	toggleCommand,
 	transfersCommand,
@@ -194,6 +195,14 @@ cli
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks subscription')
 	.action(subscriptionCommand);
+
+cli
+	.command('sync <uuid>')
+	.describe('Sync a submission or repo you own from Github.')
+	.option('--repo', 'Conditional flag to sync a repo', true)
+	.option('--submission', 'Conditional flag to sync a submission', false)
+	.example('playbooks sync starter-repo')
+	.action(syncCommand);
 
 cli
 	.command('teams')

@@ -3,7 +3,7 @@ const ora = require('ora');
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { serializeError, sleep } from 'src/utils';
+import { formatDate, serializeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const loginCommand = async (options: any) => {
@@ -44,6 +44,7 @@ export const loginCommand = async (options: any) => {
 			email: response.data.email,
 			token: response.data.token?.token,
 			account: response.data.uuid,
+			storedAt: formatDate(),
 		});
 		const contents = await service.readConfig();
 		const data = {};

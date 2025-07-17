@@ -18,6 +18,7 @@ export * from 'src/commands/stack';
 export * from 'src/commands/stacks';
 export * from 'src/commands/submissions';
 export * from 'src/commands/subscription';
+export * from 'src/commands/sync';
 export * from 'src/commands/teams';
 export * from 'src/commands/toggle';
 export * from 'src/commands/transfers';
