@@ -1,4 +1,4 @@
-const boxen = require('boxen');
+import boxen from 'boxen';
 
 export const DisplaySuccess = (title, message) => {
 	console.log(

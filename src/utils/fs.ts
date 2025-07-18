@@ -1,4 +1,4 @@
-const Fs = require('fs-extra');
+import Fs from 'fs-extra';
 
 export const checkOrCreateFile = async (pathName, fileName) => {
 	const fileExists = await checkPath(`${pathName}/${fileName}`);

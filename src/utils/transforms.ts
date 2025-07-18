@@ -1,1 +1,1 @@
-export * from '@playbooks/utils/transforms';
+export { capitalize } from '@playbooks/utils/transforms';

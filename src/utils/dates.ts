@@ -1,1 +1,1 @@
-export * from '@playbooks/utils/dates';
+export { formatDate } from '@playbooks/utils/dates';

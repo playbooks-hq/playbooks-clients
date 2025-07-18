@@ -1,9 +1,9 @@
-const Fs = require('fs-extra');
-const Superagent = require('superagent');
 import { name, version } from '../../package.json';
+import Fs from 'fs-extra';
 import { jsonApiNormalize, jsonApiNormalizeArray, jsonApiSerialize, jsonApiSerializeArray } from 'src/api';
 import { mutateType, queryType } from 'src/types';
 import { isArray } from 'src/utils';
+import Superagent from 'superagent';
 
 const MODE = import.meta.env.MODE;
 const BASE_URL = import.meta.env.VITE_BASE_URL;

@@ -1,1 +1,1 @@
-export * from '@playbooks/utils/errors';
+export { serializeError } from '@playbooks/utils/errors';

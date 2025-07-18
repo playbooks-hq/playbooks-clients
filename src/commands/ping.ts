@@ -1,4 +1,4 @@
-const ora = require('ora');
+import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { serializeError, sleep } from 'src/utils';

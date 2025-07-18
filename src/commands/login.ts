@@ -1,5 +1,5 @@
-const enquirer = require('enquirer');
-const ora = require('ora');
+import enquirer from 'enquirer';
+import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
@@ -20,9 +20,11 @@ export const loginCommand = async (options: any) => {
 		await service.setup();
 
 		// Prompts
+		// @ts-expect-error type issue
 		const emailPrompt = new enquirer.Input({ name: 'Login', message: 'Email Address:' });
 		const formattedEmail = email || (await emailPrompt.run());
 
+		// @ts-expect-error type issue
 		const passwordPrompt = new enquirer.Password({ name: 'Password', message: 'Please enter your password.' });
 		const formattedPassword = password || (await passwordPrompt.run());
 		logger.log('answers: ', { formattedEmail, formattedPassword });

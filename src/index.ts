@@ -1,6 +1,6 @@
-const os = require('os');
-const sade = require('sade');
 import { version } from '../package.json';
+import os from 'node:os';
+import sade from 'sade';
 import {
 	accountCommand,
 	banksCommand,

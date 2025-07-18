@@ -1,4 +1,4 @@
-const boxen = require('boxen');
+import boxen from 'boxen';
 
 export const DisplayError = ({ status, title, detail }) => {
 	const formattedMessage = JSON.stringify({ status, title, detail }, null, 2);

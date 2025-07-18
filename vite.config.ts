@@ -6,6 +6,7 @@ export default defineConfig(({ mode }) => {
 	return {
 		base: './',
 		build: {
+			ssr: true,
 			sourcemap: mode === 'development',
 			lib: {
 				entry: path.resolve(__dirname, 'src/index.ts'),
@@ -14,13 +15,24 @@ export default defineConfig(({ mode }) => {
 				fileName: (format, entryName) => `${entryName}.${format}.js`,
 			},
 			rollupOptions: {
-				external: ['os'],
+				external: [
+					'assert',
+					'constants',
+					'events',
+					'path',
+					'fs',
+					'node:os',
+					'node_child_process',
+					'node:process',
+					'stream',
+					'util',
+				],
 				output: {
 					banner: '#!/usr/bin/env node',
 				},
 			},
 		},
-		plugins: [],
+		plugins: [runSize()],
 		resolve: {
 			alias: {
 				src: path.resolve(__dirname, '/src'),

@@ -1,5 +1,5 @@
-const enquirer = require('enquirer');
-const ora = require('ora');
+import enquirer from 'enquirer';
+import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
@@ -32,6 +32,8 @@ export const toggleCommand = async (options: any) => {
 		// Prompts
 		spinner.stop();
 		const choices = [session.data, ...response.data];
+
+		// @ts-expect-error type issue
 		const prompt = new enquirer.Select({
 			name: 'Account',
 			message: 'Please select an account:',

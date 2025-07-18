@@ -1,6 +1,6 @@
-const http = require('http');
-const ora = require('ora');
-const { exec } = require('child_process');
+import { exec } from 'node:child_process';
+import http from 'node:http';
+import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';

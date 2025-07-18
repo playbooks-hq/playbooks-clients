@@ -1,5 +1,5 @@
-const enquirer = require('enquirer');
-const ora = require('ora');
+import enquirer from 'enquirer';
+import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
@@ -53,22 +53,26 @@ export const cloneCommand = async (entity, options: any) => {
 		spinner.stop();
 		const choices = [session.data.githubUserId, ...teams.data.map(v => v.githubOrgId)].filter(v => v);
 
+		// @ts-expect-error type issue
 		const accountPrompt = new enquirer.Select({
 			name: 'Account',
 			message: 'Which Github account would you like to clone to:',
 			choices: choices,
 		});
 
+		// @ts-expect-error type issue
 		const namePrompt = new enquirer.Input({
 			message: 'What would you like to name this repo:',
 			initial: uuid,
 		});
 
+		// @ts-expect-error type issue
 		const versionPrompt = new enquirer.Input({
 			message: 'Which version would you like to clone:',
 			initial: '',
 		});
 
+		// @ts-expect-error type issue
 		const privatePrompt = new enquirer.BooleanPrompt({
 			message: `Would you like to make ${stack ? 'them' : 'it'} private:`,
 			initial: true,
