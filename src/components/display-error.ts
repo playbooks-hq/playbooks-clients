@@ -1,6 +1,6 @@
 const boxen = require('boxen');
 
-export const DisplayError = ({ status, title, detail, framework }) => {
+export const DisplayError = ({ status, title, detail }) => {
 	const formattedMessage = JSON.stringify({ status, title, detail }, null, 2);
 
 	console.log(
