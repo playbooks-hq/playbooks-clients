@@ -12,21 +12,9 @@ export default defineConfig(({ mode }) => {
 				entry: path.resolve(__dirname, 'src/index.ts'),
 				name: 'Playbooks',
 				formats: ['es', 'cjs'],
-				fileName: (format, entryName) => `${entryName}.${format}.js`,
 			},
 			rollupOptions: {
-				external: [
-					'assert',
-					'constants',
-					'events',
-					'path',
-					'fs',
-					'node:os',
-					'node_child_process',
-					'node:process',
-					'stream',
-					'util',
-				],
+				external: [],
 				output: {
 					banner: '#!/usr/bin/env node',
 				},
