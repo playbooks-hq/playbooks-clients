@@ -25,19 +25,19 @@ export const oauthCommand = async (options: any) => {
 		// URL
 		const authUrl = new URL(VITE_WEB_DOMAIN + '/oauth/cli');
 
+		spinner.succeed();
+		spinner.start('connecting to Github...');
+
 		// Server
 		const json = await new Promise((resolve, reject) => {
 			const server = http.createServer((req, res) => {
 				if (req.url.startsWith('/cli')) {
 					const url = new URL(req.url, CALLBACK_URL);
 					const params = new URLSearchParams(url.search);
-					// logger.log('params: ', params);
 					const code = params.get('code');
 					const state = params.get('state');
-
 					res.writeHead(200, { 'Content-Type': 'text/html' });
 					res.end('<h1>Authorization successful!</h1><p>You can now close this tab.</p>');
-
 					server.close(() => resolve({ code, state }));
 				} else {
 					res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -57,19 +57,16 @@ export const oauthCommand = async (options: any) => {
 			};
 
 			// Listen
-			server.listen(PORT, () => {
-				logger.log('Server listening on: ', CALLBACK_URL);
-				exec(formatCommand(authUrl.toString()));
-			});
-
+			server.listen(PORT, () => exec(formatCommand(authUrl.toString())));
 			setTimeout(() => server.close(), 3000);
 		});
 
 		// Notes
+		spinner.succeed();
 		logger.log('json: ', json);
 
 		// API call
-		spinner.start();
+		spinner.start('performing handshake...');
 		await sleep(300);
 		const client = new ApiService();
 		const response: any = await client.post({ endpoint: '/oauth/github-auth', data: json });
