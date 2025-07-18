@@ -29,7 +29,7 @@ class ConfigService {
 				const value = record.split('=')[1];
 				return (formattedRecords[key] = value);
 			});
-		logger.info(`readConfig: `, formattedRecords);
+		// logger.log(`readConfig: `, JSON.stringify(formattedRecords));
 		return formattedRecords;
 	}
 
