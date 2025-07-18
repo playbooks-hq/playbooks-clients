@@ -1,4 +1,6 @@
+import path from 'path';
 import { defineConfig } from 'vite';
+import { runSize } from 'vite-plugin-size';
 
 export default defineConfig(({ mode }) => {
 	return {
@@ -6,8 +8,8 @@ export default defineConfig(({ mode }) => {
 		build: {
 			sourcemap: mode === 'development',
 			lib: {
-				entry: 'src/index.ts',
-				name: 'playbooks',
+				entry: path.resolve(__dirname, 'src/index.ts'),
+				name: 'Playbooks',
 				formats: ['es', 'cjs'],
 				fileName: (format, entryName) => `${entryName}.${format}.js`,
 			},
@@ -18,9 +20,10 @@ export default defineConfig(({ mode }) => {
 				},
 			},
 		},
+		plugins: [],
 		resolve: {
 			alias: {
-				src: '/src',
+				src: path.resolve(__dirname, '/src'),
 			},
 		},
 	};

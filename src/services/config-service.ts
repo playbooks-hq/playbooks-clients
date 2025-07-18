@@ -1,4 +1,4 @@
-import * as FileSystem from 'src/utils/file-system';
+import * as FileSystem from 'src/utils/fs';
 import { logger } from 'src/utils/logger';
 
 interface ConfigService {
