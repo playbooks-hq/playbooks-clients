@@ -28,12 +28,15 @@ import {
 	transfersCommand,
 } from 'src/commands';
 
+const mode = import.meta.env.MODE;
+const configFile = mode === 'development' ? `${os.homedir()}/.playbooksrcl` : `${os.homedir()}/.playbooksrc`;
+
 const cli = sade('playbooks');
 
 cli
 	.version(version)
 	.describe('A CLI for Playbooks (https://www.playbooks.xyz).')
-	.option('--config', 'Path to your config file.', `${os.homedir()}/.playbooksrc`);
+	.option('--config', 'Path to your config file.', configFile);
 
 // Commands
 cli

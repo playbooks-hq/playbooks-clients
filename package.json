@@ -39,9 +39,9 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@playbooks/normalizers": "^0.11.0",
-    "@playbooks/serializers": "^0.11.1",
-    "@playbooks/utils": "^0.10.1",
+    "@playbooks/normalizers": "^0.11.1",
+    "@playbooks/serializers": "^0.11.2",
+    "@playbooks/utils": "^0.10.2",
     "archiver": "^7.0.1",
     "boxen": "^5.1.2",
     "chalk": "^5.4.1",
