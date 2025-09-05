@@ -1,5 +1,6 @@
+import cors from 'cors';
+import express from 'express';
 import { exec } from 'node:child_process';
-import http from 'node:http';
 import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
@@ -22,43 +23,47 @@ export const oauthCommand = async (options: any) => {
 		const service = new ConfigService({ basePath: config });
 		await service.setup();
 
-		// URL
-		const authUrl = new URL(VITE_WEB_DOMAIN + '/oauth/cli');
-
 		spinner.succeed();
 		spinner.start('connecting to Github...');
 
+		const formatCommand = url => {
+			switch (process.platform) {
+				case 'darwin':
+					return `open ${url}`;
+				case 'win32':
+					return `start ${url}`;
+				default:
+					return `xdg-open ${url}`;
+			}
+		};
+
 		// Server
 		const json = await new Promise((resolve, reject) => {
-			const server = http.createServer((req, res) => {
-				if (req.url.startsWith('/cli')) {
-					const url = new URL(req.url, CALLBACK_URL);
-					const params = new URLSearchParams(url.search);
-					const code = params.get('code');
-					const state = params.get('state');
-					res.writeHead(200, { 'Content-Type': 'text/html' });
-					res.end('<h1>Authorization successful!</h1><p>You can now close this tab.</p>');
-					server.close(() => resolve({ code, state }));
-				} else {
-					res.writeHead(404, { 'Content-Type': 'text/plain' });
-					res.end('Not Found');
-				}
+			const app = express();
+			app.use(cors());
+
+			const timeout = setTimeout(
+				() => reject({ status: 422, message: 'Authorization timed out. Please try again.' }),
+				30000,
+			);
+
+			const server = app.listen(PORT, () => {
+				const authUrl = new URL(VITE_WEB_DOMAIN + '/oauth/cli');
+				const command = formatCommand(authUrl.toString());
+				exec(command);
 			});
 
-			const formatCommand = url => {
-				switch (process.platform) {
-					case 'darwin':
-						return `open ${url}`;
-					case 'win32':
-						return `start ${url}`;
-					default:
-						return `xdg-open ${url}`;
-				}
-			};
-
-			// Listen
-			server.listen(PORT, () => exec(formatCommand(authUrl.toString())));
-			setTimeout(() => server.close(), 3000);
+			app.get('/cli', (req, res, next) => {
+				const url = new URL(req.url, CALLBACK_URL);
+				const params = new URLSearchParams(url.search);
+				const code = params.get('code');
+				const state = params.get('state');
+				res.json({});
+				server.close(() => {
+					clearTimeout(timeout);
+					resolve({ code, state });
+				});
+			});
 		});
 
 		// Notes
