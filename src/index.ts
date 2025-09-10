@@ -94,6 +94,7 @@ cli
 	.option('--path', 'Path to destination folder', '.')
 	.option('--name', 'Name the downloaded repository')
 	.option('--repo', 'Conditional flag to download a repo', false)
+	.option('--snippet', 'Conditional flag to download a snippet', false)
 	.option('--stack', 'Conditional flag to download a stack', false)
 	.option('--submission', 'Conditional flag to download a submission', false)
 	.option('--version', 'Specify tarball version', false)

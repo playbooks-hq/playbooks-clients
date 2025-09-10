@@ -14,6 +14,7 @@ export const downloadCommand = async (entity, options: any) => {
 		const config = options.config;
 		const path = options.path || process.cwd();
 		const name = options.name || uuid;
+		const snippet = options.snippet;
 		const stack = options.stack;
 		const submission = options.submission;
 		const version = options.version || '';
@@ -31,29 +32,37 @@ export const downloadCommand = async (entity, options: any) => {
 		// Session
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
+		const formattedEndpoint = snippet
+			? `/snippets/${uuid}`
+			: stack
+				? `/stacks/${uuid}`
+				: submission
+					? `/submissions/${uuid}`
+					: `/repos/${uuid}`;
 
 		// Prefetch
 		const entity: any = await client.queryRecord({
-			endpoint: stack ? `/stacks/${uuid}` : submission ? `/submissions/${uuid}` : `/repos/${uuid}`,
+			endpoint: formattedEndpoint,
 			headers,
-			params: { include: stack ? 'repos' : 'versions(preview)' },
+			params: { include: snippet ? '' : stack ? 'repos' : 'versions(preview)' },
 		});
 
 		// Preformatting
 		const repos = entity.data?.repos || [];
 		const versions = entity.data?.versions || [];
 
-		const matchedVersionId = versions.find(version => version.name === version);
+		const matchedVersion = versions.find(version => version.name === version);
 
 		// Fetch
-		const endpoint = stack
-			? `/stacks/${uuid}/download`
-			: submission
-				? `/submissions/${uuid}/download`
-				: `/repos/${uuid}/download`;
-		const params = client.serializeParams({ versionId: matchedVersionId });
+		const params = client.serializeParams({ versionId: matchedVersion?.id });
 		const data = []; // config each stack repo (optional)
-		const response = await client.download({ method: stack ? 'post' : 'get', endpoint, headers, params, data });
+		const response = await client.download({
+			method: stack ? 'POST' : 'GET',
+			endpoint: `${formattedEndpoint}/download`,
+			headers,
+			params,
+			data,
+		});
 		spinner.succeed();
 
 		// Storage
