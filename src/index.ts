@@ -19,6 +19,8 @@ import {
 	repoCommand,
 	reposCommand,
 	sessionCommand,
+	snippetCommand,
+	snippetsCommand,
 	stackCommand,
 	stacksCommand,
 	subscriptionCommand,
@@ -122,19 +124,19 @@ cli.command('logout').describe('Logout of your account.').example('playbooks log
 cli.command('oauth').describe('Loging via oauth.').example('playbooks oauth').action(oauthCommand);
 
 cli
-	.command('payouts')
-	.describe('Fetch a list of your payouts.')
-	.option('--select', 'Select specific fields', '*')
-	.example('playbooks payouts')
-	.action(payoutsCommand);
-
-cli
 	.command('orders')
 	.describe('View your account orders.')
 	.option('--entity', 'Filter orders by entity', 'Repo')
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks order')
 	.action(ordersCommand);
+
+cli
+	.command('payouts')
+	.describe('Fetch a list of your payouts.')
+	.option('--select', 'Select specific fields', '*')
+	.example('playbooks payouts')
+	.action(payoutsCommand);
 
 cli.command('ping').describe('Check your API connection.').example('playbooks ping').action(pingCommand);
 
@@ -174,6 +176,27 @@ cli
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks session')
 	.action(sessionCommand);
+
+cli
+	.command('snippet <uuid>')
+	.describe('Fetch a specific snippet.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
+	.example('playbooks snippet redis-snippet')
+	.example('playbooks snippet redis-snippet --include framework')
+	.action(snippetCommand);
+
+cli
+	.command('snippets')
+	.describe('Fetch a list of snippets.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--team', 'Fetch by user identifier')
+	.option('--user', 'Fetch by team identifer')
+	.option('--view', 'Filter by view')
+	.example('playbooks snippets')
+	.example('playbooks snippets --team mile-hi-labs')
+	.example('playbooks snippets --user ehubbell')
+	.action(snippetsCommand);
 
 cli
 	.command('stack <uuid>')
