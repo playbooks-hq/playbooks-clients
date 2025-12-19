@@ -134,12 +134,10 @@ class ApiService {
 		return { status: response.status, data: JSON.parse(response.text) };
 	}
 
-	async download({ method = 'get', endpoint, headers, params, data }: queryType & { method?: string; data?: any }) {
+	async download({ endpoint, headers, params }: queryType) {
 		const computedUrl = this.computeURL(endpoint);
 		const computedHeaders = this.computeHeaders(headers);
-		const computedData = isArray(data) ? this.serializeArray(data) : this.serializeData(data);
-		if (method === 'get') return await Superagent.get(computedUrl).set(computedHeaders).query(params);
-		return await Superagent.post(computedUrl).set(computedHeaders).send(computedData);
+		return await Superagent.get(computedUrl).set(computedHeaders).query(params);
 	}
 }
 
