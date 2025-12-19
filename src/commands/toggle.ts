@@ -3,7 +3,7 @@ import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { serializeError, sleep } from 'src/utils';
+import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const toggleCommand = async (options: any) => {
@@ -56,7 +56,7 @@ export const toggleCommand = async (options: any) => {
 		DisplaySuccess('Account', selectedAccount.name);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(serializeError(e));
+		DisplayError(normalizeError(e));
 		process.exit();
 	}
 };

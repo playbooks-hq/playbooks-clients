@@ -3,7 +3,7 @@ import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { serializeError, sleep } from 'src/utils';
+import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const ordersCommand = async (options: any) => {
@@ -40,7 +40,7 @@ export const ordersCommand = async (options: any) => {
 		DisplaySuccess('Orders', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(serializeError(e));
+		DisplayError(normalizeError(e));
 		process.exit();
 	}
 };

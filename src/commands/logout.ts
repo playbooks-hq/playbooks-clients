@@ -1,7 +1,7 @@
 import ora from 'ora';
 import { DisplayError } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
-import { serializeError, sleep } from 'src/utils';
+import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const logoutCommand = async (options: any) => {
@@ -24,7 +24,7 @@ export const logoutCommand = async (options: any) => {
 		spinner.succeed();
 	} catch (e) {
 		spinner.fail();
-		DisplayError(serializeError(e));
+		DisplayError(normalizeError(e));
 		process.exit();
 	}
 };

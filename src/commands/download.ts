@@ -3,7 +3,7 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { StorageService } from 'src/services/storage-service';
-import { formatUUID, serializeError, sleep } from 'src/utils';
+import { formatUUID, normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const downloadCommand = async (entity, options: any) => {
@@ -14,11 +14,12 @@ export const downloadCommand = async (entity, options: any) => {
 		const config = options.config;
 		const path = options.path || process.cwd();
 		const name = options.name || uuid;
+		const element = options.element;
 		const snippet = options.snippet;
 		const stack = options.stack;
-		const submission = options.submission;
+		const template = options.template;
 		const version = options.version || '';
-		logger.log('options: ', { config, path, name, version, stack, submission });
+		logger.log('options: ', { config, path, name, version, element, snippet, stack, template });
 
 		// Start
 		spinner.start();
@@ -32,36 +33,32 @@ export const downloadCommand = async (entity, options: any) => {
 		// Session
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const formattedEndpoint = snippet
-			? `/snippets/${uuid}`
-			: stack
-				? `/stacks/${uuid}`
-				: submission
-					? `/submissions/${uuid}`
-					: `/repos/${uuid}`;
+		const formattedEndpoint = element
+			? `/elements/${uuid}`
+			: snippet
+				? `/snippets/${uuid}`
+				: stack
+					? `/stacks/${uuid}`
+					: `/templates/${uuid}`;
 
 		// Prefetch
 		const entity: any = await client.queryRecord({
 			endpoint: formattedEndpoint,
 			headers,
-			params: { include: snippet ? '' : stack ? 'repos' : 'versions(preview)' },
+			params: { include: 'versions(preview)' },
 		});
 
 		// Preformatting
-		const repos = entity.data?.repos || [];
 		const versions = entity.data?.versions || [];
-
 		const matchedVersion = versions.find(version => version.name === version);
 
 		// Fetch
 		const params = client.serializeParams({ versionId: matchedVersion?.id });
-		const data = []; // config each stack repo (optional)
 		const response = await client.download({
-			method: stack ? 'POST' : 'GET',
+			method: 'GET',
 			endpoint: `${formattedEndpoint}/download`,
 			headers,
 			params,
-			data,
 		});
 		spinner.succeed();
 
@@ -81,7 +78,7 @@ export const downloadCommand = async (entity, options: any) => {
 		DisplaySuccess('Download', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(serializeError(e));
+		DisplayError(normalizeError(e));
 		process.exit();
 	}
 };

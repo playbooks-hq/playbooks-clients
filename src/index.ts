@@ -16,8 +16,6 @@ import {
 	ordersCommand,
 	payoutsCommand,
 	pingCommand,
-	repoCommand,
-	reposCommand,
 	sessionCommand,
 	snippetCommand,
 	snippetsCommand,
@@ -26,6 +24,8 @@ import {
 	subscriptionCommand,
 	syncCommand,
 	teamsCommand,
+	templateCommand,
+	templatesCommand,
 	toggleCommand,
 	transfersCommand,
 } from 'src/commands';
@@ -71,16 +71,17 @@ cli
 
 cli
 	.command('clone <uuid>')
-	.describe('Clone a Playbooks repo, submission, or stack to your Github account.')
+	.describe('Clone a Playbooks template, submission, or stack to your Github account.')
 	.option('--account', 'Select your Github account')
 	.option('--name', 'Name the cloned repository')
-	.option('--private', 'Mark the cloned repo as private')
-	.option('--repo', 'Conditional flag to clone a repo', false)
+	.option('--private', 'Mark the cloned template as private')
+	.option('--element', 'Conditional flag to clone a element', false)
+	.option('--snippet', 'Conditional flag to clone a snippet', false)
 	.option('--stack', 'Conditional flag to clone a stack', false)
-	.option('--submission', 'Conditional flag to clone a submission', false)
+	.option('--template', 'Conditional flag to clone a template', false)
 	.option('--version', 'Specify the versionId', false)
 	.example('playbooks clone actix-official-starter')
-	.example('playbooks clone actix-official-starter --account mile-hi-labs --name my-new-repo --private')
+	.example('playbooks clone actix-official-starter --account mile-hi-labs --name my-new-template --private')
 	.action(cloneCommand);
 
 cli
@@ -92,16 +93,16 @@ cli
 
 cli
 	.command('download <uuid>')
-	.describe('Download a Playbooks repo, submission, or stack to your local machine.')
+	.describe('Download a Playbooks element, snippet, stack, or template to your local machine.')
 	.option('--path', 'Path to destination folder', '.')
 	.option('--name', 'Name the downloaded repository')
-	.option('--repo', 'Conditional flag to download a repo', false)
+	.option('--element', 'Conditional flag to download a element', false)
 	.option('--snippet', 'Conditional flag to download a snippet', false)
 	.option('--stack', 'Conditional flag to download a stack', false)
-	.option('--submission', 'Conditional flag to download a submission', false)
+	.option('--template', 'Conditional flag to download a template', false)
 	.option('--version', 'Specify tarball version', false)
-	.example('playbooks download actix-official-starter')
-	.example('playbooks download actix-official-starter --path ~/path/to/folder --name actix-project')
+	.example('playbooks download astro-official-starter')
+	.example('playbooks download astro-official-starter --path ~/path/to/folder --name astro-project')
 	.action(downloadCommand);
 
 cli
@@ -141,17 +142,17 @@ cli
 cli.command('ping').describe('Check your API connection.').example('playbooks ping').action(pingCommand);
 
 cli
-	.command('repo <uuid>')
-	.describe('Fetch a specific repo.')
+	.command('template <uuid>')
+	.describe('Fetch a specific template.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
-	.example('playbooks repo actix-official-starter')
-	.example('playbooks repo actix-official-starter --include framework')
-	.action(repoCommand);
+	.example('playbooks template actix-official-starter')
+	.example('playbooks template actix-official-starter --include framework')
+	.action(templateCommand);
 
 cli
-	.command('repos')
-	.describe('Fetch a list of repos.')
+	.command('templates')
+	.describe('Fetch a list of templates.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--framework', 'Fetch by framework identifer')
 	.option('--language', 'Fetch by language identifier')
@@ -161,14 +162,14 @@ cli
 	.option('--topic', 'Fetch by topic identifier')
 	.option('--user', 'Fetch by user identifier')
 	.option('--view', 'Filter by view')
-	.example('playbooks repos')
-	.example('playbooks repos --framework react')
-	.example('playbooks repos --language typescript')
-	.example('playbooks repos --team mile-hi-labs')
-	.example('playbooks repos --tool stripe')
-	.example('playbooks repos --topic portfolio')
-	.example('playbooks repos --user ehubbell')
-	.action(reposCommand);
+	.example('playbooks templates')
+	.example('playbooks templates --framework react')
+	.example('playbooks templates --language typescript')
+	.example('playbooks templates --team mile-hi-labs')
+	.example('playbooks templates --tool stripe')
+	.example('playbooks templates --topic portfolio')
+	.example('playbooks templates --user ehubbell')
+	.action(templatesCommand);
 
 cli
 	.command('session')
@@ -228,10 +229,10 @@ cli
 
 cli
 	.command('sync <uuid>')
-	.describe('Sync a submission or repo you own from Github.')
-	.option('--repo', 'Conditional flag to sync a repo', true)
+	.describe('Sync a submission or template you own from Github.')
+	.option('--template', 'Conditional flag to sync a template', true)
 	.option('--submission', 'Conditional flag to sync a submission', false)
-	.example('playbooks sync starter-repo')
+	.example('playbooks sync starter-template')
 	.action(syncCommand);
 
 cli

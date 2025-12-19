@@ -3,10 +3,10 @@ import { serialize } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { serializeError, sleep } from 'src/utils';
+import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const repoCommand = async (uuid, options: any) => {
+export const templateCommand = async (uuid, options: any) => {
 	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
@@ -28,7 +28,7 @@ export const repoCommand = async (uuid, options: any) => {
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
 		const params = client.serializeParams({ include });
-		const response = await client.queryRecord({ endpoint: `/repos/${uuid}`, headers, params });
+		const response = await client.queryRecord({ endpoint: `/templates/${uuid}`, headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
@@ -37,10 +37,10 @@ export const repoCommand = async (uuid, options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Repo', formattedResponse);
+		DisplaySuccess('Template', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(serializeError(e));
+		DisplayError(normalizeError(e));
 		process.exit();
 	}
 };

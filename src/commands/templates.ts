@@ -3,11 +3,11 @@ import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { serializeError, sleep } from 'src/utils';
+import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const reposCommand = async (options: any) => {
-	const spinner = ora('Fetching repos...');
+export const templatesCommand = async (options: any) => {
+	const spinner = ora('Fetching templates...');
 	try {
 		// Setup
 		const config = options.config;
@@ -23,20 +23,20 @@ export const reposCommand = async (options: any) => {
 		logger.log('options: ', { config, select, framework, language, platform, team, tool, topic, user, view });
 
 		const endpoint = framework
-			? `/frameworks/${framework}/repos`
+			? `/frameworks/${framework}/templates`
 			: language
-				? `/languages/${language}/repos`
+				? `/languages/${language}/templates`
 				: platform
-					? `/platforms/${platform}/repos`
+					? `/platforms/${platform}/templates`
 					: team
-						? `/teams/${team}/repos`
+						? `/teams/${team}/templates`
 						: tool
-							? `/tools/${tool}/repos`
+							? `/tools/${tool}/templates`
 							: topic
-								? `/topics/${topic}/repos`
+								? `/topics/${topic}/templates`
 								: user
-									? `/users/${user}/repos`
-									: `/repos`;
+									? `/users/${user}/templates`
+									: `/templates`;
 
 		// Start
 		spinner.start();
@@ -63,7 +63,7 @@ export const reposCommand = async (options: any) => {
 		DisplaySuccess('Repos', formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(serializeError(e));
+		DisplayError(normalizeError(e));
 		process.exit();
 	}
 };

@@ -3,7 +3,7 @@ import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatDate, serializeError, sleep } from 'src/utils';
+import { formatDate, normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const loginCommand = async (options: any) => {
@@ -61,7 +61,7 @@ export const loginCommand = async (options: any) => {
 		DisplaySuccess('Login', formattedData);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(serializeError(e));
+		DisplayError(normalizeError(e));
 		process.exit();
 	}
 };

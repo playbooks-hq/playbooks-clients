@@ -1,5 +1,4 @@
 import { name, version } from '../../package.json';
-import Fs from 'fs-extra';
 import { jsonApiNormalize, jsonApiNormalizeArray, jsonApiSerialize, jsonApiSerializeArray } from 'src/api';
 import { mutateType, queryType } from 'src/types';
 import { isArray } from 'src/utils';
@@ -26,13 +25,6 @@ class ApiService {
 	}
 
 	/* ----- Variables ----- */
-	get auth() {
-		return {
-			key: Fs.readFileSync(VITE_SSL_KEY_FILE),
-			cert: Fs.readFileSync(VITE_SSL_CERT_FILE),
-		};
-	}
-
 	get headers() {
 		return {
 			accept: 'application/json',
