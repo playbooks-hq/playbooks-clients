@@ -42,11 +42,11 @@ token=********
 - [logout](#logout)
 - [orders](#orders)
 - [ping](#ping)
-- [repo](#repo)
-- [repos](#repos)
 - [session](#session)
 - [subscription](#subscription)
 - [teams](#teams)
+- [template](#template)
+- [templates](#templates)
 - [toggle](#toggle)
 
 

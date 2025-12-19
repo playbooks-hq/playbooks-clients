@@ -34,7 +34,7 @@ export const syncCommand = async (uuid, options: any) => {
 		});
 
 		// Response
-		const formattedData = serialize('camel', response.data, ['id', 'status', 'name', 'uuid', 'tagline', 'syncDate']);
+		const formattedData = serialize(response.data, ['id', 'status', 'name', 'uuid', 'tagline', 'syncDate']);
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display

@@ -30,7 +30,7 @@ export const subscriptionCommand = async (options: any) => {
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serialize('camel', response.data, selects);
+		const formattedData = serialize(response.data, selects);
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display

@@ -54,12 +54,7 @@ export const downloadCommand = async (entity, options: any) => {
 
 		// Fetch
 		const params = client.serializeParams({ versionId: matchedVersion?.id });
-		const response = await client.download({
-			method: 'GET',
-			endpoint: `${formattedEndpoint}/download`,
-			headers,
-			params,
-		});
+		const response = await client.download({ endpoint: `${formattedEndpoint}/download`, headers, params });
 		spinner.succeed();
 
 		// Storage
