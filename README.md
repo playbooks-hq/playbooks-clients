@@ -1,6 +1,6 @@
 ## Overview
 The Playbooks CLI gives developers terminal access to their [Playbooks](https://www.playbooks.xyz) account.
-Using the CLI, developers can purchase, download, and clone Playbooks repositories from anywhere.
+Using the CLI, developers can purchase, download, and clone plays from anywhere.
 After installation, simply use the `playbooks` prompt followed by the commands outlined below.
 
 &ensp;
@@ -8,12 +8,12 @@ After installation, simply use the `playbooks` prompt followed by the commands o
 ```
 npm install -g @playbooks/cli
 playbooks login
-playbooks download <repo_uuid>
+playbooks download <uuid>
 ```
 
 &ensp;
 ## Configuration
-The Playbooks CLI will look for a config file at the root of your file system `~/.playbooksrc` containing your platform secrets.
+The Playbooks CLI will look for the following config file `~/.playbooksrc` containing your platform secrets.
 If one does not exist, the Playbooks CLI will create one when you login.
 As an alternative, you can provide a custom config file location using the `--config` flag as part of any command.
 Here is a sample config file located at the default location on your file system:
@@ -42,11 +42,11 @@ token=********
 - [logout](#logout)
 - [orders](#orders)
 - [ping](#ping)
+- [play](#play)
+- [plays](#plays)
 - [session](#session)
 - [subscription](#subscription)
 - [teams](#teams)
-- [template](#template)
-- [templates](#templates)
 - [toggle](#toggle)
 
 
@@ -135,18 +135,18 @@ playbooks charges --select 'id,amount,createdAt'
 
 &ensp;
 #### Clone
-Clone a Playbooks repo to your Github account.
+Clone a play to your Github account.
 
 ```sh
-playbooks clone <repo_uuid>
-playbooks clone <repo_uuid> --account playbooks-community --name my-new-repo
+playbooks clone <uuid>
+playbooks clone <uuid> --account playbooks-community --name my-cloned-play
 ```
 
 | Option | Type | Description |
 | :--- | :--- | :--- |
 | --account | string | Clone to a specific account |
-| --name | string | Rename the cloned repository |
-| --private | boolean | Mark the cloned repository as private |
+| --name | string | Rename the cloned play |
+| --private | boolean | Mark the cloned play as private |
 
 
 &ensp;
@@ -165,11 +165,11 @@ playbooks config --select 'id,name,email'
 
 &ensp;
 #### Download
-Download a Playbooks repo to your local computer.
+Download a play to your local machine.
 
 ```sh
-playbooks download <repo_uuid>
-playbooks download <repo_uuid> --unzip --remove
+playbooks download <uuid>
+playbooks download <uuid> --path ~/path/to/folder
 ```
 
 | Option | Type | Description |
@@ -195,7 +195,7 @@ playbooks downloads --select 'id,amount,createdAt'
 
 &ensp;
 #### Login
-Login to your Playbooks account from the command line.
+Login to your Playbooks account via email / password.
 
 ```sh
 playbooks login
@@ -214,6 +214,14 @@ Logout of your Playbooks account.
 
 ```sh
 playbooks logout
+```
+
+&ensp;
+#### Oauth
+Login to Playbooks via Github OAuth.
+
+```sh
+playbooks oauth
 ```
 
 &ensp;
@@ -254,12 +262,12 @@ playbooks ping
 ```
 
 &ensp;
-#### Repo
-Fetch a specific repo
+#### Play
+Fetch a specific play
 
 ```sh
-playbooks repo <uuid>
-playbooks repo <uuid> --select 'id,name,uuid,tagline'
+playbooks play <uuid>
+playbooks play actix-official-starter --include framework
 ```
 
 | Option | Type | Description |
@@ -269,14 +277,16 @@ playbooks repo <uuid> --select 'id,name,uuid,tagline'
 
 
 &ensp;
-#### Repos
-Fetch a list of repos
+#### Plays
+Fetch a list of plays
 
 ```sh
-playbooks repos
-playbooks repos --select 'id,name,uuid,tagline'
-playbooks repos --framework 'react'
-playbooks repos --language 'typescript'
+playbooks plays
+playbooks plays --select 'id,name,uuid,tagline'
+playbooks plays --framework 'react'
+playbooks plays --language 'typescript'
+playbooks plays --team 'mile-hi-labs'
+playbooks plays --view 'featured'
 ```
 
 | Option | Type | Description |
@@ -286,9 +296,8 @@ playbooks repos --language 'typescript'
 | --language | string | Fetch by language identifier |
 | --platform | string | Fetch by platform identifier |
 | --tool | string | Fetch by tool identifier |
-| --topic | string | Fetch by topic identifier |
+| --tag | string | Fetch by tag identifier |
 | --view | enum | Fetch by view |
-
 
 &ensp;
 #### Session

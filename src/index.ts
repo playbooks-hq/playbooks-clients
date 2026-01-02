@@ -110,7 +110,7 @@ cli
 
 cli.command('logout').describe('Logout of your Playbooks account.').example('playbooks logout').action(logoutCommand);
 
-cli.command('oauth').describe('Login to Playbooks via oauth.').example('playbooks oauth').action(oauthCommand);
+cli.command('oauth').describe('Login to Playbooks via Github oauth.').example('playbooks oauth').action(oauthCommand);
 
 cli
 	.command('orders')
