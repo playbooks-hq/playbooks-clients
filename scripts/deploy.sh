@@ -16,9 +16,8 @@ wait $build_id
 if [ $? -eq 1 ]; then exit; fi
 
 echo -e "\n npm publish \n"
-npm publish & publish_id=$!
-wait $publish_id
-if [ $? -eq 1 ]; then exit; fi
+npm publish
+if [ $? -ne 0 ]; then echo "Publish failed"; exit 1; fi
 
 echo -e "\n git push tags \n"
 git push --tags & push_id=$!

@@ -175,7 +175,7 @@ playbooks download <uuid> --path ~/path/to/folder
 | Option | Type | Description |
 | :--- | :--- | :--- |
 | --path | string | Path to custom destination folder |
-| --name | string | Provide a custom name for the download |
+| --name | string | Custom name for the download |
 | --version | string | Specify a specific version to download |
 
 
