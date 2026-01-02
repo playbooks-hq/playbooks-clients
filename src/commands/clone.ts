@@ -46,17 +46,10 @@ export const cloneCommand = async (entity, options: any) => {
 		const headers = client.authHeaders();
 		const session: any = await client.queryRecord({ endpoint: `/session`, headers });
 		const teams = await client.query({ endpoint: '/session/teams', headers });
-		const formattedEndpoint = element
-			? `/elements/${uuid}`
-			: snippet
-				? `/snippets/${uuid}`
-				: stack
-					? `/stacks/${uuid}`
-					: `/templates/${uuid}`;
 
 		// Prefetch
 		const entity: any = await client.queryRecord({
-			endpoint: formattedEndpoint,
+			endpoint: `/plays/${uuid}`,
 			headers,
 			params: { include: 'versions(preview)' },
 		});
@@ -105,7 +98,7 @@ export const cloneCommand = async (entity, options: any) => {
 
 		// Clone
 		const params = client.serializeParams({ accountId, repoId, versionId, private: isPrivate });
-		await client.queryRecord({ endpoint: `${formattedEndpoint}/download`, headers, params });
+		await client.queryRecord({ endpoint: `/plays/${uuid}/clone`, headers, params });
 		spinner.succeed();
 
 		// Response

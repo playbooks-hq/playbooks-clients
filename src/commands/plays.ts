@@ -6,18 +6,37 @@ import { ConfigService } from 'src/services/config-service';
 import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const snippetsCommand = async (options: any) => {
-	const spinner = ora('Fetching snippets...');
+export const playsCommand = async (options: any) => {
+	const spinner = ora('Fetching plays...');
 	try {
 		// Setup
 		const config = options.config;
 		const select = options.s || options.select;
+		const framework = options.framework || null;
+		const language = options.language || null;
+		const platform = options.platform || null;
 		const team = options.team || null;
+		const tool = options.tool || null;
+		const tag = options.tag || null;
 		const user = options.user || null;
 		const view = options.view || null;
-		logger.log('options: ', { config, select, team, user, view });
+		logger.log('options: ', { config, select, framework, language, platform, team, tool, tag, user, view });
 
-		const endpoint = team ? `/teams/${team}/snippets` : user ? `/users/${user}/snippets` : `/snippets`;
+		const endpoint = framework
+			? `/frameworks/${framework}/plays`
+			: language
+				? `/languages/${language}/plays`
+				: platform
+					? `/platforms/${platform}/plays`
+					: team
+						? `/teams/${team}/plays`
+						: tool
+							? `/tools/${tool}/plays`
+							: tag
+								? `/tags/${tag}/plays`
+								: user
+									? `/users/${user}/plays`
+									: `/plays`;
 
 		// Start
 		spinner.start();
@@ -41,7 +60,7 @@ export const snippetsCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('snippets', formattedResponse);
+		DisplaySuccess('Repos', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

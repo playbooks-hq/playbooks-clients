@@ -40,7 +40,7 @@ class StorageService {
 		return true;
 	}
 
-	async saveRepo(buffer: ArrayBuffer) {
+	async save(buffer: ArrayBuffer) {
 		await FileSystem.checkOrCreatePath(this.basePath);
 		await FileSystem.writeFile(this.zipFile, Buffer.from(buffer));
 	}
@@ -49,7 +49,7 @@ class StorageService {
 		return await FileSystem.fileStats(this.basePath);
 	}
 
-	async unzipRepo() {
+	async unzip() {
 		await FileSystem.checkOrCreatePath(this.repoPath);
 
 		await new Promise((resolve, reject) => {
@@ -60,12 +60,12 @@ class StorageService {
 		});
 	}
 
-	async cleanRepo() {
+	async clean() {
 		await FileSystem.removePath(this.basePath + '/.git');
 		await FileSystem.removePath(this.basePath + '/.github');
 	}
 
-	async zipRepo() {
+	async zip() {
 		await FileSystem.checkOrCreatePath(this.basePath);
 		const archive = Archiver('zip', { zlib: { level: 9 } });
 		const stream = Fs.createWriteStream(this.zipFile);
@@ -79,11 +79,7 @@ class StorageService {
 		});
 	}
 
-	async removeRepo() {
-		await FileSystem.removePath(this.basePath);
-	}
-
-	async removeZip() {
+	async remove() {
 		await FileSystem.removePath(this.zipFile);
 	}
 }

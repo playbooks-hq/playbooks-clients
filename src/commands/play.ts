@@ -6,7 +6,7 @@ import { ConfigService } from 'src/services/config-service';
 import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const stackCommand = async (uuid, options: any) => {
+export const playCommand = async (uuid, options: any) => {
 	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
@@ -28,7 +28,7 @@ export const stackCommand = async (uuid, options: any) => {
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
 		const params = client.serializeParams({ include });
-		const response = await client.queryRecord({ endpoint: `/stacks/${uuid}`, headers, params });
+		const response = await client.queryRecord({ endpoint: `/plays/${uuid}`, headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
@@ -37,7 +37,7 @@ export const stackCommand = async (uuid, options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('stack', formattedResponse);
+		DisplaySuccess('Template', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

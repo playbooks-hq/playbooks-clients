@@ -14,12 +14,8 @@ export const downloadCommand = async (entity, options: any) => {
 		const config = options.config;
 		const path = options.path || process.cwd();
 		const name = options.name || uuid;
-		const element = options.element;
-		const snippet = options.snippet;
-		const stack = options.stack;
-		const template = options.template;
 		const version = options.version || '';
-		logger.log('options: ', { config, path, name, version, element, snippet, stack, template });
+		logger.log('options: ', { config, path, name, version });
 
 		// Start
 		spinner.start();
@@ -33,17 +29,10 @@ export const downloadCommand = async (entity, options: any) => {
 		// Session
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const formattedEndpoint = element
-			? `/elements/${uuid}`
-			: snippet
-				? `/snippets/${uuid}`
-				: stack
-					? `/stacks/${uuid}`
-					: `/templates/${uuid}`;
 
 		// Prefetch
-		const entity: any = await client.queryRecord({
-			endpoint: formattedEndpoint,
+		const entity = await client.queryRecord({
+			endpoint: `/plays/${uuid}`,
 			headers,
 			params: { include: 'versions(preview)' },
 		});
@@ -54,15 +43,15 @@ export const downloadCommand = async (entity, options: any) => {
 
 		// Fetch
 		const params = client.serializeParams({ versionId: matchedVersion?.id });
-		const response = await client.download({ endpoint: `${formattedEndpoint}/download`, headers, params });
+		const response = await client.download({ endpoint: `/plays/${uuid}/download`, headers, params });
 		spinner.succeed();
 
 		// Storage
 		spinner.start('Storing zip...');
 		const storageService = new StorageService({ basePath: path, fileName: name });
-		await storageService.saveRepo(response.body);
-		await storageService.unzipRepo();
-		await storageService.removeZip();
+		await storageService.save(response.body);
+		await storageService.unzip();
+		await storageService.remove();
 		spinner.succeed();
 
 		// Response

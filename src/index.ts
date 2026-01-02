@@ -16,16 +16,12 @@ import {
 	ordersCommand,
 	payoutsCommand,
 	pingCommand,
+	playCommand,
+	playsCommand,
 	sessionCommand,
-	snippetCommand,
-	snippetsCommand,
-	stackCommand,
-	stacksCommand,
 	subscriptionCommand,
 	syncCommand,
 	teamsCommand,
-	templateCommand,
-	templatesCommand,
 	toggleCommand,
 	transfersCommand,
 } from 'src/commands';
@@ -71,17 +67,13 @@ cli
 
 cli
 	.command('clone <uuid>')
-	.describe('Clone a Playbooks template, submission, or stack to your Github account.')
+	.describe('Clone a play to your Github account.')
 	.option('--account', 'Select your Github account')
 	.option('--name', 'Name the cloned repository')
-	.option('--private', 'Mark the cloned template as private')
-	.option('--element', 'Conditional flag to clone a element', false)
-	.option('--snippet', 'Conditional flag to clone a snippet', false)
-	.option('--stack', 'Conditional flag to clone a stack', false)
-	.option('--template', 'Conditional flag to clone a template', false)
+	.option('--private', 'Mark the cloned play as private')
 	.option('--version', 'Specify the versionId', false)
 	.example('playbooks clone actix-official-starter')
-	.example('playbooks clone actix-official-starter --account mile-hi-labs --name my-new-template --private')
+	.example('playbooks clone actix-official-starter --account mile-hi-labs --private')
 	.action(cloneCommand);
 
 cli
@@ -93,16 +85,12 @@ cli
 
 cli
 	.command('download <uuid>')
-	.describe('Download a Playbooks element, snippet, stack, or template to your local machine.')
+	.describe('Download a play to your local machine.')
 	.option('--path', 'Path to destination folder', '.')
 	.option('--name', 'Name the downloaded repository')
-	.option('--element', 'Conditional flag to download a element', false)
-	.option('--snippet', 'Conditional flag to download a snippet', false)
-	.option('--stack', 'Conditional flag to download a stack', false)
-	.option('--template', 'Conditional flag to download a template', false)
 	.option('--version', 'Specify tarball version', false)
 	.example('playbooks download astro-official-starter')
-	.example('playbooks download astro-official-starter --path ~/path/to/folder --name astro-project')
+	.example('playbooks download astro-official-starter --path ~/path/to/folder')
 	.action(downloadCommand);
 
 cli
@@ -114,15 +102,15 @@ cli
 
 cli
 	.command('login')
-	.describe('Login via email / password.')
+	.describe('Login to Playbooks via email / password.')
 	.option('--email', 'Your email address')
 	.option('--password', 'Your password')
 	.example('playbooks login -e acme@example.com -p password')
 	.action(loginCommand);
 
-cli.command('logout').describe('Logout of your account.').example('playbooks logout').action(logoutCommand);
+cli.command('logout').describe('Logout of your Playbooks account.').example('playbooks logout').action(logoutCommand);
 
-cli.command('oauth').describe('Loging via oauth.').example('playbooks oauth').action(oauthCommand);
+cli.command('oauth').describe('Login to Playbooks via oauth.').example('playbooks oauth').action(oauthCommand);
 
 cli
 	.command('orders')
@@ -142,34 +130,35 @@ cli
 cli.command('ping').describe('Check your API connection.').example('playbooks ping').action(pingCommand);
 
 cli
-	.command('template <uuid>')
-	.describe('Fetch a specific template.')
+	.command('play <uuid>')
+	.describe('Fetch a specific play.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
-	.example('playbooks template actix-official-starter')
-	.example('playbooks template actix-official-starter --include framework')
-	.action(templateCommand);
+	.example('playbooks play actix-official-starter')
+	.example('playbooks play actix-official-starter --include framework')
+	.action(playCommand);
 
 cli
-	.command('templates')
-	.describe('Fetch a list of templates.')
+	.command('plays')
+	.describe('Fetch a list of plays.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--framework', 'Fetch by framework identifer')
 	.option('--language', 'Fetch by language identifier')
 	.option('--platform', 'Fetch by platform identifer')
 	.option('--team', 'Fetch by team identifier')
 	.option('--tool', 'Fetch by tool identifier')
-	.option('--topic', 'Fetch by topic identifier')
+	.option('--tag', 'Fetch by tag identifier')
 	.option('--user', 'Fetch by user identifier')
 	.option('--view', 'Filter by view')
-	.example('playbooks templates')
-	.example('playbooks templates --framework react')
-	.example('playbooks templates --language typescript')
-	.example('playbooks templates --team mile-hi-labs')
-	.example('playbooks templates --tool stripe')
-	.example('playbooks templates --topic portfolio')
-	.example('playbooks templates --user ehubbell')
-	.action(templatesCommand);
+	.example('playbooks plays')
+	.example('playbooks plays --framework react')
+	.example('playbooks plays --language typescript')
+	.example('playbooks plays --team mile-hi-labs')
+	.example('playbooks plays --tool stripe')
+	.example('playbooks plays --tag portfolio')
+	.example('playbooks plays --user ehubbell')
+	.example('playbooks plays --view featured')
+	.action(playsCommand);
 
 cli
 	.command('session')
@@ -177,48 +166,6 @@ cli
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks session')
 	.action(sessionCommand);
-
-cli
-	.command('snippet <uuid>')
-	.describe('Fetch a specific snippet.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.example('playbooks snippet redis-snippet')
-	.example('playbooks snippet redis-snippet --include framework')
-	.action(snippetCommand);
-
-cli
-	.command('snippets')
-	.describe('Fetch a list of snippets.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--team', 'Fetch by user identifier')
-	.option('--user', 'Fetch by team identifer')
-	.option('--view', 'Filter by view')
-	.example('playbooks snippets')
-	.example('playbooks snippets --team mile-hi-labs')
-	.example('playbooks snippets --user ehubbell')
-	.action(snippetsCommand);
-
-cli
-	.command('stack <uuid>')
-	.describe('Fetch a specific stack.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.example('playbooks stack marketplace-stack')
-	.example('playbooks stack marketplace-stack --include framework')
-	.action(stackCommand);
-
-cli
-	.command('stacks')
-	.describe('Fetch a list of stacks.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--team', 'Fetch by user identifier')
-	.option('--user', 'Fetch by team identifer')
-	.option('--view', 'Filter by view')
-	.example('playbooks stacks')
-	.example('playbooks stacks --team mile-hi-labs')
-	.example('playbooks stacks --user ehubbell')
-	.action(stacksCommand);
 
 cli
 	.command('subscription')
@@ -229,10 +176,8 @@ cli
 
 cli
 	.command('sync <uuid>')
-	.describe('Sync a submission or template you own from Github.')
-	.option('--template', 'Conditional flag to sync a template', true)
-	.option('--submission', 'Conditional flag to sync a submission', false)
-	.example('playbooks sync starter-template')
+	.describe('Sync a play you own to receive the latest files from Github.')
+	.example('playbooks sync my-official-starter')
 	.action(syncCommand);
 
 cli
