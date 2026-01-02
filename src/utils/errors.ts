@@ -4,7 +4,8 @@ export { serializeError } from '@playbooks/utils/errors';
 const mode = import.meta.env.MODE;
 
 export const normalizeError = e => {
-	const formattedReponse = JSON.parse(e.response.text);
+	if (!e.response?.text) return { status: 500, title: 'Canceled', detail: 'The process was canceled abruptly.' };
+	const formattedReponse = JSON.parse(e.response?.text);
 	const error = formattedReponse?.errors;
 	const formattedError = isArray(error) ? error[0] : error;
 	return {
