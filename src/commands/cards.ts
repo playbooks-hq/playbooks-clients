@@ -30,7 +30,7 @@ export const cardsCommand = async (options: any) => {
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serializeArray('camel', response.data, selects);
+		const formattedData = serializeArray(response.data, selects, 'camel');
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display

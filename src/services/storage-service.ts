@@ -45,7 +45,7 @@ class StorageService {
 		await FileSystem.writeFile(this.zipFile, Buffer.from(buffer));
 	}
 
-	async fetchRepoStats() {
+	async stats() {
 		return await FileSystem.fileStats(this.basePath);
 	}
 

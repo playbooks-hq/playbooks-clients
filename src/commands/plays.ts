@@ -55,12 +55,12 @@ export const playsCommand = async (options: any) => {
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serializeArray('camel', response.data, selects);
+		const formattedData = serializeArray(response.data, selects, 'camel');
 		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Repos', formattedResponse);
+		DisplaySuccess('Plays', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

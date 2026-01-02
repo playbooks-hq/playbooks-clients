@@ -3,11 +3,11 @@ import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
-import { formatUUID, normalizeError, sleep } from 'src/utils';
+import { normalizeError, sleep, testAndFormatUUID } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const cloneCommand = async (entity, options: any) => {
-	const uuid = !/(http(s?)):\/\//i.test(entity) ? formatUUID(entity) : entity;
+	const uuid = testAndFormatUUID(entity);
 	const spinner = ora(`Cloning ${uuid}...`);
 	try {
 		// Setup
@@ -15,20 +15,13 @@ export const cloneCommand = async (entity, options: any) => {
 		const account = options.account || '';
 		const name = options.name || '';
 		const version = options.version || '';
-		const privateOption = options.private;
-		const element = options.element;
-		const snippet = options.snippet;
-		const stack = options.stack;
-		const template = options.template;
+		const isPrivate = options.private || false;
 		logger.log('options: ', {
 			config,
+			uuid,
 			account,
 			name,
-			private: privateOption,
-			element,
-			snippet,
-			stack,
-			template,
+			private: isPrivate,
 			version,
 		});
 
@@ -44,18 +37,18 @@ export const cloneCommand = async (entity, options: any) => {
 		// Session
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const session: any = await client.queryRecord({ endpoint: `/session`, headers });
+		const session = await client.queryRecord({ endpoint: `/session`, headers });
 		const teams = await client.query({ endpoint: '/session/teams', headers });
 
 		// Prefetch
-		const entity: any = await client.queryRecord({
+		const entity = await client.queryRecord({
 			endpoint: `/plays/${uuid}`,
 			headers,
 			params: { include: 'versions(preview)' },
 		});
 
 		// Preformatting
-		const accountOptions = [session.data.githubUserId, ...teams.data.map(v => v.githubOrgId)].filter(v => v);
+		const accountOptions = [session.data.githubAccountId, ...teams.data.map(v => v.githubAccountId)].filter(v => v);
 
 		const versions = entity.data?.versions || [];
 		const versionOptions = versions.map(version => version.name);
@@ -86,7 +79,7 @@ export const cloneCommand = async (entity, options: any) => {
 
 		// @ts-expect-error type issue
 		const privatePrompt = new enquirer.BooleanPrompt({
-			message: `Would you like to make ${stack ? 'them' : 'it'} private:`,
+			message: `Would you like to make the repo private:`,
 			initial: true,
 		});
 
@@ -94,10 +87,11 @@ export const cloneCommand = async (entity, options: any) => {
 		const accountId = account || (await accountPrompt.run());
 		const repoId = name ? null : await namePrompt.run();
 		const versionId = matchedVersion ? null : await versionPrompt.run();
-		const isPrivate = privateOption || (await privatePrompt.run());
+		const privateId = isPrivate || (await privatePrompt.run());
 
 		// Clone
-		const params = client.serializeParams({ accountId, repoId, versionId, private: isPrivate });
+		spinner.start('Cloning play...');
+		const params = client.serializeParams({ accountId, repoId, versionId, private: privateId });
 		await client.queryRecord({ endpoint: `/plays/${uuid}/clone`, headers, params });
 		spinner.succeed();
 

@@ -37,7 +37,7 @@ export const playCommand = async (uuid, options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Template', formattedResponse);
+		DisplaySuccess('Play', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

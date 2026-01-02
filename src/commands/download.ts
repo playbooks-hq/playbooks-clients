@@ -3,11 +3,11 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { StorageService } from 'src/services/storage-service';
-import { formatUUID, normalizeError, sleep } from 'src/utils';
+import { normalizeError, sleep, testAndFormatUUID } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const downloadCommand = async (entity, options: any) => {
-	const uuid = /(http(s?)):\/\//i.test(entity) ? formatUUID(entity) : entity;
+	const uuid = testAndFormatUUID(entity);
 	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
@@ -15,7 +15,7 @@ export const downloadCommand = async (entity, options: any) => {
 		const path = options.path || process.cwd();
 		const name = options.name || uuid;
 		const version = options.version || '';
-		logger.log('options: ', { config, path, name, version });
+		logger.log('options: ', { config, uuid, path, name, version });
 
 		// Start
 		spinner.start();
