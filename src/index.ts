@@ -3,6 +3,7 @@ import os from 'node:os';
 import sade from 'sade';
 import {
 	accountCommand,
+	addCommand,
 	banksCommand,
 	cardsCommand,
 	chargesCommand,
@@ -43,6 +44,16 @@ cli
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks account')
 	.action(accountCommand);
+
+cli
+	.command('add <uuid>')
+	.describe('Add a play to your local project.')
+	.option('--path', 'Path to destination folder', '.')
+	.option('--name', 'Name the downloaded repository')
+	.option('--version', 'Specify tarball version', false)
+	.example('playbooks add express-logging-middleware')
+	.example('playbooks add express-logging-middleware --path ~/middlewares/logging-middleware.ts')
+	.action(addCommand);
 
 cli
 	.command('banks')

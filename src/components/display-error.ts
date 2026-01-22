@@ -1,6 +1,6 @@
 import boxen from 'boxen';
 
-export const DisplayError = ({ status, title, detail, source = null }) => {
+export const DisplayError = ({ status, title, detail = null, source = null }) => {
 	const formattedMessage = JSON.stringify({ status, title, detail, source }, null, 2);
 
 	console.log(

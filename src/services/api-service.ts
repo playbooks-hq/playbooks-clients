@@ -19,7 +19,7 @@ interface ApiService {
 }
 
 class ApiService {
-	constructor(props?) {
+	constructor(props) {
 		this.account = props?.account || '';
 		this.token = props?.token || '';
 	}

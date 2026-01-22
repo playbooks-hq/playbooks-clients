@@ -6,7 +6,7 @@ interface ConfigService {
 }
 
 class ConfigService {
-	constructor(props: { basePath: string }) {
+	constructor(props) {
 		this.basePath = props.basePath;
 	}
 

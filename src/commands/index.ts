@@ -1,4 +1,5 @@
 export * from 'src/commands/account';
+export * from 'src/commands/add';
 export * from 'src/commands/banks';
 export * from 'src/commands/cards';
 export * from 'src/commands/charges';

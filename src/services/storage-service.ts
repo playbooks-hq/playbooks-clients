@@ -10,7 +10,7 @@ interface StorageService {
 }
 
 class StorageService {
-	constructor(props: { basePath: string; fileName: string }) {
+	constructor(props) {
 		this.basePath = props.basePath;
 		this.fileName = props?.fileName;
 	}
