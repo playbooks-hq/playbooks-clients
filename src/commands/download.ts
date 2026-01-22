@@ -1,3 +1,4 @@
+import Path from 'node:path';
 import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
@@ -12,7 +13,7 @@ export const downloadCommand = async (entity, options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const path = options.path || process.cwd();
+		const path = Path.join(process.cwd(), options.path);
 		const name = options.name || uuid;
 		const version = options.version || '';
 		logger.log('options: ', { config, uuid, path, name, version });

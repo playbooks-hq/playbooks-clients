@@ -1,3 +1,4 @@
+import Path from 'node:path';
 import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
@@ -13,8 +14,8 @@ export const addCommand = async (entity, options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const base = options.base || process.cwd();
-		const path = options.path || process.cwd();
+		const base = Path.join(process.cwd(), options.base);
+		const path = Path.join(base, options.path);
 		const name = options.name || uuid;
 		const version = options.version || '';
 		logger.log('options: ', { config, uuid, base, path, name, version });
@@ -45,8 +46,8 @@ export const addCommand = async (entity, options: any) => {
 
 		// Fetch
 		const playParams = client.serializeParams({ include: ['demo'] });
-		const play = await client.download({ endpoint: `/plays/${uuid}`, headers, params: playParams });
-		if (play.body.variant !== 'partial') throw httpError(422, 'You can only run this command for partials');
+		const play: any = await client.queryRecord({ endpoint: `/plays/${uuid}`, headers, params: playParams });
+		if (play.data.variant !== 'partial') throw httpError(422, 'You can only run this command for partials');
 		spinner.succeed();
 
 		// Download
@@ -59,14 +60,14 @@ export const addCommand = async (entity, options: any) => {
 		spinner.start('Storing zip...');
 		const storageService = new StorageService({ base: path, fileName: name });
 		await storageService.save(download.body);
-		await storageService.unzip();
+		await storageService.unzipPartial();
 		await storageService.remove();
 		spinner.succeed();
 
 		// Install
 		spinner.start('Running install...');
 		const shellService = new ShellService({ base });
-		const commands = play.body?.play?.demo?.commands;
+		const commands = play.data.demo?.commands;
 		const install = commands.split('\n')[0] || '';
 		await shellService.command(install);
 		spinner.succeed();
