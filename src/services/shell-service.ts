@@ -1,16 +1,18 @@
 import Shell from 'shelljs';
 
 interface ShellService {
-	basePath: string;
+	base: string;
 	fileName: string;
 }
 
 class ShellService {
-	constructor(props) {}
+	constructor(props) {
+		this.base = props?.base;
+	}
 
 	/* ----- Computed ----- */
 	get client() {
-		return Shell.cd(this.basePath);
+		return Shell.cd(this.base);
 	}
 
 	/* ----- Helpers ----- */

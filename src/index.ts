@@ -48,6 +48,7 @@ cli
 cli
 	.command('add <uuid>')
 	.describe('Add a play to your local project.')
+	.option('--base', 'Path to base project', '.')
 	.option('--path', 'Path to destination folder', '.')
 	.option('--name', 'Name the downloaded repository')
 	.option('--version', 'Specify tarball version', false)
