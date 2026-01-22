@@ -22,7 +22,7 @@ export const downloadCommand = async (entity, options: any) => {
 		await sleep(300);
 
 		// Config
-		const service = new ConfigService({ basePath: config });
+		const service = new ConfigService({ base: config });
 		await service.setup();
 		const contents = await service.readConfig();
 
@@ -48,7 +48,7 @@ export const downloadCommand = async (entity, options: any) => {
 
 		// Storage
 		spinner.start('Storing zip...');
-		const storageService = new StorageService({ basePath: path, fileName: name });
+		const storageService = new StorageService({ base: path, fileName: name });
 		await storageService.save(response.body);
 		await storageService.unzip();
 		await storageService.remove();

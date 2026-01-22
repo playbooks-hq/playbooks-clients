@@ -5,28 +5,28 @@ import * as FileSystem from 'src/utils/fs';
 import Unzip from 'unzip-stream';
 
 interface StorageService {
-	basePath: string;
+	base: string;
 	fileName: string;
 }
 
 class StorageService {
 	constructor(props) {
-		this.basePath = props.basePath;
+		this.base = props.base;
 		this.fileName = props?.fileName;
 	}
 
 	/* ----- Computed ----- */
 	get zipFile() {
-		return `${this.basePath}/${this.fileName}.zip`;
+		return `${this.base}/${this.fileName}.zip`;
 	}
 
 	get repoPath() {
-		return `${this.basePath}/${this.fileName}`;
+		return `${this.base}/${this.fileName}`;
 	}
 
 	/* ----- Methods ----- */
 	async checkEmpty() {
-		const formattedPath = path.join(this.basePath, this.fileName);
+		const formattedPath = path.join(this.base, this.fileName);
 		const pathExists = await FileSystem.checkPath(formattedPath);
 		if (pathExists) {
 			const path = await FileSystem.fileStats(formattedPath);
@@ -41,12 +41,12 @@ class StorageService {
 	}
 
 	async save(buffer: ArrayBuffer) {
-		await FileSystem.checkOrCreatePath(this.basePath);
+		await FileSystem.checkOrCreatePath(this.base);
 		await FileSystem.writeFile(this.zipFile, Buffer.from(buffer));
 	}
 
 	async stats() {
-		return await FileSystem.fileStats(this.basePath);
+		return await FileSystem.fileStats(this.base);
 	}
 
 	async unzip() {
@@ -61,18 +61,18 @@ class StorageService {
 	}
 
 	async clean() {
-		await FileSystem.removePath(this.basePath + '/.git');
-		await FileSystem.removePath(this.basePath + '/.github');
+		await FileSystem.removePath(this.base + '/.git');
+		await FileSystem.removePath(this.base + '/.github');
 	}
 
 	async zip() {
-		await FileSystem.checkOrCreatePath(this.basePath);
+		await FileSystem.checkOrCreatePath(this.base);
 		const archive = Archiver('zip', { zlib: { level: 9 } });
 		const stream = Fs.createWriteStream(this.zipFile);
 
 		await new Promise((resolve, reject) => {
 			stream.on('close', v => resolve(v));
-			archive.directory(this.basePath, false);
+			archive.directory(this.base, false);
 			archive.on('error', err => reject(err));
 			archive.pipe(stream);
 			archive.finalize();

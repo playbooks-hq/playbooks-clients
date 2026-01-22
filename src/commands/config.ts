@@ -16,7 +16,7 @@ export const configCommand = async (options: any) => {
 		await sleep(300);
 
 		// Config
-		const service = new ConfigService({ basePath: config });
+		const service = new ConfigService({ base: config });
 		await service.setup();
 		const contents = await service.readConfig();
 

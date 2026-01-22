@@ -2,24 +2,24 @@ import * as FileSystem from 'src/utils/fs';
 import { logger } from 'src/utils/logger';
 
 interface ConfigService {
-	basePath: string;
+	base: string;
 }
 
 class ConfigService {
 	constructor(props) {
-		this.basePath = props.basePath;
+		this.base = props.base;
 	}
 
 	/* ----- Methods ----- */
 	async setup() {
-		const fragments = this.basePath.split('/');
+		const fragments = this.base.split('/');
 		const path = fragments.filter((v, i) => i < fragments.length - 1).join('/');
 		const file = fragments[fragments.length - 1];
 		return await FileSystem.checkOrCreateFile(path, file);
 	}
 
 	async readConfig(): Promise<any> {
-		const config = await FileSystem.readFile(this.basePath);
+		const config = await FileSystem.readFile(this.base);
 		const records = config.split('\n');
 		const formattedRecords = {};
 		records
@@ -38,7 +38,7 @@ class ConfigService {
 		const formattedContent = Object.keys(records)
 			.map(key => `${key}=${records[key]}`)
 			.join('\n');
-		return await FileSystem.writeFile(this.basePath, formattedContent);
+		return await FileSystem.writeFile(this.base, formattedContent);
 	}
 
 	async getValue(key) {

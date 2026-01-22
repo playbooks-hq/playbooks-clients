@@ -16,7 +16,7 @@ export const loginCommand = async (options: any) => {
 		logger.log('options: ', { config });
 
 		// Config
-		const service = new ConfigService({ basePath: config });
+		const service = new ConfigService({ base: config });
 		await service.setup();
 
 		// Prompts

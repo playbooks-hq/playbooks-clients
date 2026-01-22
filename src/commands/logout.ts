@@ -16,7 +16,7 @@ export const logoutCommand = async (options: any) => {
 		await sleep(300);
 
 		// Config
-		const service = new ConfigService({ basePath: config });
+		const service = new ConfigService({ base: config });
 		await service.setup();
 
 		// Logout

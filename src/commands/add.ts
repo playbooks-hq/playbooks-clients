@@ -24,7 +24,7 @@ export const addCommand = async (entity, options: any) => {
 		await sleep(300);
 
 		// Config
-		const service = new ConfigService({ basePath: config });
+		const service = new ConfigService({ base: config });
 		await service.setup();
 		const contents = await service.readConfig();
 
@@ -57,7 +57,7 @@ export const addCommand = async (entity, options: any) => {
 
 		// Storage
 		spinner.start('Storing zip...');
-		const storageService = new StorageService({ basePath: path, fileName: name });
+		const storageService = new StorageService({ base: path, fileName: name });
 		await storageService.save(download.body);
 		await storageService.unzip();
 		await storageService.remove();
@@ -66,7 +66,9 @@ export const addCommand = async (entity, options: any) => {
 		// Install
 		spinner.start('Running install...');
 		const shellService = new ShellService({ base });
-		await shellService.command(play.body?.play?.demo?.install);
+		const commands = play.body?.play?.demo?.commands;
+		const install = commands.split('\n')[0] || '';
+		await shellService.command(install);
 		spinner.succeed();
 
 		// Response
