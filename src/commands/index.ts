@@ -21,3 +21,4 @@ export * from 'src/commands/sync';
 export * from 'src/commands/teams';
 export * from 'src/commands/toggle';
 export * from 'src/commands/transfers';
+export * from 'src/commands/usage';

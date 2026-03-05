@@ -25,6 +25,7 @@ import {
 	teamsCommand,
 	toggleCommand,
 	transfersCommand,
+	usageCommand,
 } from 'src/commands';
 
 const mode = import.meta.env.MODE;
@@ -213,5 +214,12 @@ cli
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks transfers')
 	.action(transfersCommand);
+
+cli
+	.command('usage')
+	.describe('View your account usage.')
+	.option('--select', 'Select specific fields', '*')
+	.example('playbooks usage')
+	.action(usageCommand);
 
 cli.parse(process.argv);

@@ -24,7 +24,7 @@ export const oauthCommand = async (options: any) => {
 		await service.setup();
 
 		spinner.succeed();
-		spinner.start('connecting to Github...');
+		spinner.start('Performing handshake...');
 
 		const formatCommand = url => {
 			switch (process.platform) {
@@ -71,7 +71,7 @@ export const oauthCommand = async (options: any) => {
 		logger.log('json: ', json);
 
 		// API call
-		spinner.start('performing handshake...');
+		spinner.start('Logging in...');
 		await sleep(300);
 		const client = new ApiService();
 		const response: any = await client.post({ endpoint: '/oauth/github-auth', data: json });

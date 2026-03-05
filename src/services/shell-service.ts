@@ -17,7 +17,8 @@ class ShellService {
 
 	/* ----- Helpers ----- */
 	async command(command, options = { silent: false }): Promise<any> {
-		return this.client.exec(command, options);
+		const formattedCmd = [`sh -c "echo '> ${command}' && ${command}"`];
+		return this.client.exec(formattedCmd.join(' '), options);
 	}
 
 	/* ----- Methods ----- */
