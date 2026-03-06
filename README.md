@@ -3,15 +3,21 @@ The Playbooks CLI gives developers terminal access to their [Playbooks](https://
 Using the CLI, developers can purchase, download, and clone plays from anywhere.
 After installation, simply use the `playbooks` prompt followed by the commands outlined below.
 
-&ensp;
+## Prerequisites
+- node
+- npm
+
 ## Installation
 ```
-npm install -g @playbooks/cli
+npm install @playbooks/cli -g
+```
+
+## Quick Start
+```
 playbooks login
 playbooks download <uuid>
 ```
 
-&ensp;
 ## Configuration
 The Playbooks CLI will look for the following config file `~/.playbooksrc` containing your platform secrets.
 If one does not exist, the Playbooks CLI will create one when you login.
@@ -29,14 +35,13 @@ token=********
 ...
 ```
 
-&ensp;
 ## Table of Contents
 - [global](#global)
 - [account](#account)
+- [add](#add)
 - [banks](#banks)
 - [cards](#cards)
 - [clone](#clone)
-- [config](#config)
 - [download](#download)
 - [login](#login)
 - [logout](#logout)
@@ -48,9 +53,9 @@ token=********
 - [subscription](#subscription)
 - [teams](#teams)
 - [toggle](#toggle)
+- [usage](#usage)
 
 
-&ensp;
 ## Global
 A list of global commands and options.
 
@@ -72,12 +77,10 @@ playbooks download --config ~/path/to/.playbooksrc
 | --version | boolean | Display current library version |
 
 
-&ensp;
 ## Commands
 A list of Playbooks specific commands.
 
 
-&ensp;
 #### Account
 Display which account is currently active.
 
@@ -91,7 +94,21 @@ playbooks account --select 'id,name,email'
 | --select | string[] | A comma separated list of account fields you'd like to display |
 
 
-&ensp;
+#### Add
+Add a play to your local project and run install commands.
+
+```sh
+playbooks add <uuid>
+playbooks add <uuid> --path ~/path/to/folder
+```
+
+| Option | Type | Description |
+| :--- | :--- | :--- |
+| --path | string | Path to custom destination folder |
+| --name | string | Custom name for the directory |
+| --version | string | Specify a specific version to add |
+
+
 #### Banks
 View your account banks.
 
@@ -105,7 +122,6 @@ playbooks banks --select 'id,summary,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
 #### Cards
 View your account cards.
 
@@ -119,7 +135,6 @@ playbooks cards --select 'id,summary,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
 #### Charges
 View your account charges.
 
@@ -133,7 +148,6 @@ playbooks charges --select 'id,amount,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
 #### Clone
 Clone a play to your Github account.
 
@@ -149,21 +163,6 @@ playbooks clone <uuid> --account playbooks-community --name my-cloned-play
 | --private | boolean | Mark the cloned play as private |
 
 
-&ensp;
-#### Config
-Display your config file.
-
-```sh
-playbooks config
-playbooks config --select 'id,name,email'
-```
-
-| Option | Type | Description |
-| :--- | :--- | :--- |
-| --select | string[] | A comma separated list of fields you'd like to display
-
-
-&ensp;
 #### Download
 Download a play to your local machine.
 
@@ -175,11 +174,10 @@ playbooks download <uuid> --path ~/path/to/folder
 | Option | Type | Description |
 | :--- | :--- | :--- |
 | --path | string | Path to custom destination folder |
-| --name | string | Custom name for the download |
+| --name | string | Custom name for the directory |
 | --version | string | Specify a specific version to download |
 
 
-&ensp;
 #### Downloads
 View your account downloads.
 
@@ -193,7 +191,6 @@ playbooks downloads --select 'id,amount,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
 #### Login
 Login to your Playbooks account via email / password.
 
@@ -208,7 +205,6 @@ playbooks login --email acme@example.com --password ******
 | --password | string | Your password |
 
 
-&ensp;
 #### Logout
 Logout of your Playbooks account.
 
@@ -216,7 +212,6 @@ Logout of your Playbooks account.
 playbooks logout
 ```
 
-&ensp;
 #### Oauth
 Login to Playbooks via Github OAuth.
 
@@ -224,7 +219,6 @@ Login to Playbooks via Github OAuth.
 playbooks oauth
 ```
 
-&ensp;
 #### Orders
 View your account orders.
 
@@ -239,7 +233,6 @@ playbooks orders --select 'id,amount,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
 #### Payouts
 View your account payouts.
 
@@ -253,7 +246,6 @@ playbooks payouts --select 'id,amount,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
 #### Ping
 Test your connection to the Playbooks API.
 
@@ -261,7 +253,6 @@ Test your connection to the Playbooks API.
 playbooks ping
 ```
 
-&ensp;
 #### Play
 Fetch a specific play
 
@@ -276,7 +267,6 @@ playbooks play actix-official-starter --include framework
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
 #### Plays
 Fetch a list of plays
 
@@ -299,7 +289,6 @@ playbooks plays --view 'featured'
 | --tag | string | Fetch by tag identifier |
 | --view | enum | Fetch by view |
 
-&ensp;
 #### Session
 Fetch and display your current session
 
@@ -313,7 +302,6 @@ playbooks session --select 'id,name,uuid,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
 #### Subscription
 Fetch and display your account subscription
 
@@ -327,7 +315,6 @@ playbooks subscription --select 'id,name,uuid,email'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
 #### Teams
 View a list of your session teams
 
@@ -342,7 +329,6 @@ playbooks teams --select 'id,name,uuid,email'
 
 ***Please note: this command is only available when a user account is activated.***
 
-&ensp;
 #### Toggle
 Toggle your active account.
 
@@ -356,7 +342,6 @@ playbooks toggle --uuid 'playbooks-community'
 | --uuid | string | Account identifier
 
 
-&ensp;
 #### Transfers
 View your account transfers.
 
@@ -370,17 +355,27 @@ playbooks transfers --select 'id,amount,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-&ensp;
+#### Usage
+Fetch and display your account usage statistics
+
+```sh
+playbooks usage
+playbooks usage --select 'id,totalCredits,totalRemaining'
+```
+
+| Option | Type | Description |
+| :--- | :--- | :--- |
+| --select | string[] | A comma separated list of fields you'd like to display
+
+
 ## Questions
 Please reach out to support@playbooks.xyz with any technical questions and / or issues.
 
 
-&ensp;
 ## Author
 - Playbooks XYZ
 - support@playbooks.xyz
 
 
-&ensp;
 ## Contributions
 Please open a Github Issue describing the PR you want to submit before starting work.
