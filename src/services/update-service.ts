@@ -3,8 +3,6 @@ import { ConfigService } from 'src/services/config-service';
 import { dayjs } from 'src/utils/dates';
 import { logger } from 'src/utils/logger';
 
-const ENV = import.meta.env.VITE_ENV;
-
 interface UpdateService {
 	base: string;
 	packageName?: string;
@@ -35,10 +33,7 @@ class UpdateService {
 	}
 
 	getCurrentVersion = () => {
-		const packageFile =
-			ENV === 'development'
-				? new URL('../package.json', import.meta.url)
-				: new URL('../../package.json', import.meta.url);
+		const packageFile = new URL('../package.json', import.meta.url);
 		const pkg = JSON.parse(Fs.readFileSync(packageFile, 'utf-8'));
 		return pkg.version;
 	};
