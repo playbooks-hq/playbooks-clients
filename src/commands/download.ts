@@ -4,6 +4,7 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { StorageService } from 'src/services/storage-service';
+import { UpdateService } from 'src/services/update-service';
 import { normalizeError, sleep, testAndFormatUUID } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -17,6 +18,9 @@ export const downloadCommand = async (entity, options: any) => {
 		const name = options.name || uuid;
 		const version = options.version || '';
 		logger.log('options: ', { config, uuid, path, name, version });
+
+		// Update
+		new UpdateService({ base: config }).runCheck();
 
 		// Start
 		spinner.start();

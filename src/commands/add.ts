@@ -5,6 +5,7 @@ import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { ShellService } from 'src/services/shell-service';
 import { StorageService } from 'src/services/storage-service';
+import { UpdateService } from 'src/services/update-service';
 import { httpError, normalizeError, sleep, testAndFormatUUID } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -19,6 +20,9 @@ export const addCommand = async (entity, options: any) => {
 		const name = options.name || uuid;
 		const version = options.version || '';
 		logger.log('options: ', { config, uuid, base, path, name, version });
+
+		// Update
+		new UpdateService({ base: config }).runCheck();
 
 		// Start
 		spinner.start();

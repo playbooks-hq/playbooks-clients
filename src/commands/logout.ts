@@ -1,6 +1,7 @@
 import ora from 'ora';
 import { DisplayError } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
+import { UpdateService } from 'src/services/update-service';
 import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -10,6 +11,9 @@ export const logoutCommand = async (options: any) => {
 		// Options
 		const config = options.config;
 		logger.log('options: ', { config });
+
+		// Update
+		new UpdateService({ base: config }).runCheck();
 
 		// Start
 		spinner.start();

@@ -5,6 +5,7 @@ import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
+import { UpdateService } from 'src/services/update-service';
 import { formatDate, normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -18,6 +19,9 @@ export const oauthCommand = async (options: any) => {
 		// Setup
 		const config = options.config;
 		logger.log('options: ', { config });
+
+		// Update
+		new UpdateService({ base: config }).runCheck();
 
 		// Config
 		const service = new ConfigService({ base: config });
@@ -73,7 +77,7 @@ export const oauthCommand = async (options: any) => {
 		// API call
 		spinner.start('Logging in...');
 		await sleep(300);
-		const client = new ApiService();
+		const client = new ApiService(null);
 		const response: any = await client.post({ endpoint: '/oauth/github-auth', data: json });
 
 		// Storage

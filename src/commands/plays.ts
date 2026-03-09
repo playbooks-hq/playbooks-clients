@@ -3,6 +3,7 @@ import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
+import { UpdateService } from 'src/services/update-service';
 import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -37,6 +38,9 @@ export const playsCommand = async (options: any) => {
 								: user
 									? `/users/${user}/plays`
 									: `/plays`;
+
+		// Update
+		new UpdateService({ base: config }).runCheck();
 
 		// Start
 		spinner.start();

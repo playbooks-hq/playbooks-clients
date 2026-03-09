@@ -3,6 +3,7 @@ import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
+import { UpdateService } from 'src/services/update-service';
 import { formatDate, normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -14,6 +15,9 @@ export const loginCommand = async (options: any) => {
 		const email = options.e || options.email || '';
 		const password = options.p || options.password || '';
 		logger.log('options: ', { config });
+
+		// Update
+		new UpdateService({ base: config }).runCheck();
 
 		// Config
 		const service = new ConfigService({ base: config });
@@ -32,7 +36,7 @@ export const loginCommand = async (options: any) => {
 		// API call
 		spinner.start();
 		await sleep(300);
-		const client = new ApiService();
+		const client = new ApiService(null);
 		const response: any = await client.post({
 			endpoint: '/auth/login',
 			data: { email: formattedEmail, password: formattedPassword },

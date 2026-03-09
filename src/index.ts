@@ -13,7 +13,6 @@ import {
 	loginCommand,
 	logoutCommand,
 	oauthCommand,
-	ordersCommand,
 	payoutsCommand,
 	pingCommand,
 	playCommand,
@@ -28,7 +27,7 @@ import {
 } from 'src/commands';
 
 const mode = import.meta.env.MODE;
-const configFile = mode === 'development' ? `${os.homedir()}/.playbooksrcl` : `${os.homedir()}/.playbooksrc`;
+const configFile = mode === 'development' ? `${os.homedir()}/.playbooksrcd` : `${os.homedir()}/.playbooksrc`;
 
 const cli = sade('playbooks');
 
@@ -116,14 +115,6 @@ cli
 cli.command('logout').describe('Logout of your Playbooks account.').example('playbooks logout').action(logoutCommand);
 
 cli.command('oauth').describe('Login to Playbooks via Github oauth.').example('playbooks oauth').action(oauthCommand);
-
-cli
-	.command('orders')
-	.describe('View your account orders.')
-	.option('--entity', 'Filter orders by entity', 'Repo')
-	.option('--select', 'Select specific fields', '*')
-	.example('playbooks order')
-	.action(ordersCommand);
 
 cli
 	.command('payouts')

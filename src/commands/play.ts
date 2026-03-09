@@ -3,6 +3,7 @@ import { serialize } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
+import { UpdateService } from 'src/services/update-service';
 import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -14,6 +15,9 @@ export const playCommand = async (uuid, options: any) => {
 		const include = options.i || options.include;
 		const select = options.s || options.select;
 		logger.log('options: ', { config, select });
+
+		// Update
+		new UpdateService({ base: config }).runCheck();
 
 		// Start
 		spinner.start();

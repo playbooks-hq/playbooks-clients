@@ -1,6 +1,7 @@
 import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
+import { UpdateService } from 'src/services/update-service';
 import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -11,12 +12,15 @@ export const pingCommand = async (options: any) => {
 		const config = options.config;
 		logger.log('options: ', { config });
 
+		// Update
+		new UpdateService({ base: config }).runCheck();
+
 		// Start
 		spinner.start();
 		await sleep(300);
 
 		// Ping
-		const client = new ApiService();
+		const client = new ApiService(null);
 		const response = await client.request({ endpoint: '/' });
 
 		// Display

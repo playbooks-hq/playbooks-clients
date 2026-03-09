@@ -9,7 +9,6 @@ export * from 'src/commands/downloads';
 export * from 'src/commands/login';
 export * from 'src/commands/logout';
 export * from 'src/commands/oauth';
-export * from 'src/commands/orders';
 export * from 'src/commands/payouts';
 export * from 'src/commands/ping';
 export * from 'src/commands/play';

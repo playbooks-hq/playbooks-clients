@@ -1,1 +1,1 @@
-export { formatDate } from '@playbooks/utils/dates';
+export { dayjs, formatDate } from '@playbooks/utils/dates';

@@ -3,6 +3,7 @@ import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
+import { UpdateService } from 'src/services/update-service';
 import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -13,6 +14,9 @@ export const toggleCommand = async (options: any) => {
 		const config = options.config;
 		const uuid = options.u || options.uuid || null;
 		logger.log('options: ', { config, uuid });
+
+		// Update
+		new UpdateService({ base: config }).runCheck();
 
 		// Start
 		spinner.start();

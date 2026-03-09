@@ -3,6 +3,7 @@ import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
+import { UpdateService } from 'src/services/update-service';
 import { normalizeError, sleep, testAndFormatUUID } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -24,6 +25,9 @@ export const cloneCommand = async (entity, options: any) => {
 			private: isPrivate,
 			version,
 		});
+
+		// Update
+		new UpdateService({ base: config }).runCheck();
 
 		// Start
 		spinner.start();
