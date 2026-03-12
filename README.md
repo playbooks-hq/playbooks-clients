@@ -5,22 +5,14 @@
 ## Overview
 
 - Uses stdio transport so MCP clients can spawn it locally.
-- Resolves the Playbooks CLI from `PLAYBOOKS_CLI_PATH`, then `../playbooks-cli/dist/index.js`, then `playbooks` on `PATH`.
+- Resolves the Playbooks CLI from `PLAYBOOKS_CLI_PATH`, then the installed `@playbooks/cli` dependency, then `../playbooks-cli/dist/index.js`, then `playbooks` on `PATH`.
 - Keeps the wrapper small and focused: it delegates the real work to the existing CLI instead of reimplementing the Playbooks API client.
 
 ## Prerequisites
 
 - Node.js 20+
-- A usable Playbooks CLI:
-  - either the sibling repo at `/Users/erichubbell/Sites/playbooks/playbooks-cli` with a built `dist/index.js`
-  - or a global/local `playbooks` binary on your `PATH`
-
-If you are using the sibling repo in this workspace, build it first:
-
-```sh
-cd /Users/erichubbell/Sites/playbooks/playbooks-cli
-npm run build
-```
+- `@playbooks/cli` is installed as a package dependency and is used by default.
+- `PLAYBOOKS_CLI_PATH` can override that when you want to point at a different CLI build or binary.
 
 ## Installation
 

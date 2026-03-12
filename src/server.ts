@@ -7,7 +7,7 @@ import {
 	jsonToolResult,
 	runPlaybooksCommand,
 	runPlaybooksRawArgs,
-} from './cli.js';
+} from 'src/cli.js';
 
 const configPathSchema = z.string().min(1).optional();
 const selectSchema = z.string().min(1).optional();

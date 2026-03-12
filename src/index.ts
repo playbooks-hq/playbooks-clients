@@ -2,7 +2,7 @@
 
 import process from 'node:process';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { createServer } from './server.js';
+import { createServer } from 'src/server.js';
 
 async function main() {
 	const server = createServer();

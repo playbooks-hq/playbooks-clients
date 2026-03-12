@@ -1,4 +1,5 @@
 import { access } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
@@ -56,6 +57,7 @@ const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 const DEFAULT_TIMEOUT_MS = Number.parseInt(process.env.PLAYBOOKS_MCP_TIMEOUT_MS ?? '120000', 10);
 const DEFAULT_CONFIG_PATH = process.env.PLAYBOOKS_CONFIG ?? path.join(os.homedir(), '.playbooksrc');
 const BOX_SIDE_PATTERN = /^[\s]*[│┃]/u;
+const require = createRequire(import.meta.url);
 
 async function fileExists(filePath: string) {
 	try {
@@ -90,6 +92,17 @@ export async function resolvePlaybooksCli() {
 				? path.resolve(customPath)
 				: customPath;
 		return normalizeExecutable(resolvedPath);
+	}
+
+	try {
+		const installedModuleEntry = require.resolve('@playbooks/cli');
+		const installedBinEntry = path.join(path.dirname(installedModuleEntry), 'index.js');
+		if (await fileExists(installedBinEntry)) {
+			return normalizeExecutable(installedBinEntry);
+		}
+		return normalizeExecutable(installedModuleEntry);
+	} catch {
+		// Fall through to workspace or PATH resolution.
 	}
 
 	const siblingDist = path.resolve(PACKAGE_ROOT, '../playbooks-cli/dist/index.js');
