@@ -1,12 +1,36 @@
 {
-  "extends": "@playbooks/configs/ts-config-package",
-  "compilerOptions": {
+	"compilerOptions": {
 		"baseUrl": ".",
 		"rootDir": "src",
 		"outDir": "dist",
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"jsx": "react-jsx",
+		"types": ["vite/client", "node", "jest"],
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
 		"declaration": true,
-		"emitDeclarationOnly": true
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"useDefineForClassFields": true,
+		"strict": false,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"noEmit": true,
+		"emitDeclarationOnly": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noImplicitReturns": false,
+		"forceConsistentCasingInFileNames": true,
+		"paths": {
+			"src/*": ["./src/*"],
+			"tests/*": ["./tests/*"],
+			"types/*": ["./types/*"]
+		}
 	},
-  "include": ["src"],
-  "exclude": ["node_modules"],
+	"include": ["src"],
+	"exclude": ["node_modules"]
 }

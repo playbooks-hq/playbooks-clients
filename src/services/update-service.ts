@@ -1,4 +1,4 @@
-import Fs from 'fs-extra';
+import { version as packageVersion } from '../../package.json';
 import { ConfigService } from 'src/services/config-service';
 import { dayjs } from 'src/utils/dates';
 import { logger } from 'src/utils/logger';
@@ -33,9 +33,7 @@ class UpdateService {
 	}
 
 	getCurrentVersion = () => {
-		const packageFile = new URL('../package.json', import.meta.url);
-		const pkg = JSON.parse(Fs.readFileSync(packageFile, 'utf-8'));
-		return pkg.version;
+		return packageVersion;
 	};
 
 	async fetchCache() {

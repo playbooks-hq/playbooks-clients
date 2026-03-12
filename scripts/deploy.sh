@@ -1,11 +1,11 @@
 #!/bin/bash
 
 if [ -z "$1" ]; then
-  echo -e " \nplease include a version.\m"
+  echo -e " \n please include a version. \n"
   exit
 fi
 
-echo -e "\n deploying updates...\n"
+echo -e "\n deploying updates... \n"
 
 echo -e "\n npm version \n"
 npm version $1
@@ -16,7 +16,7 @@ wait $build_id
 if [ $? -eq 1 ]; then exit; fi
 
 echo -e "\n npm publish \n"
-npm publish
+npm publish --access public
 if [ $? -ne 0 ]; then echo "Publish failed"; exit 1; fi
 
 echo -e "\n git push tags \n"

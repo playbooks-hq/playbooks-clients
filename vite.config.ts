@@ -7,14 +7,17 @@ export default defineConfig(({ mode }) => {
 		base: './',
 		build: {
 			ssr: true,
+			target: 'node18',
+			outDir: 'dist',
+			emptyOutDir: false,
 			sourcemap: mode === 'development',
 			lib: {
 				entry: path.resolve(__dirname, 'src/index.ts'),
+				fileName: format => (format === 'es' ? 'index.js' : 'index.cjs'),
 				name: 'Playbooks',
 				formats: ['es', 'cjs'],
 			},
 			rollupOptions: {
-				external: [],
 				output: {
 					banner: '#!/usr/bin/env node',
 				},
@@ -23,7 +26,7 @@ export default defineConfig(({ mode }) => {
 		plugins: [runSize()],
 		resolve: {
 			alias: {
-				src: path.resolve(__dirname, '/src'),
+				src: path.resolve(__dirname, 'src'),
 			},
 		},
 	};

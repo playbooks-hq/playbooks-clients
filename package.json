@@ -1,84 +1,103 @@
 {
-  "name": "@playbooks/cli",
-  "description": "A simple CLI for the Playbooks project.",
-  "homepage": "https://docs.playbooks.xyz",
-  "version": "0.11.1",
-  "license": "MIT",
-  "type": "module",
-  "main": "dist/index.js",
-  "publishConfig": {
-    "access": "public"
-  },
-  "bin": {
-    "playbooks": "dist/index.js"
-  },
-  "files": [
-    "dist"
-  ],
-  "author": {
-    "name": "Playbooks",
-    "email": "support@playbooks.xyz",
-    "url": "https://github.com/playbooks-xyz"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/playbooks-xyz/playbooks-cli.git"
-  },
-  "scripts": {
-    "start": "vite build --mode development --minify false --watch",
-    "build": "vite build --mode production --minify true && npm run build:ts",
-    "build:ts": "tsc --project tsconfig.json --noEmit false && tsc-alias",
-    "clean": "npm run lint:fix",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "format": "prettier src",
-    "format:fix": "prettier --write src",
-    "commit": "scripts/commit.sh",
-    "deploy": "scripts/deploy.sh",
-    "packages": "scripts/packages.sh",
-    "git": "git push --tags",
-    "test": "jest",
-    "prepare": "husky"
-  },
-  "dependencies": {
-    "@playbooks/normalizers": "^0.13.1",
-    "@playbooks/serializers": "^0.13.1",
-    "@playbooks/utils": "^0.13.4",
-    "archiver": "^7.0.1",
-    "boxen": "^5.1.2",
-    "chalk": "^5.4.1",
-    "cors": "^2.8.5",
-    "enquirer": "^2.4.1",
-    "express": "^5.1.0",
-    "fs-extra": "^11.2.0",
-    "http": "^0.0.1-security",
-    "https": "^1.0.0",
-    "ora": "^8.2.0",
-    "sade": "^1.8.1",
-    "shelljs": "^0.10.0",
-    "superagent": "^10.2.2",
-    "unzip-stream": "^0.3.4"
-  },
-  "devDependencies": {
-    "@playbooks/configs": "^0.13.0",
-    "@types/jest": "^29.5.1",
-    "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.9",
-    "eslint": "^8.57.1",
-    "husky": "^9.1.7",
-    "jest": "^29.5.0",
-    "prettier": "^3.5.3",
-    "ts-jest": "^29.1.0",
-    "ts-node": "^10.9.1",
-    "tsc-alias": "^1.8.16",
-    "tslib": "^2.8.1",
-    "typescript": "^5.8.3",
-    "vite": "^7.0.0",
-    "vite-plugin-size": "^0.1.3"
-  },
-  "exports": {
-    "types": "./dist/index.d.ts",
-    "require": "./dist/index.cjs",
-    "import": "./dist/index.js"
-  }
+	"name": "@playbooks/cli",
+	"description": "A simple CLI for the Playbooks project.",
+	"homepage": "https://docs.playbooks.xyz",
+	"version": "0.11.1",
+	"license": "MIT",
+	"type": "module",
+	"main": "dist/index.cjs",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"packageManager": "npm@11.11.1",
+	"engines": {
+		"node": ">=18.18.0"
+	},
+	"keywords": [
+		"cli",
+		"playbooks"
+	],
+	"bugs": {
+		"url": "https://github.com/playbooks-xyz/playbooks-cli/issues"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"bin": {
+		"playbooks": "dist/index.cjs"
+	},
+	"files": [
+		"dist"
+	],
+	"author": {
+		"name": "Playbooks",
+		"email": "support@playbooks.xyz",
+		"url": "https://github.com/playbooks-xyz"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/playbooks-xyz/playbooks-cli.git"
+	},
+	"scripts": {
+		"start": "vite build --mode development --minify false --watch",
+		"build": "vite build --mode production --minify true && npm run build:ts",
+		"build:ts": "tsc --project tsconfig.json --noEmit false && tsc-alias",
+		"clean": "npm run lint:fix",
+		"lint": "eslint src",
+		"lint:fix": "eslint src --fix",
+		"format": "prettier src",
+		"format:fix": "prettier --write src",
+		"commit": "scripts/commit.sh",
+		"deploy": "scripts/deploy.sh",
+		"packages": "scripts/packages.sh",
+		"git": "git push --tags",
+		"test": "jest",
+		"prepare": "husky"
+	},
+	"dependencies": {
+		"@playbooks/normalizers": "^0.14.0",
+		"@playbooks/serializers": "^0.14.0",
+		"@playbooks/utils": "^0.14.0",
+		"boxen": "^8.0.1",
+		"chalk": "^5.6.2",
+		"cors": "^2.8.6",
+		"enquirer": "^2.4.1",
+		"express": "^5.2.1",
+		"fs-extra": "^11.3.4",
+		"ora": "^9.3.0",
+		"sade": "^1.8.1",
+		"shelljs": "^0.10.0",
+		"superagent": "^10.3.0",
+		"unzip-stream": "^0.3.4"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.39.4",
+		"@types/jest": "^30.0.0",
+		"@typescript-eslint/eslint-plugin": "^8.57.0",
+		"@typescript-eslint/parser": "^8.57.0",
+		"archiver": "^7.0.1",
+		"eslint": "^9.39.4",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-eqeqeq-fix": "^1.0.3",
+		"eslint-plugin-prettier": "^5.5.5",
+		"eslint-plugin-react-hooks": "^7.0.1",
+		"eslint-plugin-simple-import-sort": "^12.1.1",
+		"eslint-plugin-unused-imports": "^4.4.1",
+		"globals": "^13.24.0",
+		"husky": "^9.1.7",
+		"jest": "^30.3.0",
+		"prettier": "^3.8.1",
+		"ts-jest": "^29.4.6",
+		"ts-node": "^10.9.2",
+		"tsc-alias": "^1.8.16",
+		"tslib": "^2.8.1",
+		"typescript": "^5.9.3",
+		"vite": "^8.0.0",
+		"vite-plugin-size": "^0.1.4"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.cjs"
+		}
+	}
 }

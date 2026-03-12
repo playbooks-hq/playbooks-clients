@@ -135,19 +135,6 @@ playbooks cards --select 'id,summary,createdAt'
 | --select | string[] | A comma separated list of fields you'd like to display
 
 
-#### Charges
-View your account charges.
-
-```sh
-playbooks charges
-playbooks charges --select 'id,amount,createdAt'
-```
-
-| Option | Type | Description |
-| :--- | :--- | :--- |
-| --select | string[] | A comma separated list of fields you'd like to display
-
-
 #### Clone
 Clone a play to your Github account.
 
@@ -161,6 +148,7 @@ playbooks clone <uuid> --account playbooks-community --name my-cloned-play
 | --account | string | Clone to a specific account |
 | --name | string | Rename the cloned play |
 | --private | boolean | Mark the cloned play as private |
+| --version | string | Specify the versionId |
 
 
 #### Download
@@ -218,19 +206,6 @@ Login to Playbooks via Github OAuth.
 ```sh
 playbooks oauth
 ```
-
-#### Orders
-View your account orders.
-
-```sh
-playbooks orders
-playbooks orders --select 'id,amount,createdAt'
-```
-
-| Option | Type | Description |
-| :--- | :--- | :--- |
-| --entity | enum | Filter by entityType |
-| --select | string[] | A comma separated list of fields you'd like to display
 
 
 #### Payouts

@@ -1,15 +1,13 @@
-import { isEven, isOdd } from "src/index";
+import { testAndFormatUUID } from 'src/utils/helpers';
 
-describe("isEven", () => {
-  it("should return true", () => {
-    const result = isEven(20);
-    expect(result).toEqual(true);
-  });
+describe('testAndFormatUUID', () => {
+	it('returns the uuid unchanged when a raw identifier is passed', () => {
+		expect(testAndFormatUUID('astro-official-starter')).toBe('astro-official-starter');
+	});
 });
 
-describe("isOdd", () => {
-  it("should return true", () => {
-    const result = isOdd(21);
-    expect(result).toEqual(true);
-  });
+describe('testAndFormatUUID with a URL', () => {
+	it('extracts and formats the identifier from a playbooks URL', () => {
+		expect(testAndFormatUUID('https://playbooks.xyz/plays/astro-official-starter')).toBe('astro-official-starter');
+	});
 });
