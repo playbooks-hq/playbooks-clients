@@ -7,9 +7,6 @@ export default defineConfig(({ mode }) => {
 		base: './',
 		build: {
 			ssr: true,
-			target: 'node18',
-			outDir: 'dist',
-			emptyOutDir: false,
 			sourcemap: mode === 'development',
 			lib: {
 				entry: path.resolve(__dirname, 'src/index.ts'),
@@ -18,9 +15,7 @@ export default defineConfig(({ mode }) => {
 				formats: ['es', 'cjs'],
 			},
 			rollupOptions: {
-				output: {
-					banner: '#!/usr/bin/env node',
-				},
+				output: { banner: '#!/usr/bin/env node' },
 			},
 		},
 		plugins: [runSize()],
