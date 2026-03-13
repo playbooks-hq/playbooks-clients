@@ -24,7 +24,7 @@
 		"build": "vite build --mode production --minify true && npm run build:ts",
 		"build:ts": "tsc --project tsconfig.json --noEmit false && tsc-alias",
 		"build:dry": "npm run typecheck",
-		"clean": "npm run lint:fix && npm run format:fix",
+		"clean": "npm run format:fix",
 		"format": "prettier --check .",
 		"format:fix": "prettier --write .",
 		"lint": "eslint .",
