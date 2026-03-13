@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import tsEslintPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import eslintPluginComplete from 'eslint-plugin-complete';
+import prettierPlugin from 'eslint-plugin-prettier';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import simpleImportSortPlugin from 'eslint-plugin-simple-import-sort';
 import unusedImportsPlugin from 'eslint-plugin-unused-imports';
@@ -26,6 +27,7 @@ export default [
 		plugins: {
 			'@typescript-eslint': tsEslintPlugin,
 			complete: eslintPluginComplete,
+			prettier: prettierPlugin,
 			'simple-import-sort': simpleImportSortPlugin,
 			'unused-imports': unusedImportsPlugin,
 		},
@@ -46,6 +48,7 @@ export default [
 			'@typescript-eslint/no-unused-vars': 'off',
 			'@typescript-eslint/no-var-requires': 'off',
 			'@typescript-eslint/explicit-module-boundary-types': 'off',
+			'prettier/prettier': 'error',
 			'simple-import-sort/imports': 'error',
 			'simple-import-sort/exports': 'off',
 		},
