@@ -1,9 +1,10 @@
+import { spawn } from 'node:child_process';
 import { access } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
-import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 export type PlaybooksCommandName =
@@ -88,9 +89,7 @@ export async function resolvePlaybooksCli() {
 	const customPath = process.env.PLAYBOOKS_CLI_PATH;
 	if (customPath) {
 		const resolvedPath =
-			customPath.includes(path.sep) || customPath.startsWith('.')
-				? path.resolve(customPath)
-				: customPath;
+			customPath.includes(path.sep) || customPath.startsWith('.') ? path.resolve(customPath) : customPath;
 		return normalizeExecutable(resolvedPath);
 	}
 

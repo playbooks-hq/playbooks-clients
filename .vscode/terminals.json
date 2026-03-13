@@ -1,0 +1,24 @@
+{
+  "autorun": false,
+  "terminals": [
+    {
+      "name": "playbooks-mcp",
+      "focus": true,
+      "execute": false,
+      "command": "npm start",
+      "recycle": true
+    },
+    {
+      "name": "playbooks-mcp-alt",
+      "execute": false,
+      "command": "",
+      "recycle": true
+    },
+    {
+      "name": "zsh",
+      "execute": false,
+      "command": "cd ..",
+      "recycle": true
+    }
+  ]
+}

@@ -1,5 +1,4 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
 import {
 	commandResultToToolResult,
 	errorToolResult,
@@ -8,6 +7,7 @@ import {
 	runPlaybooksCommand,
 	runPlaybooksRawArgs,
 } from 'src/cli.js';
+import { z } from 'zod';
 
 const configPathSchema = z.string().min(1).optional();
 const selectSchema = z.string().min(1).optional();

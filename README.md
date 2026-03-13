@@ -1,47 +1,69 @@
 # playbooks-mcp
 
-`playbooks-mcp` is a local MCP server that wraps the existing Playbooks CLI and exposes its most useful commands as MCP tools.
-
 ## Overview
 
-- Uses stdio transport so MCP clients can spawn it locally.
-- Resolves the Playbooks CLI from `PLAYBOOKS_CLI_PATH`, then the installed `@playbooks/cli` dependency, then `../playbooks-cli/dist/index.js`, then `playbooks` on `PATH`.
-- Keeps the wrapper small and focused: it delegates the real work to the existing CLI instead of reimplementing the Playbooks API client.
+An MCP / Node project for Playbooks.
 
 ## Prerequisites
 
+- Git
 - Node.js 20+
-- `@playbooks/cli` is installed as a package dependency and is used by default.
-- `PLAYBOOKS_CLI_PATH` can override that when you want to point at a different CLI build or binary.
+- npm
+- A valid Playbooks config file at `~/.playbooksrc` or a custom path supplied at runtime
 
-## Installation
+## Setup
 
-```sh
-cd /Users/erichubbell/Sites/playbooks/playbooks-mcp
-npm install
-npm run build
-```
+- run `npm install`
+- run `npm run build`
+- point your MCP client at `dist/index.cjs`
+- optionally override the CLI target with `PLAYBOOKS_CLI_PATH`
 
-## Run
+## Quick Start
 
-```sh
-cd /Users/erichubbell/Sites/playbooks/playbooks-mcp
-npm start
-```
+- `npm install`
+- `npm run build`
+- `npm run serve`
 
 ## Configuration
 
-Environment variables:
+- `PLAYBOOKS_CLI_PATH`: override the CLI binary or JS entry file to execute
+- `PLAYBOOKS_CONFIG`: override the default Playbooks config path. Defaults to `~/.playbooksrc`
+- `PLAYBOOKS_MCP_TIMEOUT_MS`: override the CLI command timeout. Defaults to `120000`
+- each tool also accepts an optional `configPath` argument when you need to target a non-default auth file
 
-- `PLAYBOOKS_CLI_PATH`: override the CLI binary or JS entry file to execute.
-- `PLAYBOOKS_CONFIG`: override the default Playbooks config path. Defaults to `~/.playbooksrc`.
-- `PLAYBOOKS_MCP_TIMEOUT_MS`: override the CLI command timeout. Defaults to `120000`.
+## Scripts
 
-Each tool also accepts an optional `configPath` argument when you need to target a non-default Playbooks auth file.
+- `npm run dev`
+- `npm run build`
+- `npm run build:ts`
+- `npm run build:dry`
+- `npm run start`
+- `npm run serve`
+- `npm run lint`
+- `npm run lint:fix`
+- `npm run format`
+- `npm run format:fix`
+- `npm run typecheck`
+- `npm run commit -- "message"`
+- `npm run deploy -- patch`
+- `npm run packages`
+
+## MCP Client Config
+
+```json
+{
+	"mcpServers": {
+		"playbooks": {
+			"command": "node",
+			"args": ["/Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs"]
+		}
+	}
+}
+```
 
 ## Tools
 
-Read and session tools:
+### Read / Session
 
 - `playbooks_status`
 - `playbooks_help`
@@ -60,7 +82,7 @@ Read and session tools:
 - `playbooks_play`
 - `playbooks_plays`
 
-State-changing tools:
+### Write / Action
 
 - `playbooks_login`
 - `playbooks_logout`
@@ -70,17 +92,22 @@ State-changing tools:
 - `playbooks_sync`
 - `playbooks_toggle`
 
-## Example MCP Client Config
+## Deploy
 
-```json
-{
-  "mcpServers": {
-    "playbooks": {
-      "command": "node",
-      "args": [
-        "/Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.js"
-      ]
-    }
-  }
-}
-```
+- `npm run deploy -- patch` bumps the package version, rebuilds the project, publishes to npm, then pushes commits and tags
+- `npm run deploy -- minor` and `npm run deploy -- major` follow the same flow for larger releases
+
+## Notes
+
+### CLI Resolution
+
+- resolves the Playbooks CLI from `PLAYBOOKS_CLI_PATH`
+- falls back to the installed `@playbooks/cli` dependency
+- then falls back to `../playbooks-cli/dist/index.js`
+- then falls back to `playbooks` on `PATH`
+
+### MCP Runtime
+
+- uses stdio transport so MCP clients can spawn it locally
+- keeps the wrapper focused on brokering CLI commands rather than reimplementing the Playbooks API client
+- uses Vite for watch-friendly runtime bundling and TypeScript for declaration output, following the same build split as `playbooks-cli`
