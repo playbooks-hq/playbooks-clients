@@ -1,21 +1,20 @@
 import js from '@eslint/js';
-import tseslint from '@typescript-eslint/eslint-plugin';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import { defineConfig } from 'eslint/config';
-import globals from 'globals';
 import prettierConfig from 'eslint-config-prettier';
-import eqeqeqFix from 'eslint-plugin-eqeqeq-fix';
+import eslintPluginComplete from 'eslint-plugin-complete';
 import prettierPlugin from 'eslint-plugin-prettier';
-import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
+import globals from 'globals';
 
 export default defineConfig([
 	{
 		ignores: ['build', 'dist', 'node_modules'],
 	},
 	js.configs.recommended,
-	...tseslint.configs['flat/recommended'],
+	...tsPlugin.configs['flat/recommended'],
 	{
 		files: ['**/*.{js,mjs,cjs,ts,tsx}'],
 		languageOptions: {
@@ -27,19 +26,17 @@ export default defineConfig([
 			},
 		},
 		plugins: {
-			'@typescript-eslint': tseslint,
-			'eqeqeq-fix': eqeqeqFix,
+			'@typescript-eslint': tsPlugin,
+			complete: eslintPluginComplete,
 			prettier: prettierPlugin,
-			'react-hooks': reactHooks,
 			'simple-import-sort': simpleImportSort,
 			'unused-imports': unusedImports,
 		},
 		rules: {
-			...prettierConfig.rules,
-			...prettierPlugin.configs.recommended.rules,
-			...eqeqeqFix.configs.recommended.rules,
-			eqeqeq: ['warn'],
+			...tsPlugin.configs.recommended.rules,
+			'complete/eqeqeq-fix': 'error',
 			'no-empty': ['warn'],
+			'no-redeclare': 'off',
 			'no-useless-escape': ['warn'],
 			'unused-imports/no-unused-imports': 'error',
 			'no-mixed-spaces-and-tabs': ['off'],
@@ -55,20 +52,18 @@ export default defineConfig([
 			'@typescript-eslint/no-unused-expressions': 'off',
 			'@typescript-eslint/no-unused-vars': 'off',
 			'@typescript-eslint/no-var-requires': 'off',
-			'react-hooks/exhaustive-deps': 'off',
 			'simple-import-sort/imports': 'error',
 			'simple-import-sort/exports': 'off',
+			'prettier/prettier': 'error',
 		},
 	},
 	{
-		files: ['**/*.{js,ts,tsx,css}'],
-		rules: {
-			'simple-import-sort/imports': [
-				'error',
-				{
-					groups: [['react', 'next']],
-				},
-			],
+		files: ['tests/**/*.{js,ts,tsx}', '**/*.test.{js,ts,tsx}'],
+		languageOptions: {
+			globals: {
+				...globals.jest,
+			},
 		},
 	},
+	prettierConfig,
 ]);

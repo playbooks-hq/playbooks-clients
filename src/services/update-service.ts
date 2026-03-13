@@ -1,7 +1,8 @@
-import { version as packageVersion } from '../../package.json';
 import { ConfigService } from 'src/services/config-service';
 import { dayjs } from 'src/utils/dates';
 import { logger } from 'src/utils/logger';
+
+import { version as packageVersion } from '../../package.json';
 
 interface UpdateService {
 	base: string;

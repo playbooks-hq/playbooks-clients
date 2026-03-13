@@ -1,6 +1,7 @@
+import { exec } from 'node:child_process';
+
 import cors from 'cors';
 import express from 'express';
-import { exec } from 'node:child_process';
 import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';

@@ -1,5 +1,5 @@
-import { version } from '../package.json';
 import os from 'node:os';
+
 import sade from 'sade';
 import {
 	accountCommand,
@@ -25,6 +25,8 @@ import {
 	transfersCommand,
 	usageCommand,
 } from 'src/commands';
+
+import { version } from '../package.json';
 
 const mode = import.meta.env.MODE;
 const configFile = mode === 'development' ? `${os.homedir()}/.playbooksrcd` : `${os.homedir()}/.playbooksrc`;

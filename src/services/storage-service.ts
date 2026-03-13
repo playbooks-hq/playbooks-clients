@@ -1,6 +1,7 @@
+import path from 'node:path';
+
 import Archiver from 'archiver';
 import Fs from 'fs-extra';
-import path from 'node:path';
 import * as FileSystem from 'src/utils/fs';
 import Unzip from 'unzip-stream';
 
