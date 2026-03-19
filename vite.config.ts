@@ -1,6 +1,7 @@
 import path from 'path';
 import { defineConfig } from 'vite';
 import { runSize } from 'vite-plugin-size';
+import { runYalc } from 'vite-plugin-yalc';
 
 export default defineConfig(({ mode }) => {
 	return {
@@ -18,7 +19,7 @@ export default defineConfig(({ mode }) => {
 				output: { banner: '#!/usr/bin/env node' },
 			},
 		},
-		plugins: [runSize()],
+		plugins: [runSize(), runYalc()],
 		resolve: {
 			alias: {
 				src: path.resolve(__dirname, 'src'),

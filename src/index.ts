@@ -8,6 +8,7 @@ import {
 	cardsCommand,
 	chargesCommand,
 	cloneCommand,
+	configCommand,
 	downloadCommand,
 	downloadsCommand,
 	loginCommand,
@@ -88,6 +89,13 @@ cli
 	.example('playbooks clone actix-official-starter')
 	.example('playbooks clone actix-official-starter --account mile-hi-labs --private')
 	.action(cloneCommand);
+
+cli
+	.command('config')
+	.describe('Display your config file.')
+	.option('--select', 'Select specific fields', '*')
+	.example('playbooks config')
+	.action(configCommand);
 
 cli
 	.command('download <uuid>')

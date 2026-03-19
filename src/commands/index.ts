@@ -4,6 +4,7 @@ export * from 'src/commands/banks';
 export * from 'src/commands/cards';
 export * from 'src/commands/charges';
 export * from 'src/commands/clone';
+export * from 'src/commands/config';
 export * from 'src/commands/download';
 export * from 'src/commands/downloads';
 export * from 'src/commands/login';
