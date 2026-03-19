@@ -38,7 +38,7 @@ export const AccountPayoutsCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Payouts', formattedResponse);
+		DisplaySuccess('Account > Payouts', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

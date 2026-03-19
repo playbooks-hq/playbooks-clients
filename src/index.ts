@@ -7,6 +7,7 @@ import {
 	AccountChargesCommand,
 	AccountCommand,
 	AccountDownloadsCommand,
+	AccountLedgerCommand,
 	AccountPayoutsCommand,
 	AccountPlaysCommand,
 	AccountSubscriptionCommand,
@@ -83,6 +84,14 @@ cli
 	.example('account downloads')
 	.alias('downloads', 'account-downloads')
 	.action(AccountDownloadsCommand);
+
+cli
+	.command('account ledger')
+	.describe('Fetch your account ledger.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account ledger')
+	.alias('account-ledger')
+	.action(AccountLedgerCommand);
 
 cli
 	.command('account payouts')

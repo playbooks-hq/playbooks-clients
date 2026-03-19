@@ -1,28 +1,17 @@
 export * from 'src/commands/account';
-export * from 'src/commands/account-banks';
-export * from 'src/commands/account-cards';
-export * from 'src/commands/account-charges';
-export * from 'src/commands/account-downloads';
-export * from 'src/commands/account-payouts';
-export * from 'src/commands/account-plays';
-export * from 'src/commands/account-subscription';
-export * from 'src/commands/account-teams';
-export * from 'src/commands/account-transfers';
-export * from 'src/commands/account-usage';
-export * from 'src/commands/add';
-export * from 'src/commands/clone';
-export * from 'src/commands/config';
-export * from 'src/commands/download';
-export * from 'src/commands/login';
-export * from 'src/commands/logout';
-export * from 'src/commands/oauth';
-export * from 'src/commands/ping';
+export * from 'src/commands/actions';
+export * from 'src/commands/auth';
+
 export * from 'src/commands/play';
+
 export * from 'src/commands/plays';
 export * from 'src/commands/session';
 export * from 'src/commands/sync';
+
 export * from 'src/commands/team';
+
 export * from 'src/commands/teams';
-export * from 'src/commands/toggle';
+
 export * from 'src/commands/user';
 export * from 'src/commands/users';
+export * from 'src/commands/utils';

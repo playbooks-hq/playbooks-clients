@@ -7,8 +7,8 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const AccountUsageCommand = async (options: any) => {
-	const spinner = ora('Fetching usage...');
+export const AccountSubscriptionCommand = async (options: any) => {
+	const spinner = ora('Fetching subscription...');
 	try {
 		// Setup
 		const config = options.config;
@@ -29,7 +29,7 @@ export const AccountUsageCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.queryRecord({ endpoint: '/account/usage', headers });
+		const response = await client.queryRecord({ endpoint: '/account/subscription', headers });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
@@ -38,7 +38,7 @@ export const AccountUsageCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Usage', formattedResponse);
+		DisplaySuccess('Account > Subscription', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

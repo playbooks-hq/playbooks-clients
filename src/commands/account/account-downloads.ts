@@ -1,5 +1,5 @@
 import ora from 'ora';
-import { serialize } from 'src/api';
+import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
@@ -7,8 +7,8 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const AccountSubscriptionCommand = async (options: any) => {
-	const spinner = ora('Fetching subscription...');
+export const AccountDownloadsCommand = async (options: any) => {
+	const spinner = ora('Fetching downloads...');
 	try {
 		// Setup
 		const config = options.config;
@@ -29,16 +29,16 @@ export const AccountSubscriptionCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.queryRecord({ endpoint: '/account/subscription', headers });
+		const response = await client.query({ endpoint: '/account/downloads', headers });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serialize(response.data, selects);
+		const formattedData = serializeArray(response.data, selects, 'camel');
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Subscription', formattedResponse);
+		DisplaySuccess('Account > Downloads', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

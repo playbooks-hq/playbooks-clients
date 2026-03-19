@@ -7,8 +7,8 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const AccountChargesCommand = async (options: any) => {
-	const spinner = ora('Fetching charges...');
+export const AccountBanksCommand = async (options: any) => {
+	const spinner = ora('Fetching banks...');
 	try {
 		// Setup
 		const config = options.config;
@@ -29,7 +29,7 @@ export const AccountChargesCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.query({ endpoint: '/account/charges', headers });
+		const response = await client.query({ endpoint: '/account/banks', headers });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
@@ -38,7 +38,7 @@ export const AccountChargesCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Charges', formattedResponse);
+		DisplaySuccess('Account > Banks', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));
