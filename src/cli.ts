@@ -13,6 +13,7 @@ export type PlaybooksCommandName =
 	| 'cards'
 	| 'charges'
 	| 'clone'
+	| 'config'
 	| 'download'
 	| 'downloads'
 	| 'login'

@@ -1,110 +1,130 @@
-# playbooks-mcp
-
 ## Overview
 
-An MCP / Node project for Playbooks.
+The Playbooks MCP server gives developers MCP access to their Playbooks account.
+Using the server, agents can inspect configuration, view account details, browse plays, and run common Playbooks workflow actions from chat.
+After installation, add the server to your MCP client using the examples below.
 
 ## Prerequisites
 
-- Git
-- Node.js 20+
+- node
 - npm
-- A valid Playbooks config file at `~/.playbooksrc` or a custom path supplied at runtime
+- playbooks
 
-## Setup
+## Installation
 
-- run `npm install`
-- run `npm run build`
-- point your MCP client at `dist/index.cjs`
-- use the linked `@playbooks/cli` dependency for local development
+```sh
+npx -y @playbooks/mcp
+```
 
 ## Quick Start
 
-- `npm install`
-- `npm run build`
-- `npm run serve`
+```sh
+claude mcp add playbooks -- npx -y @playbooks/mcp
+claude mcp list
+```
 
-## Configuration
-
-- `PLAYBOOKS_CONFIG`: override the default Playbooks config path. Defaults to `~/.playbooksrc`
-- each tool also accepts an optional `configPath` argument when you need to target a non-default auth file
-
-## Scripts
-
-- `npm run dev`
-- `npm run build`
-- `npm run build:ts`
-- `npm run build:dry`
-- `npm run start`
-- `npm run serve`
-- `npm run lint`
-- `npm run lint:fix`
-- `npm run format`
-- `npm run format:fix`
-- `npm run typecheck`
-- `npm run commit -- "message"`
-- `npm run deploy -- patch`
-- `npm run packages`
-
-## MCP Client Config
+Or add the server to VSCode:
 
 ```json
 {
-	"mcpServers": {
-		"playbooks": {
-			"command": "node",
-			"args": ["/Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs"]
-		}
-	}
+  "servers": {
+    "playbooks": {
+      "command": "npx",
+      "args": ["-y", "@playbooks/mcp"]
+    }
+  }
 }
+```
+
+Or add the server to Codex:
+
+```toml
+[mcp_servers.playbooks]
+command = "npx"
+args = ["-y", "@playbooks/mcp"]
+```
+
+## Configuration
+
+The Playbooks MCP server uses the same Playbooks configuration file as the CLI.
+By default it reads `~/.playbooksrc`.
+If you need a different file, most tools accept an optional `configPath` argument.
+
+## Table of Contents
+
+- [vscode](#vscode)
+- [claude-code](#claude-code)
+- [openai-codex](#openai-codex)
+- [tools](#tools)
+- [troubleshooting](#troubleshooting)
+
+## VSCode
+
+Add the server to `.vscode/mcp.json` in your workspace or to your user `mcp.json` file:
+
+```json
+{
+  "servers": {
+    "playbooks": {
+      "command": "npx",
+      "args": ["-y", "@playbooks/mcp"]
+    }
+  }
+}
+```
+
+## Claude Code
+
+Add the server with the Claude CLI:
+
+```sh
+claude mcp add playbooks -- npx -y @playbooks/mcp
+```
+
+Verify it:
+
+```sh
+claude mcp list
+```
+
+## OpenAI Codex
+
+Add the server to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.playbooks]
+command = "npx"
+args = ["-y", "@playbooks/mcp"]
 ```
 
 ## Tools
 
-### Read / Session
-
-- `playbooks_status`
-- `playbooks_help`
-- `playbooks_ping`
 - `playbooks_account`
-- `playbooks_session`
-- `playbooks_teams`
-- `playbooks_subscription`
-- `playbooks_usage`
-- `playbooks_downloads`
+- `playbooks_add`
 - `playbooks_banks`
 - `playbooks_cards`
 - `playbooks_charges`
-- `playbooks_payouts`
-- `playbooks_transfers`
-- `playbooks_play`
-- `playbooks_plays`
-
-### Write / Action
-
+- `playbooks_clone`
+- `playbooks_config`
 - `playbooks_login`
 - `playbooks_logout`
 - `playbooks_download`
-- `playbooks_add`
-- `playbooks_clone`
+- `playbooks_downloads`
+- `playbooks_help`
+- `playbooks_payouts`
+- `playbooks_ping`
+- `playbooks_play`
+- `playbooks_plays`
+- `playbooks_session`
+- `playbooks_status`
+- `playbooks_subscription`
 - `playbooks_sync`
+- `playbooks_teams`
 - `playbooks_toggle`
+- `playbooks_transfers`
+- `playbooks_usage`
 
-## Deploy
+## Troubleshooting
 
-- `npm run deploy -- patch` bumps the package version, rebuilds the project, publishes to npm, then pushes commits and tags
-- `npm run deploy -- minor` and `npm run deploy -- major` follow the same flow for larger releases
-
-## Notes
-
-### CLI Resolution
-
-- resolves the Playbooks CLI from the installed `@playbooks/cli` dependency
-- with `yalc`, that dependency points at your local CLI build for development
-- falls back to `playbooks` on `PATH` if the package cannot be resolved
-
-### MCP Runtime
-
-- uses stdio transport so MCP clients can spawn it locally
-- keeps the wrapper focused on brokering CLI commands rather than reimplementing the Playbooks API client
-- uses Vite for watch-friendly runtime bundling and TypeScript for declaration output, following the same build split as `playbooks-cli`
+- If your MCP client does not show the latest tools, restart the MCP server connection and open a fresh chat session.
+- If the server starts but commands fail, verify your Playbooks configuration file path and contents.

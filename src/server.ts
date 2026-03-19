@@ -26,7 +26,7 @@ export function createServer() {
 		'playbooks_status',
 		{
 			title: 'Playbooks Status',
-			description: 'Show which Playbooks CLI binary will be used and whether the configured auth file exists.',
+			description: 'Show which Playbooks CLI binary will be used and whether the configured configuration file exists.',
 			inputSchema: {
 				configPath: configPathSchema,
 			},
@@ -48,6 +48,7 @@ export function createServer() {
 						'cards',
 						'charges',
 						'clone',
+						'config',
 						'download',
 						'downloads',
 						'login',
@@ -71,6 +72,24 @@ export function createServer() {
 			command
 				? execute({ command, positional: [], options: { help: true } })
 				: runPlaybooksRawArgs(['--help']).then(commandResultToToolResult).catch(errorToolResult),
+	);
+
+	server.registerTool(
+		'playbooks_config',
+		{
+			title: 'Playbooks Config',
+			description: 'Display the current Playbooks configuration file contents.',
+			inputSchema: {
+				select: selectSchema,
+				configPath: configPathSchema,
+			},
+		},
+		async ({ select, configPath }) =>
+			execute({
+				command: 'config',
+				configPath,
+				options: { select },
+			}),
 	);
 
 	server.registerTool(
