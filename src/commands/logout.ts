@@ -2,10 +2,10 @@ import ora from 'ora';
 import { DisplayError } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
-import { normalizeError, sleep } from 'src/utils';
+import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const logoutCommand = async (options: any) => {
+export const LogoutCommand = async (options: any) => {
 	const spinner = ora('Logging out...');
 	try {
 		// Options
@@ -17,7 +17,6 @@ export const logoutCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });

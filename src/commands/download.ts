@@ -6,10 +6,10 @@ import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { StorageService } from 'src/services/storage-service';
 import { UpdateService } from 'src/services/update-service';
-import { normalizeError, sleep, testAndFormatUUID } from 'src/utils';
+import { normalizeError, testAndFormatUUID } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const downloadCommand = async (entity, options: any) => {
+export const DownloadCommand = async (entity, options: any) => {
 	const uuid = testAndFormatUUID(entity);
 	const spinner = ora(`Fetching ${uuid}...`);
 	try {
@@ -25,7 +25,6 @@ export const downloadCommand = async (entity, options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });

@@ -4,10 +4,10 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
-import { normalizeError, sleep } from 'src/utils';
+import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const teamsCommand = async (options: any) => {
+export const TeamsCommand = async (options: any) => {
 	const spinner = ora('Fetching teams...');
 	try {
 		// Setup
@@ -20,7 +20,6 @@ export const teamsCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });
@@ -30,7 +29,7 @@ export const teamsCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.query({ endpoint: '/session/teams', headers });
+		const response = await client.query({ endpoint: '/teams', headers });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];

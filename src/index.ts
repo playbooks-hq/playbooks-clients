@@ -2,29 +2,32 @@ import os from 'node:os';
 
 import sade from 'sade';
 import {
-	accountCommand,
-	addCommand,
-	banksCommand,
-	cardsCommand,
-	chargesCommand,
-	cloneCommand,
-	configCommand,
-	downloadCommand,
-	downloadsCommand,
-	loginCommand,
-	logoutCommand,
-	oauthCommand,
-	payoutsCommand,
-	pingCommand,
-	playCommand,
-	playsCommand,
-	sessionCommand,
-	subscriptionCommand,
-	syncCommand,
-	teamsCommand,
-	toggleCommand,
-	transfersCommand,
-	usageCommand,
+	AccountBanksCommand,
+	AccountCardsCommand,
+	AccountChargesCommand,
+	AccountCommand,
+	AccountDownloadsCommand,
+	AccountPayoutsCommand,
+	AccountPlaysCommand,
+	AccountSubscriptionCommand,
+	AccountTeamsCommand,
+	AccountTransfersCommand,
+	AccountUsageCommand,
+	AddCommand,
+	CloneCommand,
+	ConfigCommand,
+	DownloadCommand,
+	LoginCommand,
+	LogoutCommand,
+	OauthCommand,
+	PingCommand,
+	PlayCommand,
+	PlaysCommand,
+	SessionCommand,
+	SyncCommand,
+	TeamsCommand,
+	ToggleCommand,
+	UsersCommand,
 } from 'src/commands';
 
 import { version } from '../package.json';
@@ -42,10 +45,91 @@ cli
 // Commands
 cli
 	.command('account')
-	.describe('View which account is currently active')
+	.describe('View your account.')
 	.option('--select', 'Select specific fields', '*')
-	.example('playbooks account')
-	.action(accountCommand);
+	.example('account')
+	.action(AccountCommand);
+
+cli
+	.command('account banks')
+	.describe('Fetch your account banks.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account banks')
+	.alias('banks', 'account-banks')
+	.action(AccountBanksCommand);
+
+cli
+	.command('account cards')
+	.describe('Fetch your account cards.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account cards')
+	.alias('cards', 'account-cards')
+	.action(AccountCardsCommand);
+
+cli
+	.command('account charges')
+	.describe('Fetch your account charges.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account charges')
+	.alias('charges', 'account-charges')
+	.action(AccountChargesCommand);
+
+cli
+	.command('account downloads')
+	.describe('Fetch your account downloads.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account downloads')
+	.alias('downloads', 'account-downloads')
+	.action(AccountDownloadsCommand);
+
+cli
+	.command('account payouts')
+	.describe('Fetch your account payouts.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account payouts')
+	.alias('payouts', 'account-payouts')
+	.action(AccountPayoutsCommand);
+
+cli
+	.command('account plays')
+	.describe('Fetch your account plays.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--status', 'Filter by status')
+	.example('account plays')
+	.alias('account-plays')
+	.action(AccountPlaysCommand);
+
+cli
+	.command('account subscription')
+	.describe('Fetch your account subscription.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account subscription')
+	.alias('subscription', 'account-subscription')
+	.action(AccountSubscriptionCommand);
+
+cli
+	.command('account teams')
+	.describe('Fetch your account teams.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account teams')
+	.alias('account-teams')
+	.action(AccountTeamsCommand);
+
+cli
+	.command('account transfers')
+	.describe('Fetch a list of your transfers.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account transfers')
+	.alias('transfers', 'account-transfers')
+	.action(AccountTransfersCommand);
+
+cli
+	.command('account usage')
+	.describe('Fetch your account usage statistics.')
+	.option('--select', 'Select specific fields', '*')
+	.example('account usage')
+	.alias('usage', 'account-usage')
+	.action(AccountUsageCommand);
 
 cli
 	.command('add <uuid>')
@@ -56,28 +140,7 @@ cli
 	.option('--version', 'Specify tarball version', false)
 	.example('playbooks add express-logging-middleware')
 	.example('playbooks add express-logging-middleware --path ~/middlewares/logging-middleware.ts')
-	.action(addCommand);
-
-cli
-	.command('banks')
-	.describe('Fetch a list of your banks.')
-	.option('--select', 'Select specific fields', '*')
-	.example('playbooks banks')
-	.action(banksCommand);
-
-cli
-	.command('cards')
-	.describe('Fetch a list of your cards.')
-	.option('--select', 'Select specific fields', '*')
-	.example('playbooks cards')
-	.action(cardsCommand);
-
-cli
-	.command('charges')
-	.describe('Fetch a list of your charges.')
-	.option('--select', 'Select specific fields', '*')
-	.example('playbooks charges')
-	.action(chargesCommand);
+	.action(AddCommand);
 
 cli
 	.command('clone <uuid>')
@@ -88,14 +151,14 @@ cli
 	.option('--version', 'Specify the versionId', false)
 	.example('playbooks clone actix-official-starter')
 	.example('playbooks clone actix-official-starter --account mile-hi-labs --private')
-	.action(cloneCommand);
+	.action(CloneCommand);
 
 cli
 	.command('config')
 	.describe('Display your config file.')
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks config')
-	.action(configCommand);
+	.action(ConfigCommand);
 
 cli
 	.command('download <uuid>')
@@ -105,14 +168,7 @@ cli
 	.option('--version', 'Specify tarball version', false)
 	.example('playbooks download astro-official-starter')
 	.example('playbooks download astro-official-starter --path ~/path/to/folder')
-	.action(downloadCommand);
-
-cli
-	.command('downloads')
-	.describe('Fetch a list of your downloads.')
-	.option('--select', 'Select specific fields', '*')
-	.example('playbooks downloads')
-	.action(downloadsCommand);
+	.action(DownloadCommand);
 
 cli
 	.command('login')
@@ -120,33 +176,26 @@ cli
 	.option('--email', 'Your email address')
 	.option('--password', 'Your password')
 	.example('playbooks login -e acme@example.com -p password')
-	.action(loginCommand);
+	.action(LoginCommand);
 
-cli.command('logout').describe('Logout of your Playbooks account.').example('playbooks logout').action(logoutCommand);
+cli.command('logout').describe('Logout of your Playbooks account.').example('playbooks logout').action(LogoutCommand);
 
-cli.command('oauth').describe('Login to Playbooks via Github oauth.').example('playbooks oauth').action(oauthCommand);
+cli.command('oauth').describe('Login to Playbooks via Github oauth.').example('playbooks oauth').action(OauthCommand);
 
-cli
-	.command('payouts')
-	.describe('Fetch a list of your payouts.')
-	.option('--select', 'Select specific fields', '*')
-	.example('playbooks payouts')
-	.action(payoutsCommand);
-
-cli.command('ping').describe('Check your API connection.').example('playbooks ping').action(pingCommand);
+cli.command('ping').describe('Check your API connection.').example('playbooks ping').action(PingCommand);
 
 cli
 	.command('play <uuid>')
-	.describe('Fetch a specific play.')
+	.describe('Fetch a specific play from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.example('playbooks play actix-official-starter')
 	.example('playbooks play actix-official-starter --include framework')
-	.action(playCommand);
+	.action(PlayCommand);
 
 cli
 	.command('plays')
-	.describe('Fetch a list of plays.')
+	.describe('Fetch plays from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--framework', 'Fetch by framework identifer')
 	.option('--language', 'Fetch by language identifier')
@@ -164,55 +213,41 @@ cli
 	.example('playbooks plays --tag portfolio')
 	.example('playbooks plays --user ehubbell')
 	.example('playbooks plays --view featured')
-	.action(playsCommand);
+	.action(PlaysCommand);
 
 cli
 	.command('session')
 	.describe('View your current session.')
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks session')
-	.action(sessionCommand);
-
-cli
-	.command('subscription')
-	.describe('View your account subscription.')
-	.option('--select', 'Select specific fields', '*')
-	.example('playbooks subscription')
-	.action(subscriptionCommand);
+	.action(SessionCommand);
 
 cli
 	.command('sync <uuid>')
 	.describe('Sync a play you own to receive the latest files from Github.')
 	.example('playbooks sync my-official-starter')
-	.action(syncCommand);
+	.action(SyncCommand);
 
 cli
 	.command('teams')
-	.describe('View a list of your session teams.')
+	.describe('Fetch teams from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks teams')
-	.action(teamsCommand);
+	.action(TeamsCommand);
 
 cli
 	.command('toggle')
 	.describe('Toggle your active account.')
 	.option('--uuid', 'Select specific fields', '*')
 	.example('playbooks toggle')
-	.example('playbooks toggle --uuid team-uuid')
-	.action(toggleCommand);
+	.example('playbooks toggle --uuid mile-hi-labs')
+	.action(ToggleCommand);
 
 cli
-	.command('transfers')
-	.describe('Fetch a list of your transfers.')
+	.command('users')
+	.describe('Fetch users from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
-	.example('playbooks transfers')
-	.action(transfersCommand);
-
-cli
-	.command('usage')
-	.describe('View your account usage.')
-	.option('--select', 'Select specific fields', '*')
-	.example('playbooks usage')
-	.action(usageCommand);
+	.example('playbooks users')
+	.action(UsersCommand);
 
 cli.parse(process.argv);

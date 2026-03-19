@@ -1,14 +1,14 @@
 import ora from 'ora';
-import { serialize } from 'src/api';
+import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
-import { normalizeError, sleep } from 'src/utils';
+import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const subscriptionCommand = async (options: any) => {
-	const spinner = ora('Fetching subscription...');
+export const AccountCardsCommand = async (options: any) => {
+	const spinner = ora('Fetching cards...');
 	try {
 		// Setup
 		const config = options.config;
@@ -20,7 +20,6 @@ export const subscriptionCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });
@@ -30,16 +29,16 @@ export const subscriptionCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.queryRecord({ endpoint: '/account/subscription', headers });
+		const response = await client.query({ endpoint: '/account/cards', headers });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serialize(response.data, selects);
+		const formattedData = serializeArray(response.data, selects, 'camel');
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Subscription', formattedResponse);
+		DisplaySuccess('Cards', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

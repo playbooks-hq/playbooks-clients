@@ -4,23 +4,22 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
-import { normalizeError, sleep } from 'src/utils';
+import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const payoutsCommand = async (options: any) => {
-	const spinner = ora('Fetching payouts...');
+export const AccountTeamsCommand = async (options: any) => {
+	const spinner = ora('Fetching accounts...');
 	try {
 		// Setup
 		const config = options.config;
 		const select = options.s || options.select;
-		logger.log('options: ', options, { config, select });
+		logger.log('options: ', { config, select });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });
@@ -30,16 +29,16 @@ export const payoutsCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.query({ endpoint: '/account/payouts', headers });
+		const response = await client.query({ endpoint: '/session/teams', headers });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
 		const formattedData = serializeArray(response.data, selects, 'camel');
-		const formattedResponse = JSON.stringify(formattedData, null, 2);
+		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Payouts', formattedResponse);
+		DisplaySuccess('Account > Teams', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

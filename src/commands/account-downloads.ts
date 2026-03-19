@@ -4,11 +4,11 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
-import { normalizeError, sleep } from 'src/utils';
+import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const banksCommand = async (options: any) => {
-	const spinner = ora('Fetching banks...');
+export const AccountDownloadsCommand = async (options: any) => {
+	const spinner = ora('Fetching downloads...');
 	try {
 		// Setup
 		const config = options.config;
@@ -20,7 +20,6 @@ export const banksCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });
@@ -30,7 +29,7 @@ export const banksCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.query({ endpoint: '/account/banks', headers });
+		const response = await client.query({ endpoint: '/account/downloads', headers });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
@@ -39,7 +38,7 @@ export const banksCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Banks', formattedResponse);
+		DisplaySuccess('Downloads', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

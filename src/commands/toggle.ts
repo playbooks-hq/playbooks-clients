@@ -7,7 +7,7 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError, sleep } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const toggleCommand = async (options: any) => {
+export const ToggleCommand = async (options: any) => {
 	const spinner = ora('Fetching teams...');
 	try {
 		// Setup
@@ -20,7 +20,6 @@ export const toggleCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });

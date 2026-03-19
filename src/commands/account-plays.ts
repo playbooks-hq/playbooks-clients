@@ -4,23 +4,25 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
-import { normalizeError, sleep } from 'src/utils';
+import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const downloadsCommand = async (options: any) => {
-	const spinner = ora('Fetching downloads...');
+export const AccountPlaysCommand = async (options: any) => {
+	const spinner = ora('Fetching account plays...');
 	try {
 		// Setup
 		const config = options.config;
 		const select = options.s || options.select;
-		logger.log('options: ', options, { config, select });
+		const status = options.s || options.status;
+		logger.log('options: ', { config, select, status });
+
+		const endpoint = `/account/plays`;
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });
@@ -30,16 +32,17 @@ export const downloadsCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.query({ endpoint: '/account/downloads', headers });
+		const params = client.serializeParams({ status });
+		const response = await client.query({ endpoint, headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
 		const formattedData = serializeArray(response.data, selects, 'camel');
-		const formattedResponse = JSON.stringify(formattedData, null, 2);
+		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Downloads', formattedResponse);
+		DisplaySuccess('Account > Plays', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

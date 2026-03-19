@@ -45,21 +45,23 @@ token=********
 - [global](#global)
 - [account](#account)
 - [add](#add)
-- [banks](#banks)
-- [cards](#cards)
+- [account banks](#account-banks)
+- [account cards](#account-cards)
 - [clone](#clone)
 - [download](#download)
+- [account downloads](#account-downloads)
 - [login](#login)
 - [logout](#logout)
-- [orders](#orders)
+- [account payouts](#account-payouts)
 - [ping](#ping)
 - [play](#play)
 - [plays](#plays)
 - [session](#session)
-- [subscription](#subscription)
-- [teams](#teams)
+- [account subscription](#account-subscription)
+- [account teams](#account-teams)
 - [toggle](#toggle)
-- [usage](#usage)
+- [account transfers](#account-transfers)
+- [account usage](#account-usage)
 
 ## Global
 
@@ -114,26 +116,26 @@ playbooks add <uuid> --path ~/path/to/folder
 | --name    | string | Custom name for the directory     |
 | --version | string | Specify a specific version to add |
 
-#### Banks
+#### Account Banks
 
 View your account banks.
 
 ```sh
-playbooks banks
-playbooks banks --select 'id,summary,createdAt'
+playbooks account banks
+playbooks account banks --select 'id,summary,createdAt'
 ```
 
 | Option   | Type     | Description                                            |
 | :------- | :------- | :----------------------------------------------------- |
 | --select | string[] | A comma separated list of fields you'd like to display |
 
-#### Cards
+#### Account Cards
 
 View your account cards.
 
 ```sh
-playbooks cards
-playbooks cards --select 'id,summary,createdAt'
+playbooks account cards
+playbooks account cards --select 'id,summary,createdAt'
 ```
 
 | Option   | Type     | Description                                            |
@@ -171,13 +173,13 @@ playbooks download <uuid> --path ~/path/to/folder
 | --name    | string | Custom name for the directory          |
 | --version | string | Specify a specific version to download |
 
-#### Downloads
+#### Account Downloads
 
 View your account downloads.
 
 ```sh
-playbooks downloads
-playbooks downloads --select 'id,amount,createdAt'
+playbooks account downloads
+playbooks account downloads --select 'id,amount,createdAt'
 ```
 
 | Option   | Type     | Description                                            |
@@ -214,13 +216,13 @@ Login to Playbooks via Github OAuth.
 playbooks oauth
 ```
 
-#### Payouts
+#### Account Payouts
 
 View your account payouts.
 
 ```sh
-playbooks payouts
-playbooks payouts --select 'id,amount,createdAt'
+playbooks account payouts
+playbooks account payouts --select 'id,amount,createdAt'
 ```
 
 | Option   | Type     | Description                                            |
@@ -285,26 +287,26 @@ playbooks session --select 'id,name,uuid,email'
 | :------- | :------- | :----------------------------------------------------- |
 | --select | string[] | A comma separated list of fields you'd like to display |
 
-#### Subscription
+#### Account Subscription
 
 Fetch and display your account subscription
 
 ```sh
-playbooks subscription
-playbooks subscription --select 'id,name,uuid,email'
+playbooks account subscription
+playbooks account subscription --select 'id,name,uuid,email'
 ```
 
 | Option   | Type     | Description                                            |
 | :------- | :------- | :----------------------------------------------------- |
 | --select | string[] | A comma separated list of fields you'd like to display |
 
-#### Teams
+#### Account Teams
 
-View a list of your session teams
+View a list of your account teams
 
 ```sh
-playbooks teams
-playbooks teams --select 'id,name,uuid,email'
+playbooks account teams
+playbooks account teams --select 'id,name,uuid,email'
 ```
 
 | Option   | Type     | Description                                            |
@@ -326,26 +328,26 @@ playbooks toggle --uuid 'playbooks-community'
 | :----- | :----- | :----------------- |
 | --uuid | string | Account identifier |
 
-#### Transfers
+#### Account Transfers
 
 View your account transfers.
 
 ```sh
-playbooks transfers
-playbooks transfers --select 'id,amount,createdAt'
+playbooks account transfers
+playbooks account transfers --select 'id,amount,createdAt'
 ```
 
 | Option   | Type     | Description                                            |
 | :------- | :------- | :----------------------------------------------------- |
 | --select | string[] | A comma separated list of fields you'd like to display |
 
-#### Usage
+#### Account Usage
 
 Fetch and display your account usage statistics
 
 ```sh
-playbooks usage
-playbooks usage --select 'id,totalCredits,totalRemaining'
+playbooks account usage
+playbooks account usage --select 'id,totalCredits,totalRemaining'
 ```
 
 | Option   | Type     | Description                                            |

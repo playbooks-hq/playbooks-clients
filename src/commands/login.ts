@@ -4,10 +4,10 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
-import { formatDate, normalizeError, sleep } from 'src/utils';
+import { formatDate, normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const loginCommand = async (options: any) => {
+export const LoginCommand = async (options: any) => {
 	const spinner = ora('Initiating login...');
 	try {
 		// Setup
@@ -35,7 +35,7 @@ export const loginCommand = async (options: any) => {
 
 		// API call
 		spinner.start();
-		await sleep(300);
+
 		const client = new ApiService(null);
 		const response: any = await client.post({
 			endpoint: '/auth/login',

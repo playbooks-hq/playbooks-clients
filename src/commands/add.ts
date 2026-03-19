@@ -7,10 +7,10 @@ import { ConfigService } from 'src/services/config-service';
 import { ShellService } from 'src/services/shell-service';
 import { StorageService } from 'src/services/storage-service';
 import { UpdateService } from 'src/services/update-service';
-import { httpError, normalizeError, sleep, testAndFormatUUID } from 'src/utils';
+import { httpError, normalizeError, testAndFormatUUID } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const addCommand = async (entity, options: any) => {
+export const AddCommand = async (entity, options: any) => {
 	const uuid = testAndFormatUUID(entity);
 	const spinner = ora(`Fetching ${uuid}...`);
 	try {
@@ -27,7 +27,6 @@ export const addCommand = async (entity, options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });

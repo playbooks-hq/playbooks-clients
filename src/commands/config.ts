@@ -1,10 +1,10 @@
 import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
-import { normalizeError, sleep } from 'src/utils';
+import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const configCommand = async (options: any) => {
+export const ConfigCommand = async (options: any) => {
 	const spinner = ora('Fetching config...');
 	try {
 		// Setup
@@ -13,7 +13,6 @@ export const configCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });

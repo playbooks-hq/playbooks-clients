@@ -2,10 +2,10 @@ import ora from 'ora';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { UpdateService } from 'src/services/update-service';
-import { normalizeError, sleep } from 'src/utils';
+import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const pingCommand = async (options: any) => {
+export const PingCommand = async (options: any) => {
 	const spinner = ora('Pinging Playbooks...');
 	try {
 		// Setup
@@ -17,7 +17,6 @@ export const pingCommand = async (options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Ping
 		const client = new ApiService(null);

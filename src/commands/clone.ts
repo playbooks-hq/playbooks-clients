@@ -4,10 +4,10 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
-import { normalizeError, sleep, testAndFormatUUID } from 'src/utils';
+import { normalizeError, testAndFormatUUID } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const cloneCommand = async (entity, options: any) => {
+export const CloneCommand = async (entity, options: any) => {
 	const uuid = testAndFormatUUID(entity);
 	const spinner = ora(`Cloning ${uuid}...`);
 	try {
@@ -31,7 +31,6 @@ export const cloneCommand = async (entity, options: any) => {
 
 		// Start
 		spinner.start();
-		await sleep(300);
 
 		// Config
 		const service = new ConfigService({ base: config });

@@ -7,14 +7,14 @@ import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
-import { formatDate, normalizeError, sleep } from 'src/utils';
+import { formatDate, normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 const PORT = import.meta.env.VITE_PORT || 4000;
 const VITE_WEB_DOMAIN = import.meta.env.VITE_WEB_DOMAIN;
 const CALLBACK_URL = `http://localhost:${PORT}/cli`;
 
-export const oauthCommand = async (options: any) => {
+export const OauthCommand = async (options: any) => {
 	const spinner = ora('Initiating oauth...');
 	try {
 		// Setup
@@ -77,7 +77,7 @@ export const oauthCommand = async (options: any) => {
 
 		// API call
 		spinner.start('Logging in...');
-		await sleep(300);
+
 		const client = new ApiService(null);
 		const response: any = await client.post({ endpoint: '/oauth/github-auth', data: json });
 
