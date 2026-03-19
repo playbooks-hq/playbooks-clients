@@ -2,5 +2,5 @@
 
 echo "running packages...\n"
 
-npm install \
-@playbooks/cli@latest
+npx yalc remove --all
+npm install @playbooks/cli@latest

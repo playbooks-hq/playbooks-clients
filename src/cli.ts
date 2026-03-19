@@ -3,7 +3,6 @@ import { access } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
@@ -54,8 +53,7 @@ type CommandResult = {
 	invocation: string;
 };
 
-const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const DEFAULT_TIMEOUT_MS = Number.parseInt(process.env.PLAYBOOKS_MCP_TIMEOUT_MS ?? '120000', 10);
+const DEFAULT_TIMEOUT_MS = 30000;
 const DEFAULT_CONFIG_PATH = process.env.PLAYBOOKS_CONFIG ?? path.join(os.homedir(), '.playbooksrc');
 const BOX_SIDE_PATTERN = /^[\s]*[│┃]/u;
 const require = createRequire(import.meta.url);
@@ -86,13 +84,6 @@ function normalizeExecutable(candidate: string): Invocation {
 }
 
 export async function resolvePlaybooksCli() {
-	const customPath = process.env.PLAYBOOKS_CLI_PATH;
-	if (customPath) {
-		const resolvedPath =
-			customPath.includes(path.sep) || customPath.startsWith('.') ? path.resolve(customPath) : customPath;
-		return normalizeExecutable(resolvedPath);
-	}
-
 	try {
 		const installedModuleEntry = require.resolve('@playbooks/cli');
 		const installedBinEntry = path.join(path.dirname(installedModuleEntry), 'index.js');
@@ -102,11 +93,6 @@ export async function resolvePlaybooksCli() {
 		return normalizeExecutable(installedModuleEntry);
 	} catch {
 		// Fall through to workspace or PATH resolution.
-	}
-
-	const siblingDist = path.resolve(PACKAGE_ROOT, '../playbooks-cli/dist/index.js');
-	if (await fileExists(siblingDist)) {
-		return normalizeExecutable(siblingDist);
 	}
 
 	return normalizeExecutable('playbooks');

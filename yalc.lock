@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "@playbooks/cli": {
+      "signature": "dc34df7f1327ea5255184eccca614366",
+      "file": true,
+      "replaced": "^0.11.1"
+    }
+  }
+}

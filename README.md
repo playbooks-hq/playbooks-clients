@@ -16,7 +16,7 @@ An MCP / Node project for Playbooks.
 - run `npm install`
 - run `npm run build`
 - point your MCP client at `dist/index.cjs`
-- optionally override the CLI target with `PLAYBOOKS_CLI_PATH`
+- use the linked `@playbooks/cli` dependency for local development
 
 ## Quick Start
 
@@ -26,9 +26,7 @@ An MCP / Node project for Playbooks.
 
 ## Configuration
 
-- `PLAYBOOKS_CLI_PATH`: override the CLI binary or JS entry file to execute
 - `PLAYBOOKS_CONFIG`: override the default Playbooks config path. Defaults to `~/.playbooksrc`
-- `PLAYBOOKS_MCP_TIMEOUT_MS`: override the CLI command timeout. Defaults to `120000`
 - each tool also accepts an optional `configPath` argument when you need to target a non-default auth file
 
 ## Scripts
@@ -101,10 +99,9 @@ An MCP / Node project for Playbooks.
 
 ### CLI Resolution
 
-- resolves the Playbooks CLI from `PLAYBOOKS_CLI_PATH`
-- falls back to the installed `@playbooks/cli` dependency
-- then falls back to `../playbooks-cli/dist/index.js`
-- then falls back to `playbooks` on `PATH`
+- resolves the Playbooks CLI from the installed `@playbooks/cli` dependency
+- with `yalc`, that dependency points at your local CLI build for development
+- falls back to `playbooks` on `PATH` if the package cannot be resolved
 
 ### MCP Runtime
 

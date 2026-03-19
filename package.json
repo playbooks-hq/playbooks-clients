@@ -34,12 +34,13 @@
 		"commit": "scripts/commit.sh",
 		"deploy": "scripts/deploy.sh",
 		"packages": "scripts/packages.sh",
+		"yalc": "scripts/yalc.sh",
 		"git": "git push --tags",
 		"prepare": "husky"
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.17.5",
-		"@playbooks/cli": "^0.11.1",
+		"@playbooks/cli": "file:.yalc/@playbooks/cli",
 		"zod": "^3.25.76"
 	},
 	"devDependencies": {
