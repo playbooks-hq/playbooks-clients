@@ -1,5 +1,4 @@
 import ora from 'ora';
-import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
@@ -24,10 +23,10 @@ export const PingCommand = async (options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Ping', response.data.message);
+		console.log(response.data.message);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(normalizeError(e));
+		console.error(JSON.stringify(normalizeError(e), null, 2));
 		process.exit();
 	}
 };

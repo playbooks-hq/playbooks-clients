@@ -1,5 +1,4 @@
 import ora from 'ora';
-import { DisplayError } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
@@ -27,7 +26,7 @@ export const LogoutCommand = async (options: any) => {
 		spinner.succeed();
 	} catch (e) {
 		spinner.fail();
-		DisplayError(normalizeError(e));
+		console.error(JSON.stringify(normalizeError(e), null, 2));
 		process.exit();
 	}
 };

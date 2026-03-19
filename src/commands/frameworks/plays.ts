@@ -1,6 +1,5 @@
 import ora from 'ora';
 import { serializeArray } from 'src/api';
-import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
@@ -40,10 +39,10 @@ export const FrameworksPlaysCommand = async (uuid, options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Plays', formattedResponse);
+		console.log(formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(normalizeError(e));
+		console.error(JSON.stringify(normalizeError(e), null, 2));
 		process.exit();
 	}
 };

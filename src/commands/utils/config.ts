@@ -1,5 +1,4 @@
 import ora from 'ora';
-import { DisplayError, DisplaySuccess } from 'src/components';
 import { ConfigService } from 'src/services/config-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
@@ -28,10 +27,10 @@ export const ConfigCommand = async (options: any) => {
 		const formattedResponse = Object.keys(data).length > 0 ? JSON.stringify(data, null, 2) : 'Nothing to see yet.';
 
 		spinner.succeed();
-		DisplaySuccess(`Config [${config}]`, formattedResponse);
+		console.log(formattedResponse);
 	} catch (e) {
 		spinner.fail();
-		DisplayError(normalizeError(e));
+		console.error(JSON.stringify(normalizeError(e), null, 2));
 		process.exit();
 	}
 };
