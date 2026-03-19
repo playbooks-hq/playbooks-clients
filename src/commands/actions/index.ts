@@ -1,13 +1,9 @@
-import { AddCommand } from 'src/commands/actions/add';
-import { CloneCommand } from 'src/commands/actions/clone';
-import { DownloadCommand } from 'src/commands/actions/download';
-
-export const ActionsCommand = async (action, entity, options: any) => {
-	if (action === 'clone') return await CloneCommand(entity, options);
-	if (action === 'download') return await DownloadCommand(entity, options);
-	return await AddCommand(entity, options);
-};
-
 export * from 'src/commands/actions/add';
 export * from 'src/commands/actions/clone';
+export * from 'src/commands/actions/config';
 export * from 'src/commands/actions/download';
+export * from 'src/commands/actions/ping';
+export * from 'src/commands/actions/publish';
+export * from 'src/commands/actions/submit';
+export * from 'src/commands/actions/sync';
+export * from 'src/commands/actions/toggle';

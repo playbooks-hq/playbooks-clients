@@ -11,8 +11,7 @@ export const SyncCommand = async (uuid, options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const submission = options.submission;
-		logger.log('options: ', { config, submission });
+		logger.log('options: ', { config });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
@@ -30,7 +29,7 @@ export const SyncCommand = async (uuid, options: any) => {
 		const headers = client.authHeaders();
 		const params = {};
 		const response = await client.queryRecord({
-			endpoint: submission ? `/submissions/${uuid}/sync` : `/repos/${uuid}/sync`,
+			endpoint: `/account/plays/${uuid}/sync`,
 			headers,
 			params,
 		});

@@ -1,6 +1,5 @@
 import { ConfigService } from 'src/services/config-service';
 import { dayjs } from 'src/utils/dates';
-import { logger } from 'src/utils/logger';
 
 import { version as packageVersion } from '../../package.json';
 
@@ -49,7 +48,7 @@ class UpdateService {
 		const currentTimestamp = dayjs().unix();
 		const cachedTimestamp = dayjs(data.timestamp).unix();
 		const difference = (currentTimestamp - cachedTimestamp) / 1000 / 60 / 60 / 24;
-		logger.log(`verifyCache: `, { currentTimestamp, cachedTimestamp, difference });
+		// logger.log(`verifyCache: `, { currentTimestamp, cachedTimestamp, difference });
 		return difference <= 1;
 	}
 

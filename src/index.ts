@@ -116,35 +116,7 @@ cli.command('oauth').describe('Login to Playbooks via Github oauth.').example('o
 cli.command('ping').describe('Check your API connection.').example('ping').action(Commands.PingCommand);
 
 cli
-	.command('tags [uuid] [action]')
-	.describe('Fetch tags from the marketplace.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.option('--view', 'Filter by view')
-	.example('tags')
-	.example('tags --view popular')
-	.example('tags portfolio')
-	.example('tags portfolio --include user')
-	.example('tags portfolio plays')
-	.example('tags portfolio plays --view featured')
-	.action(Commands.TagsCommand);
-
-cli
-	.command('teams [uuid] [action]')
-	.describe('Fetch teams from the marketplace.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.option('--view', 'Filter by view')
-	.example('teams')
-	.example('teams --view popular')
-	.example('teams mile-hi-labs')
-	.example('teams mile-hi-labs --include users')
-	.example('teams mile-hi-labs plays')
-	.example('teams mile-hi-labs plays --view featured')
-	.action(Commands.TeamsCommand);
-
-cli
-	.command('plays [uuid]')
+	.command('plays [uuid] [action]')
 	.describe('Fetch plays from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
@@ -183,6 +155,12 @@ cli
 	.action(Commands.PlatformsCommand);
 
 cli
+	.command('publish <uuid>')
+	.describe('Publish a play to the marketplace.')
+	.example('publish astro-official-starter')
+	.action(Commands.PublishCommand);
+
+cli
 	.command('session')
 	.describe('View your current session.')
 	.option('--select', 'Select specific fields', '*')
@@ -190,10 +168,46 @@ cli
 	.action(Commands.SessionCommand);
 
 cli
+	.command('submit <url>')
+	.describe('Submit a play via Github URL.')
+	.option('--variant', 'Select variant')
+	.option('--visibility', 'Select visibility')
+	.example('submit https://github.com/ehubbell/astro-official-starter')
+	.action(Commands.SubmitCommand);
+
+cli
 	.command('sync <uuid>')
-	.describe('Sync a play you own to receive the latest files from Github.')
+	.describe('Sync a play to pull the latest files from Github.')
 	.example('sync my-official-starter')
 	.action(Commands.SyncCommand);
+
+cli
+	.command('tags [uuid] [action]')
+	.describe('Fetch tags from the marketplace.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
+	.option('--view', 'Filter by view')
+	.example('tags')
+	.example('tags --view popular')
+	.example('tags portfolio')
+	.example('tags portfolio --include user')
+	.example('tags portfolio plays')
+	.example('tags portfolio plays --view featured')
+	.action(Commands.TagsCommand);
+
+cli
+	.command('teams [uuid] [action]')
+	.describe('Fetch teams from the marketplace.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
+	.option('--view', 'Filter by view')
+	.example('teams')
+	.example('teams --view popular')
+	.example('teams mile-hi-labs')
+	.example('teams mile-hi-labs --include users')
+	.example('teams mile-hi-labs plays')
+	.example('teams mile-hi-labs plays --view featured')
+	.action(Commands.TeamsCommand);
 
 cli
 	.command('tools [uuid] [action]')
