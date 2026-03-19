@@ -3,16 +3,11 @@ export * from 'src/commands/actions';
 export * from 'src/commands/auth';
 export * from 'src/commands/frameworks';
 export * from 'src/commands/languages';
-
 export * from 'src/commands/plays';
 export * from 'src/commands/platforms';
-
 export * from 'src/commands/sync';
 export * from 'src/commands/tags';
-
 export * from 'src/commands/teams';
 export * from 'src/commands/tools';
-
 export * from 'src/commands/users';
-
 export * from 'src/commands/utils';

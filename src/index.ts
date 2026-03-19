@@ -17,100 +17,22 @@ cli
 
 // Commands
 cli
-	.command('account')
-	.describe('View your account.')
-	.option('--select', 'Select specific fields', '*')
-	.example('account')
-	.action(Commands.AccountCommand);
-
-cli
-	.command('account banks')
-	.describe('Fetch your account banks.')
-	.option('--select', 'Select specific fields', '*')
-	.example('account banks')
-	.alias('banks', 'account-banks')
-	.action(Commands.AccountBanksCommand);
-
-cli
-	.command('account cards')
-	.describe('Fetch your account cards.')
-	.option('--select', 'Select specific fields', '*')
-	.example('account cards')
-	.alias('cards', 'account-cards')
-	.action(Commands.AccountCardsCommand);
-
-cli
-	.command('account charges')
-	.describe('Fetch your account charges.')
-	.option('--select', 'Select specific fields', '*')
-	.example('account charges')
-	.alias('charges', 'account-charges')
-	.action(Commands.AccountChargesCommand);
-
-cli
-	.command('account downloads')
-	.describe('Fetch your account downloads.')
-	.option('--select', 'Select specific fields', '*')
-	.example('account downloads')
-	.alias('downloads', 'account-downloads')
-	.action(Commands.AccountDownloadsCommand);
-
-cli
-	.command('account ledger')
-	.describe('Fetch your account ledger.')
-	.option('--select', 'Select specific fields', '*')
-	.example('account ledger')
-	.alias('account-ledger')
-	.action(Commands.AccountLedgerCommand);
-
-cli
-	.command('account payouts')
-	.describe('Fetch your account payouts.')
-	.option('--select', 'Select specific fields', '*')
-	.example('account payouts')
-	.alias('payouts', 'account-payouts')
-	.action(Commands.AccountPayoutsCommand);
-
-cli
-	.command('account plays')
-	.describe('Fetch your account plays.')
+	.command('account [action]')
+	.describe('Fetch your account and account resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--status', 'Filter by status')
+	.example('account')
+	.example('account banks')
+	.example('account cards')
+	.example('account charges')
+	.example('account downloads')
+	.example('account ledger')
 	.example('account plays')
-	.alias('account-plays')
-	.action(Commands.AccountPlaysCommand);
-
-cli
-	.command('account subscription')
-	.describe('Fetch your account subscription.')
-	.option('--select', 'Select specific fields', '*')
 	.example('account subscription')
-	.alias('subscription', 'account-subscription')
-	.action(Commands.AccountSubscriptionCommand);
-
-cli
-	.command('account teams')
-	.describe('Fetch your account teams.')
-	.option('--select', 'Select specific fields', '*')
 	.example('account teams')
-	.alias('account-teams')
-	.action(Commands.AccountTeamsCommand);
-
-cli
-	.command('account transfers')
-	.describe('Fetch your account transfers.')
-	.option('--select', 'Select specific fields', '*')
 	.example('account transfers')
-	.alias('transfers', 'account-transfers')
-	.action(Commands.AccountTransfersCommand);
-
-cli
-	.command('account usage')
-	.describe('Fetch your account usage.')
-	.option('--select', 'Select specific fields', '*')
 	.example('account usage')
-	.alias('usage', 'account-usage')
-	.action(Commands.AccountUsageCommand);
+	.action(Commands.AccountCommand);
 
 cli
 	.command('add <uuid>')

@@ -6,7 +6,7 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const AccountCommand = async (options: any) => {
+export const AccountAccountCommand = async (options: any) => {
 	const spinner = ora('Fetching account...');
 	try {
 		// Setup

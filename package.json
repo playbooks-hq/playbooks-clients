@@ -58,7 +58,6 @@
 		"@playbooks/normalizers": "^0.14.0",
 		"@playbooks/serializers": "^0.14.0",
 		"@playbooks/utils": "^0.14.0",
-		"boxen": "^8.0.1",
 		"chalk": "^5.6.2",
 		"cors": "^2.8.6",
 		"enquirer": "^2.4.1",
