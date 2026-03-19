@@ -21,6 +21,8 @@ export * from 'src/commands/play';
 export * from 'src/commands/plays';
 export * from 'src/commands/session';
 export * from 'src/commands/sync';
+export * from 'src/commands/team';
 export * from 'src/commands/teams';
 export * from 'src/commands/toggle';
+export * from 'src/commands/user';
 export * from 'src/commands/users';

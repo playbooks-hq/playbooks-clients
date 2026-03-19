@@ -25,8 +25,10 @@ import {
 	PlaysCommand,
 	SessionCommand,
 	SyncCommand,
+	TeamCommand,
 	TeamsCommand,
 	ToggleCommand,
+	UserCommand,
 	UsersCommand,
 } from 'src/commands';
 
@@ -194,6 +196,15 @@ cli
 	.action(PlayCommand);
 
 cli
+	.command('team <uuid>')
+	.describe('Fetch a specific team from the marketplace.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
+	.example('team mile-hi-labs')
+	.example('team mile-hi-labs --include users')
+	.action(TeamCommand);
+
+cli
 	.command('plays')
 	.describe('Fetch plays from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
@@ -234,6 +245,15 @@ cli
 	.option('--select', 'Select specific fields', '*')
 	.example('playbooks teams')
 	.action(TeamsCommand);
+
+cli
+	.command('user <uuid>')
+	.describe('Fetch a specific user from the marketplace.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
+	.example('user ehubbell')
+	.example('user ehubbell --include teams')
+	.action(UserCommand);
 
 cli
 	.command('toggle')
