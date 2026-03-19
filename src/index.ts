@@ -152,7 +152,7 @@ cli
 	.action(Commands.DownloadCommand);
 
 cli
-	.command('frameworks [uuid]')
+	.command('frameworks [uuid] [action]')
 	.describe('Fetch frameworks from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
@@ -161,7 +161,23 @@ cli
 	.example('frameworks --view popular')
 	.example('frameworks react')
 	.example('frameworks react --include team')
+	.example('frameworks react plays')
+	.example('frameworks react plays --view featured')
 	.action(Commands.FrameworksCommand);
+
+cli
+	.command('languages [uuid] [action]')
+	.describe('Fetch languages from the marketplace.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
+	.option('--view', 'Filter by view')
+	.example('languages')
+	.example('languages --view popular')
+	.example('languages typescript')
+	.example('languages typescript --include framework')
+	.example('languages typescript plays')
+	.example('languages typescript plays --view featured')
+	.action(Commands.LanguagesCommand);
 
 cli
 	.command('login')
@@ -178,19 +194,7 @@ cli.command('oauth').describe('Login to Playbooks via Github oauth.').example('o
 cli.command('ping').describe('Check your API connection.').example('ping').action(Commands.PingCommand);
 
 cli
-	.command('languages [uuid]')
-	.describe('Fetch languages from the marketplace.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.option('--view', 'Filter by view')
-	.example('languages')
-	.example('languages --view popular')
-	.example('languages typescript')
-	.example('languages typescript --include framework')
-	.action(Commands.LanguagesCommand);
-
-cli
-	.command('tags [uuid]')
+	.command('tags [uuid] [action]')
 	.describe('Fetch tags from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
@@ -199,10 +203,12 @@ cli
 	.example('tags --view popular')
 	.example('tags portfolio')
 	.example('tags portfolio --include user')
+	.example('tags portfolio plays')
+	.example('tags portfolio plays --view featured')
 	.action(Commands.TagsCommand);
 
 cli
-	.command('teams [uuid]')
+	.command('teams [uuid] [action]')
 	.describe('Fetch teams from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
@@ -211,6 +217,8 @@ cli
 	.example('teams --view popular')
 	.example('teams mile-hi-labs')
 	.example('teams mile-hi-labs --include users')
+	.example('teams mile-hi-labs plays')
+	.example('teams mile-hi-labs plays --view featured')
 	.action(Commands.TeamsCommand);
 
 cli
@@ -239,7 +247,7 @@ cli
 	.action(Commands.PlaysCommand);
 
 cli
-	.command('platforms [uuid]')
+	.command('platforms [uuid] [action]')
 	.describe('Fetch platforms from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
@@ -248,6 +256,8 @@ cli
 	.example('platforms --view popular')
 	.example('platforms web')
 	.example('platforms web --include tool')
+	.example('platforms web plays')
+	.example('platforms web plays --view featured')
 	.action(Commands.PlatformsCommand);
 
 cli
@@ -264,7 +274,7 @@ cli
 	.action(Commands.SyncCommand);
 
 cli
-	.command('tools [uuid]')
+	.command('tools [uuid] [action]')
 	.describe('Fetch tools from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
@@ -273,10 +283,12 @@ cli
 	.example('tools --view popular')
 	.example('tools stripe')
 	.example('tools stripe --include platform')
+	.example('tools stripe plays')
+	.example('tools stripe plays --view featured')
 	.action(Commands.ToolsCommand);
 
 cli
-	.command('users [uuid]')
+	.command('users [uuid] [action]')
 	.describe('Fetch users from the marketplace.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
@@ -285,6 +297,8 @@ cli
 	.example('users --view popular')
 	.example('users ehubbell')
 	.example('users ehubbell --include teams')
+	.example('users ehubbell plays')
+	.example('users ehubbell plays --view featured')
 	.action(Commands.UsersCommand);
 
 cli

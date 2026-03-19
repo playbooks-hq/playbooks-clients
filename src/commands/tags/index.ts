@@ -1,10 +1,9 @@
-export * from 'src/commands/tags/list';
-export * from 'src/commands/tags/detail';
-
 import { TagsDetailCommand } from 'src/commands/tags/detail';
 import { TagsListCommand } from 'src/commands/tags/list';
+import { TagsPlaysCommand } from 'src/commands/tags/plays';
 
-export const TagsCommand = async (uuid, options: any) => {
+export const TagsCommand = async (uuid, action, options: any) => {
+	if (action === 'plays') return await TagsPlaysCommand(uuid, options);
 	if (uuid) return await TagsDetailCommand(uuid, options);
 	return await TagsListCommand(options);
 };

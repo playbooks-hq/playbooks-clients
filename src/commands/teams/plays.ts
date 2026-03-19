@@ -1,5 +1,5 @@
 import ora from 'ora';
-import { serialize } from 'src/api';
+import { serializeArray } from 'src/api';
 import { DisplayError, DisplaySuccess } from 'src/components';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
@@ -7,42 +7,32 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const FrameworksListCommand = async (options: any) => {
-	const spinner = ora(`Fetching frameworks...`);
+export const TeamsPlaysCommand = async (uuid, options: any) => {
+	const spinner = ora(`Fetching team ${uuid} plays...`);
 	try {
-		// Setup
 		const config = options.config;
-		const include = options.i || options.include;
 		const select = options.s || options.select;
-		const view = options.s || options.view;
-		logger.log('options: ', { config, select, include, view });
+		const view = options.view || null;
+		logger.log('options: ', { config, select, view, uuid });
 
-		// Update
 		new UpdateService({ base: config }).runCheck();
-
-		// Start
 		spinner.start();
 
-		// Config
 		const service = new ConfigService({ base: config });
 		await service.setup();
 		const contents = await service.readConfig();
 
-		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({ include, view });
-		const endpoint = `/frameworks`;
-		const response = await client.queryRecord({ endpoint, headers, params });
+		const params = client.serializeParams({ view });
+		const response = await client.query({ endpoint: `/teams/${uuid}/plays`, headers, params });
 
-		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serialize(response.data, selects);
-		const formattedResponse = JSON.stringify(formattedData, null, 2);
+		const formattedData = serializeArray(response.data, selects, 'camel');
+		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
 
-		// Display
 		spinner.succeed();
-		DisplaySuccess('Frameworks', formattedResponse);
+		DisplaySuccess('Plays', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

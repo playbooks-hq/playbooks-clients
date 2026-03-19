@@ -1,6 +1,3 @@
-export * from 'src/commands/plays/list';
-export * from 'src/commands/plays/detail';
-
 import { PlaysDetailCommand } from 'src/commands/plays/detail';
 import { PlaysListCommand } from 'src/commands/plays/list';
 
