@@ -7,14 +7,15 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const TeamCommand = async (uuid, options: any) => {
-	const spinner = ora(`Fetching ${uuid}...`);
+export const PlatformsListCommand = async (options: any) => {
+	const spinner = ora(`Fetching platforms...`);
 	try {
 		// Setup
 		const config = options.config;
 		const include = options.i || options.include;
 		const select = options.s || options.select;
-		logger.log('options: ', { config, select, include });
+		const view = options.s || options.view;
+		logger.log('options: ', { config, select, include, view });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
@@ -30,8 +31,8 @@ export const TeamCommand = async (uuid, options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({ include });
-		const response = await client.queryRecord({ endpoint: `/teams/${uuid}`, headers, params });
+		const params = client.serializeParams({ include, view });
+		const response = await client.queryRecord({ endpoint: '/platforms', headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
@@ -40,7 +41,7 @@ export const TeamCommand = async (uuid, options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Team', formattedResponse);
+		DisplaySuccess('Platform', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

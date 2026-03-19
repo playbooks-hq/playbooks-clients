@@ -7,8 +7,8 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const UserCommand = async (uuid, options: any) => {
-	const spinner = ora(`Fetching ${uuid}...`);
+export const FrameworksDetailCommand = async (uuid, options: any) => {
+	const spinner = ora(`Fetching framework ${uuid}...`);
 	try {
 		// Setup
 		const config = options.config;
@@ -31,7 +31,8 @@ export const UserCommand = async (uuid, options: any) => {
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
 		const params = client.serializeParams({ include });
-		const response = await client.queryRecord({ endpoint: `/users/${uuid}`, headers, params });
+		const endpoint = `/frameworks/${uuid}`;
+		const response = await client.queryRecord({ endpoint, headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
@@ -40,7 +41,7 @@ export const UserCommand = async (uuid, options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('User', formattedResponse);
+		DisplaySuccess('Framework', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));

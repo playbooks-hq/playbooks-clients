@@ -7,14 +7,14 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const PlayCommand = async (uuid, options: any) => {
-	const spinner = ora(`Fetching ${uuid}...`);
+export const LanguagesDetailCommand = async (uuid, options: any) => {
+	const spinner = ora(`Fetching language ${uuid}...`);
 	try {
 		// Setup
 		const config = options.config;
 		const include = options.i || options.include;
 		const select = options.s || options.select;
-		logger.log('options: ', { config, select });
+		logger.log('options: ', { config, select, include });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
@@ -31,7 +31,7 @@ export const PlayCommand = async (uuid, options: any) => {
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
 		const params = client.serializeParams({ include });
-		const response = await client.queryRecord({ endpoint: `/plays/${uuid}`, headers, params });
+		const response = await client.queryRecord({ endpoint: `/languages/${uuid}`, headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
@@ -40,7 +40,7 @@ export const PlayCommand = async (uuid, options: any) => {
 
 		// Display
 		spinner.succeed();
-		DisplaySuccess('Play', formattedResponse);
+		DisplaySuccess('Language', formattedResponse);
 	} catch (e) {
 		spinner.fail();
 		DisplayError(normalizeError(e));
