@@ -56,6 +56,7 @@ If you need a different file, most tools accept an optional `configPath` argumen
 - [claude-code](#claude-code)
 - [openai-codex](#openai-codex)
 - [tools](#tools)
+- [development](#development)
 - [troubleshooting](#troubleshooting)
 
 ## VSCode
@@ -123,6 +124,48 @@ args = ["-y", "@playbooks/mcp"]
 - `playbooks_toggle`
 - `playbooks_transfers`
 - `playbooks_usage`
+
+## Development
+
+For local MCP development, run the server as `playbooks-dev`.
+
+1. Fork or clone `@playbooks/cli` next to this repo.
+2. In `playbooks-cli`, run `npm install` and `npm start` to keep the local CLI build publishing through `yalc`.
+3. In this repo, run `npm install`, then `npm run yalc`, then `npm start`.
+4. Connect your MCP client to the local server using the `playbooks-dev` name.
+
+### VSCode
+
+Add this to `.vscode/mcp.json` or your user `mcp.json`:
+
+```json
+{
+  "servers": {
+    "playbooks-dev": {
+      "command": "node",
+      "args": [
+        "/Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs"
+      ]
+    }
+  }
+}
+```
+
+### Claude Code
+
+```sh
+claude mcp add playbooks-dev -- node /Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs
+```
+
+### OpenAI Codex
+
+Add this to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.playbooks-dev]
+command = "node"
+args = ["/Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs"]
+```
 
 ## Troubleshooting
 
