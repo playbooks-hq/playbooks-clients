@@ -25,6 +25,7 @@ cli
 	.example('account banks')
 	.example('account cards')
 	.example('account charges')
+	.example('account drafts')
 	.example('account downloads')
 	.example('account ledger')
 	.example('account plays')
@@ -37,7 +38,6 @@ cli
 cli
 	.command('add <uuid>')
 	.describe('Add a play to your local project.')
-	.option('--base', 'Path to base project', '.')
 	.option('--path', 'Path to destination folder', '.')
 	.option('--name', 'Name the downloaded repository')
 	.option('--version', 'Specify tarball version', false)
@@ -86,6 +86,13 @@ cli
 	.example('frameworks react plays')
 	.example('frameworks react plays --view featured')
 	.action(Commands.FrameworksCommand);
+
+cli
+	.command('init')
+	.describe('Add a playbooks.json file to your project.')
+	.option('--path', 'Path to destination folder', '.')
+	.example('init')
+	.action(Commands.InitCommand);
 
 cli
 	.command('languages [uuid] [action]')

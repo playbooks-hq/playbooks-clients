@@ -2,6 +2,7 @@ export * from 'src/commands/actions/add';
 export * from 'src/commands/actions/clone';
 export * from 'src/commands/actions/config';
 export * from 'src/commands/actions/download';
+export * from 'src/commands/actions/init';
 export * from 'src/commands/actions/ping';
 export * from 'src/commands/actions/publish';
 export * from 'src/commands/actions/submit';

@@ -1,0 +1,46 @@
+{
+  "coverType": "",
+  "cover": "",
+  "video": "",
+  "poster": "",
+  "thumbnail": "",
+  "name": "",
+  "description": "",
+  "variant": "",
+  "setup": {
+    "welcomeComplete": true,
+    "basicsComplete": true,
+    "connectionComplete": true,
+    "mediaComplete": true,
+    "techComplete": true,
+    "demoComplete": true,
+    "reviewComplete": true
+  },
+  "qualities": {
+    "hasDemo": true,
+    "hasReadme": true,
+    "hasLicense": true,
+    "hasDistribution": true
+  },
+  "demo": {
+    "strategy": "",
+    "subdomain": "",
+    "port": 3000,
+    "subdirectory": "",
+    "dockerfile": "",
+    "dockercompose": "",
+    "image": "",
+    "partial": "",
+    "networks": [],
+    "env": [],
+    "files": [],
+    "commands": [],
+    "https": false
+  },
+  "frameworks": [],
+  "languages": [],
+  "platforms": [],
+  "packages": [],
+  "tools": [],
+  "tags": []
+}

@@ -15,11 +15,10 @@ export const AddCommand = async (entity, options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const base = Path.join(process.cwd(), options.base);
-		const path = Path.join(base, options.path);
+		const path = Path.join(process.cwd(), options.path);
 		const name = options.name || uuid;
 		const version = options.version || '';
-		logger.log('options: ', { config, uuid, base, path, name, version });
+		logger.log('options: ', { config, uuid, path, name, version });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
@@ -69,9 +68,9 @@ export const AddCommand = async (entity, options: any) => {
 
 		// Install
 		spinner.start('Running install...');
-		const shellService = new ShellService({ base });
-		const commands = play.data.demo?.commands;
-		const install = commands.split('\n')[0] || '';
+		const shellService = new ShellService({ base: path });
+		const commands = play.data.demo?.commands || [];
+		const install = commands[0] || '';
 		await shellService.command(install);
 		spinner.succeed();
 

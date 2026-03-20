@@ -35,14 +35,14 @@ export const SubmitCommand = async (url, options: any) => {
 
 		// @ts-expect-error type issue
 		const variantPrompt = new enquirer.Input({
-			message: 'What type of play is this:',
+			message: 'Please select the play variant:',
 			initial: 'starter',
 			choices: ['starter', 'partial', 'template', 'stack', 'app'],
 		});
 
 		// @ts-expect-error type issue
 		const visibilityPrompt = new enquirer.Input({
-			message: 'Will it be public or private:',
+			message: 'Please select the play visibility:',
 			initial: 'public',
 			choices: ['public', 'private'],
 		});
