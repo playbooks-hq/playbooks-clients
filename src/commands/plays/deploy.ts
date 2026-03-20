@@ -6,8 +6,8 @@ import { UpdateService } from 'src/services/update-service';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const DemosDeployCommand = async (subdomain, options: any) => {
-	const spinner = ora(`Deploying ${subdomain}...`);
+export const PlaysDeployCommand = async (uuid, options: any) => {
+	const spinner = ora(`Deploying ${uuid}...`);
 	try {
 		// Setup
 		const config = options.config;
@@ -30,7 +30,16 @@ export const DemosDeployCommand = async (subdomain, options: any) => {
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
 		const params = client.serializeParams({ include });
-		const response = await client.queryRecord({ endpoint: `/demos/${subdomain}/deploy`, headers, params });
+		const play = await client.queryRecord({
+			endpoint: `/account/plays/${uuid}`,
+			headers,
+			params: { include: 'demo' },
+		});
+		const response = await client.queryRecord({
+			endpoint: `/demos/${play?.data?.demo?.subdomain}/deploy`,
+			headers,
+			params,
+		});
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];

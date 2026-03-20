@@ -7,7 +7,7 @@ import { version } from '../package.json';
 
 const mode = import.meta.env.MODE;
 const configFile = mode === 'development' ? `${os.homedir()}/.playbooksrcd` : `${os.homedir()}/.playbooksrc`;
-const demosActions = ['deploy', 'health', 'logs'];
+const demosActions = ['deploy'];
 
 const cli = sade('playbooks');
 
@@ -73,34 +73,6 @@ cli
 	.option('--select', 'Select specific fields', '*')
 	.example('config')
 	.action(Commands.ConfigCommand);
-
-cli
-	.command('demos <subdomain>')
-	.describe('Fetch demo related resources.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.example('demos actix-official-starter')
-	.action(Commands.DemosDetailCommand);
-
-cli
-	.command('demos deploy <subdomain>')
-	.describe('Deploy a demo sandbox.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.example('demos actix-official-starter deploy')
-	.action(Commands.DemosDeployCommand);
-
-cli
-	.command('demos health <subdomain>')
-	.describe('Stream demo health events.')
-	.example('demos actix-official-starter health')
-	.action(Commands.DemosHealthCommand);
-
-cli
-	.command('demos logs <subdomain>')
-	.describe('Stream demo logs.')
-	.example('demos actix-official-starter logs')
-	.action(Commands.DemosLogsCommand);
 
 cli
 	.command('download <uuid>')
@@ -183,7 +155,8 @@ cli
 	.example('plays --user ehubbell')
 	.example('plays --view featured')
 	.example('plays actix-official-starter')
-	.example('plays actix-official-starter --include framework')
+	.example('plays actix-official-starter demo')
+	.example('plays actix-official-starter deploy')
 	.action(Commands.PlaysCommand);
 
 cli
