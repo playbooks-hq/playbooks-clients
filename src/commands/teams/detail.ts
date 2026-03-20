@@ -7,7 +7,7 @@ import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const TeamsDetailCommand = async (uuid, options: any) => {
-	const spinner = ora(`Fetching team ${uuid}...`);
+	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
 		const config = options.config;

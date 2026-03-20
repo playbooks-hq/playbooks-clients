@@ -7,7 +7,7 @@ import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const PlatformsDetailCommand = async (uuid, options: any) => {
-	const spinner = ora(`Fetching platform ${uuid}...`);
+	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
 		const config = options.config;

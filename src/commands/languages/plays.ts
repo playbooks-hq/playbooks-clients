@@ -7,7 +7,7 @@ import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const LanguagesPlaysCommand = async (uuid, options: any) => {
-	const spinner = ora(`Fetching language ${uuid} plays...`);
+	const spinner = ora(`Fetching ${uuid} plays...`);
 	try {
 		const config = options.config;
 		const select = options.s || options.select;

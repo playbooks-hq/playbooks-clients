@@ -1,6 +1,7 @@
 export * from 'src/commands/account';
 export * from 'src/commands/actions';
 export * from 'src/commands/auth';
+export * from 'src/commands/demos';
 export * from 'src/commands/frameworks';
 export * from 'src/commands/languages';
 export * from 'src/commands/plays';

@@ -28,7 +28,7 @@ export const AccountDraftsCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.query({ endpoint: '/account/drafts', headers });
+		const response = await client.query({ endpoint: '/account/plays', headers, params: { status: 'draft' } });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];

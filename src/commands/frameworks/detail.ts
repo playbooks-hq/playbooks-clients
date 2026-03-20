@@ -7,7 +7,7 @@ import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
 export const FrameworksDetailCommand = async (uuid, options: any) => {
-	const spinner = ora(`Fetching framework ${uuid}...`);
+	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
 		const config = options.config;

@@ -18,7 +18,7 @@ cli
 // Commands
 cli
 	.command('account [action]')
-	.describe('Fetch your account and account resources.')
+	.describe('Fetch your account related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--status', 'Filter by status')
 	.example('account')
@@ -64,6 +64,17 @@ cli
 	.action(Commands.ConfigCommand);
 
 cli
+	.command('demos [subdomain] [action]')
+	.describe('Fetch demo related resources.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
+	.example('demos actix-official-starter')
+	.example('demos actix-official-starter deploy')
+	.example('demos actix-official-starter health')
+	.example('demos actix-official-starter logs')
+	.action(Commands.DemosCommand);
+
+cli
 	.command('download <uuid>')
 	.describe('Download a play to your local machine.')
 	.option('--path', 'Path to destination folder', '.')
@@ -75,7 +86,7 @@ cli
 
 cli
 	.command('frameworks [uuid] [action]')
-	.describe('Fetch frameworks from the marketplace.')
+	.describe('Fetch framework related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.option('--view', 'Filter by view')
@@ -96,7 +107,7 @@ cli
 
 cli
 	.command('languages [uuid] [action]')
-	.describe('Fetch languages from the marketplace.')
+	.describe('Fetch language related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.option('--view', 'Filter by view')
@@ -124,7 +135,7 @@ cli.command('ping').describe('Check your API connection.').example('ping').actio
 
 cli
 	.command('plays [uuid] [action]')
-	.describe('Fetch plays from the marketplace.')
+	.describe('Fetch play related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.option('--framework', 'Fetch by framework identifer')
@@ -149,7 +160,7 @@ cli
 
 cli
 	.command('platforms [uuid] [action]')
-	.describe('Fetch platforms from the marketplace.')
+	.describe('Fetch platform related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.option('--view', 'Filter by view')
@@ -190,7 +201,7 @@ cli
 
 cli
 	.command('tags [uuid] [action]')
-	.describe('Fetch tags from the marketplace.')
+	.describe('Fetch tag related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.option('--view', 'Filter by view')
@@ -204,7 +215,7 @@ cli
 
 cli
 	.command('teams [uuid] [action]')
-	.describe('Fetch teams from the marketplace.')
+	.describe('Fetch team related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.option('--view', 'Filter by view')
@@ -218,7 +229,7 @@ cli
 
 cli
 	.command('tools [uuid] [action]')
-	.describe('Fetch tools from the marketplace.')
+	.describe('Fetch tool related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.option('--view', 'Filter by view')
@@ -232,7 +243,7 @@ cli
 
 cli
 	.command('users [uuid] [action]')
-	.describe('Fetch users from the marketplace.')
+	.describe('Fetch user related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.option('--view', 'Filter by view')
