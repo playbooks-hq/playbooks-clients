@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
 				output: { banner: '#!/usr/bin/env node' },
 			},
 		},
-		plugins: [runSize(), runYalc()],
+		plugins: [runSize({ format: 'cjs' }), runYalc({ format: 'cjs' })],
 		resolve: {
 			alias: {
 				src: path.resolve(__dirname, 'src'),
