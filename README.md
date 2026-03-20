@@ -1,7 +1,7 @@
 ## Overview
 
 The Playbooks CLI gives developers terminal access to their [Playbooks](https://www.playbooks.xyz) account.
-Using the CLI, developers can purchase, download, and clone plays from anywhere.
+Using the CLI, developers can browse, download, clone, and manage their plays from anywhere.
 After installation, simply use the `playbooks` prompt followed by the commands outlined below.
 
 ## Prerequisites
@@ -44,24 +44,43 @@ token=********
 
 - [global](#global)
 - [account](#account)
-- [add](#add)
 - [account banks](#account-banks)
+- [account bookmarks](#account-bookmarks)
 - [account cards](#account-cards)
-- [clone](#clone)
-- [download](#download)
+- [account charges](#account-charges)
+- [account collections](#account-collections)
+- [account drafts](#account-drafts)
 - [account downloads](#account-downloads)
-- [login](#login)
-- [logout](#logout)
+- [account ledger](#account-ledger)
 - [account payouts](#account-payouts)
-- [ping](#ping)
-- [play](#play)
-- [plays](#plays)
-- [session](#session)
+- [account plays](#account-plays)
 - [account subscription](#account-subscription)
 - [account teams](#account-teams)
-- [toggle](#toggle)
 - [account transfers](#account-transfers)
 - [account usage](#account-usage)
+- [add](#add)
+- [clone](#clone)
+- [collections](#collections)
+- [config](#config)
+- [download](#download)
+- [frameworks](#frameworks)
+- [init](#init)
+- [languages](#languages)
+- [login](#login)
+- [logout](#logout)
+- [oauth](#oauth)
+- [ping](#ping)
+- [plays](#plays)
+- [platforms](#platforms)
+- [publish](#publish)
+- [session](#session)
+- [submit](#submit)
+- [sync](#sync)
+- [tags](#tags)
+- [teams](#teams)
+- [toggle](#toggle)
+- [tools](#tools)
+- [users](#users)
 
 ## Global
 
@@ -101,6 +120,235 @@ playbooks account --select 'id,name,email'
 | :------- | :------- | :------------------------------------------------------------- |
 | --select | string[] | A comma separated list of account fields you'd like to display |
 
+#### Account Banks
+
+View your account banks.
+
+```sh
+playbooks account banks
+playbooks account banks --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Bookmarks
+
+View your account bookmarks.
+
+```sh
+playbooks account bookmarks
+playbooks account bookmarks --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Cards
+
+View your account cards.
+
+```sh
+playbooks account cards
+playbooks account cards --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Charges
+
+View your account charges.
+
+```sh
+playbooks account charges
+playbooks account charges --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Collections
+
+View your account collections.
+
+```sh
+playbooks account collections
+playbooks account collections --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Drafts
+
+View your account drafts.
+
+```sh
+playbooks account drafts
+playbooks account drafts --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Downloads
+
+View your account downloads.
+
+```sh
+playbooks account downloads
+playbooks account downloads --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Ledger
+
+Fetch and display your account ledger statistics.
+
+```sh
+playbooks account ledger
+playbooks account ledger --select 'creditsEarned,creditsSpent,balance'
+```
+
+| Option   | Type     | Description                                            |
+| :------- | :------- | :----------------------------------------------------- |
+| --select | string[] | A comma separated list of fields you'd like to display |
+
+#### Account Payouts
+
+View your account payouts.
+
+```sh
+playbooks account payouts
+playbooks account payouts --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Plays
+
+View your account plays.
+
+```sh
+playbooks account plays
+playbooks account plays --status draft --page 1
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --status    | string   | Filter by status                                       |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Subscription
+
+Fetch and display your account subscription
+
+```sh
+playbooks account subscription
+playbooks account subscription --select 'id,name,uuid,email'
+```
+
+| Option   | Type     | Description                                            |
+| :------- | :------- | :----------------------------------------------------- |
+| --select | string[] | A comma separated list of fields you'd like to display |
+
+#### Account Teams
+
+View a list of your account teams
+
+```sh
+playbooks account teams
+playbooks account teams --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+**_Please note: this command is only available when a user account is activated._**
+
+#### Account Transfers
+
+View your account transfers.
+
+```sh
+playbooks account transfers
+playbooks account transfers --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Usage
+
+Fetch and display your account usage statistics.
+
+```sh
+playbooks account usage
+playbooks account usage --select 'id,totalCredits,totalRemaining'
+```
+
+| Option   | Type     | Description                                            |
+| :------- | :------- | :----------------------------------------------------- |
+| --select | string[] | A comma separated list of fields you'd like to display |
+
 #### Add
 
 Add a play to your local project and run install commands.
@@ -116,39 +364,13 @@ playbooks add <uuid> --path ~/path/to/folder
 | --name    | string | Custom name for the directory     |
 | --version | string | Specify a specific version to add |
 
-#### Account Banks
-
-View your account banks.
-
-```sh
-playbooks account banks
-playbooks account banks --select 'id,summary,createdAt'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
-#### Account Cards
-
-View your account cards.
-
-```sh
-playbooks account cards
-playbooks account cards --select 'id,summary,createdAt'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
 #### Clone
 
 Clone a play to your Github account.
 
 ```sh
 playbooks clone <uuid>
-playbooks clone <uuid> --account playbooks-community --name my-cloned-play
+playbooks clone <uuid> --account mile-hi-labs --private
 ```
 
 | Option    | Type    | Description                     |
@@ -157,6 +379,40 @@ playbooks clone <uuid> --account playbooks-community --name my-cloned-play
 | --name    | string  | Rename the cloned play          |
 | --private | boolean | Mark the cloned play as private |
 | --version | string  | Specify the versionId           |
+
+#### Collections
+
+Fetch collection related resources.
+
+```sh
+playbooks collections
+playbooks collections starter-packs
+playbooks collections starter-packs --include team
+playbooks collections starter-packs plays --view featured
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --include   | string   | A comma separated list of relationships to include     |
+| --view      | string   | Filter by view                                         |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Config
+
+Display your config file.
+
+```sh
+playbooks config
+playbooks config --select 'token,uuid'
+```
+
+| Option   | Type     | Description                                            |
+| :------- | :------- | :----------------------------------------------------- |
+| --select | string[] | A comma separated list of fields you'd like to display |
 
 #### Download
 
@@ -173,18 +429,60 @@ playbooks download <uuid> --path ~/path/to/folder
 | --name    | string | Custom name for the directory          |
 | --version | string | Specify a specific version to download |
 
-#### Account Downloads
+#### Frameworks
 
-View your account downloads.
+Fetch framework related resources.
 
 ```sh
-playbooks account downloads
-playbooks account downloads --select 'id,amount,createdAt'
+playbooks frameworks
+playbooks frameworks react
+playbooks frameworks react --include team
+playbooks frameworks react plays --view featured
 ```
 
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --include   | string   | A comma separated list of relationships to include     |
+| --view      | string   | Filter by view                                         |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Init
+
+Add a playbooks.json file to your project.
+
+```sh
+playbooks init
+playbooks init --path ~/path/to/project
+```
+
+| Option | Type   | Description                       |
+| :----- | :----- | :-------------------------------- |
+| --path | string | Path to custom destination folder |
+
+#### Languages
+
+Fetch language related resources.
+
+```sh
+playbooks languages
+playbooks languages typescript
+playbooks languages typescript --include framework
+playbooks languages typescript plays --view featured
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --include   | string   | A comma separated list of relationships to include     |
+| --view      | string   | Filter by view                                         |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
 
 #### Login
 
@@ -216,19 +514,6 @@ Login to Playbooks via Github OAuth.
 playbooks oauth
 ```
 
-#### Account Payouts
-
-View your account payouts.
-
-```sh
-playbooks account payouts
-playbooks account payouts --select 'id,amount,createdAt'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
 #### Ping
 
 Test your connection to the Playbooks API.
@@ -237,42 +522,66 @@ Test your connection to the Playbooks API.
 playbooks ping
 ```
 
-#### Play
-
-Fetch a specific play
-
-```sh
-playbooks play <uuid>
-playbooks play actix-official-starter --include framework
-```
-
-| Option    | Type     | Description                                            |
-| :-------- | :------- | :----------------------------------------------------- |
-| --include | string   | A comma separated list of relationships to include     |
-| --select  | string[] | A comma separated list of fields you'd like to display |
-
 #### Plays
 
-Fetch a list of plays
+Fetch play related resources.
 
 ```sh
 playbooks plays
-playbooks plays --select 'id,name,uuid,tagline'
-playbooks plays --framework 'react'
-playbooks plays --language 'typescript'
-playbooks plays --team 'mile-hi-labs'
-playbooks plays --view 'featured'
+playbooks plays actix-official-starter
+playbooks plays actix-official-starter demo
+playbooks plays actix-official-starter deploy
+playbooks plays --framework react
+playbooks plays --language typescript
+playbooks plays --team mile-hi-labs
+playbooks plays --view featured
 ```
 
 | Option      | Type     | Description                                            |
 | :---------- | :------- | :----------------------------------------------------- |
 | --select    | string[] | A comma separated list of fields you'd like to display |
+| --include   | string   | A comma separated list of relationships to include     |
 | --framework | string   | Fetch by framework identifier                          |
 | --language  | string   | Fetch by language identifier                           |
 | --platform  | string   | Fetch by platform identifier                           |
+| --team      | string   | Fetch by team identifier                               |
 | --tool      | string   | Fetch by tool identifier                               |
 | --tag       | string   | Fetch by tag identifier                                |
-| --view      | enum     | Fetch by view                                          |
+| --user      | string   | Fetch by user identifier                               |
+| --view      | string   | Filter by view                                         |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Platforms
+
+Fetch platform related resources.
+
+```sh
+playbooks platforms
+playbooks platforms web
+playbooks platforms web --include tool
+playbooks platforms web plays --view featured
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --include   | string   | A comma separated list of relationships to include     |
+| --view      | string   | Filter by view                                         |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Publish
+
+Publish a play to the marketplace.
+
+```sh
+playbooks publish <uuid>
+```
 
 #### Session
 
@@ -287,33 +596,69 @@ playbooks session --select 'id,name,uuid,email'
 | :------- | :------- | :----------------------------------------------------- |
 | --select | string[] | A comma separated list of fields you'd like to display |
 
-#### Account Subscription
+#### Submit
 
-Fetch and display your account subscription
-
-```sh
-playbooks account subscription
-playbooks account subscription --select 'id,name,uuid,email'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
-#### Account Teams
-
-View a list of your account teams
+Submit a play via Github URL.
 
 ```sh
-playbooks account teams
-playbooks account teams --select 'id,name,uuid,email'
+playbooks submit https://github.com/ehubbell/astro-official-starter
+playbooks submit https://github.com/ehubbell/astro-official-starter --variant default --visibility public
 ```
 
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
+| Option       | Type   | Description       |
+| :----------- | :----- | :---------------- |
+| --variant    | string | Select variant    |
+| --visibility | string | Select visibility |
 
-**_Please note: this command is only available when a user account is activated._**
+#### Sync
+
+Sync a play to pull the latest files from Github.
+
+```sh
+playbooks sync <uuid>
+```
+
+#### Tags
+
+Fetch tag related resources.
+
+```sh
+playbooks tags
+playbooks tags portfolio
+playbooks tags portfolio --include user
+playbooks tags portfolio plays --view featured
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --include   | string   | A comma separated list of relationships to include     |
+| --view      | string   | Filter by view                                         |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Teams
+
+Fetch team related resources.
+
+```sh
+playbooks teams
+playbooks teams mile-hi-labs
+playbooks teams mile-hi-labs --include users
+playbooks teams mile-hi-labs plays --view featured
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --include   | string   | A comma separated list of relationships to include     |
+| --view      | string   | Filter by view                                         |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
 
 #### Toggle
 
@@ -328,31 +673,47 @@ playbooks toggle --uuid 'playbooks-community'
 | :----- | :----- | :----------------- |
 | --uuid | string | Account identifier |
 
-#### Account Transfers
+#### Tools
 
-View your account transfers.
-
-```sh
-playbooks account transfers
-playbooks account transfers --select 'id,amount,createdAt'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
-#### Account Usage
-
-Fetch and display your account usage statistics
+Fetch tool related resources.
 
 ```sh
-playbooks account usage
-playbooks account usage --select 'id,totalCredits,totalRemaining'
+playbooks tools
+playbooks tools stripe
+playbooks tools stripe --include platform
+playbooks tools stripe plays --view featured
 ```
 
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --include   | string   | A comma separated list of relationships to include     |
+| --view      | string   | Filter by view                                         |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Users
+
+Fetch user related resources.
+
+```sh
+playbooks users
+playbooks users ehubbell
+playbooks users ehubbell --include teams
+playbooks users ehubbell plays --view featured
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --include   | string   | A comma separated list of relationships to include     |
+| --view      | string   | Filter by view                                         |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
 
 ## Questions
 
