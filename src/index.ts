@@ -7,8 +7,19 @@ import { version } from '../package.json';
 
 const mode = import.meta.env.MODE;
 const configFile = mode === 'development' ? `${os.homedir()}/.playbooksrcd` : `${os.homedir()}/.playbooksrc`;
+const demosActions = ['deploy', 'health', 'logs'];
 
 const cli = sade('playbooks');
+
+const normalizeCommandArgs = (argv: string[]) => {
+	const [nodePath, scriptPath, command, maybeTarget, maybeAction, ...rest] = argv;
+
+	if (command === 'demos' && maybeTarget && maybeAction && demosActions.includes(maybeAction)) {
+		return [nodePath, scriptPath, command, maybeAction, maybeTarget, ...rest];
+	}
+
+	return argv;
+};
 
 cli
 	.version(version)
@@ -64,15 +75,32 @@ cli
 	.action(Commands.ConfigCommand);
 
 cli
-	.command('demos [subdomain] [action]')
+	.command('demos <subdomain>')
 	.describe('Fetch demo related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.example('demos actix-official-starter')
+	.action(Commands.DemosDetailCommand);
+
+cli
+	.command('demos deploy <subdomain>')
+	.describe('Deploy a demo sandbox.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
 	.example('demos actix-official-starter deploy')
+	.action(Commands.DemosDeployCommand);
+
+cli
+	.command('demos health <subdomain>')
+	.describe('Stream demo health events.')
 	.example('demos actix-official-starter health')
+	.action(Commands.DemosHealthCommand);
+
+cli
+	.command('demos logs <subdomain>')
+	.describe('Stream demo logs.')
 	.example('demos actix-official-starter logs')
-	.action(Commands.DemosCommand);
+	.action(Commands.DemosLogsCommand);
 
 cli
 	.command('download <uuid>')
@@ -263,4 +291,4 @@ cli
 	.example('toggle --uuid mile-hi-labs')
 	.action(Commands.ToggleCommand);
 
-cli.parse(process.argv);
+cli.parse(normalizeCommandArgs(process.argv));

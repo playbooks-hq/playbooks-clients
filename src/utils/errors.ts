@@ -5,8 +5,8 @@ const mode = import.meta.env.MODE;
 
 export const normalizeError = e => {
 	if (!e.response?.text) {
-		console.error(e);
 		if (e.status) return { status: e.status, title: e.name, detail: e.message };
+		console.error(e);
 		return { status: 500, title: 'Canceled', detail: 'The process was canceled abruptly.' };
 	}
 	const formattedReponse = JSON.parse(e.response?.text);
@@ -16,6 +16,6 @@ export const normalizeError = e => {
 		status: formattedError.status,
 		title: formattedError.title,
 		detail: formattedError.detail,
-		source: mode === 'development' ? formattedError.source.split('\n').map(v => v.trim()) : null,
+		source: mode === 'development' && formattedError.source ? formattedError.source.split('\n').map(v => v.trim()) : null,
 	};
 };
