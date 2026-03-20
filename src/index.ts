@@ -34,8 +34,10 @@ cli
 	.option('--status', 'Filter by status')
 	.example('account')
 	.example('account banks')
+	.example('account bookmarks')
 	.example('account cards')
 	.example('account charges')
+	.example('account collections')
 	.example('account drafts')
 	.example('account downloads')
 	.example('account ledger')
@@ -66,6 +68,20 @@ cli
 	.example('clone actix-official-starter')
 	.example('clone actix-official-starter --account mile-hi-labs --private')
 	.action(Commands.CloneCommand);
+
+cli
+	.command('collections [uuid] [action]')
+	.describe('Fetch collection related resources.')
+	.option('--select', 'Select specific fields', '*')
+	.option('--include', 'Include associated data')
+	.option('--view', 'Filter by view')
+	.example('collections')
+	.example('collections --view popular')
+	.example('collections starter-packs')
+	.example('collections starter-packs --include team')
+	.example('collections starter-packs plays')
+	.example('collections starter-packs plays --view featured')
+	.action(Commands.CollectionsCommand);
 
 cli
 	.command('config')

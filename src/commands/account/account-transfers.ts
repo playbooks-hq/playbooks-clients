@@ -11,7 +11,7 @@ export const AccountTransfersCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const select = options.s || options.select;
+		const select = options.select;
 		logger.log('options: ', options, { config, select });
 
 		// Update

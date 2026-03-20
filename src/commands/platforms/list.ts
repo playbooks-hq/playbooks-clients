@@ -12,7 +12,7 @@ export const PlatformsListCommand = async (options: any) => {
 		// Setup
 		const config = options.config;
 		const include = options.i || options.include;
-		const select = options.s || options.select;
+		const select = options.select;
 		const view = options.s || options.view;
 		logger.log('options: ', { config, select, include, view });
 

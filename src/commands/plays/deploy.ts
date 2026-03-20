@@ -12,7 +12,7 @@ export const PlaysDeployCommand = async (uuid, options: any) => {
 		// Setup
 		const config = options.config;
 		const include = options.i || options.include;
-		const select = options.s || options.select;
+		const select = options.select;
 		logger.log('options: ', { config, select, include });
 
 		// Update

@@ -11,7 +11,7 @@ export const AccountPlaysCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const select = options.s || options.select;
+		const select = options.select;
 		const status = options.s || options.status;
 		logger.log('options: ', { config, select, status });
 

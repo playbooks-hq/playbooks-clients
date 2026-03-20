@@ -1,6 +1,7 @@
 import { jsonApiNormalize, jsonApiNormalizeArray, jsonApiSerialize, jsonApiSerializeArray } from 'src/api';
 import { mutateType, queryType } from 'src/types';
 import { isArray } from 'src/utils';
+import { logger } from 'src/utils/logger';
 import Superagent from 'superagent';
 
 import { name, version } from '../../package.json';
@@ -36,11 +37,11 @@ class ApiService {
 	}
 
 	/* ----- Computes ----- */
-	computeURL(endpoint = '') {
+	formatURL(endpoint = '') {
 		return BASE_URL + endpoint;
 	}
 
-	computeHeaders(headers = {}) {
+	formatHeaders(headers = {}) {
 		return { ...this.headers, ...headers };
 	}
 
@@ -91,54 +92,61 @@ class ApiService {
 
 	/* ----- Methods ----- */
 	async query({ endpoint, headers, params = {} }: queryType) {
-		const computedUrl = this.computeURL(endpoint);
-		const computedHeaders = this.computeHeaders(headers);
-		const response = await Superagent.get(computedUrl).set(computedHeaders).query(params);
+		const formattedUrl = this.formatURL(endpoint);
+		const formattedHeaders = this.formatHeaders(headers);
+		logger.log(`query: `, { url: formattedUrl, params });
+		const response = await Superagent.get(formattedUrl).set(formattedHeaders).query(params);
 		return this.normalizeArray(response);
 	}
 
 	async queryRecord({ endpoint, headers, params }: queryType) {
-		const computedUrl = this.computeURL(endpoint);
-		const computedHeaders = this.computeHeaders(headers);
-		const response = await Superagent.get(computedUrl).set(computedHeaders).query(params);
+		const formattedUrl = this.formatURL(endpoint);
+		const formattedHeaders = this.formatHeaders(headers);
+		logger.log(`queryRecord: `, { url: formattedUrl, params });
+		const response = await Superagent.get(formattedUrl).set(formattedHeaders).query(params);
 		return this.normalizeData(response);
 	}
 
 	async post({ endpoint, headers, params, data }: mutateType) {
-		const computedUrl = this.computeURL(endpoint);
-		const computedHeaders = this.computeHeaders(headers);
-		const computedData = isArray(data) ? this.serializeArray(data) : this.serializeData(data);
-		const response = await Superagent.post(computedUrl).set(computedHeaders).query(params).send(computedData);
+		const formattedUrl = this.formatURL(endpoint);
+		const formattedHeaders = this.formatHeaders(headers);
+		const formatdData = isArray(data) ? this.serializeArray(data) : this.serializeData(data);
+		logger.log(`post: `, { url: formattedUrl, params, data: formatdData });
+		const response = await Superagent.post(formattedUrl).set(formattedHeaders).query(params).send(formatdData);
 		return this.normalizeData(response);
 	}
 
 	async update({ endpoint, headers, params, data }: mutateType) {
-		const computedUrl = this.computeURL(endpoint);
-		const computedHeaders = this.computeHeaders(headers);
-		const computedData = isArray(data) ? this.serializeArray(data) : this.serializeData(data);
-		const response = await Superagent.put(computedUrl).set(computedHeaders).query(params).send(computedData);
+		const formattedUrl = this.formatURL(endpoint);
+		const formattedHeaders = this.formatHeaders(headers);
+		const formatdData = isArray(data) ? this.serializeArray(data) : this.serializeData(data);
+		logger.log(`update: `, { url: formattedUrl, params, data: formatdData });
+		const response = await Superagent.put(formattedUrl).set(formattedHeaders).query(params).send(formatdData);
 		return this.normalizeData(response);
 	}
 
 	async delete({ endpoint, headers, params }: queryType) {
-		const computedUrl = this.computeURL(endpoint);
-		const computedHeaders = this.computeHeaders(headers);
-		const response = await Superagent.delete(computedUrl).set(computedHeaders).query(params);
+		const formattedUrl = this.formatURL(endpoint);
+		const formattedHeaders = this.formatHeaders(headers);
+		logger.log(`delete: `, { url: formattedUrl, params });
+		const response = await Superagent.delete(formattedUrl).set(formattedHeaders).query(params);
 		return this.normalizeData(response);
 	}
 
 	/* ----- Methods ----- */
 	async request({ endpoint, headers, params }: queryType) {
-		const computedUrl = this.computeURL(endpoint);
-		const computedHeaders = this.computeHeaders(headers);
-		const response = await Superagent.get(computedUrl).set(computedHeaders).query(params);
+		const formattedUrl = this.formatURL(endpoint);
+		const formattedHeaders = this.formatHeaders(headers);
+		logger.log(`request: `, { url: formattedUrl, params });
+		const response = await Superagent.get(formattedUrl).set(formattedHeaders).query(params);
 		return { status: response.status, data: JSON.parse(response.text) };
 	}
 
 	async download({ endpoint, headers, params }: queryType) {
-		const computedUrl = this.computeURL(endpoint);
-		const computedHeaders = this.computeHeaders(headers);
-		return await Superagent.get(computedUrl).set(computedHeaders).query(params);
+		const formattedUrl = this.formatURL(endpoint);
+		const formattedHeaders = this.formatHeaders(headers);
+		logger.log(`download: `, { url: formattedUrl, params });
+		return await Superagent.get(formattedUrl).set(formattedHeaders).query(params);
 	}
 }
 

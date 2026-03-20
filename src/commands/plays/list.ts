@@ -11,7 +11,7 @@ export const PlaysListCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const select = options.s || options.select;
+		const select = options.select;
 		const framework = options.framework || null;
 		const language = options.language || null;
 		const platform = options.platform || null;

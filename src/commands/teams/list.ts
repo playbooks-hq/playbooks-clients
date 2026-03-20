@@ -11,7 +11,7 @@ export const TeamsListCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const select = options.s || options.select;
+		const select = options.select;
 		const view = options.s || options.view;
 		logger.log('options: ', { config, select, view });
 

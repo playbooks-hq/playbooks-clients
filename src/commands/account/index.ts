@@ -1,7 +1,9 @@
 import { AccountAccountCommand } from 'src/commands/account/account';
 import { AccountBanksCommand } from 'src/commands/account/account-banks';
+import { AccountBookmarksCommand } from 'src/commands/account/account-bookmarks';
 import { AccountCardsCommand } from 'src/commands/account/account-cards';
 import { AccountChargesCommand } from 'src/commands/account/account-charges';
+import { AccountCollectionsCommand } from 'src/commands/account/account-collections';
 import { AccountDownloadsCommand } from 'src/commands/account/account-downloads';
 import { AccountDraftsCommand } from 'src/commands/account/account-drafts';
 import { AccountLedgerCommand } from 'src/commands/account/account-ledger';
@@ -14,8 +16,10 @@ import { AccountUsageCommand } from 'src/commands/account/account-usage';
 
 export const AccountCommand = async (action, options: any) => {
 	if (action === 'banks') return await AccountBanksCommand(options);
+	if (action === 'bookmarks') return await AccountBookmarksCommand(options);
 	if (action === 'cards') return await AccountCardsCommand(options);
 	if (action === 'charges') return await AccountChargesCommand(options);
+	if (action === 'collections') return await AccountCollectionsCommand(options);
 	if (action === 'downloads') return await AccountDownloadsCommand(options);
 	if (action === 'drafts') return await AccountDraftsCommand(options);
 	if (action === 'ledger') return await AccountLedgerCommand(options);

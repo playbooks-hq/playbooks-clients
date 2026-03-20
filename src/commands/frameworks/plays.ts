@@ -11,7 +11,7 @@ export const FrameworksPlaysCommand = async (uuid, options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const select = options.s || options.select;
+		const select = options.select;
 		const view = options.view || null;
 		logger.log('options: ', { config, select, view, uuid });
 

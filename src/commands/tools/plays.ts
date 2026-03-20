@@ -10,7 +10,7 @@ export const ToolsPlaysCommand = async (uuid, options: any) => {
 	const spinner = ora(`Fetching ${uuid} plays...`);
 	try {
 		const config = options.config;
-		const select = options.s || options.select;
+		const select = options.select;
 		const view = options.view || null;
 		logger.log('options: ', { config, select, view, uuid });
 

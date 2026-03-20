@@ -16,6 +16,7 @@ export const normalizeError = e => {
 		status: formattedError.status,
 		title: formattedError.title,
 		detail: formattedError.detail,
-		source: mode === 'development' && formattedError.source ? formattedError.source.split('\n').map(v => v.trim()) : null,
+		source:
+			mode === 'development' && formattedError.source ? formattedError.source.split('\n').map(v => v.trim()) : null,
 	};
 };
