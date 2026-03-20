@@ -9,26 +9,28 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 export type PlaybooksCommandName =
 	| 'account'
 	| 'add'
-	| 'banks'
-	| 'cards'
-	| 'charges'
 	| 'clone'
+	| 'collections'
 	| 'config'
 	| 'download'
-	| 'downloads'
+	| 'frameworks'
+	| 'init'
+	| 'languages'
 	| 'login'
 	| 'logout'
-	| 'payouts'
+	| 'oauth'
 	| 'ping'
-	| 'play'
 	| 'plays'
+	| 'platforms'
+	| 'publish'
 	| 'session'
-	| 'subscription'
+	| 'submit'
 	| 'sync'
+	| 'tags'
 	| 'teams'
 	| 'toggle'
-	| 'transfers'
-	| 'usage';
+	| 'tools'
+	| 'users';
 
 type Invocation = {
 	command: string;
@@ -36,7 +38,7 @@ type Invocation = {
 	source: string;
 };
 
-type CommandOptions = Record<string, boolean | string | undefined>;
+type CommandOptions = Record<string, boolean | number | string | undefined>;
 
 export type RunPlaybooksCommandInput = {
 	command: PlaybooksCommandName;
@@ -132,20 +134,21 @@ function formatInvocation(command: string, args: string[]) {
 
 function buildArgs(input: RunPlaybooksCommandInput) {
 	const args = [input.command, ...(input.positional ?? [])];
+	const options = { machine: true, ...(input.options ?? {}) };
 
 	if (input.configPath) {
 		args.push('--config', input.configPath);
 	}
 
-	for (const [key, value] of Object.entries(input.options ?? {})) {
-		if (value === undefined || value === false || value === '') {
+	for (const [key, value] of Object.entries(options)) {
+		if (value === undefined || value === false || (typeof value === 'string' && value === '')) {
 			continue;
 		}
 
 		args.push(`--${key}`);
 
 		if (value !== true) {
-			args.push(value);
+			args.push(String(value));
 		}
 	}
 

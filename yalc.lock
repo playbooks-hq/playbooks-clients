@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "@playbooks/cli": {
-      "signature": "dc34df7f1327ea5255184eccca614366",
+      "signature": "eaf10f7da2e3b7e96dbf9ba419fe32a9",
       "file": true,
       "replaced": "^0.11.1"
     }

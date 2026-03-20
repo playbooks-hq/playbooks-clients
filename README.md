@@ -79,6 +79,9 @@ Add the server to `.vscode/mcp.json` in your workspace or to your user `mcp.json
 Add the server with the Claude CLI:
 
 ```sh
+# Global
+claude mcp add playbooks --scope user -- npx -y @playbooks/mcp
+# Project
 claude mcp add playbooks -- npx -y @playbooks/mcp
 ```
 
@@ -101,29 +104,64 @@ args = ["-y", "@playbooks/mcp"]
 ## Tools
 
 - `playbooks_account`
+- `playbooks_account_bookmarks`
+- `playbooks_account_collections`
+- `playbooks_account_drafts`
+- `playbooks_account_ledger`
+- `playbooks_account_plays`
+- `playbooks_account_teams`
 - `playbooks_add`
 - `playbooks_banks`
 - `playbooks_cards`
 - `playbooks_charges`
 - `playbooks_clone`
+- `playbooks_collection`
+- `playbooks_collection_plays`
+- `playbooks_collections`
 - `playbooks_config`
-- `playbooks_login`
-- `playbooks_logout`
 - `playbooks_download`
 - `playbooks_downloads`
+- `playbooks_framework`
+- `playbooks_framework_plays`
+- `playbooks_frameworks`
 - `playbooks_help`
+- `playbooks_init`
+- `playbooks_language`
+- `playbooks_language_plays`
+- `playbooks_languages`
+- `playbooks_login`
+- `playbooks_logout`
+- `playbooks_oauth`
 - `playbooks_payouts`
 - `playbooks_ping`
 - `playbooks_play`
+- `playbooks_play_demo`
+- `playbooks_play_deploy`
 - `playbooks_plays`
+- `playbooks_platform`
+- `playbooks_platform_plays`
+- `playbooks_platforms`
+- `playbooks_publish`
 - `playbooks_session`
 - `playbooks_status`
 - `playbooks_subscription`
+- `playbooks_submit`
 - `playbooks_sync`
+- `playbooks_tag`
+- `playbooks_tag_plays`
+- `playbooks_tags`
+- `playbooks_team`
+- `playbooks_team_plays`
 - `playbooks_teams`
+- `playbooks_tool`
+- `playbooks_tool_plays`
+- `playbooks_tools`
 - `playbooks_toggle`
 - `playbooks_transfers`
 - `playbooks_usage`
+- `playbooks_user`
+- `playbooks_user_plays`
+- `playbooks_users`
 
 ## Development
 
@@ -154,6 +192,9 @@ Add this to `.vscode/mcp.json` or your user `mcp.json`:
 ### Claude Code
 
 ```sh
+# Global
+claude mcp add playbooks-dev --scope user -- node /Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs
+# Project
 claude mcp add playbooks-dev -- node /Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs
 ```
 
