@@ -12,9 +12,13 @@ export const FrameworksListCommand = async (options: any) => {
 		// Setup
 		const config = options.config;
 		const include = options.i || options.include;
+		const page = options.page || null;
+		const pageSize = options.pageSize || null;
 		const select = options.select;
+		const sortProp = options.sortProp || null;
+		const sortValue = options.sortValue || null;
 		const view = options.s || options.view;
-		logger.log('options: ', { config, select, include, view });
+		logger.log('options: ', { config, select, include, page, pageSize, sortProp, sortValue, view });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
@@ -30,7 +34,7 @@ export const FrameworksListCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({ include, view });
+		const params = client.serializeParams({ include, page, pageSize, sortProp, sortValue, view });
 		const endpoint = `/frameworks`;
 		const response = await client.queryRecord({ endpoint, headers, params });
 

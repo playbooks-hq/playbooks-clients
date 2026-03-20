@@ -14,13 +14,32 @@ export const PlaysListCommand = async (options: any) => {
 		const select = options.select;
 		const framework = options.framework || null;
 		const language = options.language || null;
+		const page = options.page || null;
+		const pageSize = options.pageSize || null;
 		const platform = options.platform || null;
+		const sortProp = options.sortProp || null;
+		const sortValue = options.sortValue || null;
 		const team = options.team || null;
 		const tool = options.tool || null;
 		const tag = options.tag || null;
 		const user = options.user || null;
 		const view = options.view || null;
-		logger.log('options: ', { config, select, framework, language, platform, team, tool, tag, user, view });
+		logger.log('options: ', {
+			config,
+			select,
+			framework,
+			language,
+			page,
+			pageSize,
+			platform,
+			sortProp,
+			sortValue,
+			team,
+			tool,
+			tag,
+			user,
+			view,
+		});
 
 		const endpoint = framework
 			? `/frameworks/${framework}/plays`
@@ -52,7 +71,7 @@ export const PlaysListCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({ view });
+		const params = client.serializeParams({ page, pageSize, sortProp, sortValue, view });
 		const response = await client.query({ endpoint, headers, params });
 
 		// Response

@@ -11,9 +11,13 @@ export const FrameworksPlaysCommand = async (uuid, options: any) => {
 	try {
 		// Setup
 		const config = options.config;
+		const page = options.page || null;
+		const pageSize = options.pageSize || null;
 		const select = options.select;
+		const sortProp = options.sortProp || null;
+		const sortValue = options.sortValue || null;
 		const view = options.view || null;
-		logger.log('options: ', { config, select, view, uuid });
+		logger.log('options: ', { config, select, page, pageSize, sortProp, sortValue, view, uuid });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
@@ -29,7 +33,7 @@ export const FrameworksPlaysCommand = async (uuid, options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({ view });
+		const params = client.serializeParams({ page, pageSize, sortProp, sortValue, view });
 		const response = await client.query({ endpoint: `/frameworks/${uuid}/plays`, headers, params });
 
 		// Response

@@ -10,9 +10,13 @@ export const UsersPlaysCommand = async (uuid, options: any) => {
 	const spinner = ora(`Fetching ${uuid} plays...`);
 	try {
 		const config = options.config;
+		const page = options.page || null;
+		const pageSize = options.pageSize || null;
 		const select = options.select;
+		const sortProp = options.sortProp || null;
+		const sortValue = options.sortValue || null;
 		const view = options.view || null;
-		logger.log('options: ', { config, select, view, uuid });
+		logger.log('options: ', { config, select, page, pageSize, sortProp, sortValue, view, uuid });
 
 		new UpdateService({ base: config }).runCheck();
 		spinner.start();
@@ -23,7 +27,7 @@ export const UsersPlaysCommand = async (uuid, options: any) => {
 
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({ view });
+		const params = client.serializeParams({ page, pageSize, sortProp, sortValue, view });
 		const response = await client.query({ endpoint: `/users/${uuid}/plays`, headers, params });
 
 		const selects = select !== '*' ? select.split(',') : [];

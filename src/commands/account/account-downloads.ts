@@ -11,8 +11,12 @@ export const AccountDownloadsCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.config;
+		const page = options.page || null;
+		const pageSize = options.pageSize || null;
 		const select = options.select;
-		logger.log('options: ', options, { config, select });
+		const sortProp = options.sortProp || null;
+		const sortValue = options.sortValue || null;
+		logger.log('options: ', options, { config, select, page, pageSize, sortProp, sortValue });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
@@ -28,7 +32,8 @@ export const AccountDownloadsCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.query({ endpoint: '/account/downloads', headers });
+		const params = client.serializeParams({ page, pageSize, sortProp, sortValue });
+		const response = await client.query({ endpoint: '/account/downloads', headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
