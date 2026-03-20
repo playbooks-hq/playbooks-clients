@@ -40,7 +40,7 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.17.5",
-		"@playbooks/cli": "file:.yalc/@playbooks/cli",
+		"@playbooks/cli": "^0.13.0",
 		"zod": "^3.25.76"
 	},
 	"devDependencies": {
