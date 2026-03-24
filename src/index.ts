@@ -161,6 +161,15 @@ cli
 
 cli.command('logout').describe('Logout of your Playbooks account.').example('logout').action(Commands.LogoutCommand);
 
+cli
+	.command('mcp [action]')
+	.describe('Configure MCP integrations for supported coding environments.')
+	.example('mcp claude')
+	.example('mcp codex')
+	.example('mcp cursor')
+	.example('mcp vscode')
+	.action(Commands.McpCommand);
+
 cli.command('oauth').describe('Login to Playbooks via Github oauth.').example('oauth').action(Commands.OauthCommand);
 
 cli.command('ping').describe('Check your API connection.').example('ping').action(Commands.PingCommand);

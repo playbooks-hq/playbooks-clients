@@ -68,6 +68,7 @@ token=********
 - [languages](#languages)
 - [login](#login)
 - [logout](#logout)
+- [mcp](#mcp)
 - [oauth](#oauth)
 - [ping](#ping)
 - [plays](#plays)
@@ -78,8 +79,8 @@ token=********
 - [sync](#sync)
 - [tags](#tags)
 - [teams](#teams)
-- [toggle](#toggle)
 - [tools](#tools)
+- [toggle](#toggle)
 - [users](#users)
 
 ## Global
@@ -506,6 +507,17 @@ Logout of your Playbooks account.
 playbooks logout
 ```
 
+#### MCP
+
+Configure Playbooks MCP for supported coding environments on your local machine.
+
+```sh
+playbooks mcp claude
+playbooks mcp codex
+playbooks mcp cursor
+playbooks mcp vscode
+```
+
 #### Oauth
 
 Login to Playbooks via Github OAuth.
@@ -660,19 +672,6 @@ playbooks teams mile-hi-labs plays --view featured
 | --sortProp  | string   | Sort by a specific property                            |
 | --sortValue | string   | Sort using a specific value                            |
 
-#### Toggle
-
-Toggle your active account.
-
-```sh
-playbooks toggle
-playbooks toggle --uuid 'playbooks-community'
-```
-
-| Option | Type   | Description        |
-| :----- | :----- | :----------------- |
-| --uuid | string | Account identifier |
-
 #### Tools
 
 Fetch tool related resources.
@@ -693,6 +692,19 @@ playbooks tools stripe plays --view featured
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
 | --sortValue | string   | Sort using a specific value                            |
+
+#### Toggle
+
+Toggle your active account.
+
+```sh
+playbooks toggle
+playbooks toggle --uuid 'playbooks-community'
+```
+
+| Option | Type   | Description        |
+| :----- | :----- | :----------------- |
+| --uuid | string | Account identifier |
 
 #### Users
 

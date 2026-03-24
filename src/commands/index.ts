@@ -4,6 +4,7 @@ export * from 'src/commands/auth';
 export * from 'src/commands/collections';
 export * from 'src/commands/frameworks';
 export * from 'src/commands/languages';
+export * from 'src/commands/mcp';
 export * from 'src/commands/plays';
 export * from 'src/commands/platforms';
 export * from 'src/commands/session';
