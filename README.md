@@ -59,21 +59,6 @@ If you need a different file, most tools accept an optional `configPath` argumen
 - [development](#development)
 - [troubleshooting](#troubleshooting)
 
-## VSCode
-
-Add the server to `.vscode/mcp.json` in your workspace or to your user `mcp.json` file:
-
-```json
-{
-  "servers": {
-    "playbooks": {
-      "command": "npx",
-      "args": ["-y", "@playbooks/mcp"]
-    }
-  }
-}
-```
-
 ## Claude Code
 
 Add the server with the Claude CLI:
@@ -91,6 +76,22 @@ Verify it:
 claude mcp list
 ```
 
+
+## Cursor
+
+Add the server to `.cursor/mcp.json` in your workspace or to your user `cursor.json` file:
+
+```json
+{
+  "servers": {
+    "playbooks": {
+      "command": "npx",
+      "args": ["-y", "@playbooks/mcp"]
+    }
+  }
+}
+```
+
 ## OpenAI Codex
 
 Add the server to `~/.codex/config.toml`:
@@ -99,6 +100,22 @@ Add the server to `~/.codex/config.toml`:
 [mcp_servers.playbooks]
 command = "npx"
 args = ["-y", "@playbooks/mcp"]
+```
+
+
+## VSCode
+
+Add the server to `.vscode/mcp.json` in your workspace or to your user `mcp.json` file:
+
+```json
+{
+  "servers": {
+    "playbooks": {
+      "command": "npx",
+      "args": ["-y", "@playbooks/mcp"]
+    }
+  }
+}
 ```
 
 ## Tools
@@ -172,9 +189,18 @@ For local MCP development, run the server as `playbooks-dev`.
 3. In this repo, run `npm install`, then `npm run yalc`, then `npm start`.
 4. Connect your MCP client to the local server using the `playbooks-dev` name.
 
-### VSCode
+### Claude Code
 
-Add this to `.vscode/mcp.json` or your user `mcp.json`:
+```sh
+# Global
+claude mcp add playbooks-dev --scope user -- node /path/to/mcp/dist/index.cjs
+# Project
+claude mcp add playbooks-dev -- node /path/to/mcp/dist/index.cjs
+```
+
+### Cursor
+
+Add this to `~/.cursor/mcp.json` or your user `mcp.json`:
 
 ```json
 {
@@ -182,20 +208,11 @@ Add this to `.vscode/mcp.json` or your user `mcp.json`:
     "playbooks-dev": {
       "command": "node",
       "args": [
-        "/Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs"
+        "/path/to/mcp/dist/index.cjs"
       ]
     }
   }
 }
-```
-
-### Claude Code
-
-```sh
-# Global
-claude mcp add playbooks-dev --scope user -- node /Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs
-# Project
-claude mcp add playbooks-dev -- node /Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs
 ```
 
 ### OpenAI Codex
@@ -205,7 +222,24 @@ Add this to `~/.codex/config.toml`:
 ```toml
 [mcp_servers.playbooks-dev]
 command = "node"
-args = ["/Users/erichubbell/Sites/playbooks/playbooks-mcp/dist/index.cjs"]
+args = ["/path/to/mcp/dist/index.cjs"]
+```
+
+### VSCode
+
+Add this to `~/.vscode/mcp.json` or your user `mcp.json`:
+
+```json
+{
+  "servers": {
+    "playbooks-dev": {
+      "command": "node",
+      "args": [
+        "/path/to/mcp/dist/index.cjs"
+      ]
+    }
+  }
+}
 ```
 
 ## Troubleshooting
