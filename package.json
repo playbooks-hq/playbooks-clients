@@ -1,6 +1,6 @@
 {
 	"name": "@playbooks/mcp",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"mcpName": "xyz.playbooks/mcp-server",
 	"description": "MCP wrapper around the Playbooks CLI.",
 	"homepage": "https://docs.playbooks.xyz",
