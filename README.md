@@ -51,7 +51,8 @@ token=********
 - [account collections](#account-collections)
 - [account drafts](#account-drafts)
 - [account downloads](#account-downloads)
-- [account ledger](#account-ledger)
+- [account invoices](#account-invoices)
+- [account ledgers](#account-ledgers)
 - [account payouts](#account-payouts)
 - [account plays](#account-plays)
 - [account subscription](#account-subscription)
@@ -240,13 +241,30 @@ playbooks account downloads --page 2 --pageSize 25
 | --sortProp  | string   | Sort by a specific property                            |
 | --sortValue | string   | Sort using a specific value                            |
 
-#### Account Ledger
+#### Account Invoices
 
-Fetch and display your account ledger statistics.
+View your account invoices.
 
 ```sh
-playbooks account ledger
-playbooks account ledger --select 'creditsEarned,creditsSpent,balance'
+playbooks account invoices
+playbooks account invoices --page 2 --pageSize 25
+```
+
+| Option      | Type     | Description                                            |
+| :---------- | :------- | :----------------------------------------------------- |
+| --select    | string[] | A comma separated list of fields you'd like to display |
+| --page      | number   | Fetch a specific page                                  |
+| --pageSize  | number   | Fetch a specific page size                             |
+| --sortProp  | string   | Sort by a specific property                            |
+| --sortValue | string   | Sort using a specific value                            |
+
+#### Account Ledgers
+
+View your account ledger activity.
+
+```sh
+playbooks account ledgers
+playbooks account ledgers --select 'id,amount,type'
 ```
 
 | Option   | Type     | Description                                            |
@@ -397,6 +415,7 @@ playbooks collections starter-packs plays --view featured
 | --select    | string[] | A comma separated list of fields you'd like to display |
 | --include   | string   | A comma separated list of relationships to include     |
 | --view      | string   | Filter by view                                         |
+| --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
@@ -446,6 +465,7 @@ playbooks frameworks react plays --view featured
 | --select    | string[] | A comma separated list of fields you'd like to display |
 | --include   | string   | A comma separated list of relationships to include     |
 | --view      | string   | Filter by view                                         |
+| --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
@@ -480,6 +500,7 @@ playbooks languages typescript plays --view featured
 | --select    | string[] | A comma separated list of fields you'd like to display |
 | --include   | string   | A comma separated list of relationships to include     |
 | --view      | string   | Filter by view                                         |
+| --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
@@ -561,6 +582,7 @@ playbooks plays --view featured
 | --tag       | string   | Fetch by tag identifier                                |
 | --user      | string   | Fetch by user identifier                               |
 | --view      | string   | Filter by view                                         |
+| --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
@@ -582,6 +604,7 @@ playbooks platforms web plays --view featured
 | --select    | string[] | A comma separated list of fields you'd like to display |
 | --include   | string   | A comma separated list of relationships to include     |
 | --view      | string   | Filter by view                                         |
+| --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
@@ -646,6 +669,7 @@ playbooks tags portfolio plays --view featured
 | --select    | string[] | A comma separated list of fields you'd like to display |
 | --include   | string   | A comma separated list of relationships to include     |
 | --view      | string   | Filter by view                                         |
+| --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
@@ -667,6 +691,7 @@ playbooks teams mile-hi-labs plays --view featured
 | --select    | string[] | A comma separated list of fields you'd like to display |
 | --include   | string   | A comma separated list of relationships to include     |
 | --view      | string   | Filter by view                                         |
+| --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
@@ -688,6 +713,7 @@ playbooks tools stripe plays --view featured
 | --select    | string[] | A comma separated list of fields you'd like to display |
 | --include   | string   | A comma separated list of relationships to include     |
 | --view      | string   | Filter by view                                         |
+| --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
@@ -722,6 +748,7 @@ playbooks users ehubbell plays --view featured
 | --select    | string[] | A comma separated list of fields you'd like to display |
 | --include   | string   | A comma separated list of relationships to include     |
 | --view      | string   | Filter by view                                         |
+| --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
 | --pageSize  | number   | Fetch a specific page size                             |
 | --sortProp  | string   | Sort by a specific property                            |
