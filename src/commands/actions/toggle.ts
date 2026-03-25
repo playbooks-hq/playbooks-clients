@@ -11,7 +11,7 @@ export const ToggleCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const uuid = options.u || options.uuid || null;
+		const uuid = options.uuid || null;
 		logger.log('options: ', { config, uuid });
 
 		// Update

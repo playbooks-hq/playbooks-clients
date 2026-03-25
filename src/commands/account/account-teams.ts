@@ -37,8 +37,8 @@ export const AccountTeamsCommand = async (options: any) => {
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serializeArray(response.data, selects, 'camel');
-		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
+		const formattedData = serializeArray(response.data, selects, 'camel') || [];
+		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display
 		spinner.succeed();

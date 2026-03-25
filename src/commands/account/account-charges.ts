@@ -37,7 +37,7 @@ export const AccountChargesCommand = async (options: any) => {
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serializeArray(response.data, selects, 'camel');
+		const formattedData = serializeArray(response.data, selects, 'camel') || [];
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display

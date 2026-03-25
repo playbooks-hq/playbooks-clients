@@ -11,8 +11,8 @@ export const LoginCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const email = options.e || options.email || '';
-		const password = options.p || options.password || '';
+		const email = options.email || '';
+		const password = options.password || '';
 		logger.log('options: ', { config });
 
 		// Update

@@ -11,7 +11,7 @@ export const TeamsDetailCommand = async (uuid, options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const include = options.i || options.include;
+		const include = options.include;
 		const select = options.select;
 		logger.log('options: ', { config, select, include });
 

@@ -12,50 +12,13 @@ export const PlaysListCommand = async (options: any) => {
 		// Setup
 		const config = options.config;
 		const select = options.select;
-		const framework = options.framework || null;
-		const language = options.language || null;
 		const page = options.page || null;
 		const pageSize = options.pageSize || null;
-		const platform = options.platform || null;
+		const query = options.query || null;
 		const sortProp = options.sortProp || null;
 		const sortValue = options.sortValue || null;
-		const team = options.team || null;
-		const tool = options.tool || null;
-		const tag = options.tag || null;
-		const user = options.user || null;
 		const view = options.view || null;
-		logger.log('options: ', {
-			config,
-			select,
-			framework,
-			language,
-			page,
-			pageSize,
-			platform,
-			sortProp,
-			sortValue,
-			team,
-			tool,
-			tag,
-			user,
-			view,
-		});
-
-		const endpoint = framework
-			? `/frameworks/${framework}/plays`
-			: language
-				? `/languages/${language}/plays`
-				: platform
-					? `/platforms/${platform}/plays`
-					: team
-						? `/teams/${team}/plays`
-						: tool
-							? `/tools/${tool}/plays`
-							: tag
-								? `/tags/${tag}/plays`
-								: user
-									? `/users/${user}/plays`
-									: `/plays`;
+		logger.log('options: ', { config, select, page, pageSize, query, sortProp, sortValue, view });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
@@ -71,13 +34,13 @@ export const PlaysListCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({ page, pageSize, sortProp, sortValue, view });
-		const response = await client.query({ endpoint, headers, params });
+		const params = client.serializeParams({ page, pageSize, query, sortProp, sortValue, view });
+		const response = await client.query({ endpoint: `/plays`, headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serializeArray(response.data, selects, 'camel');
-		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
+		const formattedData = serializeArray(response.data, selects, 'camel') || [];
+		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display
 		spinner.succeed();

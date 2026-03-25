@@ -1,5 +1,5 @@
 import ora from 'ora';
-import { serialize } from 'src/api';
+import { serializeArray } from 'src/api';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
@@ -11,14 +11,15 @@ export const ToolsListCommand = async (options: any) => {
 	try {
 		// Setup
 		const config = options.config;
-		const include = options.i || options.include;
+		const include = options.include;
 		const page = options.page || null;
 		const pageSize = options.pageSize || null;
+		const query = options.query || null;
 		const select = options.select;
 		const sortProp = options.sortProp || null;
 		const sortValue = options.sortValue || null;
-		const view = options.s || options.view;
-		logger.log('options: ', { config, select, include, page, pageSize, sortProp, sortValue, view });
+		const view = options.view;
+		logger.log('options: ', { config, select, include, page, pageSize, query, sortProp, sortValue, view });
 
 		// Update
 		new UpdateService({ base: config }).runCheck();
@@ -34,12 +35,12 @@ export const ToolsListCommand = async (options: any) => {
 		// Fetch
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const params = client.serializeParams({ include, page, pageSize, sortProp, sortValue, view });
-		const response = await client.queryRecord({ endpoint: '/tools', headers, params });
+		const params = client.serializeParams({ include, page, pageSize, query, sortProp, sortValue, view });
+		const response = await client.query({ endpoint: '/tools', headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serialize(response.data, selects);
+		const formattedData = serializeArray(response.data, selects, 'camel') || [];
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display

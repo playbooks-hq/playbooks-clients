@@ -14,7 +14,7 @@ export const AccountPlaysCommand = async (options: any) => {
 		const page = options.page || null;
 		const pageSize = options.pageSize || null;
 		const select = options.select;
-		const status = options.s || options.status;
+		const status = options.status;
 		const sortProp = options.sortProp || null;
 		const sortValue = options.sortValue || null;
 		logger.log('options: ', { config, select, status, page, pageSize, sortProp, sortValue });
@@ -40,8 +40,8 @@ export const AccountPlaysCommand = async (options: any) => {
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serializeArray(response.data, selects, 'camel');
-		const formattedResponse = formattedData.map(data => JSON.stringify(data, null, 2)).join(',\n');
+		const formattedData = serializeArray(response.data, selects, 'camel') || [];
+		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display
 		spinner.succeed();
