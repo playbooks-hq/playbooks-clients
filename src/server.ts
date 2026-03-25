@@ -15,6 +15,7 @@ const urlSchema = z.string().url();
 const selectSchema = z.string().min(1).optional();
 const includeSchema = z.string().min(1).optional();
 const viewSchema = z.string().min(1).optional();
+const querySchema = z.string().min(1).optional();
 const sortPropSchema = z.string().min(1).optional();
 const sortValueSchema = z.string().min(1).optional();
 const statusSchema = z.string().min(1).optional();
@@ -40,7 +41,7 @@ const helpCommands = [
 	'frameworks',
 	'init',
 	'languages',
-	'ledger',
+	'ledgers',
 	'login',
 	'logout',
 	'oauth',
@@ -88,6 +89,7 @@ const resourceListInputSchema = {
 	select: selectSchema,
 	include: includeSchema,
 	view: viewSchema,
+	query: querySchema,
 	page: pageSchema,
 	pageSize: pageSizeSchema,
 	sortProp: sortPropSchema,
@@ -106,6 +108,7 @@ const resourcePlaysInputSchema = {
 	uuid: uuidSchema,
 	select: selectSchema,
 	view: viewSchema,
+	query: querySchema,
 	page: pageSchema,
 	pageSize: pageSizeSchema,
 	sortProp: sortPropSchema,
@@ -116,14 +119,8 @@ const resourcePlaysInputSchema = {
 const playListInputSchema = {
 	select: selectSchema,
 	include: includeSchema,
-	framework: z.string().min(1).optional(),
-	language: z.string().min(1).optional(),
-	platform: z.string().min(1).optional(),
-	team: z.string().min(1).optional(),
-	tool: z.string().min(1).optional(),
-	tag: z.string().min(1).optional(),
-	user: z.string().min(1).optional(),
 	view: viewSchema,
+	query: querySchema,
 	page: pageSchema,
 	pageSize: pageSizeSchema,
 	sortProp: sortPropSchema,
@@ -233,7 +230,7 @@ function resolveHelpInvocation(command: (typeof helpCommands)[number] | undefine
 		case 'charges':
 		case 'downloads':
 		case 'drafts':
-		case 'ledger':
+		case 'ledgers':
 		case 'payouts':
 		case 'subscription':
 		case 'transfers':
@@ -445,14 +442,27 @@ export function createServer() {
 	);
 
 	server.registerTool(
-		'playbooks_account_ledger',
+		'playbooks_account_ledgers',
 		{
-			title: 'Playbooks Account Ledger',
-			description: 'Fetch ledger stats for the current account.',
+			title: 'Playbooks Account Ledgers',
+			description: 'Fetch ledger activity for the current account.',
 			inputSchema: accountDetailInputSchema,
 		},
 		async ({ select, configPath }) =>
-			executeAccountAction('ledger', configPath, {
+			executeAccountAction('ledgers', configPath, {
+				select,
+			}),
+	);
+
+	server.registerTool(
+		'playbooks_account_ledger',
+		{
+			title: 'Playbooks Account Ledger',
+			description: 'Deprecated alias for playbooks_account_ledgers.',
+			inputSchema: accountDetailInputSchema,
+		},
+		async ({ select, configPath }) =>
+			executeAccountAction('ledgers', configPath, {
 				select,
 			}),
 	);
@@ -643,7 +653,7 @@ export function createServer() {
 				description: `List ${resource.pluralLabel.toLowerCase()} from Playbooks.`,
 				inputSchema: resourceListInputSchema,
 			},
-			async ({ select, include, view, page, pageSize, sortProp, sortValue, configPath }) =>
+			async ({ select, include, view, query, page, pageSize, sortProp, sortValue, configPath }) =>
 				execute({
 					command: resource.command,
 					configPath,
@@ -651,6 +661,7 @@ export function createServer() {
 						select,
 						include,
 						view,
+						query,
 						page,
 						pageSize,
 						sortProp,
@@ -682,7 +693,7 @@ export function createServer() {
 				description: `List plays associated with a ${resource.singularLabel.toLowerCase()}.`,
 				inputSchema: resourcePlaysInputSchema,
 			},
-			async ({ uuid, select, view, page, pageSize, sortProp, sortValue, configPath }) =>
+			async ({ uuid, select, view, query, page, pageSize, sortProp, sortValue, configPath }) =>
 				execute({
 					command: resource.command,
 					positional: [uuid, 'plays'],
@@ -690,6 +701,7 @@ export function createServer() {
 					options: {
 						select,
 						view,
+						query,
 						page,
 						pageSize,
 						sortProp,
@@ -754,37 +766,15 @@ export function createServer() {
 			description: 'List plays from Playbooks with optional filters.',
 			inputSchema: playListInputSchema,
 		},
-		async ({
-			select,
-			include,
-			framework,
-			language,
-			platform,
-			team,
-			tool,
-			tag,
-			user,
-			view,
-			page,
-			pageSize,
-			sortProp,
-			sortValue,
-			configPath,
-		}) =>
+		async ({ select, include, view, query, page, pageSize, sortProp, sortValue, configPath }) =>
 			execute({
 				command: 'plays',
 				configPath,
 				options: {
 					select,
 					include,
-					framework,
-					language,
-					platform,
-					team,
-					tool,
-					tag,
-					user,
 					view,
+					query,
 					page,
 					pageSize,
 					sortProp,

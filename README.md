@@ -8,7 +8,7 @@ After installation, add the server to your MCP client using the examples below.
 
 - node
 - npm
-- playbooks
+- @playbooks/cli
 
 ## Installation
 
@@ -18,37 +18,23 @@ npx -y @playbooks/mcp
 
 ## Quick Start
 
+Use the `@playbooks/cli` helpers to update each client's global config file.
+
 ```sh
-claude mcp add playbooks -- npx -y @playbooks/mcp
-claude mcp list
+npm install -g @playbooks/cli
+playbooks mcp claude
+playbooks mcp cursor
+playbooks mcp codex
+playbooks mcp vscode
 ```
 
-Or add the server to VSCode:
-
-```json
-{
-  "servers": {
-    "playbooks": {
-      "command": "npx",
-      "args": ["-y", "@playbooks/mcp"]
-    }
-  }
-}
-```
-
-Or add the server to Codex:
-
-```toml
-[mcp_servers.playbooks]
-command = "npx"
-args = ["-y", "@playbooks/mcp"]
-```
 
 ## Configuration
 
 The Playbooks MCP server uses the same Playbooks configuration file as the CLI.
 By default it reads `~/.playbooksrc`.
 If you need a different file, most tools accept an optional `configPath` argument.
+Search-oriented list tools also accept a `query` argument where the underlying CLI supports it.
 
 ## Table of Contents
 
@@ -61,25 +47,24 @@ If you need a different file, most tools accept an optional `configPath` argumen
 
 ## Claude Code
 
-Add the server with the Claude CLI:
+Add the server to `~/.claude.json` for global scope or `.claude/settings.json` for project scope:
 
-```sh
-# Global
-claude mcp add playbooks --scope user -- npx -y @playbooks/mcp
-# Project
-claude mcp add playbooks -- npx -y @playbooks/mcp
-```
-
-Verify it:
-
-```sh
-claude mcp list
+```json
+{
+  "servers": {
+    "playbooks": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playbooks/mcp"]
+    }
+  }
+}
 ```
 
 
 ## Cursor
 
-Add the server to `.cursor/mcp.json` in your workspace or to your user `cursor.json` file:
+Add the server to `~/.cursor/mcp.json` for global scope or `.cursor/mcp.json` for project scope:
 
 ```json
 {
@@ -105,7 +90,7 @@ args = ["-y", "@playbooks/mcp"]
 
 ## VSCode
 
-Add the server to `.vscode/mcp.json` in your workspace or to your user `mcp.json` file:
+Add the server to `~/.vscode/mcp.json` for global scope or `.vscode/mcp.json` for project scope:
 
 ```json
 {
@@ -124,7 +109,7 @@ Add the server to `.vscode/mcp.json` in your workspace or to your user `mcp.json
 - `playbooks_account_bookmarks`
 - `playbooks_account_collections`
 - `playbooks_account_drafts`
-- `playbooks_account_ledger`
+- `playbooks_account_ledgers`
 - `playbooks_account_plays`
 - `playbooks_account_teams`
 - `playbooks_add`
@@ -200,7 +185,7 @@ claude mcp add playbooks-dev -- node /path/to/mcp/dist/index.cjs
 
 ### Cursor
 
-Add this to `~/.cursor/mcp.json` or your user `mcp.json`:
+Add this to `~/.cursor/mcp.json` for global scope or `.cursor/mcp.json` for project scope:
 
 ```json
 {
@@ -227,7 +212,7 @@ args = ["/path/to/mcp/dist/index.cjs"]
 
 ### VSCode
 
-Add this to `~/.vscode/mcp.json` or your user `mcp.json`:
+Add this to `~/.vscode/mcp.json` for global scope or `.vscode/mcp.json` for project scope:
 
 ```json
 {
