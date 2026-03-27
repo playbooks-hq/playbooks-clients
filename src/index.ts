@@ -183,6 +183,15 @@ cli.command('oauth').describe('Login to Playbooks via Github oauth.').example('o
 cli.command('ping').describe('Check your API connection.').example('ping').action(Commands.PingCommand);
 
 cli
+	.command('register')
+	.describe('Create a Playbooks account via name / email / password.')
+	.option('--name', 'Your name')
+	.option('--email', 'Your email address')
+	.option('--password', 'Your password')
+	.example('register --name "Acme Team" --email acme@example.com --password password')
+	.action(Commands.RegisterCommand);
+
+cli
 	.command('plays [uuid] [action]')
 	.describe('Fetch play related resources.')
 	.option('--select', 'Select specific fields', '*')
