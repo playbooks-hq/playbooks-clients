@@ -89,6 +89,7 @@ cli
 	.example('collections --view popular')
 	.example('collections starter-packs')
 	.example('collections starter-packs --include team')
+	.example('collections starter-packs open')
 	.example('collections starter-packs plays')
 	.example('collections starter-packs plays --view featured')
 	.action(Commands.CollectionsCommand);
@@ -125,6 +126,7 @@ cli
 	.example('frameworks --view popular')
 	.example('frameworks react')
 	.example('frameworks react --include team')
+	.example('frameworks react open')
 	.example('frameworks react plays')
 	.example('frameworks react plays --view featured')
 	.action(Commands.FrameworksCommand);
@@ -151,6 +153,7 @@ cli
 	.example('languages --view popular')
 	.example('languages typescript')
 	.example('languages typescript --include framework')
+	.example('languages typescript open')
 	.example('languages typescript plays')
 	.example('languages typescript plays --view featured')
 	.action(Commands.LanguagesCommand);
@@ -195,6 +198,7 @@ cli
 	.example('plays actix-official-starter')
 	.example('plays actix-official-starter demo')
 	.example('plays actix-official-starter deploy')
+	.example('plays actix-official-starter open')
 	.action(Commands.PlaysCommand);
 
 cli
@@ -212,6 +216,7 @@ cli
 	.example('platforms --view popular')
 	.example('platforms web')
 	.example('platforms web --include tool')
+	.example('platforms web open')
 	.example('platforms web plays')
 	.example('platforms web plays --view featured')
 	.action(Commands.PlatformsCommand);
@@ -258,6 +263,7 @@ cli
 	.example('tags --view popular')
 	.example('tags portfolio')
 	.example('tags portfolio --include user')
+	.example('tags portfolio open')
 	.example('tags portfolio plays')
 	.example('tags portfolio plays --view featured')
 	.action(Commands.TagsCommand);
@@ -277,6 +283,7 @@ cli
 	.example('teams --view popular')
 	.example('teams mile-hi-labs')
 	.example('teams mile-hi-labs --include users')
+	.example('teams mile-hi-labs open')
 	.example('teams mile-hi-labs plays')
 	.example('teams mile-hi-labs plays --view featured')
 	.action(Commands.TeamsCommand);
@@ -296,6 +303,7 @@ cli
 	.example('tools --view popular')
 	.example('tools stripe')
 	.example('tools stripe --include platform')
+	.example('tools stripe open')
 	.example('tools stripe plays')
 	.example('tools stripe plays --view featured')
 	.action(Commands.ToolsCommand);
@@ -315,6 +323,7 @@ cli
 	.example('users --view popular')
 	.example('users ehubbell')
 	.example('users ehubbell --include teams')
+	.example('users ehubbell open')
 	.example('users ehubbell plays')
 	.example('users ehubbell plays --view featured')
 	.action(Commands.UsersCommand);
