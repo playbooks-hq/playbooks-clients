@@ -46,6 +46,7 @@ cli
 	.example('account downloads')
 	.example('account invoices')
 	.example('account ledgers')
+	.example('account merchant')
 	.example('account plays')
 	.example('account subscription')
 	.example('account teams')

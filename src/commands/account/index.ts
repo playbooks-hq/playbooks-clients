@@ -7,6 +7,7 @@ import { AccountDownloadsCommand } from 'src/commands/account/account-downloads'
 import { AccountDraftsCommand } from 'src/commands/account/account-drafts';
 import { AccountInvoicesCommand } from 'src/commands/account/account-invoices';
 import { AccountLedgersCommand } from 'src/commands/account/account-ledgers';
+import { AccountMerchantCommand } from 'src/commands/account/account-merchant';
 import { AccountPayoutsCommand } from 'src/commands/account/account-payouts';
 import { AccountPlaysCommand } from 'src/commands/account/account-plays';
 import { AccountSubscriptionCommand } from 'src/commands/account/account-subscription';
@@ -23,6 +24,7 @@ export const AccountCommand = async (action, options: any) => {
 	if (action === 'drafts') return await AccountDraftsCommand(options);
 	if (action === 'invoices') return await AccountInvoicesCommand(options);
 	if (action === 'ledgers') return await AccountLedgersCommand(options);
+	if (action === 'merchant') return await AccountMerchantCommand(options);
 	if (action === 'payouts') return await AccountPayoutsCommand(options);
 	if (action === 'plays') return await AccountPlaysCommand(options);
 	if (action === 'subscription') return await AccountSubscriptionCommand(options);
