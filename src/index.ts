@@ -247,8 +247,7 @@ cli
 cli
 	.command('submit <url>')
 	.describe('Submit a play via Github URL.')
-	.option('--variant', 'Select variant')
-	.option('--visibility', 'Select visibility')
+	.option('--account', 'Select account')
 	.example('submit https://github.com/ehubbell/astro-official-starter')
 	.action(Commands.SubmitCommand);
 

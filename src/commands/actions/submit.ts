@@ -47,11 +47,6 @@ export const SubmitCommand = async (url, options: any) => {
 			choices: ['public', 'private'],
 		});
 
-		// Data
-		// const formattedName = name || (await namePrompt.run());
-		const formattedVariant = variant || (await variantPrompt.run());
-		const formattedVisibility = visibility || (await visibilityPrompt.run());
-
 		// Start
 		spinner.start();
 
@@ -59,7 +54,7 @@ export const SubmitCommand = async (url, options: any) => {
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
 		const params = {};
-		const data = { status: 'draft', url, variant: formattedVariant, visibility: formattedVisibility };
+		const data = { status: 'draft', url };
 		const response = await client.post({ endpoint: `/account/plays`, headers, params, data });
 
 		// Response
