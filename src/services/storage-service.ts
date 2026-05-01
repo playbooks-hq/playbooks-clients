@@ -17,10 +17,6 @@ class StorageService {
 	}
 
 	/* ----- Computed ----- */
-	get appPath() {
-		return `${this.base}`;
-	}
-
 	get downloadPath() {
 		return `${this.base}/${this.fileName}`;
 	}
@@ -52,17 +48,6 @@ class StorageService {
 
 	async stats() {
 		return await FileSystem.fileStats(this.base);
-	}
-
-	async unzipPartial() {
-		await FileSystem.checkOrCreatePath(this.appPath);
-
-		await new Promise((resolve, reject) => {
-			Fs.createReadStream(this.zipFile)
-				.pipe(Unzip.Extract({ path: this.appPath }))
-				.on('close', v => resolve(v))
-				.on('error', e => reject(e));
-		});
 	}
 
 	async unzip() {

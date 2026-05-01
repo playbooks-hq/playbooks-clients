@@ -55,16 +55,6 @@ cli
 	.action(Commands.AccountCommand);
 
 cli
-	.command('add <uuid>')
-	.describe('Add a play to your local project.')
-	.option('--path', 'Path to destination folder', '.')
-	.option('--name', 'Name the downloaded repository')
-	.option('--version', 'Specify tarball version', false)
-	.example('add express-logging-middleware')
-	.example('add express-logging-middleware --path ~/middlewares/logging-middleware.ts')
-	.action(Commands.AddCommand);
-
-cli
 	.command('clone <uuid>')
 	.describe('Clone a play to your Github account.')
 	.option('--account', 'Select your Github account')

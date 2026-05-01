@@ -5,7 +5,7 @@
 - authenticates users against Playbooks
 - exposes public marketplace resources as terminal commands
 - exposes authenticated account and workspace resources through the `account` namespace
-- supports play workflows like download, add, clone, submit, publish, sync, demo, and deploy
+- supports play workflows like download, clone, submit, publish, sync, demo, and deploy
 - installs Playbooks MCP configuration into tools like Claude, Codex, Cursor, and VS Code
 
 ## Why It Matters
@@ -23,7 +23,7 @@ This service sits on top of the rest of the Playbooks platform.
 
 - marketplace objects like plays, collections, frameworks, languages, platforms, tags, teams, tools, and users
 - account objects like subscriptions, transfers, ledger data, downloads, bookmarks, drafts, and account-owned plays
-- local developer actions like initializing projects, downloading assets, adding partials, cloning repos, and syncing changes
+- local developer actions like initializing projects, downloading assets, cloning repos, and syncing changes
 - AI tooling integration through `@playbooks/mcp`
 
 If you need the user-facing CLI behavior for Playbooks, start here.

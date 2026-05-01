@@ -59,7 +59,6 @@ token=********
 - [account teams](#account-teams)
 - [account transfers](#account-transfers)
 - [account usage](#account-usage)
-- [add](#add)
 - [clone](#clone)
 - [collections](#collections)
 - [config](#config)
@@ -367,21 +366,6 @@ playbooks account usage --select 'id,totalCredits,totalRemaining'
 | Option   | Type     | Description                                            |
 | :------- | :------- | :----------------------------------------------------- |
 | --select | string[] | A comma separated list of fields you'd like to display |
-
-#### Add
-
-Add a play to your local project and run install commands.
-
-```sh
-playbooks add <uuid>
-playbooks add <uuid> --path ~/path/to/folder
-```
-
-| Option    | Type   | Description                       |
-| :-------- | :----- | :-------------------------------- |
-| --path    | string | Path to custom destination folder |
-| --name    | string | Custom name for the directory     |
-| --version | string | Specify a specific version to add |
 
 #### Clone
 
