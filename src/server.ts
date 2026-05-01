@@ -27,7 +27,6 @@ const visibilitySchema = z.enum(['public', 'private']).optional();
 
 const helpCommands = [
 	'account',
-	'add',
 	'banks',
 	'bookmarks',
 	'cards',
@@ -51,6 +50,7 @@ const helpCommands = [
 	'plays',
 	'platforms',
 	'publish',
+	'register',
 	'session',
 	'subscription',
 	'submit',
@@ -104,6 +104,11 @@ const resourceDetailInputSchema = {
 	configPath: configPathSchema,
 };
 
+const resourceOpenInputSchema = {
+	uuid: uuidSchema,
+	configPath: configPathSchema,
+};
+
 const resourcePlaysInputSchema = {
 	uuid: uuidSchema,
 	select: selectSchema,
@@ -145,6 +150,7 @@ const resourceTools = [
 		pluralLabel: 'Collections',
 		singularTool: 'playbooks_collection',
 		pluralTool: 'playbooks_collections',
+		openTool: 'playbooks_collection_open',
 		playsTool: 'playbooks_collection_plays',
 	},
 	{
@@ -153,6 +159,7 @@ const resourceTools = [
 		pluralLabel: 'Frameworks',
 		singularTool: 'playbooks_framework',
 		pluralTool: 'playbooks_frameworks',
+		openTool: 'playbooks_framework_open',
 		playsTool: 'playbooks_framework_plays',
 	},
 	{
@@ -161,6 +168,7 @@ const resourceTools = [
 		pluralLabel: 'Languages',
 		singularTool: 'playbooks_language',
 		pluralTool: 'playbooks_languages',
+		openTool: 'playbooks_language_open',
 		playsTool: 'playbooks_language_plays',
 	},
 	{
@@ -169,6 +177,7 @@ const resourceTools = [
 		pluralLabel: 'Platforms',
 		singularTool: 'playbooks_platform',
 		pluralTool: 'playbooks_platforms',
+		openTool: 'playbooks_platform_open',
 		playsTool: 'playbooks_platform_plays',
 	},
 	{
@@ -177,6 +186,7 @@ const resourceTools = [
 		pluralLabel: 'Tags',
 		singularTool: 'playbooks_tag',
 		pluralTool: 'playbooks_tags',
+		openTool: 'playbooks_tag_open',
 		playsTool: 'playbooks_tag_plays',
 	},
 	{
@@ -185,6 +195,7 @@ const resourceTools = [
 		pluralLabel: 'Teams',
 		singularTool: 'playbooks_team',
 		pluralTool: 'playbooks_teams',
+		openTool: 'playbooks_team_open',
 		playsTool: 'playbooks_team_plays',
 	},
 	{
@@ -193,6 +204,7 @@ const resourceTools = [
 		pluralLabel: 'Tools',
 		singularTool: 'playbooks_tool',
 		pluralTool: 'playbooks_tools',
+		openTool: 'playbooks_tool_open',
 		playsTool: 'playbooks_tool_plays',
 	},
 	{
@@ -201,6 +213,7 @@ const resourceTools = [
 		pluralLabel: 'Users',
 		singularTool: 'playbooks_user',
 		pluralTool: 'playbooks_users',
+		openTool: 'playbooks_user_open',
 		playsTool: 'playbooks_user_plays',
 	},
 ] as const;
@@ -324,6 +337,26 @@ export function createServer() {
 				command: 'login',
 				configPath,
 				options: { email, password },
+			}),
+	);
+
+	server.registerTool(
+		'playbooks_register',
+		{
+			title: 'Playbooks Register',
+			description: 'Create a Playbooks account using name, email, and password without interactive prompts.',
+			inputSchema: {
+				name: z.string().min(1),
+				email: z.string().email(),
+				password: z.string().min(1),
+				configPath: configPathSchema,
+			},
+		},
+		async ({ name, email, password, configPath }) =>
+			execute({
+				command: 'register',
+				configPath,
+				options: { name, email, password },
 			}),
 	);
 
@@ -687,6 +720,21 @@ export function createServer() {
 		);
 
 		server.registerTool(
+			resource.openTool,
+			{
+				title: `Playbooks ${resource.singularLabel} Open`,
+				description: `Open a ${resource.singularLabel.toLowerCase()} in the browser.`,
+				inputSchema: resourceOpenInputSchema,
+			},
+			async ({ uuid, configPath }) =>
+				execute({
+					command: resource.command,
+					positional: [uuid, 'open'],
+					configPath,
+				}),
+		);
+
+		server.registerTool(
 			resource.playsTool,
 			{
 				title: `Playbooks ${resource.singularLabel} Plays`,
@@ -760,6 +808,21 @@ export function createServer() {
 	);
 
 	server.registerTool(
+		'playbooks_play_open',
+		{
+			title: 'Playbooks Play Open',
+			description: 'Open a play in the browser.',
+			inputSchema: resourceOpenInputSchema,
+		},
+		async ({ uuid, configPath }) =>
+			execute({
+				command: 'plays',
+				positional: [uuid, 'open'],
+				configPath,
+			}),
+	);
+
+	server.registerTool(
 		'playbooks_plays',
 		{
 			title: 'Playbooks Plays',
@@ -799,28 +862,6 @@ export function createServer() {
 		async ({ uuid, path, name, version, configPath }) =>
 			execute({
 				command: 'download',
-				positional: [uuid],
-				configPath,
-				options: { path, name, version },
-			}),
-	);
-
-	server.registerTool(
-		'playbooks_add',
-		{
-			title: 'Playbooks Add',
-			description: 'Add a play into an existing local project.',
-			inputSchema: {
-				uuid: uuidSchema,
-				path: pathSchema,
-				name: z.string().min(1).optional(),
-				version: z.string().min(1).optional(),
-				configPath: configPathSchema,
-			},
-		},
-		async ({ uuid, path, name, version, configPath }) =>
-			execute({
-				command: 'add',
 				positional: [uuid],
 				configPath,
 				options: { path, name, version },

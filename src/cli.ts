@@ -8,7 +8,6 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 export type PlaybooksCommandName =
 	| 'account'
-	| 'add'
 	| 'clone'
 	| 'collections'
 	| 'config'
@@ -23,6 +22,7 @@ export type PlaybooksCommandName =
 	| 'plays'
 	| 'platforms'
 	| 'publish'
+	| 'register'
 	| 'session'
 	| 'submit'
 	| 'sync'
