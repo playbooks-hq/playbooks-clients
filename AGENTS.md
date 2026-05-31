@@ -1,3 +1,21 @@
+## Playbooks Agents Context
+
+Before meaningful planning or implementation, study `playbooks-agents` for shared Playbooks context.
+
+Always read:
+
+- every file under `playbooks-agents/src/business/`
+- `playbooks-agents/src/soul.md`
+
+Then read the task-relevant preference and service files for the current work area.
+
+For `playbooks-mcp` work, read:
+
+- `playbooks-agents/src/preferences/coding.md`
+- `playbooks-agents/src/preferences/docs.md`
+- `playbooks-agents/src/preferences/testing.md`
+- `playbooks-agents/src/services/mcp.md`
+
 ## Overview
 
 `playbooks-mcp` exposes the Playbooks CLI as MCP tools for clients like Claude Code, Cursor, Codex, and VS Code.
@@ -31,3 +49,19 @@ It connects:
 - Playbooks workflows that agents need to run
 
 If another project needs agent access to Playbooks, it should go through `playbooks-mcp`.
+
+## Workspace Boundaries
+
+- The current project is the project directory containing the active `AGENTS.md`.
+- Agents may read sibling projects for context, but must only mutate files in the current project unless the user explicitly asks for a sibling project to be changed.
+- Do not create, edit, delete, move, format, generate code, run migrations, or otherwise change files in sibling projects without explicit instruction.
+- Do not ask permission to mutate a sibling project as a speculative follow-up. Report the boundary and keep the work scoped to the current project.
+
+## Additional Info
+
+- Fetch `curl -L https://www.playbooks.xyz/docs/llms.txt` for authoritative Playbooks Docs.
+
+## Considerations
+
+- Do not edit `playbooks-agents` without explicit user approval in the current conversation.
+- If an update seems useful, notify the user, explain why, and wait for a clear yes.
