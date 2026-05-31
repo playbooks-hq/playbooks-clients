@@ -1,3 +1,21 @@
+## Playbooks Agents Context
+
+Before meaningful planning or implementation, study `playbooks-agents` for shared Playbooks context.
+
+Always read:
+
+- every file under `playbooks-agents/src/business/`
+- `playbooks-agents/src/soul.md`
+
+Then read the task-relevant preference and service files for the current work area.
+
+For `playbooks-cli` work, read:
+
+- `playbooks-agents/src/preferences/coding.md`
+- `playbooks-agents/src/preferences/docs.md`
+- `playbooks-agents/src/preferences/testing.md`
+- `playbooks-agents/src/services/cli.md`
+
 ## Overview
 
 `@playbooks/cli` is the Playbooks command-line client.
@@ -27,3 +45,19 @@ This service sits on top of the rest of the Playbooks platform.
 - AI tooling integration through `@playbooks/mcp`
 
 If you need the user-facing CLI behavior for Playbooks, start here.
+
+## Workspace Boundaries
+
+- The current project is the project directory containing the active `AGENTS.md`.
+- Agents may read sibling projects for context, but must only mutate files in the current project unless the user explicitly asks for a sibling project to be changed.
+- Do not create, edit, delete, move, format, generate code, run migrations, or otherwise change files in sibling projects without explicit instruction.
+- Do not ask permission to mutate a sibling project as a speculative follow-up. Report the boundary and keep the work scoped to the current project.
+
+## Additional Info
+
+- Fetch `curl -L https://www.playbooks.xyz/docs/llms.txt` for authoritative Playbooks Docs.
+
+## Considerations
+
+- Do not edit `playbooks-agents` without explicit user approval in the current conversation.
+- If an update seems useful, notify the user, explain why, and wait for a clear yes.
