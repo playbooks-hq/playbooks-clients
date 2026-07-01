@@ -1,20 +1,19 @@
-## Playbooks Agents Context
+## Playbooks Harness Context
 
-Before meaningful planning or implementation, study `playbooks-agents` for shared Playbooks context.
+Before meaningful planning or implementation, study `playbooks-harness` for shared Playbooks context.
 
 Always read:
 
-- every file under `playbooks-agents/src/business/`
-- `playbooks-agents/src/soul.md`
+- every file under `playbooks-harness/src/about/`
 
 Then read the task-relevant preference and service files for the current work area.
 
 For `playbooks-cli` work, read:
 
-- `playbooks-agents/src/preferences/coding.md`
-- `playbooks-agents/src/preferences/docs.md`
-- `playbooks-agents/src/preferences/testing.md`
-- `playbooks-agents/src/services/cli.md`
+- `playbooks-harness/src/preferences/coding.md`
+- `playbooks-harness/src/preferences/docs.md`
+- `playbooks-harness/src/preferences/testing.md`
+- `playbooks-harness/src/services/cli.md`
 
 ## Overview
 
@@ -59,5 +58,5 @@ If you need the user-facing CLI behavior for Playbooks, start here.
 
 ## Considerations
 
-- Do not edit `playbooks-agents` without explicit user approval in the current conversation.
+- Do not edit `playbooks-harness` without explicit user approval in the current conversation.
 - If an update seems useful, notify the user, explain why, and wait for a clear yes.
