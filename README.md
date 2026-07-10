@@ -35,6 +35,7 @@ The Playbooks MCP server uses the same Playbooks configuration file as the CLI.
 By default it reads `~/.playbooksrc`.
 If you need a different file, most tools accept an optional `configPath` argument.
 Search-oriented list tools also accept a `query` argument where the underlying CLI supports it.
+When a tool accepts `include`, requested related data is returned inline on each record.
 
 ## Table of Contents
 

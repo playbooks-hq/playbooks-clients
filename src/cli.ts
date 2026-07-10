@@ -56,6 +56,16 @@ type CommandResult = {
 	invocation: string;
 };
 
+type StructuredContent = NonNullable<CallToolResult['structuredContent']>;
+type JsonParseResult = { ok: true; value: unknown } | { ok: false };
+type PlaybooksError = {
+	status: number;
+	title: string;
+	description: string;
+	source?: string;
+	debug?: string;
+};
+
 const DEFAULT_TIMEOUT_MS = 30000;
 const DEFAULT_CONFIG_PATH = process.env.PLAYBOOKS_CONFIG ?? path.join(os.homedir(), '.playbooksrc');
 const BOX_SIDE_PATTERN = /^[\s]*[│┃]/u;
@@ -130,6 +140,158 @@ function unwrapBoxOutput(value: string) {
 
 function formatInvocation(command: string, args: string[]) {
 	return [command, ...args].map(fragment => (fragment.includes(' ') ? JSON.stringify(fragment) : fragment)).join(' ');
+}
+
+function parseJson(value: string): JsonParseResult {
+	if (!value) {
+		return { ok: false };
+	}
+
+	try {
+		return { ok: true, value: JSON.parse(value) as unknown };
+	} catch {
+		return { ok: false };
+	}
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function structuredContent(value: unknown): StructuredContent {
+	if (isRecord(value)) {
+		return value;
+	}
+
+	return { data: value };
+}
+
+function textToolResult(text: string, isError = false): CallToolResult {
+	return {
+		content: [
+			{
+				type: 'text',
+				text,
+			},
+		],
+		isError,
+	};
+}
+
+function jsonPayloadToolResult(value: unknown, isError = false): CallToolResult {
+	return {
+		content: [
+			{
+				type: 'text',
+				text: JSON.stringify(value, null, 2),
+			},
+		],
+		structuredContent: structuredContent(value),
+		isError,
+	};
+}
+
+function statusTitle(status: number) {
+	switch (status) {
+		case 400:
+			return 'Bad Request';
+		case 401:
+			return 'Unauthorized';
+		case 403:
+			return 'Forbidden';
+		case 404:
+			return 'Not Found';
+		case 422:
+			return 'Unprocessable Entity';
+		case 429:
+			return 'Too Many Requests';
+		case 502:
+			return 'Bad Gateway';
+		default:
+			return status >= 500 ? 'Internal Server Error' : 'Error';
+	}
+}
+
+function optionalString(value: unknown) {
+	return typeof value === 'string' && value ? value : null;
+}
+
+function numberValue(value: unknown, fallback: number) {
+	const number = typeof value === 'string' ? Number(value) : value;
+	return typeof number === 'number' && Number.isFinite(number) ? number : fallback;
+}
+
+function debugString(value: unknown) {
+	if (!value) {
+		return null;
+	}
+
+	if (typeof value === 'string') {
+		return value;
+	}
+
+	if (Array.isArray(value)) {
+		return value.map(item => String(item)).join('\n');
+	}
+
+	return JSON.stringify(value);
+}
+
+function normalizeErrorData(value: unknown): PlaybooksError {
+	if (isRecord(value)) {
+		const status = numberValue(value.status, 500);
+		const source = optionalString(value.source);
+		const debug = optionalString(value.debug) ?? (!source ? debugString(value.source) : null);
+
+		return {
+			status,
+			title: optionalString(value.title) ?? statusTitle(status),
+			description:
+				optionalString(value.description) ??
+				optionalString(value.detail) ??
+				optionalString(value.message) ??
+				'Sorry, something went wrong.',
+			...(source ? { source } : {}),
+			...(debug ? { debug } : {}),
+		};
+	}
+
+	return {
+		status: 500,
+		title: 'Internal Server Error',
+		description: optionalString(value) ?? 'Sorry, something went wrong.',
+	};
+}
+
+function errorEnvelope(value: unknown) {
+	if (isRecord(value) && 'error' in value) {
+		return { error: normalizeErrorData(value.error) };
+	}
+
+	if (isRecord(value) && Array.isArray(value.errors)) {
+		return { error: normalizeErrorData(value.errors[0]) };
+	}
+
+	return { error: normalizeErrorData(value) };
+}
+
+function errorFromThrown(error: unknown) {
+	if (isRecord(error)) {
+		const status = numberValue(error.status, 500);
+		const debug = process.env.NODE_ENV === 'development' ? optionalString(error.stack) : null;
+
+		return {
+			error: {
+				status,
+				title: optionalString(error.title) ?? statusTitle(status),
+				description:
+					optionalString(error.description) ?? optionalString(error.message) ?? 'Sorry, something went wrong.',
+				...(debug ? { debug } : {}),
+			},
+		};
+	}
+
+	return errorEnvelope(error);
 }
 
 function buildArgs(input: RunPlaybooksCommandInput) {
@@ -245,6 +407,30 @@ export async function getPlaybooksStatus(configPath?: string) {
 }
 
 export function commandResultToToolResult(result: CommandResult): CallToolResult {
+	const parsedStdout = parseJson(result.stdout);
+	if (parsedStdout.ok) {
+		return result.ok
+			? jsonPayloadToolResult(parsedStdout.value)
+			: jsonPayloadToolResult(errorEnvelope(parsedStdout.value), true);
+	}
+
+	const parsedStderr = parseJson(result.stderr);
+	if (parsedStderr.ok) {
+		return jsonPayloadToolResult(errorEnvelope(parsedStderr.value), true);
+	}
+
+	if (!result.ok) {
+		return jsonPayloadToolResult(
+			errorEnvelope({
+				status: 500,
+				title: 'Internal Server Error',
+				description:
+					result.stderr || result.stdout || `The Playbooks CLI exited with code ${result.exitCode ?? 'unknown'}.`,
+			}),
+			true,
+		);
+	}
+
 	const pieces = [
 		`Invocation: ${result.invocation}`,
 		result.stdout ? `Output:\n${result.stdout}` : '',
@@ -253,38 +439,13 @@ export function commandResultToToolResult(result: CommandResult): CallToolResult
 		.filter(Boolean)
 		.join('\n\n');
 
-	return {
-		content: [
-			{
-				type: 'text',
-				text: pieces || 'The Playbooks CLI completed without output.',
-			},
-		],
-		isError: !result.ok,
-	};
+	return textToolResult(pieces || 'The Playbooks CLI completed without output.', !result.ok);
 }
 
 export function jsonToolResult(value: unknown): CallToolResult {
-	return {
-		content: [
-			{
-				type: 'text',
-				text: JSON.stringify(value, null, 2),
-			},
-		],
-	};
+	return jsonPayloadToolResult(value);
 }
 
 export function errorToolResult(error: unknown): CallToolResult {
-	const message = error instanceof Error ? error.message : String(error);
-
-	return {
-		content: [
-			{
-				type: 'text',
-				text: message,
-			},
-		],
-		isError: true,
-	};
+	return jsonPayloadToolResult(errorFromThrown(error), true);
 }

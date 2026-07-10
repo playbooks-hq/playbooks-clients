@@ -17,7 +17,7 @@
     {
       "name": "zsh",
       "execute": false,
-      "command": "cd ..",
+      "command": "",
       "recycle": true
     }
   ]
