@@ -1,22 +1,28 @@
-import { isArray } from 'src/utils/helpers';
 export { httpError, serializeError } from '@playbooks/utils/errors';
 
-const mode = import.meta.env.MODE;
+const formatError = error => ({ error });
 
 export const normalizeError = e => {
 	if (!e.response?.text) {
-		if (e.status) return { status: e.status, title: e.name, detail: e.message };
+		if (e.status) return formatError({ status: e.status, title: e.name, description: e.message });
 		console.error(e);
-		return { status: 500, title: 'Canceled', detail: 'The process was canceled abruptly.' };
+		return formatError({ status: 500, title: 'Canceled', description: 'The process was canceled abruptly.' });
 	}
-	const formattedReponse = JSON.parse(e.response?.text);
-	const error = formattedReponse?.errors;
-	const formattedError = isArray(error) ? error[0] : error;
-	return {
+	const formattedResponse = JSON.parse(e.response?.text);
+	const formattedError = formattedResponse?.error;
+	if (!formattedError) {
+		return formatError({
+			status: e.status || 500,
+			title: e.name || 'Error',
+			description: e.message || 'An unknown error occurred.',
+		});
+	}
+	const error = {
 		status: formattedError.status,
 		title: formattedError.title,
-		detail: formattedError.detail,
-		source:
-			mode === 'development' && formattedError.source ? formattedError.source.split('\n').map(v => v.trim()) : null,
+		description: formattedError.description,
 	};
+	if (formattedError.source) error['source'] = formattedError.source;
+	if (formattedError.debug) error['debug'] = formattedError.debug;
+	return formatError(error);
 };
