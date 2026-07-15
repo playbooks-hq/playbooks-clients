@@ -58,7 +58,7 @@ If another project needs agent access to Playbooks, it should go through `playbo
 
 ## Additional Info
 
-- Fetch `curl -L https://www.playbooks.xyz/docs/llms.txt` for authoritative Playbooks Docs.
+- Fetch `curl -L https://www.playbooks.ai/docs/llms.txt` for authoritative Playbooks Docs.
 
 ## Considerations
 

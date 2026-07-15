@@ -3,7 +3,7 @@
 	"version": "0.2.0",
 	"mcpName": "xyz.playbooks/mcp-server",
 	"description": "MCP wrapper around the Playbooks CLI.",
-	"homepage": "https://docs.playbooks.xyz",
+	"homepage": "https://docs.playbooks.ai",
 	"license": "MIT",
 	"type": "module",
 	"main": "dist/index.cjs",
@@ -68,15 +68,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/playbooks-xyz/playbooks-mcp.git"
+		"url": "git+https://github.com/playbooks-hq/playbooks-mcp.git"
 	},
 	"bugs": {
-		"url": "https://github.com/playbooks-xyz/playbooks-mcp/issues"
+		"url": "https://github.com/playbooks-hq/playbooks-mcp/issues"
 	},
 	"author": {
 		"name": "Playbooks",
-		"email": "support@playbooks.xyz",
-		"url": "https://github.com/playbooks-xyz"
+		"email": "support@playbooks.ai",
+		"url": "https://github.com/playbooks-hq"
 	},
 	"exports": {
 		".": {
