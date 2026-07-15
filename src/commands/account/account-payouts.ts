@@ -1,8 +1,8 @@
 import ora from 'ora';
-import { serializeArray } from 'src/api';
 import { ApiService } from 'src/services/api-service';
 import { ConfigService } from 'src/services/config-service';
 import { UpdateService } from 'src/services/update-service';
+import { serializeArray } from 'src/utils';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
@@ -37,7 +37,7 @@ export const AccountPayoutsCommand = async (options: any) => {
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
-		const formattedData = serializeArray(response.data, selects, 'camel') || [];
+		const formattedData = serializeArray(response.data, selects) || [];
 		const formattedResponse = JSON.stringify(formattedData, null, 2);
 
 		// Display

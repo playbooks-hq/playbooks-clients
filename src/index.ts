@@ -23,7 +23,7 @@ const normalizeCommandArgs = (argv: string[]) => {
 
 cli
 	.version(version)
-	.describe('A CLI for Playbooks (https://www.playbooks.xyz).')
+	.describe('A CLI for Playbooks (https://www.playbooks.ai).')
 	.option('--config', 'Path to your config file.', configFile);
 
 // Commands

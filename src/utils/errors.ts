@@ -1,6 +1,18 @@
-export { httpError, serializeError } from '@playbooks/utils/errors';
+import HttpError from 'http-errors';
 
 const formatError = error => ({ error });
+
+export const httpError = HttpError;
+
+export const serializeError = e => {
+	const status = e.status || e.statusCode || e.code || 500;
+	const title = e.title || e.name || 'Error';
+	const description = e.description || e.message || 'An unknown error occurred.';
+	const error = { status, title, description };
+	if (e.source) error['source'] = e.source;
+	if (e.debug) error['debug'] = e.debug;
+	return formatError(error);
+};
 
 export const normalizeError = e => {
 	if (!e.response?.text) {

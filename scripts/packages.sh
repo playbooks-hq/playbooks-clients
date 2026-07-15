@@ -1,6 +1,1 @@
-echo "running packages...\n"
-
-npm install \
-@playbooks/normalizers@latest \
-@playbooks/serializers@latest \
-@playbooks/utils@latest
+echo "no shared Playbooks packages to refresh."
