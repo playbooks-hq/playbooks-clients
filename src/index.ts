@@ -103,51 +103,11 @@ cli
 	.action(Commands.DownloadCommand);
 
 cli
-	.command('frameworks [uuid] [action]')
-	.describe('Fetch framework related resources.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.option('--view', 'Filter by view')
-	.option('--query', 'Filter by a search query')
-	.option('--page', 'Fetch a specific page')
-	.option('--pageSize', 'Fetch a specific page size')
-	.option('--sortProp', 'Sort by a specific property')
-	.option('--sortValue', 'Sort using a specific value')
-	.example('frameworks')
-	.example('frameworks --view popular')
-	.example('frameworks react')
-	.example('frameworks react --include team')
-	.example('frameworks react open')
-	.example('frameworks react plays')
-	.example('frameworks react plays --view featured')
-	.action(Commands.FrameworksCommand);
-
-cli
 	.command('init')
 	.describe('Add a playbooks.json file to your project.')
 	.option('--path', 'Path to destination folder', '.')
 	.example('init')
 	.action(Commands.InitCommand);
-
-cli
-	.command('languages [uuid] [action]')
-	.describe('Fetch language related resources.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.option('--view', 'Filter by view')
-	.option('--query', 'Filter by a search query')
-	.option('--page', 'Fetch a specific page')
-	.option('--pageSize', 'Fetch a specific page size')
-	.option('--sortProp', 'Sort by a specific property')
-	.option('--sortValue', 'Sort using a specific value')
-	.example('languages')
-	.example('languages --view popular')
-	.example('languages typescript')
-	.example('languages typescript --include framework')
-	.example('languages typescript open')
-	.example('languages typescript plays')
-	.example('languages typescript plays --view featured')
-	.action(Commands.LanguagesCommand);
 
 cli
 	.command('login')
@@ -200,26 +160,6 @@ cli
 	.example('plays actix-official-starter deploy')
 	.example('plays actix-official-starter open')
 	.action(Commands.PlaysCommand);
-
-cli
-	.command('platforms [uuid] [action]')
-	.describe('Fetch platform related resources.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.option('--view', 'Filter by view')
-	.option('--query', 'Filter by a search query')
-	.option('--page', 'Fetch a specific page')
-	.option('--pageSize', 'Fetch a specific page size')
-	.option('--sortProp', 'Sort by a specific property')
-	.option('--sortValue', 'Sort using a specific value')
-	.example('platforms')
-	.example('platforms --view popular')
-	.example('platforms web')
-	.example('platforms web --include tool')
-	.example('platforms web open')
-	.example('platforms web plays')
-	.example('platforms web plays --view featured')
-	.action(Commands.PlatformsCommand);
 
 cli
 	.command('publish <uuid>')
@@ -286,26 +226,6 @@ cli
 	.example('teams mile-hi-labs plays')
 	.example('teams mile-hi-labs plays --view featured')
 	.action(Commands.TeamsCommand);
-
-cli
-	.command('tools [uuid] [action]')
-	.describe('Fetch tool related resources.')
-	.option('--select', 'Select specific fields', '*')
-	.option('--include', 'Include associated data')
-	.option('--view', 'Filter by view')
-	.option('--query', 'Filter by a search query')
-	.option('--page', 'Fetch a specific page')
-	.option('--pageSize', 'Fetch a specific page size')
-	.option('--sortProp', 'Sort by a specific property')
-	.option('--sortValue', 'Sort using a specific value')
-	.example('tools')
-	.example('tools --view popular')
-	.example('tools stripe')
-	.example('tools stripe --include platform')
-	.example('tools stripe open')
-	.example('tools stripe plays')
-	.example('tools stripe plays --view featured')
-	.action(Commands.ToolsCommand);
 
 cli
 	.command('users [uuid] [action]')

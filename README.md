@@ -63,23 +63,19 @@ token=********
 - [collections](#collections)
 - [config](#config)
 - [download](#download)
-- [frameworks](#frameworks)
 - [init](#init)
-- [languages](#languages)
 - [login](#login)
 - [logout](#logout)
 - [mcp](#mcp)
 - [oauth](#oauth)
 - [ping](#ping)
 - [plays](#plays)
-- [platforms](#platforms)
 - [publish](#publish)
 - [session](#session)
 - [submit](#submit)
 - [sync](#sync)
 - [tags](#tags)
 - [teams](#teams)
-- [tools](#tools)
 - [toggle](#toggle)
 - [users](#users)
 
@@ -433,28 +429,6 @@ playbooks download <uuid> --path ~/path/to/folder
 | --name    | string | Custom name for the directory          |
 | --version | string | Specify a specific version to download |
 
-#### Frameworks
-
-Fetch framework related resources.
-
-```sh
-playbooks frameworks
-playbooks frameworks react
-playbooks frameworks react --include team
-playbooks frameworks react plays --view featured
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --include   | string   | A comma separated list of relationships to include     |
-| --view      | string   | Filter by view                                         |
-| --query     | string   | Filter by a search query                               |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
 #### Init
 
 Add a playbooks.json file to your project.
@@ -467,28 +441,6 @@ playbooks init --path ~/path/to/project
 | Option | Type   | Description                       |
 | :----- | :----- | :-------------------------------- |
 | --path | string | Path to custom destination folder |
-
-#### Languages
-
-Fetch language related resources.
-
-```sh
-playbooks languages
-playbooks languages typescript
-playbooks languages typescript --include framework
-playbooks languages typescript plays --view featured
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --include   | string   | A comma separated list of relationships to include     |
-| --view      | string   | Filter by view                                         |
-| --query     | string   | Filter by a search query                               |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
 
 #### Login
 
@@ -548,8 +500,6 @@ playbooks plays
 playbooks plays actix-official-starter
 playbooks plays actix-official-starter demo
 playbooks plays actix-official-starter deploy
-playbooks plays --framework react
-playbooks plays --language typescript
 playbooks plays --team mile-hi-labs
 playbooks plays --view featured
 ```
@@ -558,35 +508,9 @@ playbooks plays --view featured
 | :---------- | :------- | :----------------------------------------------------- |
 | --select    | string[] | A comma separated list of fields you'd like to display |
 | --include   | string   | A comma separated list of relationships to include     |
-| --framework | string   | Fetch by framework identifier                          |
-| --language  | string   | Fetch by language identifier                           |
-| --platform  | string   | Fetch by platform identifier                           |
 | --team      | string   | Fetch by team identifier                               |
-| --tool      | string   | Fetch by tool identifier                               |
 | --tag       | string   | Fetch by tag identifier                                |
 | --user      | string   | Fetch by user identifier                               |
-| --view      | string   | Filter by view                                         |
-| --query     | string   | Filter by a search query                               |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Platforms
-
-Fetch platform related resources.
-
-```sh
-playbooks platforms
-playbooks platforms web
-playbooks platforms web --include tool
-playbooks platforms web plays --view featured
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --include   | string   | A comma separated list of relationships to include     |
 | --view      | string   | Filter by view                                         |
 | --query     | string   | Filter by a search query                               |
 | --page      | number   | Fetch a specific page                                  |
@@ -668,28 +592,6 @@ playbooks teams
 playbooks teams mile-hi-labs
 playbooks teams mile-hi-labs --include users
 playbooks teams mile-hi-labs plays --view featured
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --include   | string   | A comma separated list of relationships to include     |
-| --view      | string   | Filter by view                                         |
-| --query     | string   | Filter by a search query                               |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Tools
-
-Fetch tool related resources.
-
-```sh
-playbooks tools
-playbooks tools stripe
-playbooks tools stripe --include platform
-playbooks tools stripe plays --view featured
 ```
 
 | Option      | Type     | Description                                            |
