@@ -1,7 +1,7 @@
 ## Overview
 
 The Playbooks MCP server gives developers MCP access to their Playbooks account.
-Using the server, agents can inspect configuration, view account details, browse plays, and run common Playbooks workflow actions from chat.
+Using the server, agents can inspect configuration, view account details, browse templates, and run common Playbooks workflow actions from chat.
 After installation, add the server to your MCP client using the examples below.
 
 ## Prerequisites

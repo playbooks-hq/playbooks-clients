@@ -22,7 +22,7 @@ const statusSchema = z.string().min(1).optional();
 const pageSchema = z.coerce.number().int().positive().optional();
 const pageSizeSchema = z.coerce.number().int().positive().optional();
 const pathSchema = z.string().min(1).optional();
-const variantSchema = z.enum(['starter', 'partial', 'template', 'stack', 'app']).optional();
+const typeSchema = z.string().min(1).optional();
 const visibilitySchema = z.enum(['public', 'private']).optional();
 
 const helpCommands = [
@@ -850,7 +850,7 @@ export function createServer() {
 		'playbooks_download',
 		{
 			title: 'Playbooks Download',
-			description: 'Download a play to the local filesystem.',
+			description: 'Download a template to the local filesystem.',
 			inputSchema: {
 				uuid: uuidSchema,
 				path: pathSchema,
@@ -872,7 +872,7 @@ export function createServer() {
 		'playbooks_clone',
 		{
 			title: 'Playbooks Clone',
-			description: 'Clone a play to a GitHub account connected to Playbooks.',
+			description: 'Clone a template to a GitHub account connected to Playbooks.',
 			inputSchema: {
 				uuid: uuidSchema,
 				account: z.string().min(1).optional(),
@@ -913,7 +913,7 @@ export function createServer() {
 		'playbooks_publish',
 		{
 			title: 'Playbooks Publish',
-			description: 'Publish a play owned by the current account to the marketplace.',
+			description: 'Publish a template owned by the current account to the marketplace.',
 			inputSchema: {
 				uuid: uuidSchema,
 				configPath: configPathSchema,
@@ -931,21 +931,21 @@ export function createServer() {
 		'playbooks_submit',
 		{
 			title: 'Playbooks Submit',
-			description: 'Submit a play to Playbooks from a GitHub URL.',
+			description: 'Submit a template to Playbooks from a GitHub URL.',
 			inputSchema: {
 				url: urlSchema,
-				variant: variantSchema,
+				type: typeSchema,
 				visibility: visibilitySchema,
 				configPath: configPathSchema,
 			},
 		},
-		async ({ url, variant, visibility, configPath }) =>
+		async ({ url, type, visibility, configPath }) =>
 			execute({
 				command: 'submit',
 				positional: [url],
 				configPath,
 				options: {
-					variant: variant ?? 'starter',
+					type,
 					visibility: visibility ?? 'public',
 				},
 			}),
@@ -955,7 +955,7 @@ export function createServer() {
 		'playbooks_sync',
 		{
 			title: 'Playbooks Sync',
-			description: 'Sync a play to pull the latest files from GitHub.',
+			description: 'Sync a template to pull the latest files from GitHub.',
 			inputSchema: {
 				uuid: uuidSchema,
 				configPath: configPathSchema,
