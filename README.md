@@ -155,10 +155,10 @@ Add the server to `~/.vscode/mcp.json` for global scope or `.vscode/mcp.json` fo
 - `playbooks_subscription`
 - `playbooks_submit`
 - `playbooks_sync`
-- `playbooks_tag`
-- `playbooks_tag_open`
-- `playbooks_tag_plays`
-- `playbooks_tags`
+- `playbooks_category`
+- `playbooks_category_open`
+- `playbooks_category_templates`
+- `playbooks_categories`
 - `playbooks_team`
 - `playbooks_team_open`
 - `playbooks_team_plays`

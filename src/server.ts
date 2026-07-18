@@ -55,7 +55,7 @@ const helpCommands = [
 	'subscription',
 	'submit',
 	'sync',
-	'tags',
+	'categories',
 	'teams',
 	'toggle',
 	'tools',
@@ -109,7 +109,7 @@ const resourceOpenInputSchema = {
 	configPath: configPathSchema,
 };
 
-const resourcePlaysInputSchema = {
+const resourceRelatedInputSchema = {
 	uuid: uuidSchema,
 	select: selectSchema,
 	view: viewSchema,
@@ -151,7 +151,9 @@ const resourceTools = [
 		singularTool: 'playbooks_collection',
 		pluralTool: 'playbooks_collections',
 		openTool: 'playbooks_collection_open',
-		playsTool: 'playbooks_collection_plays',
+		relatedTool: 'playbooks_collection_plays',
+		relatedAction: 'plays',
+		relatedLabel: 'Plays',
 	},
 	{
 		command: 'frameworks',
@@ -160,7 +162,9 @@ const resourceTools = [
 		singularTool: 'playbooks_framework',
 		pluralTool: 'playbooks_frameworks',
 		openTool: 'playbooks_framework_open',
-		playsTool: 'playbooks_framework_plays',
+		relatedTool: 'playbooks_framework_plays',
+		relatedAction: 'plays',
+		relatedLabel: 'Plays',
 	},
 	{
 		command: 'languages',
@@ -169,7 +173,9 @@ const resourceTools = [
 		singularTool: 'playbooks_language',
 		pluralTool: 'playbooks_languages',
 		openTool: 'playbooks_language_open',
-		playsTool: 'playbooks_language_plays',
+		relatedTool: 'playbooks_language_plays',
+		relatedAction: 'plays',
+		relatedLabel: 'Plays',
 	},
 	{
 		command: 'platforms',
@@ -178,16 +184,20 @@ const resourceTools = [
 		singularTool: 'playbooks_platform',
 		pluralTool: 'playbooks_platforms',
 		openTool: 'playbooks_platform_open',
-		playsTool: 'playbooks_platform_plays',
+		relatedTool: 'playbooks_platform_plays',
+		relatedAction: 'plays',
+		relatedLabel: 'Plays',
 	},
 	{
-		command: 'tags',
-		singularLabel: 'Tag',
-		pluralLabel: 'Tags',
-		singularTool: 'playbooks_tag',
-		pluralTool: 'playbooks_tags',
-		openTool: 'playbooks_tag_open',
-		playsTool: 'playbooks_tag_plays',
+		command: 'categories',
+		singularLabel: 'Category',
+		pluralLabel: 'Categories',
+		singularTool: 'playbooks_category',
+		pluralTool: 'playbooks_categories',
+		openTool: 'playbooks_category_open',
+		relatedTool: 'playbooks_category_templates',
+		relatedAction: 'templates',
+		relatedLabel: 'Templates',
 	},
 	{
 		command: 'teams',
@@ -196,7 +206,9 @@ const resourceTools = [
 		singularTool: 'playbooks_team',
 		pluralTool: 'playbooks_teams',
 		openTool: 'playbooks_team_open',
-		playsTool: 'playbooks_team_plays',
+		relatedTool: 'playbooks_team_plays',
+		relatedAction: 'plays',
+		relatedLabel: 'Plays',
 	},
 	{
 		command: 'tools',
@@ -205,7 +217,9 @@ const resourceTools = [
 		singularTool: 'playbooks_tool',
 		pluralTool: 'playbooks_tools',
 		openTool: 'playbooks_tool_open',
-		playsTool: 'playbooks_tool_plays',
+		relatedTool: 'playbooks_tool_plays',
+		relatedAction: 'plays',
+		relatedLabel: 'Plays',
 	},
 	{
 		command: 'users',
@@ -214,7 +228,9 @@ const resourceTools = [
 		singularTool: 'playbooks_user',
 		pluralTool: 'playbooks_users',
 		openTool: 'playbooks_user_open',
-		playsTool: 'playbooks_user_plays',
+		relatedTool: 'playbooks_user_plays',
+		relatedAction: 'plays',
+		relatedLabel: 'Plays',
 	},
 ] as const;
 
@@ -735,16 +751,16 @@ export function createServer() {
 		);
 
 		server.registerTool(
-			resource.playsTool,
+			resource.relatedTool,
 			{
-				title: `Playbooks ${resource.singularLabel} Plays`,
-				description: `List plays associated with a ${resource.singularLabel.toLowerCase()}.`,
-				inputSchema: resourcePlaysInputSchema,
+				title: `Playbooks ${resource.singularLabel} ${resource.relatedLabel}`,
+				description: `List ${resource.relatedLabel.toLowerCase()} associated with a ${resource.singularLabel.toLowerCase()}.`,
+				inputSchema: resourceRelatedInputSchema,
 			},
 			async ({ uuid, select, view, query, page, pageSize, sortProp, sortValue, configPath }) =>
 				execute({
 					command: resource.command,
-					positional: [uuid, 'plays'],
+					positional: [uuid, resource.relatedAction],
 					configPath,
 					options: {
 						select,
@@ -895,7 +911,7 @@ export function createServer() {
 		'playbooks_init',
 		{
 			title: 'Playbooks Init',
-			description: 'Create a playbooks.json file in a local project.',
+			description: 'Create the minimal playbooks.json project manifest without exposing runtime internals.',
 			inputSchema: {
 				path: pathSchema,
 				configPath: configPathSchema,

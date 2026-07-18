@@ -26,7 +26,7 @@ export type PlaybooksCommandName =
 	| 'session'
 	| 'submit'
 	| 'sync'
-	| 'tags'
+	| 'categories'
 	| 'teams'
 	| 'toggle'
 	| 'tools'
