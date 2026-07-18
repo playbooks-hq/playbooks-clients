@@ -104,7 +104,7 @@ cli
 
 cli
 	.command('init')
-	.describe('Add a playbooks.json file to your project.')
+	.describe('Add the minimal playbooks.json project manifest.')
 	.option('--path', 'Path to destination folder', '.')
 	.example('init')
 	.action(Commands.InitCommand);
@@ -188,8 +188,8 @@ cli
 	.action(Commands.SyncCommand);
 
 cli
-	.command('tags [uuid] [action]')
-	.describe('Fetch tag related resources.')
+	.command('categories [uuid] [action]')
+	.describe('Fetch category related resources.')
 	.option('--select', 'Select specific fields', '*')
 	.option('--include', 'Include associated data')
 	.option('--view', 'Filter by view')
@@ -198,14 +198,14 @@ cli
 	.option('--pageSize', 'Fetch a specific page size')
 	.option('--sortProp', 'Sort by a specific property')
 	.option('--sortValue', 'Sort using a specific value')
-	.example('tags')
-	.example('tags --view popular')
-	.example('tags portfolio')
-	.example('tags portfolio --include user')
-	.example('tags portfolio open')
-	.example('tags portfolio plays')
-	.example('tags portfolio plays --view featured')
-	.action(Commands.TagsCommand);
+	.example('categories')
+	.example('categories --view popular')
+	.example('categories portfolio')
+	.example('categories portfolio --include user')
+	.example('categories portfolio open')
+	.example('categories portfolio templates')
+	.example('categories portfolio templates --view featured')
+	.action(Commands.CategoriesCommand);
 
 cli
 	.command('teams [uuid] [action]')

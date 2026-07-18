@@ -5,8 +5,8 @@ import { UpdateService } from 'src/services/update-service';
 import { httpError, normalizeError, openUrl } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const TagsOpenCommand = async (uuid, options: any) => {
-	const spinner = ora(`Opening tag ${uuid}...`);
+export const CategoriesOpenCommand = async (uuid, options: any) => {
+	const spinner = ora(`Opening category ${uuid}...`);
 	try {
 		const config = options.config;
 		logger.log('options: ', { config, uuid });
@@ -20,10 +20,10 @@ export const TagsOpenCommand = async (uuid, options: any) => {
 
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
-		const response = await client.queryRecord({ endpoint: `/tags/${uuid}`, headers });
+		const response = await client.queryRecord({ endpoint: `/categories/${uuid}`, headers });
 		const webUrl = response.data?.webUrl;
 
-		if (!webUrl) throw httpError(422, 'This tag does not have a webUrl.');
+		if (!webUrl) throw httpError(422, 'This category does not have a webUrl.');
 
 		await openUrl(webUrl);
 

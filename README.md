@@ -74,7 +74,7 @@ token=********
 - [session](#session)
 - [submit](#submit)
 - [sync](#sync)
-- [tags](#tags)
+- [categories](#categories)
 - [teams](#teams)
 - [toggle](#toggle)
 - [users](#users)
@@ -431,7 +431,7 @@ playbooks download <uuid> --path ~/path/to/folder
 
 #### Init
 
-Add a playbooks.json file to your project.
+Add the minimal playbooks.json manifest to your project.
 
 ```sh
 playbooks init
@@ -561,15 +561,15 @@ Sync a play to pull the latest files from Github.
 playbooks sync <uuid>
 ```
 
-#### Tags
+#### Categories
 
-Fetch tag related resources.
+Fetch category related resources.
 
 ```sh
-playbooks tags
-playbooks tags portfolio
-playbooks tags portfolio --include user
-playbooks tags portfolio plays --view featured
+playbooks categories
+playbooks categories portfolio
+playbooks categories portfolio --include user
+playbooks categories portfolio templates --view featured
 ```
 
 | Option      | Type     | Description                                            |

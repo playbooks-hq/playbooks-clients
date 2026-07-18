@@ -5,6 +5,6 @@ export * from 'src/commands/collections';
 export * from 'src/commands/mcp';
 export * from 'src/commands/plays';
 export * from 'src/commands/session';
-export * from 'src/commands/tags';
+export * from 'src/commands/categories';
 export * from 'src/commands/teams';
 export * from 'src/commands/users';

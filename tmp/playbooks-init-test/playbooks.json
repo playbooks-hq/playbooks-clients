@@ -1,46 +1,24 @@
 {
-  "coverType": "",
-  "cover": "",
-  "video": "",
-  "poster": "",
+  "$schema": "https://playbooks.ai/schemas/project.json",
+  "version": 1,
+  "name": "My Project",
+  "tagline": "A short project summary",
+  "description": "Describe what this project does.",
   "thumbnail": "",
-  "name": "",
-  "description": "",
-  "variant": "",
-  "setup": {
-    "welcomeComplete": true,
-    "basicsComplete": true,
-    "connectionComplete": true,
-    "mediaComplete": true,
-    "techComplete": true,
-    "demoComplete": true,
-    "reviewComplete": true
-  },
-  "qualities": {
-    "hasDemo": true,
-    "hasReadme": true,
-    "hasLicense": true,
-    "hasDistribution": true
-  },
-  "demo": {
-    "strategy": "",
-    "subdomain": "",
-    "port": 3000,
-    "subdirectory": "",
-    "dockerfile": "",
-    "dockercompose": "",
-    "image": "",
-    "partial": "",
-    "networks": [],
-    "env": [],
-    "files": [],
-    "commands": [],
-    "https": false
-  },
-  "frameworks": [],
-  "languages": [],
-  "platforms": [],
-  "packages": [],
-  "tools": [],
-  "tags": []
+  "cover": "",
+  "visibility": "private",
+  "deploys": {
+    "sandbox": {
+      "lifecycle": "standard",
+      "performance": "standard",
+      "https": true,
+      "credentials": []
+    },
+    "production": {
+      "lifecycle": "standard",
+      "performance": "standard",
+      "https": true,
+      "credentials": []
+    }
+  }
 }

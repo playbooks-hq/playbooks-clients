@@ -6,7 +6,7 @@ import { serialize } from 'src/utils';
 import { normalizeError } from 'src/utils';
 import { logger } from 'src/utils/logger';
 
-export const TagsDetailCommand = async (uuid, options: any) => {
+export const CategoriesDetailCommand = async (uuid, options: any) => {
 	const spinner = ora(`Fetching ${uuid}...`);
 	try {
 		// Setup
@@ -30,7 +30,7 @@ export const TagsDetailCommand = async (uuid, options: any) => {
 		const client = new ApiService(contents);
 		const headers = client.authHeaders();
 		const params = client.serializeParams({ include });
-		const response = await client.queryRecord({ endpoint: `/tags/${uuid}`, headers, params });
+		const response = await client.queryRecord({ endpoint: `/categories/${uuid}`, headers, params });
 
 		// Response
 		const selects = select !== '*' ? select.split(',') : [];
