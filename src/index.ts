@@ -44,9 +44,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(templates.listTemplates));
 
 cli
@@ -62,9 +59,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(categories.listCategories));
 
 // Collections
@@ -74,9 +68,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(collections.listCollections));
 
 // Creators
@@ -86,9 +77,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(creators.listWorkspaces));
 
 // Types
@@ -98,16 +86,14 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(types.listTypes));
 
 // Workspace
 cli
 	.command('workspace update')
 	.describe('Update the active Workspace profile.')
-	.option('--file', 'JSON input file or - for stdin. Fields: thumbnail, name, tagline, description, visibility, urls.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('workspace update --data \'{"name":"Acme"}\'')
 	.action(run(workspace.updateWorkspace));
 
 cli.command('workspace list').describe('List your Workspaces.').action(run(workspace.listWorkspace));
@@ -130,47 +116,44 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listFolders));
 
 cli
 	.command('workspace folder')
 	.describe('Get a Folder.')
-	.option('--include', 'Inline related records.')
 	.option('--folder', 'Folder identifier.')
 	.action(run(workspace.getFolder));
 
 cli
 	.command('workspace folder create')
 	.describe('Create a Folder.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, description.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('workspace folder create --data \'{"name":"Customer projects"}\'')
 	.action(run(workspace.createFolder));
 
 cli
 	.command('workspace folder update')
 	.describe('Update a Folder.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, description.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--folder', 'Folder identifier.')
+	.example('workspace folder update --folder abc --data \'{"name":"Customer projects"}\'')
 	.action(run(workspace.updateFolder));
 
 cli
 	.command('workspace template update')
 	.describe('Update an owned Template listing.')
-	.option(
-		'--file',
-		'JSON input file or - for stdin. Fields: name, tagline, description, cover, thumbnail, licenseId, categoryIds.',
-	)
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--template', 'Template identifier.')
+	.example('workspace template update --template abc --data \'{"description":"Customer portal starter"}\'')
 	.action(run(workspace.updateTemplate));
 
 cli
 	.command('workspace template publish')
 	.describe('Publish a Template version to the marketplace.')
-	.option('--file', 'JSON input file or - for stdin. Fields: .')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--template', 'Template identifier.')
+	.example("workspace template publish --template abc --data '{}' --yes")
 	.action(run(workspace.publishTemplate));
 
 cli
@@ -179,15 +162,11 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listTemplates));
 
 cli
 	.command('workspace template')
 	.describe('Get an owned Template.')
-	.option('--include', 'Inline related records.')
 	.option('--template', 'Template identifier.')
 	.action(run(workspace.getTemplate));
 
@@ -197,9 +176,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.option('--template', 'Template identifier.')
 	.action(run(workspace.listTemplateVersions));
 
@@ -218,9 +194,10 @@ cli
 cli
 	.command('workspace member depart')
 	.describe('Remove a member using the reviewed revision and ownership recipient.')
-	.option('--file', 'JSON input file or - for stdin. Fields: revision, toUserId.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--member', 'Member User identifier.')
+	.example('workspace member depart --member abc --data \'{"revision":"CURRENT_REVISION","toUserId":123}\' --yes')
 	.action(run(workspace.removeMember));
 
 cli
@@ -229,9 +206,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listMembers));
 
 cli
@@ -243,9 +217,10 @@ cli
 cli
 	.command('workspace member update')
 	.describe('Update a Workspace member role.')
-	.option('--file', 'JSON input file or - for stdin. Fields: memberRole.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--member', 'Member identifier.')
+	.example('workspace member update --member abc --data \'{"memberRole":"collaborator"}\' --yes')
 	.action(run(workspace.updateMember));
 
 cli
@@ -254,16 +229,14 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listInvitations));
 
 cli
 	.command('workspace invitation create')
 	.describe('Invite a Workspace member.')
-	.option('--file', 'JSON input file or - for stdin. Fields: email, role.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.example('workspace invitation create --data \'{"email":"teammate@example.com","role":"collaborator"}\' --yes')
 	.action(run(workspace.createInvitation));
 
 cli
@@ -281,7 +254,8 @@ cli
 cli
 	.command('workspace settings update')
 	.describe('Update Workspace Operator preferences.')
-	.option('--file', 'JSON input file or - for stdin. Fields: mode, deliveryMode, instructions, modelId, permissions.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('workspace settings update --data \'{"instructions":"Use concise responses."}\'')
 	.action(run(workspace.updateWorkspacePreferences));
 
 cli
@@ -290,9 +264,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listWorkspaceDesigns));
 
 cli
@@ -301,9 +272,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listWorkspaceSkills));
 
 cli
@@ -312,9 +280,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listWorkspaceMcps));
 
 cli
@@ -323,9 +288,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listWorkspaceConnectors));
 
 cli
@@ -334,9 +296,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listWorkspaceSecrets));
 
 cli
@@ -345,9 +304,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listWorkspaceFiles));
 
 cli
@@ -368,11 +324,9 @@ cli
 cli
 	.command('workspace budget update')
 	.describe('Update the Workspace credit budget.')
-	.option(
-		'--file',
-		'JSON input file or - for stdin. Fields: creditBudget, budgetStopNewWork, budgetAlertThresholds, budgetRecipientMode, budgetRecipientIds, budgetEmail.',
-	)
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.example('workspace budget update --data \'{"creditBudget":100}\' --yes')
 	.action(run(workspace.updateBudgetOperations));
 
 cli
@@ -381,9 +335,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.activityOperations));
 
 cli.command('workspace usage').describe('Inspect Workspace usage.').action(run(workspace.usageOperations));
@@ -396,9 +347,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.creditsOperations));
 
 cli
@@ -407,9 +355,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.invoicesOperations));
 
 cli
@@ -418,9 +363,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.settlementsOperations));
 
 cli
@@ -429,9 +371,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.transfersOperations));
 
 cli
@@ -440,9 +379,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.schedulesOperations));
 
 cli
@@ -451,22 +387,19 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(workspace.listDomains));
 
 cli
 	.command('workspace domain')
 	.describe('Inspect a domain.')
-	.option('--include', 'Inline related records.')
 	.option('--domain', 'Domain identifier.')
 	.action(run(workspace.getDomain));
 
 cli
 	.command('workspace domain add')
 	.describe('Add an existing external domain; does not purchase a domain.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('workspace domain add --data \'{"name":"app.example.com"}\'')
 	.action(run(workspace.addDomain));
 
 cli
@@ -486,18 +419,24 @@ cli
 cli
 	.command('workspace domain record create')
 	.describe('Create a DNS record.')
-	.option('--file', 'JSON input file or - for stdin. Fields: type, name, value, ttl, priority, port, weight.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--domain', 'Domain identifier.')
+	.example(
+		'workspace domain record create --domain abc --data \'{"type":"TXT","name":"_verification","value":"verification-value","ttl":300}\' --yes',
+	)
 	.action(run(workspace.createRecord));
 
 cli
 	.command('workspace domain record update')
 	.describe('Update a DNS record.')
 	.option('--record', 'DNS record identifier.')
-	.option('--file', 'JSON input file or - for stdin. Fields: type, name, value, ttl, priority, port, weight.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--domain', 'Domain identifier.')
+	.example(
+		'workspace domain record update --domain abc --record abc --data \'{"type":"TXT","name":"_verification","value":"updated-value","ttl":300}\' --yes',
+	)
 	.action(run(workspace.updateRecord));
 
 cli
@@ -515,36 +454,35 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listProjects));
 
 cli
 	.command('project')
 	.describe('Get a Project.')
-	.option('--include', 'Inline related records.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
 	.action(run(project.getProject));
 
 cli
 	.command('project create')
 	.describe('Create a blank Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, description, typeId, folderId.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('project create --data \'{"name":"Customer portal"}\'')
 	.action(run(project.createProject));
 
 cli
 	.command('project update')
 	.describe('Update Project details.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, description, thumbnail, typeId.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
+	.example('project update --data \'{"description":"Customer support app"}\'')
 	.action(run(project.updateProject));
 
 cli
 	.command('project move')
 	.describe('Move a Project to a Folder.')
-	.option('--file', 'JSON input file or - for stdin. Fields: folderId.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
+	.example('project move --data \'{"folderId":123}\'')
 	.action(run(project.moveProject));
 
 cli
@@ -570,40 +508,45 @@ cli
 	.command('project archive')
 	.describe('Archive the selected Project.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: confirmation.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.example('project archive --data \'{"confirmation":"Customer portal"}\' --yes')
 	.action(run(project.archiveProject));
 
 cli
 	.command('project restore')
 	.describe('Restore the selected Project.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: confirmation.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.example('project restore --data \'{"confirmation":"Customer portal"}\' --yes')
 	.action(run(project.restoreProject));
 
 cli
 	.command('project delete')
 	.describe('Permanently delete the selected Project.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: confirmation.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.example('project delete --data \'{"confirmation":"Customer portal"}\' --yes')
 	.action(run(project.deleteProject));
 
 cli
 	.command('project preflight')
 	.describe('Review Production publication requirements.')
 	.option('--project', 'Project identifier.')
-	.option('--file', 'Optional JSON input: branchId.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('project preflight --data \'{"branchId":123}\'')
 	.action(run(project.preflightProject));
 
 cli
 	.command('project publish')
 	.describe('Publish Project code to Production.')
 	.option('--project', 'Project identifier.')
-	.option('--file', 'JSON input: expectedRevision, branchId.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm publication and usage charges.', false)
 	.option('--wait', 'Wait up to five minutes for completion.', false)
+	.example('project publish --data \'{"expectedRevision":"CURRENT_REVISION"}\' --yes')
 	.action(run(project.publishProject));
 
 cli
@@ -632,8 +575,9 @@ cli
 	.command('project ownership transfer')
 	.describe('Request Project ownership transfer to an active member.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: toUserId.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.example('project ownership transfer --data \'{"toUserId":123}\' --yes')
 	.action(run(project.transferOwnership));
 
 cli
@@ -672,17 +616,19 @@ cli
 	.command('project collaborator add')
 	.describe('Grant Project access to an existing Workspace member.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: userId, role.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.example('project collaborator add --data \'{"userId":123,"role":"collaborator"}\' --yes')
 	.action(run(project.addCollaborator));
 
 cli
 	.command('project collaborator update')
 	.describe('Update Project collaborator access.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: role.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--collaborator', 'Collaborator identifier.')
+	.example('project collaborator update --collaborator abc --data \'{"role":"collaborator"}\' --yes')
 	.action(run(project.updateCollaborator));
 
 cli
@@ -692,9 +638,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listCollaborators));
 
 cli
@@ -704,16 +647,12 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listAgents));
 
 cli
 	.command('project agent')
 	.describe('Get a Project Agent.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--include', 'Inline related records.')
 	.option('--agent', 'Agent identifier.')
 	.action(run(project.getAgent));
 
@@ -721,16 +660,18 @@ cli
 	.command('project agent create')
 	.describe('Create a Project Agent without starting a run.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, description, thumbnail, creationKey.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('project agent create --data \'{"name":"Research assistant","creationKey":"unique-creation-key"}\'')
 	.action(run(project.createAgent));
 
 cli
 	.command('project agent update')
 	.describe('Enable or disable a Project Agent.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: status, revision.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--agent', 'Agent identifier.')
+	.example('project agent update --agent abc --data \'{"status":"disabled","revision":1}\' --yes')
 	.action(run(project.updateAgent));
 
 cli
@@ -743,7 +684,8 @@ cli
 	.command('project resources update')
 	.describe('Update revision-checked Project resource selections.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: revision, designId, workspaceConnectorIds.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('project resources update --data \'{"revision":"CURRENT_REVISION","designId":null}\'')
 	.action(run(project.updateProjectResources));
 
 cli
@@ -753,9 +695,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listProjectDesigns));
 
 cli
@@ -770,15 +709,19 @@ cli
 	.command('project design create')
 	.describe('Create a Project Agent Design from package files.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, files.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example(
+		'project design create --data \'{"name":"Brand design","files":[{"path":"DESIGN.md","content":"BASE64_CONTENT"}]}\'',
+	)
 	.action(run(project.createProjectDesign));
 
 cli
 	.command('project design update')
 	.describe('Update a Project-owned Agent Design.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, files, revision.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--design', 'Design identifier.')
+	.example('project design update --design abc --data \'{"name":"Brand design","revision":"CURRENT_CHECKSUM"}\'')
 	.action(run(project.updateProjectDesign));
 
 cli
@@ -788,9 +731,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listProjectSkills));
 
 cli
@@ -805,15 +745,19 @@ cli
 	.command('project skill create')
 	.describe('Create a Project Skill from package files.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, files.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example(
+		'project skill create --data \'{"name":"Review changes","files":[{"path":"SKILL.md","content":"BASE64_CONTENT"}]}\'',
+	)
 	.action(run(project.createProjectSkill));
 
 cli
 	.command('project skill update')
 	.describe('Update a Project-owned Skill.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, files, revision.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--skill', 'Skill identifier.')
+	.example('project skill update --skill abc --data \'{"name":"Review changes","revision":"CURRENT_CHECKSUM"}\'')
 	.action(run(project.updateProjectSkill));
 
 cli
@@ -826,10 +770,8 @@ cli
 	.command('project settings update')
 	.describe('Update Project preferences.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option(
-		'--file',
-		'JSON input file or - for stdin. Fields: opinionPolicy, modelId, mode, permissions, instructions, deliveryMode, inferenceProviderMode, inferenceProjectConnectorId, revision.',
-	)
+	.option('--data', 'JSON object or - for stdin.')
+	.example('project settings update --data \'{"instructions":"Use concise responses.","revision":"CURRENT_REVISION"}\'')
 	.action(run(project.updateProjectPreferences));
 
 cli
@@ -845,9 +787,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listProjectMcps));
 
 cli
@@ -857,9 +796,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listProjectConnectors));
 
 cli
@@ -869,9 +805,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listProjectFiles));
 
 cli
@@ -903,11 +836,11 @@ cli
 	.command('project source connect')
 	.describe('Connect a repository; source may be replaced unless preserveSource is supported and selected.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option(
-		'--file',
-		'JSON input file or - for stdin. Fields: provider, githubInstallationId, githubRepositoryId, workspaceConnectorId, workspace, repository, repositoryId, namespaceId, repositoryName, subdirectory, preserveSource.',
-	)
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.example(
+		'project source connect --data \'{"provider":"github","githubInstallationId":123,"githubRepositoryId":456,"preserveSource":true}\' --yes',
+	)
 	.action(run(project.connectSource));
 
 cli
@@ -921,8 +854,9 @@ cli
 	.command('project source sync')
 	.describe('Synchronize source using the reviewed Git head.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: branchId, expectedHead.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.example('project source sync --data \'{"branchId":123,"expectedHead":"CURRENT_COMMIT_SHA"}\' --yes')
 	.action(run(project.syncSource));
 
 cli
@@ -937,7 +871,8 @@ cli
 	.command('project branch create')
 	.describe('Create a branch from a selected base branch.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, baseBranch, branchId.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('project branch create --data \'{"name":"feature/customer-portal","baseBranch":"main"}\'')
 	.action(run(project.createBranch));
 
 cli
@@ -952,8 +887,9 @@ cli
 	.command('project checkpoint rename')
 	.describe('Rename a Project checkpoint.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: label.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--checkpoint', 'Checkpoint identifier.')
+	.example('project checkpoint rename --checkpoint abc --data \'{"label":"Before settings update"}\'')
 	.action(run(project.renameCheckpoint));
 
 cli
@@ -977,9 +913,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listBranches));
 
 cli
@@ -989,9 +922,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listCheckpoints));
 
 cli
@@ -1009,16 +939,12 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listReleases));
 
 cli
 	.command('project release')
 	.describe('Inspect a release.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--include', 'Inline related records.')
 	.option('--release', 'Release identifier.')
 	.action(run(project.getRelease));
 
@@ -1026,9 +952,10 @@ cli
 	.command('project release rollback')
 	.describe('Restore release code; application data is not rolled back.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: currentReleaseId.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--release', 'Release identifier.')
+	.example('project release rollback --release abc --data \'{"currentReleaseId":123}\' --yes')
 	.action(run(project.rollbackRelease));
 
 cli
@@ -1044,9 +971,6 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.logsOperations));
 
 cli
@@ -1056,16 +980,12 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'field:asc or field:desc.')
-	.option('--include', 'Inline related records.')
-	.option('--status', 'Filter by status.')
 	.action(run(project.listWorkflows));
 
 cli
 	.command('project workflow')
 	.describe('Inspect a saved workflow and its runs.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--include', 'Inline related records.')
 	.option('--workflow', 'Workflow identifier.')
 	.action(run(project.getWorkflow));
 
@@ -1073,25 +993,28 @@ cli
 	.command('project workflow create')
 	.describe('Create a workflow with its schedule initially disabled.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, status, steps, schedule.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('project workflow create --data \'{"name":"Daily review"}\'')
 	.action(run(project.createWorkflow));
 
 cli
 	.command('project workflow update')
 	.describe('Update saved workflow steps.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: name, status, steps, revision.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workflow', 'Workflow identifier.')
+	.example('project workflow update --data \'{"name":"Daily review","revision":1}\' --yes')
 	.action(run(project.updateWorkflow));
 
 cli
 	.command('project workflow schedule')
 	.describe('Update recurrence; enabling it authorizes real actions and usage charges.')
 	.option('--project', 'Project identifier; defaults to selected Project.')
-	.option('--file', 'JSON input file or - for stdin. Fields: enabled, recurrence, time, timezone, actingUserId.')
+	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workflow', 'Workflow identifier.')
+	.example('project workflow schedule --data \'{"enabled":false}\' --yes')
 	.action(run(project.scheduleWorkflow));
 
 cli
@@ -1132,9 +1055,16 @@ cli
 	);
 
 try {
-	if (process.argv.length === 2) cli.help();
+	const args = process.argv.slice();
+	// Sade's parser drops a standalone dash; preserve the stdin marker as a flag value.
+	for (let index = 2; index < args.length - 1; index++) {
+		if (args[index] === '--') break;
+		if (args[index] === '--data' && args[index + 1] === '-') args.splice(index, 2, '--data=-');
+	}
+	if (args.length === 2) cli.help();
 	else
-		cli.parse(process.argv, {
+		cli.parse(args, {
+			string: ['data'],
 			unknown: flag => {
 				throw new CliError(422, `Unknown option: ${flag}`);
 			},

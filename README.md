@@ -29,29 +29,37 @@ For automation, provide `PLAYBOOKS_TOKEN` through your secret manager. Alternati
 ## Work with Projects
 
 ```sh
-playbooks project create --file project.json
+playbooks project create --data '{"name":"Customer portal"}'
 playbooks project use --project abc
 playbooks project settings
 playbooks project open
 ```
 
-The creation file is a plain JSON object, for example `{"name":"Customer portal"}`. Project commands use saved selection or an explicit `--project` within the active Workspace. An explicit identifier does not change saved selection. `project current` shows the selected Project; `project clear` clears it.
+Project commands use saved selection or an explicit `--project` within the active Workspace. An explicit identifier does not change saved selection. `project current` shows the selected Project; `project clear` clears it.
 
-Publication starts with `project preflight`. Supply the reviewed `expectedRevision` in a JSON file to `project publish --file publication.json --yes`; add `--wait` to observe completion for up to five minutes. Publication and other remote operations can incur usage charges. Interrupting the CLI does not cancel accepted remote work. Inspect `project releases` or `project lifecycle` to follow outstanding work.
+Publication starts with `project preflight`. Supply the reviewed `expectedRevision` to `project publish --data '{"expectedRevision":"CURRENT_REVISION"}' --yes`; replace the placeholder with the value returned by preflight. Add `--wait` to observe completion for up to five minutes. Publication and other remote operations can incur usage charges. Interrupting the CLI does not cancel accepted remote work. Inspect `project releases` or `project lifecycle` to follow outstanding work.
 
 ## Scripts and Discovery
 
 ```sh
 playbooks projects --json --select uuid,name,status
 playbooks templates --query portal
-playbooks project update --project abc --file changes.json
+playbooks project update --project abc --data '{"description":"Customer support app"}'
 ```
 
 Public discovery uses `templates`, `categories`, `collections`, `creators`, and `types`. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
 
-Plural resource names list records; singular names address one record, such as `project release --release def`. Mutations follow the resource name. Use `workspace use --workspace abc` to select a Workspace in scripts. `--file` is JSON input; `--file-id` identifies an Agent File.
+Plural resource names list records; singular names address one record, such as `project release --release def`. Mutations follow the resource name. Use `workspace use --workspace abc` to select a Workspace in scripts. `--file-id` identifies an Agent File; binary transfers continue to use `--upload` and `--output`.
 
-Piped output is JSON automatically. Responses retain `{ data, meta? }`; errors go to stderr as `{ error }` with a nonzero exit code. `--file -` reads JSON from stdin. Pagination is zero-based; each list request fetches one page. `--select` supports nested fields.
+Structured input uses `--data` with a JSON object or `--data -` for stdin, up to 1 MB. Paths are not interpreted as input files:
+
+```sh
+cat settings.json | playbooks project settings update --data -
+```
+
+Prefer stdin for sensitive or large payloads: inline arguments can appear in shell history and process inspection. Help examples use placeholders such as `CURRENT_REVISION` and `BASE64_CONTENT`; replace these with current server values or actual encoded content.
+
+Piped output is JSON automatically. Responses retain `{ data, meta? }`; errors go to stderr as `{ error }` with a nonzero exit code. Pagination is zero-based; each list request fetches one page. Search remains available where supported. `--select` supports nested output fields; query filters `--sort`, `--include`, and `--status` are not exposed.
 
 Context is stored in `~/.config/playbooks/config.json`, with separately protected credentials alongside it. Use `--config <path>` consistently for isolated automation contexts. Environment keys are never saved. Old CLI configuration is not imported: sign in and select a Workspace again.
 

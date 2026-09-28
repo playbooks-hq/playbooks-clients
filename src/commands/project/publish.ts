@@ -15,7 +15,7 @@ export const publishProject = async (options: any) => {
 	if (!data.expectedRevision || !options.yes)
 		throw new CliError(
 			422,
-			'Review project preflight, then supply expectedRevision in --file and confirm with --yes. Publication can incur usage charges.',
+			'Review project preflight, then supply expectedRevision in --data and confirm with --yes. Publication can incur usage charges.',
 		);
 	let result = await context.client.request(path, 'POST', data, {}, false, false, false);
 	if (!options.wait) return result;

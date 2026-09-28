@@ -1,12 +1,12 @@
 import { workspaceContext } from 'src/services/command-context';
-import { identifier, input, listParams } from 'src/utils/cli-input';
+import { identifier, input } from 'src/utils/cli-input';
 import { assertOperationSucceeded } from 'src/utils/cli-operation';
 
 export const updateTemplate = async (options: any) => {
 	const context = await workspaceContext(options);
 	const { client } = context;
 	const path = `/workspace/templates/${identifier(options['template'])}`;
-	const params = options.include ? listParams({ include: options.include }) : {};
+	const params = {};
 	const data = await input(options, [
 		'name',
 		'tagline',

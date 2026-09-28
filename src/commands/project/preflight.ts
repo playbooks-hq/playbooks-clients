@@ -9,6 +9,6 @@ export const preflightProject = async (options: any) => {
 	if (!deploy?.uuid) throw new CliError(422, 'Configure Production for this Project in Playbooks before publishing.');
 	const path = `/deploys/${identifier(deploy.uuid)}/release`;
 
-	const data = !options.file ? {} : await input(options, ['branchId', 'expectedRevision']);
+	const data = options.data === undefined ? {} : await input(options, ['branchId', 'expectedRevision']);
 	return context.client.request(`${path}/preflight`, 'POST', data, {}, false, false, true);
 };
