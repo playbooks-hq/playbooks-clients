@@ -1,70 +1,27 @@
 import enquirer from 'enquirer';
-import ora from 'ora';
-import { ApiService } from 'src/services/api-service';
-import { ConfigService } from 'src/services/config-service';
-import { UpdateService } from 'src/services/update-service';
-import { formatDate, normalizeError } from 'src/utils';
-import { logger } from 'src/utils/logger';
+import { CliClient, CliError } from 'src/services/cli-client';
+import { CliContext } from 'src/services/cli-context';
+import { readStdin } from 'src/utils/cli-input';
 
-export const LoginCommand = async (options: any) => {
-	const spinner = ora('Initiating login...');
-	try {
-		// Setup
-		const config = options.config;
-		const email = options.email || '';
-		const password = options.password || '';
-		logger.log('options: ', { config });
-
-		// Update
-		new UpdateService({ base: config }).runCheck();
-
-		// Config
-		const service = new ConfigService({ base: config });
-		await service.setup();
-
-		// Prompts
-		// @ts-expect-error type issue
-		const emailPrompt = new enquirer.Input({ name: 'Login', message: 'Email Address:' });
-		const formattedEmail = email || (await emailPrompt.run());
-
-		// @ts-expect-error type issue
-		const passwordPrompt = new enquirer.Password({ name: 'Password', message: 'Please enter your password.' });
-		const formattedPassword = password || (await passwordPrompt.run());
-		logger.log('answers: ', { formattedEmail, formattedPassword });
-
-		// API call
-		spinner.start();
-
-		const client = new ApiService(null);
-		const response: any = await client.post({
-			endpoint: '/auth/login',
-			data: { email: formattedEmail, password: formattedPassword },
-		});
-
-		// Storage
-		await service.storeValues({
-			id: response.data.id,
-			name: response.data.name,
-			uuid: response.data.uuid,
-			email: response.data.email,
-			token: response.data.token?.token,
-			account: response.data.uuid,
-			storedAt: formatDate(),
-		});
-		const contents = await service.readConfig();
-		const data = {};
-		Object.keys(contents).map(key => {
-			if (key === 'token') return (data[key] = '********');
-			return (data[key] = contents[key]);
-		});
-		const formattedData = JSON.stringify(data, null, 2);
-
-		// Display
-		spinner.succeed();
-		console.log(formattedData);
-	} catch (e) {
-		spinner.fail();
-		console.error(JSON.stringify(normalizeError(e), null, 2));
-		process.exit();
+export const login = async (options: any) => {
+	const store = new CliContext(options.config);
+	let token = process.env.PLAYBOOKS_TOKEN;
+	if (options['token-stdin']) {
+		if (process.stdin.isTTY) throw new CliError(422, '--token-stdin requires piped input.');
+		token = (await readStdin()).trim();
+	} else if (!token && process.stdin.isTTY && !options.json) {
+		console.error('Browser handoff is not available yet. Create a developer key in Account settings.');
+		const answer: any = await enquirer.prompt({ type: 'password', name: 'token', message: 'Developer API key' });
+		token = answer.token;
 	}
+	if (!token)
+		throw new CliError(
+			401,
+			'Set PLAYBOOKS_TOKEN or pipe a developer key to login --token-stdin. Browser handoff requires Server/App support.',
+		);
+	if (/^pb_(sand|prod)_/.test(token)) throw new CliError(401, 'Use a platform developer key, not an application key.');
+	const session = await new CliClient(token).request('/session');
+	if (options['token-stdin'] || !process.env.PLAYBOOKS_TOKEN) await store.login(token);
+	else await store.write({ version: 1 });
+	return { data: { authenticated: true, user: { uuid: session.data.uuid, name: session.data.name }, workspace: null } };
 };

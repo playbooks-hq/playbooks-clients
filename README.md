@@ -1,654 +1,83 @@
-## Overview
+# Playbooks CLI
 
-The Playbooks CLI gives developers terminal access to their [Playbooks](https://www.playbooks.xyz) account.
-Using the CLI, developers can browse, download, clone, and manage their plays from anywhere.
-After installation, simply use the `playbooks` prompt followed by the commands outlined below.
+Manage Playbooks resources from your terminal. Select a Workspace, then work with its Projects, settings, and operations.
 
-## Prerequisites
+## Install
 
-- node
-- npm
+Requires Node.js 22.12 or newer.
 
-## Installation
-
-```
-npm install @playbooks/cli -g
+```sh
+npm install --global @playbooks/cli
 ```
 
-## Quick Start
+## Connect
 
-```
+Create a scoped developer API key in Playbooks Account settings, then enter it at the hidden prompt:
+
+```sh
 playbooks login
-playbooks download <uuid>
+playbooks workspace use
+playbooks projects
 ```
 
-## Configuration
+Browser sign-in is awaiting a dedicated Server/App CLI handoff. Application API keys cannot authenticate this CLI.
 
-The Playbooks CLI will look for the following config file `~/.playbooksrc` containing your platform secrets.
-If one does not exist, the Playbooks CLI will create one when you login.
-As an alternative, you can provide a custom config file location using the `--config` flag as part of any command.
-Here is a sample config file located at the default location on your file system:
+For automation, provide `PLAYBOOKS_TOKEN` through your secret manager. Alternatively, pipe a key to `login --token-stdin` to store it locally. Never put keys in command arguments or project files.
 
-```
-# ~/.playbooksrc
+`workspace current` shows the active Workspace. `workspace clear` clears local selection without leaving membership. Switching Workspaces clears Project selection; commands never silently switch tenants.
 
-id=1
-name=Eric Hubbell
-email=eric@playbooks.xyz
-uuid=eric-hubbell
-token=********
-...
+## Work with Projects
+
+```sh
+playbooks project create --file project.json
+playbooks project use --project abc
+playbooks project settings
+playbooks project open
 ```
 
-## Table of Contents
+The creation file is a plain JSON object, for example `{"name":"Customer portal"}`. Project commands use saved selection or an explicit `--project` within the active Workspace. An explicit identifier does not change saved selection. `project current` shows the selected Project; `project clear` clears it.
 
-- [global](#global)
-- [account](#account)
-- [account banks](#account-banks)
-- [account bookmarks](#account-bookmarks)
-- [account cards](#account-cards)
-- [account charges](#account-charges)
-- [account collections](#account-collections)
-- [account drafts](#account-drafts)
-- [account downloads](#account-downloads)
-- [account invoices](#account-invoices)
-- [account ledgers](#account-ledgers)
-- [account payouts](#account-payouts)
-- [account plays](#account-plays)
-- [account subscription](#account-subscription)
-- [account teams](#account-teams)
-- [account transfers](#account-transfers)
-- [account usage](#account-usage)
-- [clone](#clone)
-- [collections](#collections)
-- [config](#config)
-- [download](#download)
-- [init](#init)
-- [login](#login)
-- [logout](#logout)
-- [mcp](#mcp)
-- [oauth](#oauth)
-- [ping](#ping)
-- [plays](#plays)
-- [publish](#publish)
-- [session](#session)
-- [submit](#submit)
-- [sync](#sync)
-- [categories](#categories)
-- [teams](#teams)
-- [toggle](#toggle)
-- [users](#users)
+Publication starts with `project preflight`. Supply the reviewed `expectedRevision` in a JSON file to `project publish --file publication.json --yes`; add `--wait` to observe completion for up to five minutes. Publication and other remote operations can incur usage charges. Interrupting the CLI does not cancel accepted remote work. Inspect `project releases` or `project lifecycle` to follow outstanding work.
 
-## Global
+## Scripts and Discovery
 
-A list of global commands and options.
+```sh
+playbooks projects --json --select uuid,name,status
+playbooks templates --query portal
+playbooks project update --project abc --file changes.json
+```
+
+Public discovery uses `templates`, `categories`, `collections`, `creators`, and `types`. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
+
+Plural resource names list records; singular names address one record, such as `project release --release def`. Mutations follow the resource name. Use `workspace use --workspace abc` to select a Workspace in scripts. `--file` is JSON input; `--file-id` identifies an Agent File.
+
+Piped output is JSON automatically. Responses retain `{ data, meta? }`; errors go to stderr as `{ error }` with a nonzero exit code. `--file -` reads JSON from stdin. Pagination is zero-based; each list request fetches one page. `--select` supports nested fields.
+
+Context is stored in `~/.config/playbooks/config.json`, with separately protected credentials alongside it. Use `--config <path>` consistently for isolated automation contexts. Environment keys are never saved. Old CLI configuration is not imported: sign in and select a Workspace again.
+
+## Find Commands
 
 ```sh
 playbooks --help
-playbooks --version
-
-playbooks login --help
-playbooks login --config ~/path/to/.playbooksrc
-
-playbooks download --help
-playbooks download --config ~/path/to/.playbooksrc
+playbooks project create --help
+playbooks mcp install codex
 ```
 
-| Option    | Type    | Description                                |
-| :-------- | :------ | :----------------------------------------- |
-| --config  | string  | Path to a custom playbooks config file     |
-| --help    | boolean | Display command info and available options |
-| --version | boolean | Display current library version            |
+Root help lists all commands by their full names; command help shows supported options and input fields. Private resources require an active Workspace. Settings and resource output preserve owned/inherited distinctions supplied by the server. Revision-checked edits require the current revision. File downloads refuse to overwrite existing files.
 
-## Commands
+`completion print bash` and `completion print zsh` print top-level shell completion definitions. Local MCP installation is separate from platform MCP configuration. Interactive Agent conversations are not supported.
 
-A list of Playbooks specific commands.
+Saved workflow execution and recurrence are explicit actions that can affect external systems. DNS edits apply to Playbooks-managed zones; adding an external domain does not move its DNS. Domain purchases/renewals and direct Sandbox start/stop remain in the web application.
 
-#### Account
-
-Display which account is currently active.
+## Development
 
 ```sh
-playbooks account
-playbooks account --select 'id,name,email'
+npm install
+npm run lint
+npm run typecheck
+npm run build
 ```
 
-| Option   | Type     | Description                                                    |
-| :------- | :------- | :------------------------------------------------------------- |
-| --select | string[] | A comma separated list of account fields you'd like to display |
+`PLAYBOOKS_API_URL` selects an API origin for local development; use an isolated config. HTTPS is required outside loopback. Stored credentials are bound to their API origin. Product test authoring lives in `playbooks-auto` under separate scope.
 
-#### Account Banks
-
-View your account banks.
-
-```sh
-playbooks account banks
-playbooks account banks --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Bookmarks
-
-View your account bookmarks.
-
-```sh
-playbooks account bookmarks
-playbooks account bookmarks --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Cards
-
-View your account cards.
-
-```sh
-playbooks account cards
-playbooks account cards --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Charges
-
-View your account charges.
-
-```sh
-playbooks account charges
-playbooks account charges --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Collections
-
-View your account collections.
-
-```sh
-playbooks account collections
-playbooks account collections --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Drafts
-
-View your account drafts.
-
-```sh
-playbooks account drafts
-playbooks account drafts --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Downloads
-
-View your account downloads.
-
-```sh
-playbooks account downloads
-playbooks account downloads --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Invoices
-
-View your account invoices.
-
-```sh
-playbooks account invoices
-playbooks account invoices --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Ledgers
-
-View your account ledger activity.
-
-```sh
-playbooks account ledgers
-playbooks account ledgers --select 'id,amount,type'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
-#### Account Payouts
-
-View your account payouts.
-
-```sh
-playbooks account payouts
-playbooks account payouts --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Plays
-
-View your account plays.
-
-```sh
-playbooks account plays
-playbooks account plays --status draft --page 1
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --status    | string   | Filter by status                                       |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Subscription
-
-Fetch and display your account subscription
-
-```sh
-playbooks account subscription
-playbooks account subscription --select 'id,name,uuid,email'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
-#### Account Teams
-
-View a list of your account teams
-
-```sh
-playbooks account teams
-playbooks account teams --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-**_Please note: this command is only available when a user account is activated._**
-
-#### Account Transfers
-
-View your account transfers.
-
-```sh
-playbooks account transfers
-playbooks account transfers --page 2 --pageSize 25
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Account Usage
-
-Fetch and display your account usage statistics.
-
-```sh
-playbooks account usage
-playbooks account usage --select 'id,totalCredits,totalRemaining'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
-#### Clone
-
-Clone a play to your Github account.
-
-```sh
-playbooks clone <uuid>
-playbooks clone <uuid> --account mile-hi-labs --private
-```
-
-| Option    | Type    | Description                     |
-| :-------- | :------ | :------------------------------ |
-| --account | string  | Clone to a specific account     |
-| --name    | string  | Rename the cloned play          |
-| --private | boolean | Mark the cloned play as private |
-| --version | string  | Specify the versionId           |
-
-#### Collections
-
-Fetch collection related resources.
-
-```sh
-playbooks collections
-playbooks collections starter-packs
-playbooks collections starter-packs --include team
-playbooks collections starter-packs plays --view featured
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --include   | string   | A comma separated list of relationships to include     |
-| --view      | string   | Filter by view                                         |
-| --query     | string   | Filter by a search query                               |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Config
-
-Display your config file.
-
-```sh
-playbooks config
-playbooks config --select 'token,uuid'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
-#### Download
-
-Download a play to your local machine.
-
-```sh
-playbooks download <uuid>
-playbooks download <uuid> --path ~/path/to/folder
-```
-
-| Option    | Type   | Description                            |
-| :-------- | :----- | :------------------------------------- |
-| --path    | string | Path to custom destination folder      |
-| --name    | string | Custom name for the directory          |
-| --version | string | Specify a specific version to download |
-
-#### Init
-
-Add the minimal playbooks.json manifest to your project.
-
-```sh
-playbooks init
-playbooks init --path ~/path/to/project
-```
-
-| Option | Type   | Description                       |
-| :----- | :----- | :-------------------------------- |
-| --path | string | Path to custom destination folder |
-
-#### Login
-
-Login to your Playbooks account via email / password.
-
-```sh
-playbooks login
-playbooks login --email acme@example.com --password ******
-```
-
-| Option     | Type   | Description        |
-| :--------- | :----- | :----------------- |
-| --email    | string | Your email address |
-| --password | string | Your password      |
-
-#### Logout
-
-Logout of your Playbooks account.
-
-```sh
-playbooks logout
-```
-
-#### MCP
-
-Configure Playbooks MCP for supported coding environments on your local machine.
-
-```sh
-playbooks mcp claude
-playbooks mcp codex
-playbooks mcp cursor
-playbooks mcp vscode
-```
-
-#### Oauth
-
-Login to Playbooks via Github OAuth.
-
-```sh
-playbooks oauth
-```
-
-#### Ping
-
-Test your connection to the Playbooks API.
-
-```sh
-playbooks ping
-```
-
-#### Plays
-
-Fetch play related resources.
-
-```sh
-playbooks plays
-playbooks plays actix-official-starter
-playbooks plays actix-official-starter demo
-playbooks plays actix-official-starter deploy
-playbooks plays --team mile-hi-labs
-playbooks plays --view featured
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --include   | string   | A comma separated list of relationships to include     |
-| --team      | string   | Fetch by team identifier                               |
-| --tag       | string   | Fetch by tag identifier                                |
-| --user      | string   | Fetch by user identifier                               |
-| --view      | string   | Filter by view                                         |
-| --query     | string   | Filter by a search query                               |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Publish
-
-Publish a play to the marketplace.
-
-```sh
-playbooks publish <uuid>
-```
-
-#### Session
-
-Fetch and display your current session
-
-```sh
-playbooks session
-playbooks session --select 'id,name,uuid,email'
-```
-
-| Option   | Type     | Description                                            |
-| :------- | :------- | :----------------------------------------------------- |
-| --select | string[] | A comma separated list of fields you'd like to display |
-
-#### Submit
-
-Submit a play via Github URL.
-
-```sh
-playbooks submit https://github.com/ehubbell/astro-official-starter
-playbooks submit https://github.com/ehubbell/astro-official-starter --variant default --visibility public
-```
-
-| Option       | Type   | Description       |
-| :----------- | :----- | :---------------- |
-| --variant    | string | Select variant    |
-| --visibility | string | Select visibility |
-
-#### Sync
-
-Sync a play to pull the latest files from Github.
-
-```sh
-playbooks sync <uuid>
-```
-
-#### Categories
-
-Fetch category related resources.
-
-```sh
-playbooks categories
-playbooks categories portfolio
-playbooks categories portfolio --include user
-playbooks categories portfolio templates --view featured
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --include   | string   | A comma separated list of relationships to include     |
-| --view      | string   | Filter by view                                         |
-| --query     | string   | Filter by a search query                               |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Teams
-
-Fetch team related resources.
-
-```sh
-playbooks teams
-playbooks teams mile-hi-labs
-playbooks teams mile-hi-labs --include users
-playbooks teams mile-hi-labs plays --view featured
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --include   | string   | A comma separated list of relationships to include     |
-| --view      | string   | Filter by view                                         |
-| --query     | string   | Filter by a search query                               |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-#### Toggle
-
-Toggle your active account.
-
-```sh
-playbooks toggle
-playbooks toggle --uuid 'playbooks-community'
-```
-
-| Option | Type   | Description        |
-| :----- | :----- | :----------------- |
-| --uuid | string | Account identifier |
-
-#### Users
-
-Fetch user related resources.
-
-```sh
-playbooks users
-playbooks users ehubbell
-playbooks users ehubbell --include teams
-playbooks users ehubbell plays --view featured
-```
-
-| Option      | Type     | Description                                            |
-| :---------- | :------- | :----------------------------------------------------- |
-| --select    | string[] | A comma separated list of fields you'd like to display |
-| --include   | string   | A comma separated list of relationships to include     |
-| --view      | string   | Filter by view                                         |
-| --query     | string   | Filter by a search query                               |
-| --page      | number   | Fetch a specific page                                  |
-| --pageSize  | number   | Fetch a specific page size                             |
-| --sortProp  | string   | Sort by a specific property                            |
-| --sortValue | string   | Sort using a specific value                            |
-
-## Questions
-
-Please reach out to support@playbooks.xyz with any technical questions and / or issues.
-
-## Author
-
-- Playbooks XYZ
-- support@playbooks.xyz
-
-## Contributions
-
-Please open a Github Issue describing the PR you want to submit before starting work.
+Support: support@playbooks.ai
