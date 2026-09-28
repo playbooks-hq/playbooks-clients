@@ -1,4 +1,14 @@
 export { listProjects } from './list';
+export { getConversation } from './conversations/get';
+export { listConversations } from './conversations/list';
+export { listMessages } from './messages/list';
+export { getMessage } from './messages/get';
+export { createMessage } from './messages/create';
+export { updateMessage } from './messages/update';
+export { deleteMessage } from './messages/delete';
+export { listRuns } from './runs/list';
+export { getRun } from './runs/get';
+export { streamOperatorRun } from './runs/stream';
 export { getProject } from './get';
 export { createProject } from './create';
 export { updateProject } from './update';

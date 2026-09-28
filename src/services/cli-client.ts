@@ -24,6 +24,47 @@ export class CliClient {
 		readonly workspace?: string,
 	) {}
 
+	private url(path: string, params: Record<string, any> = {}) {
+		const url = new URL(apiURL().replace(/\/$/, '') + path);
+		if (url.username || url.password || url.search || url.hash)
+			throw new CliError(400, 'The API origin must not contain credentials, query parameters, or a fragment.');
+		if (this.token && !/^[\x21-\x7e]+$/.test(this.token))
+			throw new CliError(401, 'The credential contains invalid characters.');
+		if (url.protocol !== 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
+			throw new CliError(400, 'The API endpoint must use HTTPS.');
+		for (const [key, value] of Object.entries(params))
+			if (value !== undefined && value !== null) url.searchParams.set(key, String(value));
+		return url;
+	}
+
+	async openStream(path: string, signal: AbortSignal) {
+		const response = await fetch(this.url(path), {
+			redirect: 'error',
+			signal,
+			headers: {
+				client: `${name}@${version}`,
+				accept: 'text/event-stream',
+				...(this.token ? { authorization: this.token } : {}),
+				...(this.workspace ? { workspace: this.workspace } : {}),
+			},
+		});
+		if (!response.ok) {
+			const body = await response.json().catch(() => null);
+			throw new CliError(
+				response.status,
+				body?.error?.description || `HTTP ${response.status}`,
+				body?.error?.source,
+				body?.error?.debug,
+				body?.error?.title,
+			);
+		}
+		if (response.headers.get('content-type')?.split(';')[0].trim() !== 'text/event-stream' || !response.body) {
+			await response.body?.cancel();
+			throw new CliError(502, 'The server did not return an event stream.');
+		}
+		return response.body;
+	}
+
 	async request(
 		path: string,
 		method = 'GET',
@@ -32,24 +73,14 @@ export class CliClient {
 		readOnly = method === 'GET',
 		binary = false,
 		raw = false,
+		signal?: AbortSignal,
 	) {
-		const base = apiURL();
-		const url = new URL(base.replace(/\/$/, '') + path);
-		if (url.username || url.password || url.search || url.hash)
-			throw new CliError(400, 'The API origin must not contain credentials, query parameters, or a fragment.');
-		if (this.token && !/^[\x21-\x7e]+$/.test(this.token))
-			throw new CliError(401, 'The credential contains invalid characters.');
-		if (url.protocol !== 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) {
-			throw new CliError(400, 'The API endpoint must use HTTPS.');
-		}
-		for (const [key, value] of Object.entries(params)) {
-			if (value !== undefined && value !== null) url.searchParams.set(key, String(value));
-		}
+		const url = this.url(path, params);
 		for (let attempt = 0; ; attempt++) {
 			const response = await fetch(url, {
 				method,
 				redirect: 'error',
-				signal: AbortSignal.timeout(30000),
+				signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(30000)]) : AbortSignal.timeout(30000),
 				headers: {
 					client: `${name}@${version}`,
 					accept: binary ? 'application/octet-stream' : 'application/json',
@@ -72,7 +103,7 @@ export class CliClient {
 				const seconds = retry ? Number(retry) : attempt + 1;
 				if (!Number.isFinite(seconds) || seconds > 10)
 					throw new CliError(response.status, 'Server is busy. Retry later.');
-				await delay(Math.max(0, seconds) * 1000);
+				await delay(Math.max(0, seconds) * 1000, undefined, { signal });
 				continue;
 			}
 			if (binary && response.ok) return Buffer.from(await response.arrayBuffer());

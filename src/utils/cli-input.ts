@@ -1,5 +1,7 @@
 import { CliError } from 'src/services/cli-client';
 
+export const shellArgument = (value: string) => "'" + value.replaceAll("'", "'\\''") + "'";
+
 export const readStdin = async () => {
 	let text = '';
 	process.stdin.setEncoding('utf8');

@@ -48,6 +48,28 @@ An explicit `--workspace` overrides the saved workspace for one invocation witho
 
 Publication starts with `project preflight --project abc`. Supply the reviewed `expectedRevision` to `project publish --project abc --data '{"expectedRevision":"CURRENT_REVISION"}' --yes`; replace the placeholder with the value returned by preflight. Add `--wait` to observe completion for up to five minutes. Publication and other remote operations can incur usage charges. Interrupting the CLI does not cancel accepted remote work. Inspect `project releases --project abc` or `project lifecycle --project abc` to follow outstanding work.
 
+## Operator messages and runs
+
+Submit a message, inspect its runs, then follow a specific attempt:
+
+```sh
+playbooks project message create --project portal --data '{"text":"Review authentication","mode":"plan"}' --yes
+playbooks project runs --project portal --message 123
+playbooks project run stream --project portal --run 456 --yes
+```
+
+Workspace operators use `workspace messages`, `workspace message create`, `workspace runs`, and `workspace run stream`. Creation may execute or steer work and incur usage; server preferences apply when mode and delivery mode are omitted. It may instead queue a message, request clarification, or return a comment without a run. Acceptance is not completion.
+
+Message commands default to the primary conversation, which the server may initialize on first access. Use `workspace conversation`, `project conversation`, or `project conversations` to inspect conversation identifiers. Override with `--conversation <uuid>`; project messages use the conversation's latest branch unless `--branch <numeric-id>` is supplied. If no branch is recorded, choose one from `project branches`. Overrides are never saved.
+
+Messages support `text`, `mode` (plan/execute), `modelId`, `deliveryMode` (queue/steer), and `replyToMessageId` in `--data`. Project message creation also supports `maxCredits` and `idempotencyKey`. Prefer `--data -` for sensitive text. Project messages are sandbox-only. Only queued project messages can be updated, using `text`, `queuedMode`, or `queuedModelId`. Message deletion cancels queued work, retaining history. Workspace single-message reads and updates are not supported by the server.
+
+Message lists accept `--before <input-message-id>` and `--page-size 1-100`. Use an input message ID, not its accompanying output message, when paging. Run lists accept `--message` and zero-based pagination. `project run --project portal --run 456` returns the run and available input/output; attempts are never selected automatically.
+
+Opening a project stream can start execution and requires confirmation or `--yes`, even for an apparently completed run. Workspace streams only observe. Terminal streams show text; `--json` or piped output emits newline-delimited `{ event, data }` records, followed by a `run-status` event after a clean close. Streams do not support `--select`.
+
+Streams stop after 1,800 seconds by default; use `--timeout <seconds>` to change this. Connection and inactivity timeouts also apply. Waiting for input or approval is reported separately from completion. Failures and incomplete streams return a nonzero exit code. Streams never reconnect automatically, and Ctrl-C stops observation without canceling remote work. Interactive chat, approval submission, and run retry/cancel commands remain deferred.
+
 ## Scripts and Discovery
 
 ```sh
@@ -90,7 +112,7 @@ playbooks mcp install codex
 
 Root help lists all commands by their full names; command help shows supported options and input fields. Private resources require an authorized workspace, supplied explicitly or through saved selection. Settings and resource output preserve owned/inherited distinctions supplied by the server. Revision-checked edits require the current revision. File downloads refuse to overwrite existing files.
 
-`completion print bash` and `completion print zsh` print top-level shell completion definitions. Local MCP installation is separate from platform MCP configuration. Interactive Agent conversations are not supported.
+`completion print bash` and `completion print zsh` print shell completion definitions, including operator message/run commands. Local MCP installation is separate from platform MCP configuration. Interactive Agent conversations are not supported.
 
 Saved workflow execution and recurrence are explicit actions that can affect external systems. DNS edits apply to Playbooks-managed zones; adding an external domain does not move its DNS. Domain purchases/renewals and direct Sandbox start/stop remain in the web application.
 

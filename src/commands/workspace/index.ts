@@ -1,4 +1,11 @@
 export { updateWorkspace } from './update';
+export { getConversation } from './conversations/get';
+export { listMessages } from './messages/list';
+export { createMessage } from './messages/create';
+export { deleteMessage } from './messages/delete';
+export { listRuns } from './runs/list';
+export { getRun } from './runs/get';
+export { streamOperatorRun } from './runs/stream';
 export { listWorkspace } from './list';
 export { currentWorkspace } from './current';
 export { clearWorkspace } from './clear';

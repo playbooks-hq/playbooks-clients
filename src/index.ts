@@ -17,14 +17,15 @@ import {
 import { CliError } from 'src/services/cli-client';
 import { run } from 'src/utils/cli-command';
 import { reportError } from 'src/utils/cli-output';
+import { outputMessages } from 'src/utils/message-output';
 
 import { version } from '../package.json';
 
 const cli = sade('playbooks').version(version);
 cli.describe('Manage Playbooks from your terminal.');
 cli.option('--config', 'Isolated context file.', path.join(os.homedir(), '.config', 'playbooks', 'config.json'));
-cli.option('--json', 'Print a JSON response envelope.', false);
-cli.option('--select', 'Select comma-separated output fields.');
+cli.option('--json', 'Print JSON; run streams use newline-delimited JSON.', false);
+cli.option('--select', 'Select comma-separated output fields; unavailable for run streams.');
 
 // Auth
 cli
@@ -1184,6 +1185,172 @@ cli
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.runWorkflow));
 
+// Operator conversations, messages, and runs
+cli
+	.command('workspace conversation')
+	.describe('Get a conversation; the default may initialize the primary conversation.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.action(run(workspace.getConversation));
+
+cli
+	.command('workspace messages')
+	.describe('List recent operator messages.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--before', 'Fetch messages before this numeric message identifier.')
+	.option('--page-size', 'Input messages per window, 1-100; output messages are included.')
+	.action(run(workspace.listMessages, outputMessages));
+
+cli
+	.command('workspace message create')
+	.describe('Submit a message; may start or steer execution and incur usage.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.example('workspace message create --data \'{"text":"Review the current setup","mode":"plan"}\' --yes')
+	.action(run(workspace.createMessage));
+
+cli
+	.command('workspace message delete')
+	.describe('Cancel a queued message; retains message history.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--message', 'Numeric message identifier.')
+	.option('--yes', 'Confirm this operation.', false)
+	.action(run(workspace.deleteMessage));
+
+cli
+	.command('workspace runs')
+	.describe('List operator runs and attempts.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--message', 'Filter by numeric input message identifier.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Records per page, 1-100.')
+	.example('workspace runs --message 123')
+	.action(run(workspace.listRuns));
+
+cli
+	.command('workspace run')
+	.describe('Get an operator run with its available input and output.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--run', 'Numeric run identifier.')
+	.action(run(workspace.getRun));
+
+cli
+	.command('workspace run stream')
+	.describe('Follow operator run output.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--run', 'Numeric run identifier.')
+	.option('--timeout', 'Total stream duration in seconds; defaults to 1800.')
+	.example('workspace run stream --run 456')
+	.action(run(workspace.streamOperatorRun));
+
+cli
+	.command('project conversation')
+	.describe('Get a conversation; the default may initialize the primary conversation.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.action(run(project.getConversation));
+
+cli
+	.command('project conversations')
+	.describe('List project conversations; may initialize the primary conversation.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.action(run(project.listConversations));
+
+cli
+	.command('project messages')
+	.describe('List recent operator messages.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
+	.option('--before', 'Fetch messages before this numeric message identifier.')
+	.option('--page-size', 'Input messages per window, 1-100; output messages are included.')
+	.action(run(project.listMessages, outputMessages));
+
+cli
+	.command('project message')
+	.describe('Get a sandbox conversation message.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
+	.option('--message', 'Numeric message identifier.')
+	.action(run(project.getMessage));
+
+cli
+	.command('project message create')
+	.describe('Submit a message; may start or steer execution and incur usage.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.example('project message create --project portal --data \'{"text":"Review the current setup","mode":"plan"}\' --yes')
+	.action(run(project.createMessage));
+
+cli
+	.command('project message update')
+	.describe('Edit a queued sandbox message.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
+	.option('--message', 'Numeric message identifier.')
+	.option('--data', 'JSON object or - for stdin.')
+	.example('project message update --project portal --message 123 --data \'{"text":"Review authentication first"}\'')
+	.action(run(project.updateMessage));
+
+cli
+	.command('project message delete')
+	.describe('Cancel a queued message; retains message history.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
+	.option('--message', 'Numeric message identifier.')
+	.option('--yes', 'Confirm this operation.', false)
+	.action(run(project.deleteMessage));
+
+cli
+	.command('project runs')
+	.describe('List operator runs and attempts.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--conversation', 'Filter by conversation UUID.')
+	.option('--branch', 'Filter by numeric branch identifier.')
+	.option('--message', 'Filter by numeric input message identifier.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Records per page, 1-100.')
+	.example('project runs --project portal --message 123')
+	.action(run(project.listRuns));
+
+cli
+	.command('project run')
+	.describe('Get an operator run with its available input and output.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--run', 'Numeric run identifier.')
+	.action(run(project.getRun));
+
+cli
+	.command('project run stream')
+	.describe('Follow run output; may start execution and incur usage.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--run', 'Numeric run identifier.')
+	.option('--timeout', 'Total stream duration in seconds; defaults to 1800.')
+	.option('--yes', 'Confirm possible execution.', false)
+	.example('project run stream --project portal --run 456 --yes')
+	.action(run(project.streamOperatorRun));
+
 // MCP
 cli
 	.command('mcp install <target>')
@@ -1232,5 +1399,5 @@ try {
 	reportError(error);
 }
 process.once('SIGINT', () => {
-	process.exit(130);
+	if (process.exitCode !== 130) process.exit(130);
 });
