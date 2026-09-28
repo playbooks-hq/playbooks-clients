@@ -52,11 +52,13 @@ Publication starts with `project preflight --project abc`. Supply the reviewed `
 
 ```sh
 playbooks projects --json --select uuid,name,status
-playbooks templates --query portal
+playbooks templates --category business --type website --query portal
 playbooks project update --project abc --data '{"description":"Customer support app"}'
 ```
 
 Public discovery uses `templates`, `categories`, `collections`, `creators`, and `types`. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
+
+Use category and type identifiers returned by `categories` and `types`; example identifiers are placeholders. Filter projects with `--folder <folder-uuid>` or `--owner <numeric-user-id>`. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
 
 Plural resource names list records; singular names address one record, such as `project release --project abc --release def`. Mutations follow the resource name. `--file-id` identifies an Agent File; binary transfers continue to use `--upload` and `--output`.
 
@@ -68,7 +70,13 @@ cat settings.json | playbooks project settings update --project abc --data -
 
 Prefer stdin for sensitive or large payloads: inline arguments can appear in shell history and process inspection. Help examples use placeholders such as `CURRENT_REVISION` and `BASE64_CONTENT`; replace these with current server values or actual encoded content.
 
-Piped output is JSON automatically. Responses retain `{ data, meta? }`; errors go to stderr as `{ error }` with a nonzero exit code. Pagination is zero-based; each list request fetches one page. Search remains available where supported. `--select` supports nested output fields; query filters `--sort`, `--include`, and `--status` are not exposed.
+Piped output is JSON automatically. Responses retain `{ data, meta? }`; errors go to stderr as `{ error }` with a nonzero exit code. Paginated lists use zero-based `--page` and `--page-size`; full-list endpoints do not expose pagination. Search remains available where supported. Command help lists only supported options.
+
+Workspace folders, template versions, invitations, designs, secrets, files, schedules, and domains, plus project files and workflows, return full lists unless `--page` or `--page-size` is supplied. These opt-in lists accept page sizes from 1–100. Operational project connectors follow the same opt-in pagination behavior and support search and sorting; application project connectors remain paginated by default.
+
+`--include` fetches allowed inline relations on templates and projects; `--select` selects fields from the returned data, including nested fields. For example: `playbooks project --project abc --include folder,type --select uuid,name,folder.name`. File lists and project design/skill libraries support `--available` to include available or inherited resources.
+
+Project logs use cursor pagination: `playbooks project logs --project abc --query error --limit 50`. Pass the returned `data.nextCursor` as `--cursor` to fetch the next page; a null cursor means there is no next page. Logs do not accept `--page`, `--page-size`, or custom sorting.
 
 Workspace context is stored in `~/.config/playbooks/config.json`, with separately protected credentials alongside it. Use `--config <path>` consistently for isolated automation contexts. Environment keys are never saved. Previously saved project identifiers are ignored; existing workspace selection and credentials remain usable.
 

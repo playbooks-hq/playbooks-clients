@@ -44,12 +44,18 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
+	.option('--include', 'Comma-separated relations: categories, license, stats.')
+	.option('--category', 'Category identifier from categories.')
+	.option('--type', 'Project type identifier from types.')
+	.example('templates --category business --type website')
 	.action(run(templates.listTemplates));
 
 cli
 	.command('template')
 	.describe('Get a public template.')
 	.option('--template', 'Template identifier.')
+	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.action(run(templates.getTemplate));
 
 // Categories
@@ -59,6 +65,7 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.action(run(categories.listCategories));
 
 // Collections
@@ -68,6 +75,7 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.action(run(collections.listCollections));
 
 // Creators
@@ -77,6 +85,7 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.action(run(creators.listWorkspaces));
 
 // Types
@@ -86,6 +95,7 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt, position.')
 	.action(run(types.listTypes));
 
 // Workspace
@@ -119,8 +129,8 @@ cli
 	.command('workspace folders')
 	.describe('List workspace folders.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listFolders));
 
@@ -174,6 +184,11 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
+	.option('--include', 'Comma-separated relations: categories, license, stats.')
+	.option('--category', 'Category identifier from categories.')
+	.option('--type', 'Project type identifier from types.')
+	.example('workspace templates --category business --type website')
 	.action(run(workspace.listTemplates));
 
 cli
@@ -181,14 +196,15 @@ cli
 	.describe('Get an owned template.')
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.action(run(workspace.getTemplate));
 
 cli
 	.command('workspace template versions')
 	.describe('List template versions.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listTemplateVersions));
@@ -247,8 +263,8 @@ cli
 	.command('workspace invitations')
 	.describe('List workspace invitations.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listInvitations));
 
@@ -286,9 +302,9 @@ cli
 cli
 	.command('workspace designs')
 	.describe('List available workspace agent designs.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listWorkspaceDesigns));
 
@@ -299,6 +315,7 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort: name:asc or updatedAt:desc.')
 	.action(run(workspace.listWorkspaceSkills));
 
 cli
@@ -308,6 +325,7 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort: name:asc or updatedAt:desc.')
 	.action(run(workspace.listWorkspaceMcps));
 
 cli
@@ -317,24 +335,27 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(workspace.listWorkspaceConnectors));
 
 cli
 	.command('workspace secrets')
 	.describe('List safe workspace secret metadata.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(workspace.listWorkspaceSecrets));
 
 cli
 	.command('workspace files')
 	.describe('List workspace-owned agent files.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--available', 'Include available and inherited resources.', false)
 	.action(run(workspace.listWorkspaceFiles));
 
 cli
@@ -370,6 +391,7 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(workspace.activityOperations));
 
 cli
@@ -391,6 +413,7 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(workspace.creditsOperations));
 
 cli
@@ -400,6 +423,7 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(workspace.invoicesOperations));
 
 cli
@@ -409,6 +433,7 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(workspace.settlementsOperations));
 
 cli
@@ -418,14 +443,15 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(workspace.transfersOperations));
 
 cli
 	.command('workspace schedules')
 	.describe('List workspace schedules.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.schedulesOperations));
 
@@ -433,8 +459,8 @@ cli
 	.command('workspace domains')
 	.describe('List workspace domains.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listDomains));
 
@@ -510,6 +536,11 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
+	.option('--include', 'Comma-separated relations: folder, type, projectOwner, branches, deploy.')
+	.option('--folder', 'Folder identifier from workspace folders.')
+	.option('--owner', 'Numeric user ID of the project owner.')
+	.example('projects --folder abc --sort name:asc')
 	.action(run(project.listProjects));
 
 cli
@@ -517,6 +548,8 @@ cli
 	.describe('Get a project.')
 	.option('--project', 'Project identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--include', 'Comma-separated relations: folder, type, projectOwner, branches, deploy.')
+	.example('project --project abc --include folder,type')
 	.action(run(project.getProject));
 
 cli
@@ -700,18 +733,19 @@ cli
 cli
 	.command('project collaborators')
 	.describe('List project collaborators.')
-	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
+	.option('--project', 'Project identifier.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(project.listCollaborators));
 
 cli
 	.command('project agents')
 	.describe('List project agents.')
-	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
+	.option('--project', 'Project identifier.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -771,6 +805,8 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort: name:asc or updatedAt:desc.')
+	.option('--available', 'Include available and inherited resources.', false)
 	.action(run(project.listProjectDesigns));
 
 cli
@@ -812,6 +848,8 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort: name:asc or updatedAt:desc.')
+	.option('--available', 'Include available and inherited resources.', false)
 	.action(run(project.listProjectSkills));
 
 cli
@@ -878,26 +916,29 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort: name:asc or updatedAt:desc.')
 	.action(run(project.listProjectMcps));
 
 cli
 	.command('project connectors')
 	.describe('List project connector assignments.')
-	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--project', 'Project identifier.')
+	.option('--page', 'Zero-based page; operational projects paginate only when requested.')
+	.option('--page-size', 'Records per page (1-100 for operational projects).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(project.listProjectConnectors));
 
 cli
 	.command('project files')
 	.describe('List project-owned agent files.')
-	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--project', 'Project identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--available', 'Include available and inherited resources.', false)
 	.action(run(project.listProjectFiles));
 
 cli
@@ -1011,18 +1052,19 @@ cli
 cli
 	.command('project branches')
 	.describe('List project branches.')
-	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
+	.option('--project', 'Project identifier.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt, position.')
 	.action(run(project.listBranches));
 
 cli
 	.command('project checkpoints')
 	.describe('List project checkpoints.')
-	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
+	.option('--project', 'Project identifier.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1078,18 +1120,19 @@ cli
 	.describe('Read project logs.')
 	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--limit', 'Maximum log entries (1-500; server default 100).')
+	.option('--cursor', 'Cursor from data.nextCursor for the next log page.')
+	.example('project logs --project abc --query error --limit 50')
 	.action(run(project.logsOperations));
 
 cli
 	.command('project workflows')
 	.describe('List saved project workflows.')
-	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
+	.option('--page', 'Zero-based page; enables pagination when supplied.')
+	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--project', 'Project identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listWorkflows));
 
@@ -1180,7 +1223,7 @@ try {
 	if (args.length === 2) cli.help();
 	else
 		cli.parse(args, {
-			string: ['data'],
+			string: ['data', 'query', 'sort', 'include', 'category', 'type', 'folder', 'owner', 'cursor'],
 			unknown: flag => {
 				throw new CliError(422, `Unknown option: ${flag}`);
 			},

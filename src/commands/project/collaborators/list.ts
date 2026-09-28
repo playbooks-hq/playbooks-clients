@@ -1,10 +1,10 @@
 import { projectContext } from 'src/services/command-context';
-import { listParams } from 'src/utils/cli-input';
+import { listParams, zeroBasedPage } from 'src/utils/cli-input';
 
 export const listCollaborators = async (options: any) => {
+	const params = listParams(options, { pageBase: 1, sort: ['id', 'createdAt', 'updatedAt'] });
 	const context = await projectContext(options);
 	const { client } = context;
 	const path = `${context.path}/collaborators`;
-	const params = listParams(options);
-	return client.request(path, 'GET', undefined, params, true);
+	return zeroBasedPage(await client.request(path, 'GET', undefined, params, true));
 };
