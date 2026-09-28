@@ -3,9 +3,10 @@ import { identifier, input } from 'src/utils/cli-input';
 import { assertOperationSucceeded } from 'src/utils/cli-operation';
 
 export const updateProject = async (options: any) => {
+	const id = identifier(options.project, '--project');
 	const context = await workspaceContext(options);
 	const { client } = context;
-	const path = `/workspace/projects/${identifier(options.project ?? context.state.project)}`;
+	const path = `/workspace/projects/${id}`;
 	const params = {};
 	const data = await input(options, ['name', 'description', 'thumbnail', 'typeId']);
 	const response = await client.request(path, 'PUT', data, params, false);

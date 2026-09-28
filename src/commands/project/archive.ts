@@ -9,7 +9,7 @@ export const archiveProject = async (options: any) => {
 	const path = `${context.path}/lifecycle/archive`;
 	const params = {};
 	const data = await input(options, ['confirmation']);
-	await confirm(options, 'Archive the selected Project.: ' + path + '?');
+	await confirm(options, 'Archive the project.: ' + path + '?');
 	const response = await client.request(path, 'POST', data, params, false);
 	assertOperationSucceeded(response, path);
 	return response;

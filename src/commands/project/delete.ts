@@ -9,7 +9,7 @@ export const deleteProject = async (options: any) => {
 	const path = `${context.path}/lifecycle/delete`;
 	const params = {};
 	const data = await input(options, ['confirmation']);
-	await confirm(options, 'Permanently delete the selected Project.: ' + path + '?');
+	await confirm(options, 'Permanently delete the project.: ' + path + '?');
 	const response = await client.request(path, 'POST', data, params, false);
 	assertOperationSucceeded(response, path);
 	return response;

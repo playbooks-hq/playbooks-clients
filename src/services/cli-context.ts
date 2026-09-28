@@ -7,7 +7,6 @@ import { apiURL } from 'src/services/cli-client';
 export interface ContextData {
 	version: 1;
 	workspace?: string;
-	project?: string;
 }
 
 export class CliContext {
@@ -17,7 +16,7 @@ export class CliContext {
 		const data = await this.readJSON(this.path);
 		if (!data) return { version: 1 };
 		if (data.version !== 1) throw new Error('Unsupported config. Choose a new --config file and sign in again.');
-		return data;
+		return { version: 1, ...(data.workspace !== undefined ? { workspace: data.workspace } : {}) };
 	}
 
 	async readJSON(path: string) {
@@ -30,7 +29,7 @@ export class CliContext {
 	}
 
 	async write(data: ContextData) {
-		await this.writeJSON(this.path, data);
+		await this.writeJSON(this.path, { version: 1, workspace: data.workspace });
 	}
 
 	async writeJSON(path: string, data: object) {

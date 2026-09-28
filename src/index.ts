@@ -40,7 +40,7 @@ cli.command('logout').describe('Remove stored credentials and context.').action(
 // Templates
 cli
 	.command('templates')
-	.describe('Explore public Templates.')
+	.describe('Explore public templates.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
@@ -48,14 +48,14 @@ cli
 
 cli
 	.command('template')
-	.describe('Get a public Template.')
+	.describe('Get a public template.')
 	.option('--template', 'Template identifier.')
 	.action(run(templates.getTemplate));
 
 // Categories
 cli
 	.command('categories')
-	.describe('Explore Categories.')
+	.describe('Explore categories.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
@@ -64,7 +64,7 @@ cli
 // Collections
 cli
 	.command('collections')
-	.describe('Explore Collections.')
+	.describe('Explore collections.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
@@ -82,7 +82,7 @@ cli
 // Types
 cli
 	.command('types')
-	.describe('List curated Project Types.')
+	.describe('List curated project types.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
@@ -91,104 +91,120 @@ cli
 // Workspace
 cli
 	.command('workspace update')
-	.describe('Update the active Workspace profile.')
+	.describe('Update the active workspace profile.')
 	.option('--data', 'JSON object or - for stdin.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace update --data \'{"name":"Acme"}\'')
 	.action(run(workspace.updateWorkspace));
 
-cli.command('workspace list').describe('List your Workspaces.').action(run(workspace.listWorkspace));
+cli.command('workspace list').describe('List your workspaces.').action(run(workspace.listWorkspace));
 
-cli.command('workspace current').describe('Show the active Workspace.').action(run(workspace.currentWorkspace));
+cli.command('workspace current').describe('Show the active workspace.').action(run(workspace.currentWorkspace));
 
-cli.command('workspace clear').describe('Exit local Workspace context.').action(run(workspace.clearWorkspace));
+cli.command('workspace clear').describe('Exit local workspace context.').action(run(workspace.clearWorkspace));
 
 cli
 	.command('workspace use')
-	.describe('Select a Workspace; clears Project context.')
+	.describe('Select a workspace.')
 	.option('--workspace', 'Workspace identifier; prompts when omitted.')
 	.action(run(workspace.useWorkspace));
 
-cli.command('workspace open').describe('Open this resource in Playbooks.').action(run(workspace.openWorkspace));
+cli
+	.command('workspace open')
+	.describe('Open this resource in Playbooks.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.openWorkspace));
 
 cli
 	.command('workspace folders')
-	.describe('List Workspace Folders.')
+	.describe('List workspace folders.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listFolders));
 
 cli
 	.command('workspace folder')
-	.describe('Get a Folder.')
+	.describe('Get a folder.')
 	.option('--folder', 'Folder identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.getFolder));
 
 cli
 	.command('workspace folder create')
-	.describe('Create a Folder.')
+	.describe('Create a folder.')
 	.option('--data', 'JSON object or - for stdin.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace folder create --data \'{"name":"Customer projects"}\'')
 	.action(run(workspace.createFolder));
 
 cli
 	.command('workspace folder update')
-	.describe('Update a Folder.')
+	.describe('Update a folder.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--folder', 'Folder identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace folder update --folder abc --data \'{"name":"Customer projects"}\'')
 	.action(run(workspace.updateFolder));
 
 cli
 	.command('workspace template update')
-	.describe('Update an owned Template listing.')
+	.describe('Update an owned template listing.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--template', 'Template identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace template update --template abc --data \'{"description":"Customer portal starter"}\'')
 	.action(run(workspace.updateTemplate));
 
 cli
 	.command('workspace template publish')
-	.describe('Publish a Template version to the marketplace.')
+	.describe('Publish a template version to the marketplace.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--template', 'Template identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example("workspace template publish --template abc --data '{}' --yes")
 	.action(run(workspace.publishTemplate));
 
 cli
 	.command('workspace templates')
-	.describe('List owned Templates.')
+	.describe('List owned templates.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listTemplates));
 
 cli
 	.command('workspace template')
-	.describe('Get an owned Template.')
+	.describe('Get an owned template.')
 	.option('--template', 'Template identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.getTemplate));
 
 cli
 	.command('workspace template versions')
-	.describe('List Template versions.')
+	.describe('List template versions.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--template', 'Template identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listTemplateVersions));
 
 cli
 	.command('workspace template open')
 	.describe('Open this resource in Playbooks.')
 	.option('--template', 'Template identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.openTemplate));
 
 cli
 	.command('workspace member departure-preview')
-	.describe('Review removal of a member by User ID.')
-	.option('--member', 'Member User identifier.')
+	.describe('Review removal of a member by user ID.')
+	.option('--member', 'Member user identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.previewMemberDeparture));
 
 cli
@@ -196,46 +212,52 @@ cli
 	.describe('Remove a member using the reviewed revision and ownership recipient.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
-	.option('--member', 'Member User identifier.')
+	.option('--member', 'Member user identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace member depart --member abc --data \'{"revision":"CURRENT_REVISION","toUserId":123}\' --yes')
 	.action(run(workspace.removeMember));
 
 cli
 	.command('workspace members')
-	.describe('List Workspace members.')
+	.describe('List workspace members.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listMembers));
 
 cli
 	.command('workspace member')
-	.describe('Get a Workspace member.')
+	.describe('Get a workspace member.')
 	.option('--member', 'Member identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.getMember));
 
 cli
 	.command('workspace member update')
-	.describe('Update a Workspace member role.')
+	.describe('Update a workspace member role.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--member', 'Member identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace member update --member abc --data \'{"memberRole":"collaborator"}\' --yes')
 	.action(run(workspace.updateMember));
 
 cli
 	.command('workspace invitations')
-	.describe('List Workspace invitations.')
+	.describe('List workspace invitations.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listInvitations));
 
 cli
 	.command('workspace invitation create')
-	.describe('Invite a Workspace member.')
+	.describe('Invite a workspace member.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace invitation create --data \'{"email":"teammate@example.com","role":"collaborator"}\' --yes')
 	.action(run(workspace.createInvitation));
 
@@ -244,117 +266,140 @@ cli
 	.describe('Revoke a pending invitation.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--invitation', 'Invitation identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.revokeInvitation));
 
 cli
 	.command('workspace settings')
-	.describe('Get Workspace Operator preferences and instructions.')
+	.describe('Get workspace operator preferences and instructions.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.getWorkspacePreferences));
 
 cli
 	.command('workspace settings update')
-	.describe('Update Workspace Operator preferences.')
+	.describe('Update workspace operator preferences.')
 	.option('--data', 'JSON object or - for stdin.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace settings update --data \'{"instructions":"Use concise responses."}\'')
 	.action(run(workspace.updateWorkspacePreferences));
 
 cli
 	.command('workspace designs')
-	.describe('List available Workspace Agent Designs.')
+	.describe('List available workspace agent designs.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listWorkspaceDesigns));
 
 cli
 	.command('workspace skills')
-	.describe('List available Workspace Skills.')
+	.describe('List available workspace skills.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listWorkspaceSkills));
 
 cli
 	.command('workspace mcps')
-	.describe('List Workspace MCP connections.')
+	.describe('List workspace MCP connections.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listWorkspaceMcps));
 
 cli
 	.command('workspace connectors')
-	.describe('List Workspace connector connections.')
+	.describe('List workspace connector connections.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listWorkspaceConnectors));
 
 cli
 	.command('workspace secrets')
-	.describe('List safe Workspace secret metadata.')
+	.describe('List safe workspace secret metadata.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listWorkspaceSecrets));
 
 cli
 	.command('workspace files')
-	.describe('List Workspace-owned Agent Files.')
+	.describe('List workspace-owned agent files.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listWorkspaceFiles));
 
 cli
 	.command('workspace file download')
-	.describe('Download a Workspace-owned Agent File.')
+	.describe('Download a workspace-owned agent file.')
 	.option('--output', 'New destination file.')
 	.option('--file-id', 'File-id identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.downloadWorkspaceFile));
 
 cli
 	.command('workspace file upload')
-	.describe('Upload an Agent File; replacement requires its current revision.')
+	.describe('Upload an agent file; replacement requires its current revision.')
 	.option('--upload', 'Local file path.')
-	.option('--name', 'Relative Agent File name.')
+	.option('--name', 'Relative agent file name.')
 	.option('--revision', 'Existing file revision when replacing.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.uploadWorkspaceFile));
 
 cli
 	.command('workspace budget update')
-	.describe('Update the Workspace credit budget.')
+	.describe('Update the workspace credit budget.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace budget update --data \'{"creditBudget":100}\' --yes')
 	.action(run(workspace.updateBudgetOperations));
 
 cli
 	.command('workspace activity')
-	.describe('List Workspace activity.')
+	.describe('List workspace activity.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.activityOperations));
 
-cli.command('workspace usage').describe('Inspect Workspace usage.').action(run(workspace.usageOperations));
+cli
+	.command('workspace usage')
+	.describe('Inspect workspace usage.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.usageOperations));
 
-cli.command('workspace budget').describe('Inspect the Workspace budget.').action(run(workspace.budgetOperations));
+cli
+	.command('workspace budget')
+	.describe('Inspect the workspace budget.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.budgetOperations));
 
 cli
 	.command('workspace credits')
-	.describe('List Workspace credit records.')
+	.describe('List workspace credit records.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.creditsOperations));
 
 cli
 	.command('workspace invoices')
-	.describe('List Workspace invoices.')
+	.describe('List workspace invoices.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.invoicesOperations));
 
 cli
@@ -363,42 +408,48 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.settlementsOperations));
 
 cli
 	.command('workspace transfers')
-	.describe('List Workspace transfers.')
+	.describe('List workspace transfers.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.transfersOperations));
 
 cli
 	.command('workspace schedules')
-	.describe('List Workspace schedules.')
+	.describe('List workspace schedules.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.schedulesOperations));
 
 cli
 	.command('workspace domains')
-	.describe('List Workspace domains.')
+	.describe('List workspace domains.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listDomains));
 
 cli
 	.command('workspace domain')
 	.describe('Inspect a domain.')
 	.option('--domain', 'Domain identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.getDomain));
 
 cli
 	.command('workspace domain add')
 	.describe('Add an existing external domain; does not purchase a domain.')
 	.option('--data', 'JSON object or - for stdin.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace domain add --data \'{"name":"app.example.com"}\'')
 	.action(run(workspace.addDomain));
 
@@ -406,6 +457,7 @@ cli
 	.command('workspace domain records')
 	.describe('Inspect DNS records.')
 	.option('--domain', 'Domain identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listRecords));
 
 cli
@@ -422,6 +474,7 @@ cli
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--domain', 'Domain identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
 		'workspace domain record create --domain abc --data \'{"type":"TXT","name":"_verification","value":"verification-value","ttl":300}\' --yes',
 	)
@@ -434,6 +487,7 @@ cli
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--domain', 'Domain identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
 		'workspace domain record update --domain abc --record abc --data \'{"type":"TXT","name":"_verification","value":"updated-value","ttl":300}\' --yes',
 	)
@@ -445,163 +499,173 @@ cli
 	.option('--record', 'DNS record identifier.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--domain', 'Domain identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.deleteRecord));
 
 // Project
 cli
 	.command('projects')
-	.describe('List Projects in the active Workspace.')
+	.describe('List projects in the active workspace.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listProjects));
 
 cli
 	.command('project')
-	.describe('Get a Project.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Get a project.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getProject));
 
 cli
 	.command('project create')
-	.describe('Create a blank Project.')
+	.describe('Create a blank project.')
 	.option('--data', 'JSON object or - for stdin.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('project create --data \'{"name":"Customer portal"}\'')
 	.action(run(project.createProject));
 
 cli
 	.command('project update')
-	.describe('Update Project details.')
+	.describe('Update project details.')
 	.option('--data', 'JSON object or - for stdin.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
-	.example('project update --data \'{"description":"Customer support app"}\'')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project update --project abc --data \'{"description":"Customer support app"}\'')
 	.action(run(project.updateProject));
 
 cli
 	.command('project move')
-	.describe('Move a Project to a Folder.')
+	.describe('Move a project to a folder.')
 	.option('--data', 'JSON object or - for stdin.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
-	.example('project move --data \'{"folderId":123}\'')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project move --project abc --data \'{"folderId":123}\'')
 	.action(run(project.moveProject));
 
 cli
 	.command('project publication')
 	.describe('Inspect publication readiness.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getPublication));
 
 cli
 	.command('project export')
-	.describe('Download Project source.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Download project source.')
+	.option('--project', 'Project identifier.')
 	.option('--output', 'New destination file.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.exportProject));
 
 cli
 	.command('project lifecycle')
 	.describe('Inspect lifecycle state and confirmation requirements.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getProjectLifecycle));
 
 cli
 	.command('project archive')
-	.describe('Archive the selected Project.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Archive the project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
-	.example('project archive --data \'{"confirmation":"Customer portal"}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project archive --project abc --data \'{"confirmation":"Customer portal"}\' --yes')
 	.action(run(project.archiveProject));
 
 cli
 	.command('project restore')
-	.describe('Restore the selected Project.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Restore the project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
-	.example('project restore --data \'{"confirmation":"Customer portal"}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project restore --project abc --data \'{"confirmation":"Customer portal"}\' --yes')
 	.action(run(project.restoreProject));
 
 cli
 	.command('project delete')
-	.describe('Permanently delete the selected Project.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Permanently delete the project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
-	.example('project delete --data \'{"confirmation":"Customer portal"}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project delete --project abc --data \'{"confirmation":"Customer portal"}\' --yes')
 	.action(run(project.deleteProject));
 
 cli
 	.command('project preflight')
-	.describe('Review Production publication requirements.')
+	.describe('Review production publication requirements.')
 	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
-	.example('project preflight --data \'{"branchId":123}\'')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project preflight --project abc --data \'{"branchId":123}\'')
 	.action(run(project.preflightProject));
 
 cli
 	.command('project publish')
-	.describe('Publish Project code to Production.')
+	.describe('Publish project code to production.')
 	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm publication and usage charges.', false)
 	.option('--wait', 'Wait up to five minutes for completion.', false)
-	.example('project publish --data \'{"expectedRevision":"CURRENT_REVISION"}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project publish --project abc --data \'{"expectedRevision":"CURRENT_REVISION"}\' --yes')
 	.action(run(project.publishProject));
-
-cli
-	.command('project use')
-	.describe('Select a Project in the active Workspace.')
-	.option('--project', 'Project identifier.')
-	.action(run(project.useProject));
-
-cli.command('project current').describe('Show the selected Project.').action(run(project.currentProject));
-
-cli.command('project clear').describe('Clear local Project selection.').action(run(project.clearProject));
 
 cli
 	.command('project open')
 	.describe('Open this resource in Playbooks.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.openProject));
 
 cli
 	.command('project ownership')
-	.describe('Inspect the pending Project ownership request.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Inspect the pending project ownership request.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getOwnershipRequest));
 
 cli
 	.command('project ownership transfer')
-	.describe('Request Project ownership transfer to an active member.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Request project ownership transfer to an active member.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
-	.example('project ownership transfer --data \'{"toUserId":123}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project ownership transfer --project abc --data \'{"toUserId":123}\' --yes')
 	.action(run(project.transferOwnership));
 
 cli
 	.command('project ownership accept')
-	.describe('Accept a Project ownership request addressed to you.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Accept a project ownership request addressed to you.')
+	.option('--project', 'Project identifier.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--request', 'Request identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.acceptOwnership));
 
 cli
 	.command('project ownership decline')
-	.describe('Decline a Project ownership request.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Decline a project ownership request.')
+	.option('--project', 'Project identifier.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--request', 'Request identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.declineOwnership));
 
 cli
 	.command('project ownership cancel')
-	.describe('Cancel a pending Project ownership request.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Cancel a pending project ownership request.')
+	.option('--project', 'Project identifier.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--request', 'Request identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.cancelOwnership));
 
 cli
@@ -614,92 +678,104 @@ cli
 
 cli
 	.command('project collaborator add')
-	.describe('Grant Project access to an existing Workspace member.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Grant project access to an existing workspace member.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
-	.example('project collaborator add --data \'{"userId":123,"role":"collaborator"}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project collaborator add --project abc --data \'{"userId":123,"role":"collaborator"}\' --yes')
 	.action(run(project.addCollaborator));
 
 cli
 	.command('project collaborator update')
-	.describe('Update Project collaborator access.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Update project collaborator access.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--collaborator', 'Collaborator identifier.')
-	.example('project collaborator update --collaborator abc --data \'{"role":"collaborator"}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project collaborator update --project abc --collaborator abc --data \'{"role":"collaborator"}\' --yes')
 	.action(run(project.updateCollaborator));
 
 cli
 	.command('project collaborators')
-	.describe('List Project collaborators.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project collaborators.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listCollaborators));
 
 cli
 	.command('project agents')
-	.describe('List Project Agents.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project agents.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listAgents));
 
 cli
 	.command('project agent')
-	.describe('Get a Project Agent.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Get a project agent.')
+	.option('--project', 'Project identifier.')
 	.option('--agent', 'Agent identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getAgent));
 
 cli
 	.command('project agent create')
-	.describe('Create a Project Agent without starting a run.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Create a project agent without starting a run.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
-	.example('project agent create --data \'{"name":"Research assistant","creationKey":"unique-creation-key"}\'')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example(
+		'project agent create --project abc --data \'{"name":"Research assistant","creationKey":"unique-creation-key"}\'',
+	)
 	.action(run(project.createAgent));
 
 cli
 	.command('project agent update')
-	.describe('Enable or disable a Project Agent.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Enable or disable a project agent.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--agent', 'Agent identifier.')
-	.example('project agent update --agent abc --data \'{"status":"disabled","revision":1}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project agent update --project abc --agent abc --data \'{"status":"disabled","revision":1}\' --yes')
 	.action(run(project.updateAgent));
 
 cli
 	.command('project resources state')
-	.describe('Inspect the Project resource selection revision.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Inspect the project resource selection revision.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getResourceState));
 
 cli
 	.command('project resources update')
-	.describe('Update revision-checked Project resource selections.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Update revision-checked project resource selections.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
-	.example('project resources update --data \'{"revision":"CURRENT_REVISION","designId":null}\'')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project resources update --project abc --data \'{"revision":"CURRENT_REVISION","designId":null}\'')
 	.action(run(project.updateProjectResources));
 
 cli
 	.command('project designs')
-	.describe('List Project-owned Agent Designs.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project-owned agent designs.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listProjectDesigns));
 
 cli
 	.command('project design')
-	.describe('Agent Design commands: project design create, update.')
+	.describe('Agent design commands: project design create, update.')
 	.action(options => {
 		if (options._?.length) throw new CliError(422, 'Unknown Agent Design action. See project design --help.');
 		cli.help('project design');
@@ -707,30 +783,35 @@ cli
 
 cli
 	.command('project design create')
-	.describe('Create a Project Agent Design from package files.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Create a project agent design from package files.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
-		'project design create --data \'{"name":"Brand design","files":[{"path":"DESIGN.md","content":"BASE64_CONTENT"}]}\'',
+		'project design create --project abc --data \'{"name":"Brand design","files":[{"path":"DESIGN.md","content":"BASE64_CONTENT"}]}\'',
 	)
 	.action(run(project.createProjectDesign));
 
 cli
 	.command('project design update')
-	.describe('Update a Project-owned Agent Design.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Update a project-owned agent design.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--design', 'Design identifier.')
-	.example('project design update --design abc --data \'{"name":"Brand design","revision":"CURRENT_CHECKSUM"}\'')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example(
+		'project design update --project abc --design abc --data \'{"name":"Brand design","revision":"CURRENT_CHECKSUM"}\'',
+	)
 	.action(run(project.updateProjectDesign));
 
 cli
 	.command('project skills')
-	.describe('List Project-owned Skills.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project-owned skills.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listProjectSkills));
 
 cli
@@ -743,73 +824,85 @@ cli
 
 cli
 	.command('project skill create')
-	.describe('Create a Project Skill from package files.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Create a project skill from package files.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
-		'project skill create --data \'{"name":"Review changes","files":[{"path":"SKILL.md","content":"BASE64_CONTENT"}]}\'',
+		'project skill create --project abc --data \'{"name":"Review changes","files":[{"path":"SKILL.md","content":"BASE64_CONTENT"}]}\'',
 	)
 	.action(run(project.createProjectSkill));
 
 cli
 	.command('project skill update')
-	.describe('Update a Project-owned Skill.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Update a project-owned skill.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--skill', 'Skill identifier.')
-	.example('project skill update --skill abc --data \'{"name":"Review changes","revision":"CURRENT_CHECKSUM"}\'')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example(
+		'project skill update --project abc --skill abc --data \'{"name":"Review changes","revision":"CURRENT_CHECKSUM"}\'',
+	)
 	.action(run(project.updateProjectSkill));
 
 cli
 	.command('project settings')
-	.describe('Get Project preferences and instructions.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Get project preferences and instructions.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getProjectPreferences));
 
 cli
 	.command('project settings update')
-	.describe('Update Project preferences.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Update project preferences.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
-	.example('project settings update --data \'{"instructions":"Use concise responses.","revision":"CURRENT_REVISION"}\'')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example(
+		'project settings update --project abc --data \'{"instructions":"Use concise responses.","revision":"CURRENT_REVISION"}\'',
+	)
 	.action(run(project.updateProjectPreferences));
 
 cli
 	.command('project resources')
-	.describe('Inspect Project resource assignments.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Inspect project resource assignments.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getProjectResources));
 
 cli
 	.command('project mcps')
-	.describe('List Project-owned MCP connections.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project-owned MCP connections.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listProjectMcps));
 
 cli
 	.command('project connectors')
-	.describe('List Project connector assignments.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project connector assignments.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listProjectConnectors));
 
 cli
 	.command('project files')
-	.describe('List Project-owned Agent Files.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project-owned agent files.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listProjectFiles));
 
 cli
 	.command('project file')
-	.describe('Agent File commands: project file download, upload.')
+	.describe('Agent file commands: project file download, upload.')
 	.action(options => {
 		if (options._?.length) throw new CliError(422, 'Unknown Agent File action. See project file --help.');
 		cli.help('project file');
@@ -817,46 +910,51 @@ cli
 
 cli
 	.command('project file download')
-	.describe('Download a Project-owned Agent File.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Download a project-owned agent file.')
+	.option('--project', 'Project identifier.')
 	.option('--output', 'New destination file.')
 	.option('--file-id', 'File-id identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.downloadProjectFile));
 
 cli
 	.command('project file upload')
-	.describe('Upload an Agent File; replacement requires its current revision.')
+	.describe('Upload an agent file; replacement requires its current revision.')
 	.option('--upload', 'Local file path.')
-	.option('--name', 'Relative Agent File name.')
+	.option('--name', 'Relative agent file name.')
 	.option('--revision', 'Existing file revision when replacing.')
 	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.uploadProjectFile));
 
 cli
 	.command('project source connect')
 	.describe('Connect a repository; source may be replaced unless preserveSource is supported and selected.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
-		'project source connect --data \'{"provider":"github","githubInstallationId":123,"githubRepositoryId":456,"preserveSource":true}\' --yes',
+		'project source connect --project abc --data \'{"provider":"github","githubInstallationId":123,"githubRepositoryId":456,"preserveSource":true}\' --yes',
 	)
 	.action(run(project.connectSource));
 
 cli
 	.command('project source disconnect')
-	.describe('Disconnect the Project repository.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Disconnect the project repository.')
+	.option('--project', 'Project identifier.')
 	.option('--yes', 'Confirm this operation.', false)
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.disconnectSource));
 
 cli
 	.command('project source sync')
 	.describe('Synchronize source using the reviewed Git head.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
-	.example('project source sync --data \'{"branchId":123,"expectedHead":"CURRENT_COMMIT_SHA"}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project source sync --project abc --data \'{"branchId":123,"expectedHead":"CURRENT_COMMIT_SHA"}\' --yes')
 	.action(run(project.syncSource));
 
 cli
@@ -870,9 +968,10 @@ cli
 cli
 	.command('project branch create')
 	.describe('Create a branch from a selected base branch.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
-	.example('project branch create --data \'{"name":"feature/customer-portal","baseBranch":"main"}\'')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project branch create --project abc --data \'{"name":"feature/customer-portal","baseBranch":"main"}\'')
 	.action(run(project.createBranch));
 
 cli
@@ -885,144 +984,161 @@ cli
 
 cli
 	.command('project checkpoint rename')
-	.describe('Rename a Project checkpoint.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Rename a project checkpoint.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--checkpoint', 'Checkpoint identifier.')
-	.example('project checkpoint rename --checkpoint abc --data \'{"label":"Before settings update"}\'')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project checkpoint rename --project abc --checkpoint abc --data \'{"label":"Before settings update"}\'')
 	.action(run(project.renameCheckpoint));
 
 cli
 	.command('project checkpoint restore')
 	.describe('Restore a source checkpoint; application data is unchanged.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--checkpoint', 'Checkpoint identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.restoreCheckpoint));
 
 cli
 	.command('project source')
-	.describe('Inspect Project source control.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Inspect project source control.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getSourceStatus));
 
 cli
 	.command('project branches')
-	.describe('List Project branches.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project branches.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listBranches));
 
 cli
 	.command('project checkpoints')
-	.describe('List Project checkpoints.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project checkpoints.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listCheckpoints));
 
 cli
 	.command('project source import')
-	.describe('Replace selected Project source with a zip archive.')
+	.describe('Replace project source with a zip archive.')
 	.option('--project', 'Project identifier.')
 	.option('--upload', 'Local source zip.')
 	.option('--yes', 'Confirm source replacement.', false)
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.importSource));
 
 cli
 	.command('project releases')
-	.describe('List Project releases.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List project releases.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listReleases));
 
 cli
 	.command('project release')
 	.describe('Inspect a release.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--release', 'Release identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getRelease));
 
 cli
 	.command('project release rollback')
 	.describe('Restore release code; application data is not rolled back.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--release', 'Release identifier.')
-	.example('project release rollback --release abc --data \'{"currentReleaseId":123}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project release rollback --project abc --release abc --data \'{"currentReleaseId":123}\' --yes')
 	.action(run(project.rollbackRelease));
 
 cli
 	.command('project sandbox')
-	.describe('Inspect Project Sandbox configuration and resize status.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Inspect project sandbox configuration and resize status.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.sandboxOperations));
 
 cli
 	.command('project logs')
-	.describe('Read Project logs.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('Read project logs.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.logsOperations));
 
 cli
 	.command('project workflows')
-	.describe('List saved Project workflows.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.describe('List saved project workflows.')
+	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listWorkflows));
 
 cli
 	.command('project workflow')
 	.describe('Inspect a saved workflow and its runs.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--workflow', 'Workflow identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getWorkflow));
 
 cli
 	.command('project workflow create')
 	.describe('Create a workflow with its schedule initially disabled.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
-	.example('project workflow create --data \'{"name":"Daily review"}\'')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project workflow create --project abc --data \'{"name":"Daily review"}\'')
 	.action(run(project.createWorkflow));
 
 cli
 	.command('project workflow update')
 	.describe('Update saved workflow steps.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workflow', 'Workflow identifier.')
-	.example('project workflow update --data \'{"name":"Daily review","revision":1}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project workflow update --project abc --data \'{"name":"Daily review","revision":1}\' --yes')
 	.action(run(project.updateWorkflow));
 
 cli
 	.command('project workflow schedule')
 	.describe('Update recurrence; enabling it authorizes real actions and usage charges.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workflow', 'Workflow identifier.')
-	.example('project workflow schedule --data \'{"enabled":false}\' --yes')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project workflow schedule --project abc --data \'{"enabled":false}\' --yes')
 	.action(run(project.scheduleWorkflow));
 
 cli
 	.command('project workflow run')
 	.describe('Run saved work now; may send notifications, change external systems, and incur usage charges.')
-	.option('--project', 'Project identifier; defaults to selected Project.')
+	.option('--project', 'Project identifier.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workflow', 'Workflow identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.runWorkflow));
 
 // MCP

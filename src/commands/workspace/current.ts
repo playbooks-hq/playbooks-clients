@@ -1,6 +1,5 @@
-import { authenticated, workspaceContext } from 'src/services/command-context';
+import { workspaceContext } from 'src/services/command-context';
 
 export const currentWorkspace = async (options: any) => {
-	await authenticated(options);
-	return (await workspaceContext(options)).workspace;
+	return (await workspaceContext({ ...options, workspace: undefined })).workspace;
 };

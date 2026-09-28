@@ -9,7 +9,7 @@ export const restoreProject = async (options: any) => {
 	const path = `${context.path}/lifecycle/restore`;
 	const params = {};
 	const data = await input(options, ['confirmation']);
-	await confirm(options, 'Restore the selected Project.: ' + path + '?');
+	await confirm(options, 'Restore the project.: ' + path + '?');
 	const response = await client.request(path, 'POST', data, params, false);
 	assertOperationSucceeded(response, path);
 	return response;

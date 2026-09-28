@@ -27,10 +27,10 @@ export const input = async (options: any, fields: string[]) => {
 	return data;
 };
 
-export const identifier = (value: any) => {
+export const identifier = (value: any, flag?: string) => {
 	if (Number.isSafeInteger(value) && value > 0) value = String(value);
 	if (typeof value !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(value))
-		throw new CliError(422, 'Provide a valid resource identifier.');
+		throw new CliError(422, flag ? `Provide a valid identifier with ${flag}.` : 'Provide a valid resource identifier.');
 	return encodeURIComponent(value);
 };
 

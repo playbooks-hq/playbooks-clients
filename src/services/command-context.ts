@@ -12,19 +12,23 @@ export const authenticated = async (options: any) => {
 };
 
 export const workspaceContext = async (options: any) => {
+	const explicitWorkspace = options.workspace !== undefined ? identifier(options.workspace, '--workspace') : undefined;
 	const { store, token } = await authenticated(options);
 	const state = await store.read();
-	if (!state.workspace) throw new CliError(422, 'Select a Workspace with playbooks workspace use --workspace <id>.');
-	const client = new CliClient(token, state.workspace);
+	const workspaceValue = explicitWorkspace ?? state.workspace;
+	if (workspaceValue === undefined)
+		throw new CliError(422, 'Provide --workspace <id> or select a workspace with playbooks workspace use.');
+	const workspaceUuid = identifier(workspaceValue, '--workspace');
+	const client = new CliClient(token, workspaceUuid);
 	const workspace = await client.request('/workspace');
-	if (workspace.data.uuid !== state.workspace)
-		throw new CliError(403, 'The server did not resolve the selected Workspace.');
-	return { store, state, client, workspace };
+	if (workspace.data.uuid !== workspaceUuid)
+		throw new CliError(403, 'The server did not resolve the requested workspace.');
+	return { store, state, client, workspace, workspaceUuid };
 };
 
 export const projectContext = async (options: any) => {
+	const id = identifier(options.project, '--project');
 	const context = await workspaceContext(options);
-	const id = identifier(options.project ?? context.state.project);
 	const path = `/workspace/projects/${id}`;
 	const project = await context.client.request(path);
 	return { ...context, path, project };
