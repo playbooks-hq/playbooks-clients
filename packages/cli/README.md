@@ -119,12 +119,14 @@ Saved workflow execution and recurrence are explicit actions that can affect ext
 ## Development
 
 ```sh
-npm install
-npm run lint
-npm run typecheck
-npm run build
+pnpm install --frozen-lockfile # from the repository root
+pnpm lint
+pnpm typecheck
+pnpm build
 ```
 
 `PLAYBOOKS_API_URL` selects an API origin for local development; use an isolated config. HTTPS is required outside loopback. Stored credentials are bound to their API origin. Product test authoring lives in `playbooks-auto` under separate scope.
 
 Support: support@playbooks.ai
+
+Development and shared release preparation are documented in the [workspace README](../../README.md).

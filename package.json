@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "lint": "turbo run lint",
+    "lint": "node --check scripts/prepare-release.mjs && node --check scripts/verify-artifacts.mjs && turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "turbo run format",
     "start": "turbo run start",

@@ -6,6 +6,5 @@ export const getProject = async (options: any) => {
 	const id = identifier(options.project, '--project');
 	const context = await workspaceContext(options);
 	const { client } = context;
-	const path = `/workspace/projects/${id}`;
-	return client.request(path, 'GET', undefined, params, true);
+	return client.projects.get(id, params);
 };

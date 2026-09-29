@@ -17,6 +17,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@playbooks/sdk':
+        specifier: workspace:*
+        version: link:../sdk
       enquirer:
         specifier: 2.4.1
         version: 2.4.1
@@ -163,6 +166,54 @@ importers:
       vite-plugin-size:
         specifier: 0.1.4
         version: 0.1.4
+
+  packages/sdk:
+    devDependencies:
+      '@eslint/js':
+        specifier: 9.39.4
+        version: 9.39.4
+      '@types/node':
+        specifier: 24.0.14
+        version: 24.0.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: 8.57.0
+        version: 8.57.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4)(typescript@5.9.3))(eslint@9.39.4)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: 8.57.0
+        version: 8.57.0(eslint@9.39.4)(typescript@5.9.3)
+      eslint:
+        specifier: 9.39.4
+        version: 9.39.4
+      eslint-config-prettier:
+        specifier: 10.1.8
+        version: 10.1.8(eslint@9.39.4)
+      eslint-plugin-complete:
+        specifier: 1.4.0
+        version: 1.4.0(eslint@9.39.4)(typescript@5.9.3)
+      eslint-plugin-prettier:
+        specifier: 5.5.5
+        version: 5.5.5(eslint-config-prettier@10.1.8(eslint@9.39.4))(eslint@9.39.4)(prettier@3.8.1)
+      eslint-plugin-simple-import-sort:
+        specifier: 12.1.1
+        version: 12.1.1(eslint@9.39.4)
+      eslint-plugin-unused-imports:
+        specifier: 4.4.1
+        version: 4.4.1(@typescript-eslint/eslint-plugin@8.57.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4)(typescript@5.9.3))(eslint@9.39.4)(typescript@5.9.3))(eslint@9.39.4)
+      globals:
+        specifier: 13.24.0
+        version: 13.24.0
+      prettier:
+        specifier: 3.8.1
+        version: 3.8.1
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vite:
+        specifier: 8.0.0
+        version: 8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@types/node@24.0.14)
 
 packages:
 

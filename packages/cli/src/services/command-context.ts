@@ -20,7 +20,7 @@ export const workspaceContext = async (options: any) => {
 		throw new CliError(422, 'Provide --workspace <id> or select a workspace with playbooks workspace use.');
 	const workspaceUuid = identifier(workspaceValue, '--workspace');
 	const client = new CliClient(token, workspaceUuid);
-	const workspace = await client.request('/workspace');
+	const workspace = await client.workspaces.get();
 	if (workspace.data.uuid !== workspaceUuid)
 		throw new CliError(403, 'The server did not resolve the requested workspace.');
 	return { store, state, client, workspace, workspaceUuid };
@@ -30,6 +30,6 @@ export const projectContext = async (options: any) => {
 	const id = identifier(options.project, '--project');
 	const context = await workspaceContext(options);
 	const path = `/workspace/projects/${id}`;
-	const project = await context.client.request(path);
+	const project = await context.client.projects.get(id);
 	return { ...context, path, project };
 };

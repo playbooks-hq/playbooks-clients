@@ -105,13 +105,15 @@ Append server options to `args` as separate entries. On Windows, use the CLI ins
 ## Development And Release
 
 ```sh
-npm install
-npm run lint
-npm run typecheck
+pnpm install --frozen-lockfile # from the repository root
+pnpm lint
+pnpm typecheck
 ```
 
-Point a development MCP client at `node /absolute/path/playbooks-mcp/dist/index.cjs` after explicitly building the package. The adapter resolves the installed CLI package's declared executable; it does not fall back to a global CLI. No sibling checkout is read at runtime.
+Point a development MCP client at `node /absolute/path/playbooks-clients/packages/mcp/dist/index.cjs` after explicitly building the package. The adapter resolves the installed CLI package's declared executable; it does not fall back to a global CLI. No sibling checkout is read at runtime.
 
 Publishing requires an exact, identifiable CLI rewrite version in `package.json`, an installed matching artifact, and a refreshed lockfile. `prepublishOnly` rejects the legacy dependency or an unpinned version. A locally rewritten CLI still labeled `0.16.1` is not a distributable release identity. Registry access and an approved CLI release are prerequisites for release verification.
 
 Platform test authoring belongs to `playbooks-auto` under separate scope. Live mutations and external-provider checks require an authorized environment. Static checks do not establish live execution acceptance.
+
+Development and shared release preparation are documented in the [workspace README](../../README.md).
