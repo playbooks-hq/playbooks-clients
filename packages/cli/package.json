@@ -1,92 +1,88 @@
 {
-	"name": "@playbooks/cli",
-	"description": "A simple CLI for the Playbooks project.",
-	"homepage": "https://docs.playbooks.xyz",
-	"version": "0.16.1",
-	"license": "MIT",
-	"type": "module",
-	"main": "dist/index.cjs",
-	"module": "dist/index.js",
-	"types": "dist/index.d.ts",
-	"packageManager": "npm@11.11.1",
-	"engines": {
-		"node": ">=22.12.0"
-	},
-	"keywords": [
-		"cli",
-		"playbooks"
-	],
-	"bugs": {
-		"url": "https://github.com/playbooks-hq/playbooks-cli/issues"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
-	"bin": {
-		"playbooks": "dist/index.cjs"
-	},
-	"files": [
-		"dist"
-	],
-	"author": {
-		"name": "Playbooks",
-		"email": "support@playbooks.ai",
-		"url": "https://github.com/playbooks-hq"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/playbooks-hq/playbooks-cli.git"
-	},
-	"scripts": {
-		"start": "vite build --mode development --minify false --watch",
-		"build": "vite build --mode production --minify true && npm run build:ts",
-		"build:ts": "tsc --project tsconfig.json --noEmit false && tsc-alias",
-		"clean": "npm run lint:fix",
-		"lint": "eslint src",
-		"lint:fix": "eslint src --fix",
-		"format": "prettier --check src",
-		"format:fix": "prettier --write src",
-		"typecheck": "tsc --project tsconfig.json --noEmit",
-		"commit": "scripts/commit.sh",
-		"deploy": "scripts/deploy.sh",
-		"packages": "scripts/packages.sh",
-		"git": "git push --tags",
-		"test": "jest",
-		"prepare": "husky"
-	},
-	"dependencies": {
-		"enquirer": "^2.4.1",
-		"fs-extra": "^11.3.4",
-		"sade": "^1.8.1"
-	},
-	"devDependencies": {
-		"@eslint/js": "^9.39.4",
-		"@types/jest": "^30.0.0",
-		"@typescript-eslint/eslint-plugin": "^8.57.0",
-		"@typescript-eslint/parser": "^8.57.0",
-		"eslint": "^9.39.4",
-		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-complete": "^1.4.0",
-		"eslint-plugin-prettier": "^5.5.5",
-		"eslint-plugin-simple-import-sort": "^12.1.1",
-		"eslint-plugin-unused-imports": "^4.4.1",
-		"globals": "^13.24.0",
-		"husky": "^9.1.7",
-		"jest": "^30.3.0",
-		"prettier": "^3.8.1",
-		"rollup-plugin-visualizer": "^7.0.1",
-		"ts-jest": "^29.4.6",
-		"ts-node": "^10.9.2",
-		"tsc-alias": "^1.8.16",
-		"tslib": "^2.8.1",
-		"typescript": "^5.9.3",
-		"vite": "^8.0.0",
-		"vite-plugin-size": "^0.2.2"
-	},
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.cjs"
-		}
-	}
+  "name": "@playbooks/cli",
+  "description": "A simple CLI for the Playbooks project.",
+  "homepage": "https://docs.playbooks.xyz",
+  "version": "0.17.0",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "keywords": [
+    "cli",
+    "playbooks"
+  ],
+  "bugs": {
+    "url": "https://github.com/playbooks-hq/playbooks-clients/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "playbooks": "dist/index.cjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": {
+    "name": "Playbooks",
+    "email": "support@playbooks.ai",
+    "url": "https://github.com/playbooks-hq"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/playbooks-hq/playbooks-clients.git",
+    "directory": "packages/cli"
+  },
+  "scripts": {
+    "start": "vite build --mode development --minify false --watch",
+    "build": "vite build --mode production --minify true && npm run build:ts",
+    "build:ts": "tsc --project tsconfig.json --noEmit false && tsc-alias",
+    "clean": "npm run lint:fix",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --check src",
+    "format:fix": "prettier --write src",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "test": "jest"
+  },
+  "dependencies": {
+    "enquirer": "2.4.1",
+    "fs-extra": "11.3.4",
+    "sade": "1.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.4",
+    "@types/jest": "30.0.0",
+    "@typescript-eslint/eslint-plugin": "8.57.0",
+    "@typescript-eslint/parser": "8.57.0",
+    "eslint": "9.39.4",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-complete": "1.4.0",
+    "eslint-plugin-prettier": "5.5.5",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "eslint-plugin-unused-imports": "4.4.1",
+    "globals": "13.24.0",
+    "husky": "9.1.7",
+    "jest": "30.3.0",
+    "prettier": "3.8.1",
+    "rollup-plugin-visualizer": "7.0.1",
+    "ts-jest": "29.4.6",
+    "ts-node": "10.9.2",
+    "tsc-alias": "1.8.16",
+    "tslib": "2.8.1",
+    "typescript": "5.9.3",
+    "vite": "8.0.0",
+    "vite-plugin-size": "0.2.2",
+    "@types/node": "24.0.14"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.cjs"
+    }
+  }
 }
