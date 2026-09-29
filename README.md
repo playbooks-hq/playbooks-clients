@@ -81,6 +81,6 @@ If publication stops partway, keep the original artifacts and compare already-pu
 
 ## Repository cutover
 
-CLI history is the base; MCP history is merged without rewriting and its tags use the `mcp/` prefix. The local migration retains original checkouts. The planned remote identity is `playbooks-hq/playbooks-clients`; rename the CLI GitHub repository and update origin during an explicit public cutover. Archive the former MCP repository only after consumers and published artifacts are verified. No forwarding packages or duplicate maintenance paths are required.
+CLI history is the base; MCP history is merged without rewriting and its tags use the `mcp/` prefix. The local migration retains original checkouts. The GitHub repository is `playbooks-hq/playbooks-clients`, renamed from `playbooks-cli` with its existing history preserved. Archive the former MCP repository only after consumers and published artifacts are verified. No forwarding packages or duplicate maintenance paths are required.
 
 Harness repository maps and test-ownership references need a separately authorized harness update. Platform tests remain in Auto; CLI alone retains independent test ownership. The Clients repository owns its explicitly authorized local integration suite. Package verification alone is release acceptance, not evidence of live platform behavior.
