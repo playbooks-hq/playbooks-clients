@@ -5,5 +5,5 @@ export const updateMessage = async (options: any) => {
 	integerOption(options.message, 'message', 1);
 	const data = validateMessage(await input(options, ['text', 'queuedMode', 'queuedModelId']), true);
 	const context = await projectExistingMessageContext(options);
-	return context.client.request(context.messageUrl, 'PUT', data);
+	return context.client.request(context.messageUrl, 'PUT', data, { environment: 'sandbox' });
 };

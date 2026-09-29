@@ -8,5 +8,5 @@ export const deleteMessage = async (options: any) => {
 		options,
 		`Cancel queued message ${id} in conversation ${context.conversation.uuid}? History is retained.`,
 	);
-	return context.client.request(context.messageUrl, 'DELETE');
+	return context.client.request(context.messageUrl, 'DELETE', undefined, { environment: 'sandbox' });
 };

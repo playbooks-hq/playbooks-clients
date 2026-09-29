@@ -45,7 +45,7 @@ export { usageOperations } from './usage';
 export { budgetOperations } from './budget/get';
 export { creditsOperations } from './credits';
 export { invoicesOperations } from './invoices';
-export { settlementsOperations } from './settlements';
+export { settlementOperations, settlementsOperations } from './settlements';
 export { transfersOperations } from './transfers';
 export { schedulesOperations } from './schedules';
 export { listDomains } from './domains/list';
@@ -55,3 +55,6 @@ export { listRecords } from './domains/records';
 export { createRecord } from './domains/create-record';
 export { updateRecord } from './domains/update-record';
 export { deleteRecord } from './domains/delete-record';
+
+export { getMessage } from './messages/get';
+export { updateMessage } from './messages/update';

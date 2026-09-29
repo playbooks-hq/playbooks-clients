@@ -438,6 +438,12 @@ cli
 	.action(run(workspace.settlementsOperations));
 
 cli
+	.command('workspace settlement <settlementId>')
+	.describe('Inspect a creator settlement or settlement adjustment.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.settlementOperations));
+
+cli
 	.command('workspace transfers')
 	.describe('List workspace transfers.')
 	.option('--query', 'Search text.')
@@ -1203,11 +1209,28 @@ cli
 	.action(run(workspace.listMessages, outputMessages));
 
 cli
+	.command('workspace message')
+	.describe('Get an operator message and available run references.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--message', 'Numeric message identifier.')
+	.action(run(workspace.getMessage));
+
+cli
+	.command('workspace message update')
+	.describe('Edit a pending queued message before execution begins.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--message', 'Numeric message identifier.')
+	.option('--data', 'JSON object or - for stdin: text, queuedMode, queuedModelId.')
+	.action(run(workspace.updateMessage));
+
+cli
 	.command('workspace message create')
 	.describe('Submit a message; may start or steer execution and incur usage.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
-	.option('--data', 'JSON object or - for stdin.')
+	.option('--data', 'JSON object or - for stdin; reuse idempotencyKey when retrying identical input.')
 	.option('--yes', 'Confirm this operation.', false)
 	.example('workspace message create --data \'{"text":"Review the current setup","mode":"plan"}\' --yes')
 	.action(run(workspace.createMessage));
@@ -1342,13 +1365,12 @@ cli
 
 cli
 	.command('project run stream')
-	.describe('Follow run output; may start execution and incur usage.')
+	.describe('Observe run output without starting execution.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
 	.option('--run', 'Numeric run identifier.')
 	.option('--timeout', 'Total stream duration in seconds; defaults to 1800.')
-	.option('--yes', 'Confirm possible execution.', false)
-	.example('project run stream --project portal --run 456 --yes')
+	.example('project run stream --project portal --run 456')
 	.action(run(project.streamOperatorRun));
 
 // MCP

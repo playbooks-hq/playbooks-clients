@@ -61,7 +61,7 @@ export const projectExistingMessageContext = async (options: any) => {
 	const id = integerOption(options.message, 'message', 1);
 	const context = await projectMessageContext(options);
 	const messageUrl = `${context.messagePath}/${id}`;
-	const message = await context.client.request(messageUrl);
+	const message = await context.client.request(messageUrl, 'GET', undefined, { environment: 'sandbox' });
 	if (String(message.data.conversationId) !== String(context.conversation.id) || message.data.environment !== 'sandbox')
 		throw new CliError(403, 'The message does not belong to this sandbox conversation.');
 	return { ...context, message, messageUrl };

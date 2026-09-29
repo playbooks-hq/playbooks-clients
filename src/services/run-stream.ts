@@ -22,6 +22,7 @@ export const streamRun = async (client: CliClient, path: string, options: any, i
 	const total = setTimeout(abort, timeout);
 	let idle = setTimeout(abort, 30000);
 	let streamError: any;
+	let finish: any;
 	const render = runOutput(options, controller.signal);
 	try {
 		const body = await client.openStream(`${path}/stream`, controller.signal);
@@ -32,13 +33,16 @@ export const streamRun = async (client: CliClient, path: string, options: any, i
 		activity();
 		for await (const event of readEvents(body, activity)) {
 			await render(event);
+			if (event.data?.type === 'finish') finish = event.data;
 			if (event.data?.type === 'error' || event.data?.type === 'abort')
 				streamError = new CliError(502, 'The run stream reported a failure or cancellation.');
 		}
 		clearTimeout(idle);
-		const response = await client.request(path, 'GET', undefined, {}, true, false, false, controller.signal);
-		const status = response.data?.status;
-		if (options.json || !process.stdout.isTTY) await render({ event: 'run-status', data: response.data });
+		if (!finish || !Number.isInteger(finish.runId) || String(finish.runId) !== path.split('/').pop())
+			throw new CliError(503, 'Run stream ended without an authoritative final status.');
+		const status = finish.status;
+		if (options.json || !process.stdout.isTTY)
+			await render({ event: 'run-status', data: { id: finish.runId, status } });
 		else process.stdout.write('\n');
 		if (streamError) throw streamError;
 		if (status === 'waiting') console.error('Run is waiting for input or approval; it has not completed.');
@@ -51,10 +55,14 @@ export const streamRun = async (client: CliClient, path: string, options: any, i
 			return;
 		}
 		const failure = controller.signal.reason instanceof CliError ? controller.signal.reason : error;
+		const remoteState =
+			finish && ['completed', 'failed', 'canceled', 'waiting'].includes(finish.status)
+				? ''
+				: ' Remote execution may still be active.';
 		if (failure instanceof CliError)
 			throw new CliError(
 				failure.status,
-				`${failure.message} Remote execution may still be active. Inspect with: ${inspect}`,
+				`${failure.message}${remoteState} Inspect with: ${inspect}`,
 				failure.source,
 				failure.debug,
 				failure.title,
