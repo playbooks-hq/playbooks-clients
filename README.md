@@ -1,86 +1,88 @@
-## Overview
+# Playbooks MCP
 
-The Playbooks MCP server gives developers MCP access to their Playbooks account.
-Using the server, agents can inspect configuration, view account details, browse templates, and run common Playbooks workflow actions from chat.
-After installation, add the server to your MCP client using the examples below.
+Use Playbooks Workspaces, Projects, Templates, and Operators from an MCP client. This local stdio server delegates operations to the Playbooks CLI; the CLI and Server own authentication, permissions, validation, and execution.
 
-## Prerequisites
+## Requirements
 
-- node
-- npm
-- @playbooks/cli
+- Node.js 22.12 or newer.
+- The Workspace/Project rewrite of `@playbooks/cli`. Legacy CLI releases are incompatible and rejected at startup.
+- A scoped developer API key, configured through the CLI or supplied as `PLAYBOOKS_TOKEN` by your secret manager. Application API keys are not supported.
 
-## Installation
+Authenticate outside the agent conversation:
 
 ```sh
-npx -y @playbooks/mcp
+playbooks login
+playbooks status
+playbooks mcp install codex
 ```
 
-## Quick Start
-
-Use the `@playbooks/cli` helpers to update each client's global config file.
-
-```sh
-npm install -g @playbooks/cli
-playbooks mcp claude
-playbooks mcp cursor
-playbooks mcp codex
-playbooks mcp vscode
-```
-
+The installer also accepts `claude`, `cursor`, and `vscode`. Never put credentials in tool arguments or project files.
 
 ## Configuration
 
-The Playbooks MCP server uses the same Playbooks configuration file as the CLI.
-By default it reads `~/.playbooksrc`.
-If you need a different file, most tools accept an optional `configPath` argument.
-Search-oriented list tools also accept a `query` argument where the underlying CLI supports it.
-When a tool accepts `include`, requested related data is returned inline on each record.
+```sh
+npx -y @playbooks/mcp
+npx -y @playbooks/mcp --toolsets core,operator,discovery,project
+npx -y @playbooks/mcp --toolsets all --read-only
+npx -y @playbooks/mcp --config /absolute/path/config.json
+```
 
-## Table of Contents
+The default config is `~/.config/playbooks/config.json`. Use the same `--config` path when authenticating with the CLI. The config is fixed for an MCP connection; tools cannot change credentials or saved Workspace selection.
 
-- [vscode](#vscode)
-- [claude-code](#claude-code)
-- [openai-codex](#openai-codex)
-- [tools](#tools)
-- [development](#development)
-- [troubleshooting](#troubleshooting)
+Private tools require an explicit `workspace`. Tools targeting an existing Project also require `project`. Saved CLI context is visible through `playbooks_status` but never supplies an implicit mutation target.
 
-## Claude Code
+| Toolset | Contents | Default |
+| --- | --- | --- |
+| `core` | Identity, Workspace discovery, Projects, preflight, publication, releases, logs | Yes |
+| `operator` | Project conversations, messages, and run inspection | Yes |
+| `discovery` | Public Templates, categories, collections, creators, types | Yes |
+| `templates` | Workspace-owned Templates and publication | No |
+| `workspace` | Workspace administration, configuration, financial observations, Workspace Operator | No |
+| `project` | Project configuration, source, checkpoints, administration, workflows | No |
+| `local` | Browser opening, file transfers, source import, export | No |
 
-Add the server to `~/.claude.json` for global scope or `.claude/settings.json` for project scope:
+`--toolsets` replaces the default selection; `all` enables every group. `--read-only` removes mutating tools regardless of group selection, including local file writes and conversation reads that may initialize state. It narrows the MCP tool surface; Server permissions remain authoritative. Restart the MCP connection after changing options.
+
+`playbooks_help` lists the enabled tools and can show an individual tool's input schema. Command names map directly to tools: `project message create` becomes `playbooks_project_message_create`.
+
+## Project Workflow
+
+Use `playbooks_workspace_list` to find an authorized Workspace, then call `playbooks_projects` with `{ "workspace": "WORKSPACE_UUID" }`.
+
+To submit Operator work, call `playbooks_project_message_create`:
 
 ```json
 {
-  "servers": {
-    "playbooks": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@playbooks/mcp"]
-    }
+  "workspace": "WORKSPACE_UUID",
+  "project": "PROJECT_UUID",
+  "data": { "text": "Review authentication", "mode": "plan", "idempotencyKey": "UNIQUE_REQUEST_KEY" },
+  "confirm": true
+}
+```
+
+Acceptance may mean queued work, clarification, a comment, or a run. Inspect the returned message and use `playbooks_project_runs` and `playbooks_project_run` to observe an explicitly selected attempt. Waiting is not completion. Message deletion cancels queued work and retains history; it does not cancel an active run.
+
+For publication, inspect `playbooks_project_preflight`, then pass its reviewed `expectedRevision` in `data` to `playbooks_project_publish` with `confirm: true`. Inspect the returned release using `playbooks_project_release`. Publishing and Operator execution can incur usage charges.
+
+Tools use structured `data` objects, delivered to the CLI through stdin. Fields such as revisions, idempotency keys, permissions, and budgets retain their CLI/Server meaning. A `confirm` field defaults to false and maps to the CLI's `--yes`; the calling client remains responsible for obtaining user authorization.
+
+Results preserve `{ data, meta? }` and inline relations, with both JSON text and structured content. Errors use `{ error: { status, title, description, source?, debug? } }`. List tools expose only their supported pagination: zero-based `page`/`pageSize`, message `before` cursors, or log `cursor`/`limit`. Preserve the returned cursor rather than deriving one from record counts.
+
+Calls are bounded to 120 seconds and 8 MiB of output. Narrow queries or use `select` for large results. Canceling an MCP request stops the local CLI process, not accepted remote work. Inspect state before retrying uncertain mutations; reuse the same idempotency key and identical input where supported. Streaming, automatic polling, login/logout, and arbitrary CLI execution are not exposed.
+
+## Manual Client Setup
+
+For Claude (`~/.claude.json`) and Cursor (`~/.cursor/mcp.json`), merge this entry into `mcpServers`:
+
+```json
+{
+  "mcpServers": {
+    "playbooks": { "command": "npx", "args": ["-y", "@playbooks/mcp"] }
   }
 }
 ```
 
-
-## Cursor
-
-Add the server to `~/.cursor/mcp.json` for global scope or `.cursor/mcp.json` for project scope:
-
-```json
-{
-  "servers": {
-    "playbooks": {
-      "command": "npx",
-      "args": ["-y", "@playbooks/mcp"]
-    }
-  }
-}
-```
-
-## OpenAI Codex
-
-Add the server to `~/.codex/config.toml`:
+For Codex (`~/.codex/config.toml`):
 
 ```toml
 [mcp_servers.playbooks]
@@ -88,156 +90,28 @@ command = "npx"
 args = ["-y", "@playbooks/mcp"]
 ```
 
-
-## VSCode
-
-Add the server to `~/.vscode/mcp.json` for global scope or `.vscode/mcp.json` for project scope:
+For VS Code project configuration (`.vscode/mcp.json`):
 
 ```json
 {
   "servers": {
-    "playbooks": {
-      "command": "npx",
-      "args": ["-y", "@playbooks/mcp"]
-    }
+    "playbooks": { "type": "stdio", "command": "npx", "args": ["-y", "@playbooks/mcp"] }
   }
 }
 ```
 
-## Tools
+Append server options to `args` as separate entries. On Windows, use the CLI installer, which configures `cmd /c npx`. Do not replace unrelated client settings.
 
-- `playbooks_account`
-- `playbooks_account_bookmarks`
-- `playbooks_account_collections`
-- `playbooks_account_drafts`
-- `playbooks_account_ledgers`
-- `playbooks_account_plays`
-- `playbooks_account_teams`
-- `playbooks_banks`
-- `playbooks_cards`
-- `playbooks_charges`
-- `playbooks_clone`
-- `playbooks_collection`
-- `playbooks_collection_open`
-- `playbooks_collection_plays`
-- `playbooks_collections`
-- `playbooks_config`
-- `playbooks_download`
-- `playbooks_downloads`
-- `playbooks_framework`
-- `playbooks_framework_open`
-- `playbooks_framework_plays`
-- `playbooks_frameworks`
-- `playbooks_help`
-- `playbooks_init`
-- `playbooks_language`
-- `playbooks_language_open`
-- `playbooks_language_plays`
-- `playbooks_languages`
-- `playbooks_login`
-- `playbooks_logout`
-- `playbooks_oauth`
-- `playbooks_payouts`
-- `playbooks_ping`
-- `playbooks_play`
-- `playbooks_play_demo`
-- `playbooks_play_deploy`
-- `playbooks_play_open`
-- `playbooks_plays`
-- `playbooks_platform`
-- `playbooks_platform_open`
-- `playbooks_platform_plays`
-- `playbooks_platforms`
-- `playbooks_publish`
-- `playbooks_register`
-- `playbooks_session`
-- `playbooks_status`
-- `playbooks_subscription`
-- `playbooks_submit`
-- `playbooks_sync`
-- `playbooks_category`
-- `playbooks_category_open`
-- `playbooks_category_templates`
-- `playbooks_categories`
-- `playbooks_team`
-- `playbooks_team_open`
-- `playbooks_team_plays`
-- `playbooks_teams`
-- `playbooks_tool`
-- `playbooks_tool_open`
-- `playbooks_tool_plays`
-- `playbooks_tools`
-- `playbooks_toggle`
-- `playbooks_transfers`
-- `playbooks_usage`
-- `playbooks_user`
-- `playbooks_user_open`
-- `playbooks_user_plays`
-- `playbooks_users`
-
-## Development
-
-For local MCP development, run the server as `playbooks-dev`.
-
-1. Fork or clone `@playbooks/cli` next to this repo.
-2. In `playbooks-cli`, run `npm install` and `npm start` to keep the local CLI build publishing through `yalc`.
-3. In this repo, run `npm install`, then `npm run yalc`, then `npm start`.
-4. Connect your MCP client to the local server using the `playbooks-dev` name.
-
-### Claude Code
+## Development And Release
 
 ```sh
-# Global
-claude mcp add playbooks-dev --scope user -- node /path/to/mcp/dist/index.cjs
-# Project
-claude mcp add playbooks-dev -- node /path/to/mcp/dist/index.cjs
+npm install
+npm run lint
+npm run typecheck
 ```
 
-### Cursor
+Point a development MCP client at `node /absolute/path/playbooks-mcp/dist/index.cjs` after explicitly building the package. The adapter resolves the installed CLI package's declared executable; it does not fall back to a global CLI. No sibling checkout is read at runtime.
 
-Add this to `~/.cursor/mcp.json` for global scope or `.cursor/mcp.json` for project scope:
+Publishing requires an exact, identifiable CLI rewrite version in `package.json`, an installed matching artifact, and a refreshed lockfile. `prepublishOnly` rejects the legacy dependency or an unpinned version. A locally rewritten CLI still labeled `0.16.1` is not a distributable release identity. Registry access and an approved CLI release are prerequisites for release verification.
 
-```json
-{
-  "servers": {
-    "playbooks-dev": {
-      "command": "node",
-      "args": [
-        "/path/to/mcp/dist/index.cjs"
-      ]
-    }
-  }
-}
-```
-
-### OpenAI Codex
-
-Add this to `~/.codex/config.toml`:
-
-```toml
-[mcp_servers.playbooks-dev]
-command = "node"
-args = ["/path/to/mcp/dist/index.cjs"]
-```
-
-### VSCode
-
-Add this to `~/.vscode/mcp.json` for global scope or `.vscode/mcp.json` for project scope:
-
-```json
-{
-  "servers": {
-    "playbooks-dev": {
-      "command": "node",
-      "args": [
-        "/path/to/mcp/dist/index.cjs"
-      ]
-    }
-  }
-}
-```
-
-## Troubleshooting
-
-- If your MCP client does not show the latest tools, restart the MCP server connection and open a fresh chat session.
-- If the server starts but commands fail, verify your Playbooks configuration file path and contents.
+Platform test authoring belongs to `playbooks-auto` under separate scope. Live mutations and external-provider checks require an authorized environment. Static checks do not establish live execution acceptance.

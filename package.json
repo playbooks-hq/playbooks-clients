@@ -31,6 +31,7 @@
 		"lint:fix": "eslint src --fix",
 		"serve": "node dist/index.cjs",
 		"typecheck": "tsc --project tsconfig.json --noEmit",
+		"prepublishOnly": "node scripts/check-cli-release.mjs",
 		"commit": "scripts/commit.sh",
 		"deploy": "scripts/deploy.sh",
 		"packages": "scripts/packages.sh",
@@ -39,9 +40,9 @@
 		"prepare": "husky"
 	},
 	"dependencies": {
-		"@modelcontextprotocol/sdk": "^1.17.5",
+		"@modelcontextprotocol/server": "2.2.0",
 		"@playbooks/cli": "^0.16.1",
-		"zod": "^3.25.76"
+		"zod": "^4.2.0"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
@@ -64,7 +65,7 @@
 		"vite-plugin-size": "^0.1.4"
 	},
 	"engines": {
-		"node": ">=20.0.0"
+		"node": ">=22.12.0"
 	},
 	"repository": {
 		"type": "git",
