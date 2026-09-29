@@ -1,6 +1,7 @@
 import { Collection } from './collection.js';
 import { PlaybooksError } from './error.js';
 import { Files } from './files.js';
+import { Inbox } from './inbox.js';
 import { Conversations, Runs } from './operators.js';
 import { Projects } from './project.js';
 import { action, get, identifier, listing, Resource } from './resource.js';
@@ -117,6 +118,9 @@ export class Workspace extends Resource<WorkspaceData> {
 	get secrets() {
 		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/secrets', options) };
 	}
+	get inbox() {
+		return new Inbox(this.#transport);
+	}
 	get activity() {
 		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/activities', options) };
 	}
@@ -143,9 +147,6 @@ export class Workspace extends Resource<WorkspaceData> {
 	}
 	get transfers() {
 		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/transfers', options) };
-	}
-	get schedules() {
-		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/schedules', options) };
 	}
 	get domains() {
 		return {

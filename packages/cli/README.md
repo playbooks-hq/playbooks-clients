@@ -141,3 +141,16 @@ CLI flags and JSON output remain the terminal contract. CLI and SDK pages start 
 Use `playbooks mcp install codex` to configure the [MCP package](../mcp/README.md) for an agent client. MCP calls this executable; neither package should be imported as an application API client. Use the SDK for that purpose.
 
 For local development before publication, run `node packages/cli/dist/index.cjs --help` from the workspace root after building. Shared versioning, isolated tarball verification, and release preparation are described in the [workspace README](../../README.md).
+
+## Workspace Inbox
+
+```sh
+playbooks workspace inbox --workspace WORKSPACE_UUID --view attention --page 0 --page-size 20
+playbooks workspace inbox count --workspace WORKSPACE_UUID
+playbooks workspace inbox read --workspace WORKSPACE_UUID --conversation CONVERSATION_UUID --data '{"throughMessageId":456,"branchId":123}'
+playbooks workspace inbox read-all --workspace WORKSPACE_UUID --yes
+```
+
+List filters mirror the web Inbox: `--view attention|mentions|all`, `--scope all|workspace|project:<uuid>|folder:<uuid>`, `--type all|approval|question|review|failure|mention|reply|report`, and `--search`. `--conversation` selects a conversation directly and bypasses other filters. JSON output preserves counts and source scopes in page metadata. Listing does not mark conversations read.
+
+Use the actual loaded message ID when marking read; Project conversations also require the matching branch ID. Read receipts do not approve requests or execute work. `read-all` applies to every accessible conversation in the Workspace, regardless of list filters, and requires confirmation in noninteractive use.

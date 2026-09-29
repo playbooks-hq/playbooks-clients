@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "lint": "node --check scripts/run-tests.mjs && node --check scripts/prepare-release.mjs && node --check scripts/verify-artifacts.mjs && turbo run lint && node packages/sdk/node_modules/eslint/bin/eslint.js tests --config eslint.tests.config.mjs",
+    "lint": "bash -n scripts/commit.sh && node --check scripts/python.mjs && node --check scripts/run-tests.mjs && node --check scripts/prepare-release.mjs && node --check scripts/verify-artifacts.mjs && turbo run lint && node packages/sdk/node_modules/eslint/bin/eslint.js tests --config eslint.tests.config.mjs",
     "typecheck": "turbo run typecheck && tsc -p tests/tsconfig.json --noEmit",
     "format": "turbo run format",
     "start": "turbo run start",
@@ -18,7 +18,12 @@
     "test": "pnpm build && pnpm test:compile && node scripts/run-tests.mjs run",
     "test:setup": "pnpm build && pnpm test:compile && node scripts/run-tests.mjs setup",
     "test:check": "pnpm test:compile && node scripts/run-tests.mjs check",
-    "test:cleanup": "pnpm test:compile && node scripts/run-tests.mjs cleanup"
+    "test:cleanup": "pnpm test:compile && node scripts/run-tests.mjs cleanup",
+    "python:setup": "node scripts/python.mjs setup",
+    "lint:fix": "turbo run lint:fix",
+    "format:fix": "turbo run format:fix",
+    "clean": "pnpm lint:fix",
+    "commit": "scripts/commit.sh"
   },
   "devDependencies": {
     "turbo": "2.9.3",

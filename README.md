@@ -1,18 +1,19 @@
 # Playbooks Clients
 
-One workspace for three independently installable Node.js packages:
+One workspace for three independently installable Node.js packages and a Python SDK:
 
 | Package | Responsibility |
 | --- | --- |
+| `playbooks-sdk` (Python) | Synchronous and asynchronous platform clients with explicit credentials, resources, files, and streams |
 | `@playbooks/sdk` | Resource-oriented platform API covering CLI operations, explicit credentials, errors, files, and streams |
 | `@playbooks/cli` | `playbooks` terminal commands, configuration, credentials, files, and output |
 | `@playbooks/mcp` | `playbooks-mcp` agent tools adapting CLI workflows |
 
-Dependencies flow from MCP to CLI to SDK. Server remains authoritative for permissions, billing, and execution. The SDK is for backend platform access, not browser managed-service access. Construct `PlaybooksSDK({ apiKey })`, select a Workspace with `client.workspaces.get(uuid)`, and navigate its resources. All CLI platform operations use named SDK methods; local terminal behavior remains in CLI. SDK pages start at 1 and CLI pages at 0.
+Dependencies flow from MCP to CLI to SDK. Server remains authoritative for permissions, billing, and execution. The SDK is for backend platform access, not browser managed-service access. Construct `PlaybooksSDK({ apiKey })`, select a Workspace with `client.workspaces.get(uuid)`, and navigate its resources. All CLI platform operations use named SDK methods; local terminal behavior remains in CLI. Both SDKs and the CLI use zero-based pages.
 
 ## Development
 
-Use Node.js 22.12 or newer and pnpm 10.33.0.
+Use Node.js 22.12 or newer, pnpm 10.33.0, and Python 3.11 or newer. Run `pnpm python:setup` once to create the Python SDK virtual environment and install its development dependencies. Root lint and type checks include Python through a private pnpm task package; Python is distributed through its own `pyproject.toml`.
 
 ```sh
 pnpm install --frozen-lockfile
@@ -25,7 +26,21 @@ node packages/mcp/dist/index.cjs --help
 
 Turbo builds dependencies first. Type checks build dependency declarations when necessary. The first install can warn about the CLI binary before its first build. Package-specific watch builds use `pnpm --filter @playbooks/cli start` or `pnpm --filter @playbooks/mcp start`; rebuild the SDK after changing it.
 
-Package instructions: [SDK](packages/sdk/README.md), [CLI](packages/cli/README.md), [MCP](packages/mcp/README.md).
+Package instructions: [TypeScript SDK](packages/sdk/README.md), [Python SDK](packages/sdk-python/README.md), [CLI](packages/cli/README.md), [MCP](packages/mcp/README.md).
+
+## Repository helpers
+
+Use these from the repository root; `npm run <script>` also works, with pnpm owning workspace tasks.
+
+| Command | Behavior |
+| --- | --- |
+| `npm run commit -- "Message"` | Stages all changes, commits, and pushes the current branch to its configured upstream. Requires an attached branch and upstream; the existing pre-commit hook runs lint. |
+| `pnpm lint:fix` | Runs lint fixes across TypeScript and Python package sources. |
+| `pnpm format` / `pnpm format:fix` | Checks or applies source formatting across all four packages. |
+| `pnpm clean` | Runs lint fixes, matching the code-cleanup convention in other Playbooks repositories. |
+| `pnpm release:prepare [version]` | Prepares npm and Python release artifacts without publishing. |
+
+The commit helper stops on any failure and does not switch branches. This repository currently uses `main`; it does not include the `dev`/`staging` promotion workflow used by application repositories. Package publishing follows the release procedure below, not a `deploy` alias.
 
 ## Local environment
 
@@ -73,11 +88,11 @@ All packages share one version. Internal `workspace:*` dependencies become exact
 pnpm release:prepare 1.0.0
 ```
 
-This updates all manifest versions, refreshes the workspace lockfile, runs lint/type checks, builds SDK → CLI → MCP, and packs into ignored `artifacts/<version>/`. It validates packed manifests and installs all three tarballs in a temporary directory to verify ESM/CommonJS imports and declarations, CLI help/version, and MCP initialization and tool discovery. Installation may require registry access. The temporary installation is removed afterward. `release.json` records artifact SHA-512 integrity in publication order only after verification succeeds. No package is published and no Git tag is created.
+This updates all manifest versions, refreshes the workspace lockfile, runs lint/type checks, builds SDK → CLI → MCP, and packs into ignored `artifacts/<version>/`. It validates packed manifests and installs all three tarballs in a temporary directory to verify ESM/CommonJS imports and declarations, CLI help/version, and MCP initialization and tool discovery. Installation may require registry access. The temporary installation is removed afterward. `release.json` records artifact SHA-512 integrity in publication order only after verification succeeds. Python preparation also synchronizes its version, builds a wheel and source distribution, and adds their SHA-512 integrity to `release.json`. The isolated compatibility verifier covers the npm artifacts; Python distribution construction does not establish runtime or live platform acceptance. No package is published and no Git tag is created.
 
-Before a public release, verify the chosen version is unused for every package and verify npm publishing access. Prepare and review the artifacts from the intended release commit. Publish those exact tarballs in SDK → CLI → MCP order, confirming each registry artifact and exact dependency before continuing. Only after all three match should the shared `v<version>` release tag be created and pushed. Do not run package-local version/deploy scripts.
+Before a public release, verify the chosen version is unused for every package and verify publishing access to npm and PyPI, including availability of the `playbooks-sdk` Python distribution name. Prepare and review the artifacts from the intended release commit. Publish those exact tarballs in SDK → CLI → MCP order, confirming each registry artifact and exact dependency before continuing. Publish the exact prepared Python wheel and source distribution to PyPI and verify their hashes against the manifest. Only after all npm and Python artifacts match should the shared `v<version>` release tag be created and pushed. Do not run package-local version/deploy scripts.
 
-If publication stops partway, keep the original artifacts and compare already-published `dist.integrity` values with `release.json`. Resume only missing packages when all existing artifacts match. Never overwrite or rebuild a published version; an integrity mismatch requires investigation and a new shared version. npm publication is not atomic across packages.
+If publication stops partway, keep the original artifacts and compare already-published `dist.integrity` values with `release.json`. Resume only missing packages when all existing artifacts match. Never overwrite or rebuild a published version; an integrity mismatch requires investigation and a new shared version. Publication is not atomic across packages or registries.
 
 ## Repository cutover
 

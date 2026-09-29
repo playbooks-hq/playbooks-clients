@@ -1,0 +1,20 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "lint": {
+      "inputs": ["src/**/*.py", "pyproject.toml", "package.json", "$TURBO_ROOT$/scripts/python.mjs"]
+    },
+    "typecheck": {
+      "inputs": ["src/**/*.py", "pyproject.toml", "package.json", "$TURBO_ROOT$/scripts/python.mjs"]
+    },
+    "format": {
+      "inputs": ["src/**/*.py", "pyproject.toml", "package.json", "$TURBO_ROOT$/scripts/python.mjs"]
+    },
+    "lint:fix": {
+      "inputs": ["src/**/*.py", "pyproject.toml", "package.json", "$TURBO_ROOT$/scripts/python.mjs"]
+    },
+    "format:fix": {
+      "inputs": ["src/**/*.py", "pyproject.toml", "package.json", "$TURBO_ROOT$/scripts/python.mjs"]
+    }
+  }
+}

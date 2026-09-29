@@ -391,6 +391,40 @@ cli
 	.action(run(workspace.updateBudgetOperations));
 
 cli
+	.command('workspace inbox')
+	.describe('List Inbox conversations and requests (defaults to needs attention).')
+	.option('--view', 'attention, mentions, or all.')
+	.option('--scope', 'all, workspace, project:<uuid>, or folder:<uuid>.')
+	.option('--type', 'all, approval, question, review, failure, mention, reply, or report.')
+	.option('--search', 'Search Inbox text.')
+	.option('--conversation', 'Filter by conversation UUID; bypasses view and source filters.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.listInbox));
+
+cli
+	.command('workspace inbox count')
+	.describe('Get Workspace Inbox counts for all, attention, mentions, and unread.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.countInbox));
+
+cli
+	.command('workspace inbox read')
+	.describe('Mark a conversation read through a loaded message; Project conversations require branchId.')
+	.option('--conversation', 'Conversation UUID.')
+	.option('--data', 'JSON with throughMessageId and optional branchId, or - for stdin.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.markInboxRead));
+
+cli
+	.command('workspace inbox read-all')
+	.describe('Mark all accessible Inbox conversations read for your account in this Workspace.')
+	.option('--yes', 'Confirm marking all Inbox conversations read.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.markAllInboxRead));
+
+cli
 	.command('workspace activity')
 	.describe('List workspace activity.')
 	.option('--query', 'Search text.')
@@ -457,15 +491,6 @@ cli
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(workspace.transfersOperations));
-
-cli
-	.command('workspace schedules')
-	.describe('List workspace schedules.')
-	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page (default 0).')
-	.option('--page-size', 'Records per page (1-100; default 20).')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(workspace.schedulesOperations));
 
 cli
 	.command('workspace domains')

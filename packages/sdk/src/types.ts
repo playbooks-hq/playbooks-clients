@@ -340,3 +340,39 @@ export interface AgentUpdate {
 	status: string;
 	revision: string | number;
 }
+
+export interface InboxListOptions {
+	page?: number;
+	pageSize?: number;
+	view?: 'attention' | 'mentions' | 'all';
+	scope?: 'all' | 'workspace' | `project:${string}` | `folder:${string}`;
+	type?: 'all' | 'approval' | 'question' | 'review' | 'failure' | 'mention' | 'reply' | 'report';
+	search?: string;
+	conversation?: string;
+}
+
+export interface InboxCounts {
+	all: number;
+	attention: number;
+	mentions: number;
+	unread: number;
+}
+
+export interface InboxItem extends RecordData {
+	id: number;
+	uuid: string;
+	title: string;
+	excerpt: string;
+	unread: boolean;
+	unreadBranchCount: number;
+	needsAttention: boolean;
+	running: boolean;
+	requests: RecordData[];
+	canonicalPath: string;
+}
+
+export interface InboxReadInput {
+	throughMessageId: number;
+	/** Required for Project conversations; omit or use null for unbranched conversations. */
+	branchId?: number | null;
+}

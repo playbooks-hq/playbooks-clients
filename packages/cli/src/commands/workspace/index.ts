@@ -47,7 +47,6 @@ export { creditsOperations } from './credits';
 export { invoicesOperations } from './invoices';
 export { settlementOperations, settlementsOperations } from './settlements';
 export { transfersOperations } from './transfers';
-export { schedulesOperations } from './schedules';
 export { listDomains } from './domains/list';
 export { getDomain } from './domains/get';
 export { addDomain } from './domains/add';
@@ -58,3 +57,8 @@ export { deleteRecord } from './domains/delete-record';
 
 export { getMessage } from './messages/get';
 export { updateMessage } from './messages/update';
+
+export { listInbox } from './inbox/list';
+export { countInbox } from './inbox/count';
+export { markInboxRead } from './inbox/read';
+export { markAllInboxRead } from './inbox/read-all';

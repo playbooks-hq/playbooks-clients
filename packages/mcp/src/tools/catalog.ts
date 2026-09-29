@@ -11,6 +11,7 @@ import { templatesTools } from './templates.js';
 import { workspaceConfigurationTools } from './workspace-configuration.js';
 import { workspaceDomainsTools } from './workspace-domains.js';
 import { workspaceFinanceTools } from './workspace-finance.js';
+import { workspaceInboxTools } from './workspace-inbox.js';
 import { workspaceMembersTools } from './workspace-members.js';
 import { workspaceOperatorTools } from './workspace-operator.js';
 
@@ -22,6 +23,7 @@ export const catalog = [
 	...templatesTools,
 	...workspaceMembersTools,
 	...workspaceFinanceTools,
+	...workspaceInboxTools,
 	...workspaceDomainsTools,
 	...projectAdministrationTools,
 	...projectConfigurationTools,

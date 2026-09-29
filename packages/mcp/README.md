@@ -126,3 +126,9 @@ Development and shared release preparation are documented in the [workspace READ
 Tool calls flow through **MCP → CLI → SDK → Server**. MCP retains its existing tool names, schemas, explicit Workspace/Project targets, toolset filtering, confirmations, and cancellation behavior. The CLI now uses resource-oriented SDK methods underneath; agents do not need to construct SDK objects or change tool calls.
 
 Authenticate through the CLI or `PLAYBOOKS_TOKEN`, never through tool arguments. A mutation may start remote work before observation ends. Inspect its returned identifiers and status; a canceled tool call does not imply that accepted work was canceled. A read-only toolset limits exposed tools but does not replace Server authorization.
+
+## Workspace Inbox
+
+The `workspace` toolset includes `playbooks_workspace_inbox`, `playbooks_workspace_inbox_count`, `playbooks_workspace_inbox_read`, and `playbooks_workspace_inbox_read-all`. All require an explicit Workspace. List/count are available in read-only mode; read mutations are excluded. Listing supports the web Inbox filters and retains counts and source metadata.
+
+Marking a conversation read requires its UUID and `data.throughMessageId`, plus `data.branchId` for Project conversations. `read-all` requires `confirm: true` and applies across all accessible Workspace conversations, not the current filters. These tools acknowledge receipts without approving requests or executing work.

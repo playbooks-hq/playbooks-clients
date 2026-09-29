@@ -19,6 +19,12 @@
     "start": {
       "cache": false,
       "persistent": true
+    },
+    "lint:fix": {
+      "cache": false
+    },
+    "format:fix": {
+      "cache": false
     }
   }
 }

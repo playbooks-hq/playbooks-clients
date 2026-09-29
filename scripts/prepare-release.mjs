@@ -15,7 +15,12 @@ const packages = ["sdk", "cli", "mcp"];
 const output = path.join(root, "artifacts", version);
 // A failed preparation must not leave an earlier success marker.
 rmSync(path.join(output, "release.json"), { force: true });
-for (const directory of [".", ...packages.map((name) => `packages/${name}`)]) {
+const pythonManifest = path.join(root, "packages/sdk-python/pyproject.toml");
+const pythonMetadata = readFileSync(pythonManifest, "utf8");
+if (!/^version = "[^"]+"$/m.test(pythonMetadata))
+  throw new Error("Python package version metadata is missing.");
+writeFileSync(pythonManifest, pythonMetadata.replace(/^version = "[^"]+"$/m, `version = "${version}"`));
+for (const directory of [".", "packages/sdk-python", ...packages.map((name) => `packages/${name}`)]) {
   const file = path.join(directory, "package.json");
   const manifest = read(file);
   manifest.version = version;
@@ -78,10 +83,19 @@ for (const name of packages) {
   });
 }
 run("node", ["scripts/verify-artifacts.mjs", output, version]);
+run("node", ["scripts/python.mjs", "build", output]);
+for (const file of [`playbooks_sdk-${version}-py3-none-any.whl`, `playbooks_sdk-${version}.tar.gz`]) {
+  artifacts.push({
+    name: "playbooks-sdk",
+    version,
+    file,
+    integrity: `sha512-${createHash("sha512").update(readFileSync(path.join(output, file))).digest("base64")}`,
+  });
+}
 writeFileSync(
   path.join(output, "release.json"),
   JSON.stringify({ version, artifacts }, null, 2) + "\n",
 );
 console.log(
-  `Validated release artifacts: ${output}. Nothing was published or tagged.`,
+  `Prepared release artifacts (npm compatibility verified; Python distributions built): ${output}. Nothing was published or tagged.`,
 );

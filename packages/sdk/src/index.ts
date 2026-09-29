@@ -6,3 +6,4 @@ export { Project, Projects } from './project.js';
 export { Conversation, Conversations, ProjectConversations, Messages, Runs } from './operators.js';
 export { Files } from './files.js';
 export type * from './types.js';
+export { Inbox } from './inbox.js';

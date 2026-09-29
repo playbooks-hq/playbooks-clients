@@ -2,7 +2,7 @@
 
 Use `@playbooks/sdk` from a Node.js backend or automation script to work with Playbooks resources. The SDK covers the platform operations exposed by the CLI: discovery, Workspaces, Projects, configuration, Operators, files, source, publication, and administration. Server remains authoritative for permissions, billing, and execution.
 
-Requires Node.js 22.12 or newer. ESM, CommonJS, and TypeScript declarations are included. Python and browser managed-service clients are not included.
+Requires Node.js 22.12 or newer. ESM, CommonJS, and TypeScript declarations are included. The [Python SDK](../sdk-python/README.md) is a separate package in this repository. Browser managed-service clients are not included.
 
 ## Install and connect
 
@@ -76,7 +76,7 @@ Only operations already supported by CLI are exposed; not every resource has eve
 | --- | --- |
 | `client` | `session.get()`, `workspaces.list/get/update()`, public `templates.list/get()`, `categories`, `collections`, `creators`, `types` |
 | `workspace` | `projects`, `folders`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
-| Workspace observations | `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers`, `schedules` |
+| Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
 | `project` | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `ownership`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
 | Project development | `files`, `source`, `branches`, `checkpoints`, `workflows`, `sandbox`, `logs` |
 | Project publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
@@ -101,6 +101,20 @@ const workflows = await project.workflows.list();
 ```
 
 Consequential methods are explicit programmatic actions: the SDK does not prompt. Preserve the required revisions, recipients, confirmation values, and idempotency keys when calling them. Server validates authority and current state. SDK resource access never grants additional permissions.
+
+## Workspace Inbox
+
+```ts
+const inbox = await workspace.inbox.list({ view: 'attention', page: 0, pageSize: 20 });
+const counts = await workspace.inbox.count();
+await workspace.inbox.markRead('CONVERSATION_UUID', { throughMessageId: 456, branchId: 123 });
+// Explicitly mark every accessible conversation read, regardless of list filters.
+await workspace.inbox.markAllRead();
+```
+
+Inbox supports `view` (`attention`, `mentions`, `all`), `scope` (`all`, `workspace`, `project:<uuid>`, `folder:<uuid>`), request `type`, `search`, and `conversation` filters. The default view is `attention`; `type: 'report'` uses all activity. A conversation UUID selects that conversation directly, bypassing other filters. Page metadata preserves Server counts and available scopes. `count()` returns Workspace-wide totals for the current user.
+
+Reading is an explicit mutation: supply the actual loaded `throughMessageId` and the matching `branchId` for Project conversations. Omit the branch for unbranched conversations. Marking read acknowledges receipts; it does not approve requests or execute work. Server enforces conversation access and message/branch ownership.
 
 ## Operator messages and streams
 

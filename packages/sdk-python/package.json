@@ -1,0 +1,12 @@
+{
+  "name": "@playbooks/sdk-python-dev",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "node ../../scripts/python.mjs lint",
+    "typecheck": "node ../../scripts/python.mjs typecheck",
+    "lint:fix": "node ../../scripts/python.mjs lint:fix",
+    "format": "node ../../scripts/python.mjs format",
+    "format:fix": "node ../../scripts/python.mjs format:fix"
+  }
+}

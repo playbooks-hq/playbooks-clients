@@ -215,6 +215,8 @@ importers:
         specifier: 8.0.0
         version: 8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@types/node@24.0.14)
 
+  packages/sdk-python: {}
+
 packages:
 
   '@cspotcode/source-map-support@0.8.1':
