@@ -2,12 +2,11 @@ import { workspaceContext } from 'src/services/command-context';
 import { confirm } from 'src/utils/cli-confirm';
 import { input } from 'src/utils/cli-input';
 import { assertOperationSucceeded } from 'src/utils/cli-operation';
+import { sdkEnvelope } from 'src/utils/sdk-output';
 
 export const updateBudgetOperations = async (options: any) => {
 	const context = await workspaceContext(options);
-	const { client } = context;
-	const path = '/workspace/budget';
-	const params = {};
+	const target = JSON.stringify({ workspace: context.workspaceUuid });
 	const data = await input(options, [
 		'creditBudget',
 		'budgetStopNewWork',
@@ -16,8 +15,8 @@ export const updateBudgetOperations = async (options: any) => {
 		'budgetRecipientIds',
 		'budgetEmail',
 	]);
-	await confirm(options, 'Update the Workspace credit budget.: ' + path + '?');
-	const response = await client.request(path, 'PUT', data, params, false);
-	assertOperationSucceeded(response, path);
+	await confirm(options, 'Update the Workspace credit budget.: ' + target + '?');
+	const response = sdkEnvelope(await context.workspaceResource.budget.update(data));
+	assertOperationSucceeded(response, target);
 	return response;
 };

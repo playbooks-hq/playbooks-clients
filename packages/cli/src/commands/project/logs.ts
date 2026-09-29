@@ -1,12 +1,11 @@
 import { projectContext } from 'src/services/command-context';
 import { integerOption, listParams, textOption } from 'src/utils/cli-input';
+import { sdkList } from 'src/utils/sdk-output';
 
 export const logsOperations = async (options: any) => {
 	const params = listParams(options, { pagination: false });
-	if (options.limit !== undefined) params.limit = integerOption(options.limit, 'limit', 1, 500);
+	if (options['page-size'] !== undefined) params.pageSize = integerOption(options['page-size'], 'page-size', 1, 100);
 	if (options.cursor !== undefined) params.cursor = textOption(options.cursor, 'cursor');
 	const context = await projectContext(options);
-	const { client } = context;
-	const path = `${context.path}/logs`;
-	return client.request(path, 'GET', undefined, params, true);
+	return sdkList(await context.projectResource.logs.list(params));
 };

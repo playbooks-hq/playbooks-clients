@@ -1,10 +1,9 @@
 import { workspaceContext } from 'src/services/command-context';
 import { listParams } from 'src/utils/cli-input';
+import { sdkList } from 'src/utils/sdk-output';
 
 export const listWorkspaceDesigns = async (options: any) => {
 	const params = listParams(options, { pageSizeMax: 100 });
 	const context = await workspaceContext(options);
-	const { client } = context;
-	const path = '/workspace/designs';
-	return client.request(path, 'GET', undefined, params, true);
+	return sdkList(await context.workspaceResource.designs.list(params));
 };

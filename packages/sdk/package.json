@@ -1,6 +1,6 @@
 {
   "name": "@playbooks/sdk",
-  "version": "0.17.0",
+  "version": "1.0.0",
   "description": "Typed server-side client for the Playbooks platform API.",
   "type": "module",
   "license": "MIT",

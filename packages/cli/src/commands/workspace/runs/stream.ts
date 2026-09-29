@@ -6,9 +6,8 @@ export const streamOperatorRun = async (options: any) => {
 	const id = integerOption(options.run, 'run', 1);
 	streamTimeout(options);
 	const context = await workspaceContext(options);
-	const path = `/workspace/operator/runs/${id}`;
-	await context.client.request(path);
+	await context.workspaceResource.runs.get(id);
 
 	const inspect = `playbooks workspace run --workspace ${context.workspaceUuid} --run ${id} --config ${shellArgument(options.config)}`;
-	await streamRun(context.client, path, options, inspect);
+	await streamRun(context.workspaceResource.runs, id, options, inspect);
 };

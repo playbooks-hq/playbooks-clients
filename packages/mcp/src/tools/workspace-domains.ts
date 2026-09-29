@@ -18,12 +18,12 @@ export const workspaceDomainsTools: ToolDefinition[] = [
 			},
 			page: {
 				flag: 'page',
-				description: 'Zero-based page; enables pagination when supplied.',
+				description: 'Zero-based page (default 0).',
 				kind: 'number',
 			},
 			pageSize: {
 				flag: 'page-size',
-				description: 'Records per page (1-100); enables pagination when supplied.',
+				description: 'Records per page (1-100; default 20).',
 				kind: 'number',
 			},
 			workspace: {
@@ -83,6 +83,8 @@ export const workspaceDomainsTools: ToolDefinition[] = [
 		readOnly: true,
 		destructive: false,
 		options: {
+			page: { flag: 'page', description: 'Zero-based page (default 0).', kind: 'number' },
+			pageSize: { flag: 'page-size', description: 'Records per page (1-100; default 20).', kind: 'number' },
 			select: {
 				flag: 'select',
 				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',

@@ -21,6 +21,8 @@ export const coreTools: ToolDefinition[] = [
 		readOnly: true,
 		destructive: false,
 		options: {
+			page: { flag: 'page', description: 'Zero-based page (default 0).', kind: 'number' },
+			pageSize: { flag: 'page-size', description: 'Records per page (1-100; default 20).', kind: 'number' },
 			select: {
 				flag: 'select',
 				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
@@ -404,14 +406,14 @@ export const coreTools: ToolDefinition[] = [
 				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
 				required: true,
 			},
-			limit: {
-				flag: 'limit',
-				description: 'Maximum log entries (1-500; server default 100).',
+			pageSize: {
+				flag: 'page-size',
+				description: 'Records per page (1-100; default 20).',
 				kind: 'number',
 			},
 			cursor: {
 				flag: 'cursor',
-				description: 'Cursor from data.nextCursor for the next log page.',
+				description: 'Cursor from meta.nextCursor for the next log page.',
 			},
 		},
 	},

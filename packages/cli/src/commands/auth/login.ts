@@ -2,6 +2,7 @@ import enquirer from 'enquirer';
 import { CliClient, CliError } from 'src/services/cli-client';
 import { CliContext } from 'src/services/cli-context';
 import { readStdin } from 'src/utils/cli-input';
+import { sdkEnvelope } from 'src/utils/sdk-output';
 
 export const login = async (options: any) => {
 	const store = new CliContext(options.config);
@@ -20,7 +21,7 @@ export const login = async (options: any) => {
 			'Set PLAYBOOKS_TOKEN or pipe a developer key to login --token-stdin. Browser handoff requires Server/App support.',
 		);
 	if (/^pb_(sand|prod)_/.test(token)) throw new CliError(401, 'Use a platform developer key, not an application key.');
-	const session = await new CliClient(token).request('/session');
+	const session = sdkEnvelope(await new CliClient(token).session.get());
 	if (options['token-stdin'] || !process.env.PLAYBOOKS_TOKEN) await store.login(token);
 	else await store.write({ version: 1 });
 	return { data: { authenticated: true, user: { uuid: session.data.uuid, name: session.data.name }, workspace: null } };

@@ -7,7 +7,7 @@
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"jsx": "react-jsx",
-		"types": ["vite/client", "node", "jest"],
+		"types": ["vite/client", "node"],
 		"lib": ["ESNext", "DOM", "DOM.Iterable"],
 		"declaration": true,
 		"allowJs": true,

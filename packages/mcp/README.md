@@ -1,5 +1,8 @@
 # Playbooks MCP
 
+Use `@playbooks/mcp` as a local stdio server in your agent client. It is an executable integration package, not an application API library; use [`@playbooks/sdk`](../sdk/README.md) in backend code and [`@playbooks/cli`](../cli/README.md) in a terminal.
+
+
 Use Playbooks Workspaces, Projects, Templates, and Operators from an MCP client. This local stdio server delegates operations to the Playbooks CLI; the CLI and Server own authentication, permissions, validation, and execution.
 
 ## Requirements
@@ -66,7 +69,7 @@ For publication, inspect `playbooks_project_preflight`, then pass its reviewed `
 
 Tools use structured `data` objects, delivered to the CLI through stdin. Fields such as revisions, idempotency keys, permissions, and budgets retain their CLI/Server meaning. A `confirm` field defaults to false and maps to the CLI's `--yes`; the calling client remains responsible for obtaining user authorization.
 
-Results preserve `{ data, meta? }` and inline relations, with both JSON text and structured content. Errors use `{ error: { status, title, description, source?, debug? } }`. List tools expose only their supported pagination: zero-based `page`/`pageSize`, message `before` cursors, or log `cursor`/`limit`. Preserve the returned cursor rather than deriving one from record counts.
+Results preserve `{ data, meta? }` and inline relations, with both JSON text and structured content. Errors use `{ error: { status, title, description, source?, debug? } }`. List tools expose only their supported pagination: zero-based `page`/`pageSize` (default 0/20, maximum size 100), message, log, and search `cursor`/`pageSize`. Preserve the returned cursor rather than deriving one from record counts.
 
 Calls are bounded to 120 seconds and 8 MiB of output. Narrow queries or use `select` for large results. Canceling an MCP request stops the local CLI process, not accepted remote work. Inspect state before retrying uncertain mutations; reuse the same idempotency key and identical input where supported. Streaming, automatic polling, login/logout, and arbitrary CLI execution are not exposed.
 
@@ -112,8 +115,14 @@ pnpm typecheck
 
 Point a development MCP client at `node /absolute/path/playbooks-clients/packages/mcp/dist/index.cjs` after explicitly building the package. The adapter resolves the installed CLI package's declared executable; it does not fall back to a global CLI. No sibling checkout is read at runtime.
 
-Publishing requires an exact, identifiable CLI rewrite version in `package.json`, an installed matching artifact, and a refreshed lockfile. `prepublishOnly` rejects the legacy dependency or an unpinned version. A locally rewritten CLI still labeled `0.16.1` is not a distributable release identity. Registry access and an approved CLI release are prerequisites for release verification.
+All three packages share one version. `workspace:*` dependencies become exact matching versions in packed artifacts. Run `pnpm release:prepare 1.0.0` from the workspace root to validate SDK → CLI → MCP, including initialization and tool discovery from an isolated installation. Runtime startup also verifies that the installed CLI supports every enabled tool. Publication is a separate operation; see the workspace release instructions.
 
 Platform test authoring belongs to `playbooks-auto` under separate scope. Live mutations and external-provider checks require an authorized environment. Static checks do not establish live execution acceptance.
 
 Development and shared release preparation are documented in the [workspace README](../../README.md).
+
+## Execution model
+
+Tool calls flow through **MCP → CLI → SDK → Server**. MCP retains its existing tool names, schemas, explicit Workspace/Project targets, toolset filtering, confirmations, and cancellation behavior. The CLI now uses resource-oriented SDK methods underneath; agents do not need to construct SDK objects or change tool calls.
+
+Authenticate through the CLI or `PLAYBOOKS_TOKEN`, never through tool arguments. A mutation may start remote work before observation ends. Inspect its returned identifiers and status; a canceled tool call does not imply that accepted work was canceled. A read-only toolset limits exposed tools but does not replace Server authorization.

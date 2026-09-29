@@ -1,6 +1,6 @@
 {
   "name": "playbooks-clients",
-  "version": "0.17.0",
+  "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "engines": {
@@ -8,15 +8,24 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "lint": "node --check scripts/prepare-release.mjs && node --check scripts/verify-artifacts.mjs && turbo run lint",
-    "typecheck": "turbo run typecheck",
+    "lint": "node --check scripts/run-tests.mjs && node --check scripts/prepare-release.mjs && node --check scripts/verify-artifacts.mjs && turbo run lint && node packages/sdk/node_modules/eslint/bin/eslint.js tests --config eslint.tests.config.mjs",
+    "typecheck": "turbo run typecheck && tsc -p tests/tsconfig.json --noEmit",
     "format": "turbo run format",
     "start": "turbo run start",
     "release:prepare": "node scripts/prepare-release.mjs",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:compile": "tsc -p tests/tsconfig.json",
+    "test": "pnpm build && pnpm test:compile && node scripts/run-tests.mjs run",
+    "test:setup": "pnpm build && pnpm test:compile && node scripts/run-tests.mjs setup",
+    "test:check": "pnpm test:compile && node scripts/run-tests.mjs check",
+    "test:cleanup": "pnpm test:compile && node scripts/run-tests.mjs cleanup"
   },
   "devDependencies": {
     "turbo": "2.9.3",
-    "husky": "^9.1.7"
-  }
+    "husky": "^9.1.7",
+    "typescript": "5.9.3",
+    "@types/node": "24.0.14",
+    "@playbooks/sdk": "workspace:*"
+  },
+  "type": "module"
 }

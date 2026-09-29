@@ -5,6 +5,7 @@ node_modules
 .editorconfig
 .env
 .env.*
+!.env.example
 .yalc
 
 # production

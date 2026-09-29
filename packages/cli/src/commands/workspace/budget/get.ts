@@ -1,9 +1,7 @@
 import { workspaceContext } from 'src/services/command-context';
+import { sdkEnvelope } from 'src/utils/sdk-output';
 
 export const budgetOperations = async (options: any) => {
 	const context = await workspaceContext(options);
-	const { client } = context;
-	const path = '/workspace/budget';
-	const params = {};
-	return client.request(path, 'GET', undefined, params, true);
+	return sdkEnvelope(await context.workspaceResource.budget.get());
 };

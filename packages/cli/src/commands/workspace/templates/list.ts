@@ -1,5 +1,6 @@
 import { workspaceContext } from 'src/services/command-context';
 import { identifier, includeParams, listParams } from 'src/utils/cli-input';
+import { sdkList } from 'src/utils/sdk-output';
 
 export const listTemplates = async (options: any) => {
 	const params = {
@@ -9,7 +10,5 @@ export const listTemplates = async (options: any) => {
 	if (options.category !== undefined) params.category = identifier(options.category, '--category');
 	if (options.type !== undefined) params.projectType = identifier(options.type, '--type');
 	const context = await workspaceContext(options);
-	const { client } = context;
-	const path = '/workspace/templates';
-	return client.request(path, 'GET', undefined, params, true);
+	return sdkList(await context.workspaceResource.templates.list(params));
 };

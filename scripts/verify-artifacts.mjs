@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
-import { mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, realpathSync, rmSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -54,8 +54,8 @@ try {
     }).includes("--json"),
   );
   for (const esm of [false, true]) {
-    const code = `${esm ? "import { PlaybooksClient, PlaybooksError } from '@playbooks/sdk';" : "const { PlaybooksClient, PlaybooksError } = require('@playbooks/sdk');"}
-   if (typeof new PlaybooksClient().projects.list !== 'function' || !(new PlaybooksError(400, 'invalid') instanceof Error)) process.exit(1);`;
+    const code = `${esm ? "import { PlaybooksSDK, PlaybooksError } from '@playbooks/sdk';" : "const { PlaybooksSDK, PlaybooksError } = require('@playbooks/sdk');"}
+   if (typeof new PlaybooksSDK().workspaces.get !== 'function' || !(new PlaybooksError(400, 'invalid') instanceof Error)) process.exit(1);`;
     execFileSync(
       process.execPath,
       [...(esm ? ["--input-type=module"] : []), "-e", code],
@@ -70,7 +70,7 @@ try {
     const file = path.join(temporary, `consumer.${extension}`);
     writeFileSync(
       file,
-      "import { PlaybooksClient, type ApiResponse, type Project } from '@playbooks/sdk';\nconst response: Promise<ApiResponse<Project[]>> = new PlaybooksClient({ token: 'explicit', workspace: 'selected' }).projects.list({ page: 1 });\nvoid response;\n",
+      "import { PlaybooksSDK, type ApiResponse, type Project } from '@playbooks/sdk';\nasync function example() { const client = new PlaybooksSDK({ apiKey: 'explicit' }); const workspace = await client.workspaces.get('selected'); await workspace.update({ name: 'Acme' }); const response: ApiResponse<Project[]> = await workspace.projects.list({ page: 1 }); const project = await workspace.projects.get('project'); await project.update({ name: 'Portal' }); return response; }\nvoid example;\n",
     );
     execFileSync(
       process.execPath,
@@ -89,6 +89,14 @@ try {
       { cwd: temporary, stdio: "inherit" },
     );
   }
+  // Type-check the shipped SDK README examples without executing API calls.
+  const readme = readFileSync(path.join(temporary, 'node_modules/@playbooks/sdk/README.md'), 'utf8');
+  const examples = [...readme.matchAll(/```ts\n([\s\S]*?)```/g)].map(match => match[1]).join('\n');
+  const imports = [...examples.matchAll(/^import .+;$/gm)].map(match => match[0]).join('\n');
+  const exampleFile = path.join(temporary, 'readme.mts');
+  writeFileSync(exampleFile, imports + '\nasync function readmeExamples() {\n' + examples.replace(/^import .+;$/gm, '') + '\n}\nvoid readmeExamples;\n');
+  const nodeTypes = path.dirname(path.dirname(requireSdk.resolve('@types/node/package.json')));
+  execFileSync(process.execPath, [compiler, '--noEmit', '--strict', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--target', 'ES2022', '--typeRoots', nodeTypes, exampleFile], { cwd: temporary, stdio: 'inherit' });
   // Initialization checks the packaged CLI against every enabled MCP command.
   const child = spawn(process.execPath, [mcp, "--toolsets", "all"], {
     cwd: temporary,

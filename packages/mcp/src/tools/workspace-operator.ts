@@ -44,10 +44,9 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 				flag: 'conversation',
 				description: 'Conversation UUID; defaults to the primary conversation.',
 			},
-			before: {
-				flag: 'before',
-				description: 'Fetch messages before this numeric message identifier.',
-				kind: 'number',
+			cursor: {
+				flag: 'cursor',
+				description: 'Continuation cursor from meta.nextCursor.',
 			},
 			pageSize: {
 				flag: 'page-size',

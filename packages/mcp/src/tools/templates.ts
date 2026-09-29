@@ -149,12 +149,12 @@ export const templatesTools: ToolDefinition[] = [
 			},
 			page: {
 				flag: 'page',
-				description: 'Zero-based page; enables pagination when supplied.',
+				description: 'Zero-based page (default 0).',
 				kind: 'number',
 			},
 			pageSize: {
 				flag: 'page-size',
-				description: 'Records per page (1-100); enables pagination when supplied.',
+				description: 'Records per page (1-100; default 20).',
 				kind: 'number',
 			},
 			template: {

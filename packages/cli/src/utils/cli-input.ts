@@ -72,7 +72,6 @@ export const listParams = (
 		pagination?: boolean;
 		sort?: string[];
 		librarySort?: boolean;
-		pageBase?: 1;
 		pageSizeMax?: number;
 	} = {},
 ) => {
@@ -82,19 +81,11 @@ export const listParams = (
 		['page-size', 'pageSize'],
 	]) {
 		if (config.pagination === false || options[flag] === undefined) continue;
-		params[key] = integerOption(
-			options[flag],
-			flag,
-			flag === 'page' ? 0 : 1,
-			flag === 'page-size' ? config.pageSizeMax : undefined,
-		);
+		params[key] = integerOption(options[flag], flag, flag === 'page' ? 0 : 1, flag === 'page-size' ? 100 : undefined);
 	}
 	if (config.pageSizeMax && !Number.isSafeInteger((params.page ?? 0) * (params.pageSize ?? 20)))
 		throw new CliError(422, 'Invalid pagination offset.');
-	// Model-backed endpoints use one-based pages; resource libraries use zero-based pages.
-	if (config.pageBase === 1) {
-		params.page = integerOption(params.page ?? 0, 'page', 0, Number.MAX_SAFE_INTEGER - 1) + 1;
-	}
+
 	if (config.search !== false && options.query !== undefined) params.query = textOption(options.query, 'query');
 	if (options.sort !== undefined && config.librarySort) {
 		if (!['name:asc', 'updatedAt:desc'].includes(options.sort))
@@ -107,9 +98,4 @@ export const listParams = (
 		[params.sortProp, params.sortValue] = parts;
 	}
 	return params;
-};
-
-export const zeroBasedPage = (response: any) => {
-	if (response.meta?.page !== undefined) response.meta.page -= 1;
-	return response;
 };

@@ -1,11 +1,9 @@
 import { projectContext } from 'src/services/command-context';
+import { sdkEnvelope } from 'src/utils/sdk-output';
 import { secretMetadata } from 'src/utils/secret-metadata';
 
 export const sandboxOperations = async (options: any) => {
 	const context = await projectContext(options);
-	const { client } = context;
-	const path = `${context.path}/sandbox/config`;
-	const params = {};
-	const response = await client.request(path, 'GET', undefined, params, true);
+	const response = sdkEnvelope(await context.projectResource.sandbox.get());
 	return secretMetadata(response);
 };

@@ -1,10 +1,9 @@
 import { projectContext } from 'src/services/command-context';
-import { listParams, zeroBasedPage } from 'src/utils/cli-input';
+import { listParams } from 'src/utils/cli-input';
+import { sdkList } from 'src/utils/sdk-output';
 
 export const listCheckpoints = async (options: any) => {
-	const params = listParams(options, { pageBase: 1 });
+	const params = listParams(options, {});
 	const context = await projectContext(options);
-	const { client } = context;
-	const path = `${context.path}/checkpoints`;
-	return zeroBasedPage(await client.request(path, 'GET', undefined, params, true));
+	return sdkList(await context.projectResource.checkpoints.list(params));
 };

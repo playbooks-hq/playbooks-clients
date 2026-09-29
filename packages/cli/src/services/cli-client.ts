@@ -1,4 +1,4 @@
-import { PlaybooksClient, PlaybooksError } from '@playbooks/sdk';
+import { PlaybooksError, PlaybooksSDK } from '@playbooks/sdk';
 
 import { name, version } from '../../package.json';
 
@@ -7,9 +7,9 @@ export const apiURL = () =>
 
 export { PlaybooksError as CliError };
 
-export class CliClient extends PlaybooksClient {
-	constructor(token?: string, workspace?: string) {
-		super({ token, workspace, baseUrl: apiURL() });
+export class CliClient extends PlaybooksSDK {
+	constructor(token?: string) {
+		super({ apiKey: token, baseUrl: apiURL() });
 	}
 
 	protected get clientHeader() {

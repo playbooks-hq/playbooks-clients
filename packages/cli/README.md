@@ -1,5 +1,8 @@
 # Playbooks CLI
 
+Use `@playbooks/cli` through the `playbooks` executable for terminal and shell automation. For application code, use [`@playbooks/sdk`](../sdk/README.md). CLI delegates every platform operation to a named SDK resource method; it owns local credentials, confirmations, filesystem access, output, and exit codes. Server owns permissions, billing, and execution.
+
+
 Manage Playbooks resources from your terminal. Use a saved workspace or pass `--workspace` per command. Identify existing projects explicitly with `--project`.
 
 ## Install
@@ -64,7 +67,7 @@ Message commands default to the primary conversation, which the server may initi
 
 Messages support `text`, `mode` (plan/execute), `modelId`, `deliveryMode` (queue/steer), and `replyToMessageId` in `--data`. Both message submission commands support `idempotencyKey`; Project submission additionally supports `maxCredits`. Workspace submission generates a key when omitted and reports it if the response is uncertain. Retry identical data with that same key to avoid duplicate work. Prefer `--data -` for sensitive text. Project messages are sandbox-only. Only pending queued messages can be updated, using `text`, `queuedMode`, or `queuedModelId`. Message deletion cancels queued work, retaining history.
 
-Message lists accept `--before <input-message-id>` and `--page-size 1-100`. Use the Server-provided `meta.nextCursor` as `--before` while `meta.hasMore` is true; output-message IDs and rendered message counts are not pagination cursors. Run lists accept `--message` and zero-based pagination. `project run --project portal --run 456` returns the run and available input/output; attempts are never selected automatically.
+Message lists accept `--cursor <cursor>` and `--page-size 1-100`. Use the Server-provided `meta.nextCursor` as `--cursor` while `meta.hasMore` is true; output-message IDs and rendered message counts are not pagination cursors. Run lists accept `--message` and zero-based pagination. `project run --project portal --run 456` returns the run and available input/output; attempts are never selected automatically.
 
 Project and Workspace streams only observe; opening or reconnecting a stream never starts execution and requires no confirmation. Terminal streams show text; `--json` or piped output emits newline-delimited `{ event, data }` records, followed by a `run-status` event when the Server sends an authoritative finish. Closing the connection alone does not establish completion. Streams do not support `--select`.
 
@@ -94,11 +97,11 @@ Prefer stdin for sensitive or large payloads: inline arguments can appear in she
 
 Piped output is JSON automatically. Responses retain `{ data, meta? }`; errors go to stderr as `{ error }` with a nonzero exit code. Paginated lists use zero-based `--page` and `--page-size`; full-list endpoints do not expose pagination. Search remains available where supported. Command help lists only supported options.
 
-Workspace folders, template versions, invitations, designs, secrets, files, schedules, and domains, plus project files and workflows, return full lists unless `--page` or `--page-size` is supplied. These opt-in lists accept page sizes from 1–100. Operational project connectors follow the same opt-in pagination behavior and support search and sorting; application project connectors remain paginated by default.
+Resource lists are always paginated: `--page` defaults to 0 and `--page-size` defaults to 20 (maximum 100). Use `meta.hasMore` to continue.
 
 `--include` fetches allowed inline relations on templates and projects; `--select` selects fields from the returned data, including nested fields. For example: `playbooks project --project abc --include folder,type --select uuid,name,folder.name`. File lists and project design/skill libraries support `--available` to include available or inherited resources.
 
-Project logs use cursor pagination: `playbooks project logs --project abc --query error --limit 50`. Pass the returned `data.nextCursor` as `--cursor` to fetch the next page; a null cursor means there is no next page. Logs do not accept `--page`, `--page-size`, or custom sorting.
+Project logs use cursor pagination: `playbooks project logs --project abc --query error --page-size 50`. Pass the returned `meta.nextCursor` as `--cursor` to fetch the next page; a null cursor means there is no next page. Logs accept `--cursor` and `--page-size`, with sizes from 1–100 (default 20).
 
 Workspace context is stored in `~/.config/playbooks/config.json`, with separately protected credentials alongside it. Use `--config <path>` consistently for isolated automation contexts. Environment keys are never saved. Previously saved project identifiers are ignored; existing workspace selection and credentials remain usable.
 
@@ -125,8 +128,16 @@ pnpm typecheck
 pnpm build
 ```
 
-`PLAYBOOKS_API_URL` selects an API origin for local development; use an isolated config. HTTPS is required outside loopback. Stored credentials are bound to their API origin. Product test authoring lives in `playbooks-auto` under separate scope.
+`PLAYBOOKS_API_URL` selects an API origin for local development; use an isolated config. HTTPS is required outside loopback. Stored credentials are bound to their API origin. Platform journeys live in `playbooks-auto`; the root Clients integration suite exercises SDK, CLI, and MCP together against a dedicated local Workspace. See the [local integration instructions](../../README.md#local-integration-tests).
 
 Support: support@playbooks.ai
 
 Development and shared release preparation are documented in the [workspace README](../../README.md).
+
+## SDK and agent integration
+
+CLI flags and JSON output remain the terminal contract. CLI and SDK pages start at 0 and preserve Server metadata. `--json` produces plain API data rather than SDK resource internals. File transfers read/write local paths, downloads refuse overwrites, and mutations retain their confirmation requirements.
+
+Use `playbooks mcp install codex` to configure the [MCP package](../mcp/README.md) for an agent client. MCP calls this executable; neither package should be imported as an application API client. Use the SDK for that purpose.
+
+For local development before publication, run `node packages/cli/dist/index.cjs --help` from the workspace root after building. Shared versioning, isolated tarball verification, and release preparation are described in the [workspace README](../../README.md).

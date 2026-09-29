@@ -1,8 +1,8 @@
 import { CliError } from 'src/services/cli-client';
-import { integerOption } from 'src/utils/cli-input';
+import { integerOption, textOption } from 'src/utils/cli-input';
 
 export const messageParams = (options: any) => ({
-	...(options.before !== undefined ? { beforeId: integerOption(options.before, 'before', 1) } : {}),
+	...(options.cursor !== undefined ? { cursor: textOption(options.cursor, 'cursor') } : {}),
 	...(options['page-size'] !== undefined ? { pageSize: integerOption(options['page-size'], 'page-size', 1, 100) } : {}),
 });
 

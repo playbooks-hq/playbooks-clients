@@ -1,157 +1,96 @@
-import { setTimeout as delay } from 'node:timers/promises';
-
 import { name, version } from '../package.json';
 import { PlaybooksError } from './error.js';
-import type {
-	ApiResponse,
-	ClientOptions,
-	Project,
-	ProjectGetOptions,
-	ProjectListOptions,
-	Workspace,
-	WorkspaceSummary,
-} from './types.js';
+import { get, identifier, listing } from './resource.js';
+import { Transport } from './transport.js';
+import type { ApiResponse } from './types.js';
+import type { TemplateData, TemplateListOptions } from './types.js';
+import type { ClientOptions, Identifier, ListOptions, WorkspaceData, WorkspaceUpdate } from './types.js';
+import { updateWorkspace, Workspace } from './workspace.js';
 
-export class PlaybooksClient {
-	readonly token?: string;
-	readonly workspace?: string;
-	readonly baseUrl: string;
-
+export class PlaybooksSDK {
+	#options: ClientOptions;
 	constructor(options: ClientOptions = {}) {
-		this.token = options.token;
-		this.workspace = options.workspace;
-		this.baseUrl = options.baseUrl ?? 'https://api.playbooks.ai';
+		this.#options = { ...options };
 	}
-
 	protected get clientHeader() {
 		return `${name}@${version}`;
 	}
-
-	private requireWorkspace() {
-		if (!this.workspace) throw new PlaybooksError(422, 'Provide a Workspace UUID for this operation.');
+	#transport(workspace?: string) {
+		return new Transport(this.#options, workspace, this.clientHeader);
 	}
-
-	readonly workspaces = {
-		list: (): Promise<ApiResponse<WorkspaceSummary[]>> => this.request('/session/workspaces'),
-		get: (): Promise<ApiResponse<Workspace>> => {
-			this.requireWorkspace();
-			return this.request('/workspace');
-		},
-	};
-
-	readonly projects = {
-		list: (options: ProjectListOptions = {}): Promise<ApiResponse<Project[]>> => {
-			this.requireWorkspace();
-			return this.request('/workspace/projects', 'GET', undefined, options);
-		},
-		get: (projectId: string, options: ProjectGetOptions = {}): Promise<ApiResponse<Project>> => {
-			this.requireWorkspace();
-			if (typeof projectId !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(projectId))
-				throw new PlaybooksError(422, 'Provide a valid Project identifier.');
-			return this.request(`/workspace/projects/${encodeURIComponent(projectId)}`, 'GET', undefined, options);
-		},
-	};
-
-	private url(path: string, params: Record<string, any> = {}) {
-		const url = new URL(this.baseUrl.replace(/\/$/, '') + path);
-		if (url.username || url.password || url.search || url.hash)
-			throw new PlaybooksError(400, 'The API origin must not contain credentials, query parameters, or a fragment.');
-		if (this.token && !/^[\x21-\x7e]+$/.test(this.token))
-			throw new PlaybooksError(401, 'The credential contains invalid characters.');
-		if (url.protocol !== 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
-			throw new PlaybooksError(400, 'The API endpoint must use HTTPS.');
-		for (const [key, value] of Object.entries(params))
-			if (value !== undefined && value !== null) url.searchParams.set(key, String(value));
-		return url;
+	#publicTransport() {
+		return new Transport({ baseUrl: this.#options.baseUrl }, undefined, this.clientHeader);
 	}
-
-	async openStream(path: string, signal: AbortSignal) {
-		const response = await fetch(this.url(path), {
-			redirect: 'error',
-			signal,
-			headers: {
-				client: this.clientHeader,
-				accept: 'text/event-stream',
-				...(this.token ? { authorization: this.token } : {}),
-				...(this.workspace ? { workspace: this.workspace } : {}),
+	get session() {
+		return { get: () => get(this.#transport(), '/session') };
+	}
+	get workspaces() {
+		return {
+			list: async (options: ListOptions = {}): Promise<ApiResponse<Workspace[]>> => {
+				const response = await this.#transport().request('/session/workspaces', 'GET', undefined, options);
+				return {
+					...response,
+					data: response.data.map((data: WorkspaceData) => new Workspace(this.#transport(data.uuid), data)),
+				};
 			},
-		});
-		if (!response.ok) {
-			const body = await response.json().catch(() => null);
-			throw new PlaybooksError(
-				response.status,
-				body?.error?.description || `HTTP ${response.status}`,
-				body?.error?.source,
-				body?.error?.debug,
-				body?.error?.title,
-			);
-		}
-		if (response.headers.get('content-type')?.split(';')[0].trim() !== 'text/event-stream' || !response.body) {
-			await response.body?.cancel();
-			throw new PlaybooksError(502, 'The server did not return an event stream.');
-		}
-		return response.body;
+			get: async (id: Identifier) => {
+				const transport = this.#transport(String(id));
+				identifier(id);
+				const { data } = await transport.request('/workspace');
+				if (data.uuid !== String(id))
+					throw new PlaybooksError(403, 'The server did not resolve the requested workspace.');
+				return new Workspace(transport, data);
+			},
+			update: async (id: Identifier, input: WorkspaceUpdate) => {
+				identifier(id);
+				const transport = this.#transport(String(id));
+				const data = await updateWorkspace(transport, id, input);
+				return new Workspace(transport, data);
+			},
+		};
 	}
-
-	async request(
+	get templates() {
+		return {
+			list: (options?: TemplateListOptions) => listing<TemplateData>(this.#publicTransport(), '/templates', options),
+			get: (id: Identifier, options: { include?: string } = {}) =>
+				get<TemplateData>(this.#publicTransport(), `/templates/${identifier(id)}`, options),
+		};
+	}
+	get categories() {
+		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/categories', options) };
+	}
+	get collections() {
+		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/collections', options) };
+	}
+	get creators() {
+		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/workspaces', options) };
+	}
+	get types() {
+		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/project-types', options) };
+	}
+	/** Low-level escape hatch. Named resources provide the supported typed surface. */
+	request(
 		path: string,
-		method = 'GET',
-		data?: object,
-		params: Record<string, any> = {},
-		readOnly = method === 'GET',
-		binary = false,
-		raw = false,
-		signal?: AbortSignal,
+		options: {
+			workspace?: string;
+			method?: string;
+			data?: object;
+			params?: Record<string, unknown>;
+			readOnly?: boolean;
+			binary?: boolean;
+			raw?: boolean;
+			signal?: AbortSignal;
+		} = {},
 	) {
-		const url = this.url(path, params);
-		for (let attempt = 0; ; attempt++) {
-			const response = await fetch(url, {
-				method,
-				redirect: 'error',
-				signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(30000)]) : AbortSignal.timeout(30000),
-				headers: {
-					client: this.clientHeader,
-					accept: binary ? 'application/octet-stream' : 'application/json',
-					...(data && !(data instanceof FormData) ? { 'content-type': 'application/json' } : {}),
-					...(this.token ? { authorization: this.token } : {}),
-					...(this.workspace ? { workspace: this.workspace } : {}),
-				},
-				body: data === undefined ? undefined : data instanceof FormData ? data : JSON.stringify(data),
-			}).catch(() => {
-				throw new PlaybooksError(
-					503,
-					readOnly
-						? 'The API request could not complete. Check connectivity and try again.'
-						: 'The request could not complete. The server may have accepted it; inspect resource state before retrying.',
-				);
-			});
-			if (readOnly && attempt < 2 && [429, 502, 503, 504].includes(response.status)) {
-				await response.body?.cancel();
-				const retry = response.headers.get('retry-after');
-				const seconds = retry ? Number(retry) : attempt + 1;
-				if (!Number.isFinite(seconds) || seconds > 10)
-					throw new PlaybooksError(response.status, 'Server is busy. Retry later.');
-				await delay(Math.max(0, seconds) * 1000, undefined, { signal });
-				continue;
-			}
-			if (binary && response.ok) return Buffer.from(await response.arrayBuffer());
-			if (response.status === 204) return { data: null };
-			const body = await response.json().catch(() => null);
-			if (!response.ok) {
-				const error = body?.error;
-				throw new PlaybooksError(
-					response.status,
-					error?.description || `HTTP ${response.status}: ${response.statusText}`,
-					error?.source,
-					error?.debug,
-					error?.title,
-				);
-			}
-			if (raw) return { data: body };
-			if (method !== 'GET' && body && Object.keys(body).length === 0) return { data: null };
-			if (!body || typeof body !== 'object' || !('data' in body))
-				throw new PlaybooksError(502, 'The server returned an invalid response envelope.');
-			return body;
-		}
+		return this.#transport(options.workspace).request(
+			path,
+			options.method,
+			options.data,
+			options.params,
+			options.readOnly,
+			options.binary,
+			options.raw,
+			options.signal,
+		);
 	}
 }

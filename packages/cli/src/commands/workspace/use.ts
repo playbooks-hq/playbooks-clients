@@ -1,7 +1,8 @@
 import enquirer from 'enquirer';
-import { CliClient, CliError } from 'src/services/cli-client';
+import { CliError } from 'src/services/cli-client';
 import { authenticated } from 'src/services/command-context';
 import { identifier } from 'src/utils/cli-input';
+import { sdkEnvelope } from 'src/utils/sdk-output';
 
 export const useWorkspace = async (options: any) => {
 	let id = options.workspace;
@@ -9,7 +10,7 @@ export const useWorkspace = async (options: any) => {
 	if (id === undefined) {
 		if (!process.stdin.isTTY || options.json)
 			throw new CliError(422, 'Provide a Workspace identifier with --workspace.');
-		const response = await client.request('/session/workspaces');
+		const response = await client.workspaces.list();
 		const answer: any = await enquirer.prompt({
 			type: 'select',
 			name: 'workspace',
@@ -19,7 +20,7 @@ export const useWorkspace = async (options: any) => {
 		id = answer.workspace;
 	}
 	id = identifier(id, '--workspace');
-	const response = await new CliClient(token, id).request('/workspace');
+	const response = sdkEnvelope(await client.workspaces.get(id));
 	if (response.data.uuid !== id) throw new CliError(403, 'The requested Workspace could not be resolved.');
 	await store.write({ version: 1, workspace: id });
 	return response;

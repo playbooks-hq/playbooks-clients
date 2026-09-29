@@ -9,8 +9,8 @@ process.chdir(root);
 const read = (file) => JSON.parse(readFileSync(file, "utf8"));
 const rootManifest = read("package.json");
 const version = process.argv[2] ?? rootManifest.version;
-if (process.argv.length > 3 || !/^0\.[1-9]\d*\.\d+$/.test(version))
-  throw new Error("Usage: pnpm release:prepare [0.MINOR.PATCH]");
+if (process.argv.length > 3 || !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version))
+  throw new Error("Usage: pnpm release:prepare [MAJOR.MINOR.PATCH]");
 const packages = ["sdk", "cli", "mcp"];
 const output = path.join(root, "artifacts", version);
 // A failed preparation must not leave an earlier success marker.

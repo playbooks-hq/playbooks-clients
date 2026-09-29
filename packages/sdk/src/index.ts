@@ -1,3 +1,8 @@
-export { PlaybooksClient } from './client.js';
+export { PlaybooksSDK } from './client.js';
 export { PlaybooksError } from './error.js';
+export { Resource, EditableResource } from './resource.js';
+export { Workspace } from './workspace.js';
+export { Project, Projects } from './project.js';
+export { Conversation, Conversations, ProjectConversations, Messages, Runs } from './operators.js';
+export { Files } from './files.js';
 export type * from './types.js';

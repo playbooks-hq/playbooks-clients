@@ -108,7 +108,12 @@ cli
 	.example('workspace update --data \'{"name":"Acme"}\'')
 	.action(run(workspace.updateWorkspace));
 
-cli.command('workspace list').describe('List your workspaces.').action(run(workspace.listWorkspace));
+cli
+	.command('workspace list')
+	.describe('List your workspaces.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
+	.action(run(workspace.listWorkspace));
 
 cli.command('workspace current').describe('Show the active workspace.').action(run(workspace.currentWorkspace));
 
@@ -130,8 +135,8 @@ cli
 	.command('workspace folders')
 	.describe('List workspace folders.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listFolders));
 
@@ -204,8 +209,8 @@ cli
 	.command('workspace template versions')
 	.describe('List template versions.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listTemplateVersions));
@@ -264,8 +269,8 @@ cli
 	.command('workspace invitations')
 	.describe('List workspace invitations.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listInvitations));
 
@@ -303,8 +308,8 @@ cli
 cli
 	.command('workspace designs')
 	.describe('List available workspace agent designs.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--query', 'Search text.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listWorkspaceDesigns));
@@ -343,8 +348,8 @@ cli
 	.command('workspace secrets')
 	.describe('List safe workspace secret metadata.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
 	.action(run(workspace.listWorkspaceSecrets));
@@ -353,8 +358,8 @@ cli
 	.command('workspace files')
 	.describe('List workspace-owned agent files.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--available', 'Include available and inherited resources.', false)
 	.action(run(workspace.listWorkspaceFiles));
@@ -457,8 +462,8 @@ cli
 	.command('workspace schedules')
 	.describe('List workspace schedules.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.schedulesOperations));
 
@@ -466,8 +471,8 @@ cli
 	.command('workspace domains')
 	.describe('List workspace domains.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listDomains));
 
@@ -488,6 +493,8 @@ cli
 
 cli
 	.command('workspace domain records')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.describe('Inspect DNS records.')
 	.option('--domain', 'Domain identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -931,7 +938,7 @@ cli
 	.describe('List project connector assignments.')
 	.option('--query', 'Search text.')
 	.option('--project', 'Project identifier.')
-	.option('--page', 'Zero-based page; operational projects paginate only when requested.')
+	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100 for operational projects).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--sort', 'Sort field:asc|desc; fields: id, createdAt, updatedAt.')
@@ -941,8 +948,8 @@ cli
 	.command('project files')
 	.describe('List project-owned agent files.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--project', 'Project identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--available', 'Include available and inherited resources.', false)
@@ -1128,17 +1135,17 @@ cli
 	.option('--project', 'Project identifier.')
 	.option('--query', 'Search text.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--limit', 'Maximum log entries (1-500; server default 100).')
-	.option('--cursor', 'Cursor from data.nextCursor for the next log page.')
-	.example('project logs --project abc --query error --limit 50')
+	.option('--page-size', 'Records per page (1-100; default 20).')
+	.option('--cursor', 'Cursor from meta.nextCursor for the next log page.')
+	.example('project logs --project abc --query error --page-size 50')
 	.action(run(project.logsOperations));
 
 cli
 	.command('project workflows')
 	.describe('List saved project workflows.')
 	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page; enables pagination when supplied.')
-	.option('--page-size', 'Records per page (1-100); enables pagination when supplied.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--project', 'Project identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listWorkflows));
@@ -1204,7 +1211,7 @@ cli
 	.describe('List recent operator messages.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
-	.option('--before', 'Fetch messages before this numeric message identifier.')
+	.option('--cursor', 'Continuation cursor from meta.nextCursor.')
 	.option('--page-size', 'Input messages per window, 1-100; output messages are included.')
 	.action(run(workspace.listMessages, outputMessages));
 
@@ -1293,7 +1300,7 @@ cli
 	.option('--project', 'Project identifier.')
 	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
-	.option('--before', 'Fetch messages before this numeric message identifier.')
+	.option('--cursor', 'Continuation cursor from meta.nextCursor.')
 	.option('--page-size', 'Input messages per window, 1-100; output messages are included.')
 	.action(run(project.listMessages, outputMessages));
 

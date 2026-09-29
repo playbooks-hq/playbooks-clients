@@ -1,12 +1,11 @@
 import { projectContext } from 'src/services/command-context';
 import { input } from 'src/utils/cli-input';
 import { assertOperationSucceeded } from 'src/utils/cli-operation';
+import { sdkEnvelope } from 'src/utils/sdk-output';
 
 export const updateProjectPreferences = async (options: any) => {
 	const context = await projectContext(options);
-	const { client } = context;
-	const path = `${context.path}/preferences`;
-	const params = {};
+	const target = JSON.stringify({ workspace: context.workspaceUuid, project: options.project });
 	const data = await input(options, [
 		'opinionPolicy',
 		'modelId',
@@ -18,7 +17,7 @@ export const updateProjectPreferences = async (options: any) => {
 		'inferenceProjectConnectorId',
 		'revision',
 	]);
-	const response = await client.request(path, 'PUT', data, params, false);
-	assertOperationSucceeded(response, path);
+	const response = sdkEnvelope(await context.projectResource.settings.update(data));
+	assertOperationSucceeded(response, target);
 	return response;
 };

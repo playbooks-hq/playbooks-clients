@@ -1,14 +1,14 @@
-import { CliClient, CliError } from 'src/services/cli-client';
+import type { Runs } from '@playbooks/sdk';
+import { CliError } from 'src/services/cli-client';
 import { integerOption } from 'src/utils/cli-input';
 import { runOutput } from 'src/utils/run-output';
-import { readEvents } from 'src/utils/sse';
 
 export const streamTimeout = (options: any) => {
 	if (options.select !== undefined) throw new CliError(422, '--select is not supported for run streams.');
 	return integerOption(options.timeout ?? 1800, 'timeout', 1, 2147483) * 1000;
 };
 
-export const streamRun = async (client: CliClient, path: string, options: any, inspect: string) => {
+export const streamRun = async (runs: Runs, id: number, options: any, inspect: string) => {
 	const timeout = streamTimeout(options);
 	const controller = new AbortController();
 	const interrupt = () => {
@@ -25,20 +25,18 @@ export const streamRun = async (client: CliClient, path: string, options: any, i
 	let finish: any;
 	const render = runOutput(options, controller.signal);
 	try {
-		const body = await client.openStream(`${path}/stream`, controller.signal);
 		const activity = () => {
 			clearTimeout(idle);
 			idle = setTimeout(abort, 90000);
 		};
-		activity();
-		for await (const event of readEvents(body, activity)) {
+		for await (const event of runs.stream(id, { signal: controller.signal, onActivity: activity })) {
 			await render(event);
 			if (event.data?.type === 'finish') finish = event.data;
 			if (event.data?.type === 'error' || event.data?.type === 'abort')
 				streamError = new CliError(502, 'The run stream reported a failure or cancellation.');
 		}
 		clearTimeout(idle);
-		if (!finish || !Number.isInteger(finish.runId) || String(finish.runId) !== path.split('/').pop())
+		if (!finish || !Number.isInteger(finish.runId) || String(finish.runId) !== String(id))
 			throw new CliError(503, 'Run stream ended without an authoritative final status.');
 		const status = finish.status;
 		if (options.json || !process.stdout.isTTY)

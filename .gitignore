@@ -5,4 +5,9 @@ artifacts/
 *.tgz
 .env
 .env.*
+!.env.example
 .DS_Store
+
+.runs/
+.test-dist/
+!.env.test.example

@@ -10,5 +10,5 @@ export const outputMessages = (response: any, options: any) => {
 		const text = [`[${message.id}] ${message.role} (${message.status})`, message.text || '', ''].join('\n');
 		console.log(terminalText(text));
 	}
-	if (response.meta?.hasMore) console.log(`More messages: use --before ${response.meta.nextCursor}.`);
+	if (response.meta?.hasMore) console.log(`More messages: use --cursor ${response.meta.nextCursor}.`);
 };

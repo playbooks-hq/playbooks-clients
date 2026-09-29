@@ -83,10 +83,9 @@ export const operatorTools: ToolDefinition[] = [
 				description: 'Numeric branch identifier; defaults to the conversation current branch.',
 				kind: 'number',
 			},
-			before: {
-				flag: 'before',
-				description: 'Fetch messages before this numeric message identifier.',
-				kind: 'number',
+			cursor: {
+				flag: 'cursor',
+				description: 'Continuation cursor from meta.nextCursor.',
 			},
 			pageSize: {
 				flag: 'page-size',
