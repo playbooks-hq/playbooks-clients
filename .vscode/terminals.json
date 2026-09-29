@@ -1,0 +1,24 @@
+{
+	"autorun": false,
+	"autokill": true,
+	"terminals": [
+		{
+			"name": "playbooks-clients",
+			"focus": true,
+			"execute": false,
+			"command": "",
+			"recycle": true
+		},
+		{
+			"name": "playbooks-clients-alt",
+			"execute": false,
+			"command": "",
+			"recycle": true
+		},
+		{
+			"name": "zsh",
+			"open": true,
+			"recycle": true
+		}
+	]
+}
