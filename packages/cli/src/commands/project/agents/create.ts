@@ -5,7 +5,7 @@ import { sdkEnvelope } from 'src/utils/sdk-output';
 
 export const createAgent = async (options: any) => {
 	const context = await projectContext(options);
-	const target = JSON.stringify({ workspace: context.workspaceUuid, project: options.project });
+	const target = JSON.stringify({ workspace: context.workspaceUuid, project: context.projectResource.uuid });
 	const data = await input(options, ['name', 'description', 'thumbnail', 'creationKey']);
 	const response = sdkEnvelope(await context.projectResource.agents.create(data));
 	assertOperationSucceeded(response, target);

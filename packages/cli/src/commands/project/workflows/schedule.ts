@@ -8,7 +8,7 @@ export const scheduleWorkflow = async (options: any) => {
 	const context = await projectContext(options);
 	const target = JSON.stringify({
 		workspace: context.workspaceUuid,
-		project: options.project,
+		project: context.projectResource.uuid,
 		workflow: options.workflow,
 	});
 	const data = await input(options, ['enabled', 'recurrence', 'time', 'timezone', 'actingUserId']);

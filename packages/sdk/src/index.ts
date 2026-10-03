@@ -7,3 +7,4 @@ export { Conversation, Conversations, ProjectConversations, Messages, Runs } fro
 export { Files } from './files.js';
 export type * from './types.js';
 export { Inbox } from './inbox.js';
+export { ProjectTests } from './project-tests.js';

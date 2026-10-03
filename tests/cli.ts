@@ -15,6 +15,12 @@ export async function cliChecks(state: Json, config: string) {
   const get = await cli(config, ["project", ...scope]);
   assert.equal(get.code, 0);
   assert.equal(JSON.parse(get.stdout).data.uuid, state.projectUuid);
+  const tests = await cli(config, ["project", "tests", ...scope]);
+  assert.equal(tests.code, 0);
+  const testList = JSON.parse(tests.stdout).data;
+  assert.deepEqual(testList.tests, []);
+  assert.equal(testList.summary.tests, 0);
+  assert(!("environments" in testList));
   const updated = await cli(
     config,
     ["project", "update", ...scope, "--data", "-"],

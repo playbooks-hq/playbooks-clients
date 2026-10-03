@@ -71,3 +71,13 @@ export { createWorkflow } from './workflows/create';
 export { updateWorkflow } from './workflows/update';
 export { scheduleWorkflow } from './workflows/schedule';
 export { runWorkflow } from './workflows/run';
+export { listTests, getTest, getTestOperation, createTest, testAction } from './tests';
+export {
+	getRunControl,
+	cancelRun,
+	replaceRun,
+	createConversation,
+	forkConversation,
+	respondToMessage,
+} from './controls';
+export { getProjectUsage, getProjectBudget, updateProjectBudget } from './budget';

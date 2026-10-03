@@ -28,10 +28,16 @@ export const workspaceContext = async (options: any) => {
 	return { store, state, client, workspace, workspaceUuid, workspaceResource };
 };
 
-export const projectContext = async (options: any) => {
+export const projectContext = async (options: any, params: { include?: string } = {}) => {
 	const id = identifier(options.project, '--project');
 	const context = await workspaceContext(options);
-	const projectResource = await context.workspaceResource.projects.get(id);
+	const projectResource = await context.workspaceResource.projects.get(id, {
+		...params,
+		...(options['target-agent'] === undefined
+			? {}
+			: { agentId: identifier(options['target-agent'], '--target-agent') }),
+		...(options['target-test'] === undefined ? {} : { testId: identifier(options['target-test'], '--target-test') }),
+	});
 	const project = sdkEnvelope(projectResource);
 	return { ...context, project, projectResource };
 };

@@ -132,3 +132,9 @@ Authenticate through the CLI or `PLAYBOOKS_TOKEN`, never through tool arguments.
 The `workspace` toolset includes `playbooks_workspace_inbox`, `playbooks_workspace_inbox_count`, `playbooks_workspace_inbox_read`, and `playbooks_workspace_inbox_read-all`. All require an explicit Workspace. List/count are available in read-only mode; read mutations are excluded. Listing supports the web Inbox filters and retains counts and source metadata.
 
 Marking a conversation read requires its UUID and `data.throughMessageId`, plus `data.branchId` for Project conversations. `read-all` requires `confirm: true` and applies across all accessible Workspace conversations, not the current filters. These tools acknowledge receipts without approving requests or executing work.
+
+## Agent and Test targets
+
+Project tools accept mutually exclusive `targetAgent` and `targetTest` UUIDs with the parent `project` and authorized `workspace`. They use the same child-scoped CLI and SDK operations and never fall back to parent execution. Tools for unsupported capabilities return server errors.
+
+The `operator` toolset includes run control/cancel/replace, conversation create/fork, and structured message responses. The `project` toolset includes Test inventory, operation inspection, create/action, and child usage/budget tools. Test management takes parent `project` plus `test`; it does not accept an execution target. Preserve request/idempotency keys on retries and provide current revisions and explicit confirmation where required. Read-only mode excludes all mutation tools. Tool results preserve server admission reasons, operation references and evidence; acceptance is not execution completion.

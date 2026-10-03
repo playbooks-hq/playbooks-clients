@@ -8,7 +8,7 @@ export const restoreCheckpoint = async (options: any) => {
 	const context = await projectContext(options);
 	const target = JSON.stringify({
 		workspace: context.workspaceUuid,
-		project: options.project,
+		project: context.projectResource.uuid,
 		checkpoint: options.checkpoint,
 	});
 	await confirm(options, 'Restore a source checkpoint; application data is unchanged.: ' + target + '?');

@@ -1,10 +1,24 @@
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 
 import type { Project, Workspace } from "../packages/sdk/dist/index.js";
 import { PlaybooksError } from "../packages/sdk/dist/index.js";
 import { identity } from "./support/environment.js";
 
+export async function projectTestChecks(project: Project) {
+  const tests = (await project.tests.list()).toJSON() as Record<string, any>;
+  assert.deepEqual(tests.tests, []);
+  assert.equal(tests.summary.tests, 0);
+  assert.equal(typeof tests.executionAvailable, "boolean");
+  assert(!("environments" in tests));
+  await assert.rejects(
+    project.tests.list({ environmentId: randomUUID() } as any),
+    (error: unknown) => error instanceof PlaybooksError && error.status === 422,
+  );
+}
+
 export async function sdkChecks(workspace: Workspace, project: Project) {
+  await projectTestChecks(project);
   const snapshot = project.toJSON();
   assert.equal(await project.update({ name: `${project.name} SDK` }), project);
   assert.notEqual(project.name, snapshot.name);

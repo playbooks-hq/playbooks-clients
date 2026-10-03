@@ -13,6 +13,7 @@ export const createMessage = async (options: any) => {
 			'replyToMessageId',
 			'maxCredits',
 			'idempotencyKey',
+			'attachments',
 		]),
 	);
 	const context = await projectMessageContext(options);

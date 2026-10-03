@@ -1,0 +1,143 @@
+import type { ToolDefinition } from './definition.js';
+
+export const projectControlTools: ToolDefinition[] = [
+	{
+		command: 'project run control',
+		description: 'Inspect current run controls and unavailable reasons.',
+		toolset: 'operator',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Authorized Workspace UUID.', required: true },
+			project: { flag: 'project', description: 'Project UUID.', required: true },
+			run: { flag: 'run', description: 'Numeric run identifier.', kind: 'number', required: true },
+		},
+	},
+	{
+		command: 'project run cancel',
+		description: 'Request stop for the selected run.',
+		toolset: 'operator',
+		readOnly: false,
+		destructive: true,
+		options: {
+			workspace: { flag: 'workspace', description: 'Authorized Workspace UUID.', required: true },
+			project: { flag: 'project', description: 'Project UUID.', required: true },
+			run: { flag: 'run', description: 'Numeric run identifier.', kind: 'number', required: true },
+			confirm: {
+				flag: 'yes',
+				description: 'Confirm the reviewed operation, retained side effects and possible usage.',
+				kind: 'boolean',
+			},
+		},
+	},
+	{
+		command: 'project run replace',
+		description: 'Replace a terminal turn, retaining history and prior side effects.',
+		toolset: 'operator',
+		readOnly: false,
+		destructive: true,
+		options: {
+			workspace: { flag: 'workspace', description: 'Authorized Workspace UUID.', required: true },
+			project: { flag: 'project', description: 'Project UUID.', required: true },
+			run: { flag: 'run', description: 'Numeric run identifier.', kind: 'number', required: true },
+			confirm: {
+				flag: 'yes',
+				description: 'Confirm the reviewed operation, retained side effects and possible usage.',
+				kind: 'boolean',
+			},
+		},
+		dataFields: ['text', 'mode', 'modelId', 'deliveryMode', 'maxCredits', 'idempotencyKey', 'attachments'],
+	},
+	{
+		command: 'project conversation create',
+		description: 'Create a conversation within the selected execution environment.',
+		toolset: 'operator',
+		readOnly: false,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Authorized Workspace UUID.', required: true },
+			project: { flag: 'project', description: 'Project UUID.', required: true },
+		},
+		dataFields: ['branchId'],
+	},
+	{
+		command: 'project conversation fork',
+		description: 'Summarize saved context into a new chat in the same environment; starts no run.',
+		toolset: 'operator',
+		readOnly: false,
+		destructive: true,
+		options: {
+			workspace: { flag: 'workspace', description: 'Authorized Workspace UUID.', required: true },
+			project: { flag: 'project', description: 'Project UUID.', required: true },
+			conversation: { flag: 'conversation', description: 'Conversation identifier.', required: true },
+			confirm: {
+				flag: 'yes',
+				description: 'Confirm the reviewed operation, retained side effects and possible usage.',
+				kind: 'boolean',
+			},
+		},
+		dataFields: ['submissionKey', 'throughMessageId', 'branchId'],
+	},
+	{
+		command: 'project message respond',
+		description: 'Submit structured prompt responses using the current prompt data.',
+		toolset: 'operator',
+		readOnly: false,
+		destructive: true,
+		options: {
+			workspace: { flag: 'workspace', description: 'Authorized Workspace UUID.', required: true },
+			project: { flag: 'project', description: 'Project UUID.', required: true },
+			conversation: { flag: 'conversation', description: 'Conversation identifier.', required: true },
+			branch: { flag: 'branch', description: 'Numeric branch identifier.', kind: 'number', required: true },
+			message: { flag: 'message', description: 'Numeric message identifier.', kind: 'number', required: true },
+			confirm: {
+				flag: 'yes',
+				description: 'Confirm the reviewed operation, retained side effects and possible usage.',
+				kind: 'boolean',
+			},
+		},
+		dataFields: ['idempotencyKey', 'parts', 'text', 'maxCredits'],
+	},
+	{
+		command: 'project usage',
+		description: 'Scoped Project, Agent or Test usage; ancestor limits remain enforced.',
+		toolset: 'project',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Authorized Workspace UUID.', required: true },
+			project: { flag: 'project', description: 'Project UUID.', required: true },
+		},
+	},
+	{
+		command: 'project budget',
+		description: 'Scoped Project, Agent or Test budget; ancestor limits remain enforced.',
+		toolset: 'project',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Authorized Workspace UUID.', required: true },
+			project: { flag: 'project', description: 'Project UUID.', required: true },
+		},
+	},
+	{
+		command: 'project budget update',
+		description: 'Scoped Project, Agent or Test budget; ancestor limits remain enforced.',
+		toolset: 'project',
+		readOnly: false,
+		destructive: true,
+		options: {
+			workspace: { flag: 'workspace', description: 'Authorized Workspace UUID.', required: true },
+			project: { flag: 'project', description: 'Project UUID.', required: true },
+			confirm: { flag: 'yes', description: 'Confirm the reviewed budget update.', kind: 'boolean' },
+		},
+		dataFields: [
+			'creditBudget',
+			'budgetStopNewWork',
+			'budgetAlertThresholds',
+			'budgetRecipientMode',
+			'budgetRecipientIds',
+			'budgetEmail',
+		],
+	},
+];

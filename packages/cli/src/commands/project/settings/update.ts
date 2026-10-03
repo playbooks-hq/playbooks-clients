@@ -5,7 +5,7 @@ import { sdkEnvelope } from 'src/utils/sdk-output';
 
 export const updateProjectPreferences = async (options: any) => {
 	const context = await projectContext(options);
-	const target = JSON.stringify({ workspace: context.workspaceUuid, project: options.project });
+	const target = JSON.stringify({ workspace: context.workspaceUuid, project: context.projectResource.uuid });
 	const data = await input(options, [
 		'opinionPolicy',
 		'modelId',

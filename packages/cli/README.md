@@ -154,3 +154,21 @@ playbooks workspace inbox read-all --workspace WORKSPACE_UUID --yes
 List filters mirror the web Inbox: `--view attention|mentions|all`, `--scope all|workspace|project:<uuid>|folder:<uuid>`, `--type all|approval|question|review|failure|mention|reply|report`, and `--search`. `--conversation` selects a conversation directly and bypasses other filters. JSON output preserves counts and source scopes in page metadata. Listing does not mark conversations read.
 
 Use the actual loaded message ID when marking read; Project conversations also require the matching branch ID. Read receipts do not approve requests or execute work. `read-all` applies to every accessible conversation in the Workspace, regardless of list filters, and requires confirmation in noninteractive use.
+
+## Agent and Test targets
+
+Shared Project commands accept either `--target-agent <agent-uuid>` or `--target-test <environment-uuid>` alongside the parent `--project` and `--workspace`. The flags are mutually exclusive and never change saved context. Unsupported child capabilities fail without operating on the parent.
+
+```sh
+playbooks project settings --workspace WORKSPACE_UUID --project PARENT_UUID --target-test TEST_UUID --json
+playbooks project runs --workspace WORKSPACE_UUID --project PARENT_UUID --target-agent AGENT_UUID --json
+playbooks project usage --workspace WORKSPACE_UUID --project PARENT_UUID --target-test TEST_UUID --json
+playbooks project tests --workspace WORKSPACE_UUID --project PARENT_UUID --json
+playbooks project test operation --workspace WORKSPACE_UUID --project PARENT_UUID --test TEST_UUID --operation OPERATION_UUID --json
+```
+
+`project run control`, `project run cancel`, `project run replace`, `project conversation create`, `project conversation fork`, and `project message respond` use shared child execution APIs. Replacement retains history and does not undo side effects; use a new durable `idempotencyKey` for the replacement and preserve it on retry. Fork data uses `submissionKey` and an optional `throughMessageId`. Structured responses use the current prompt's response `parts` and an idempotency key. Mutations that can approve or start work require `--yes` in noninteractive mode.
+
+`project test create --data ... --yes` and `project test action --test ... --action ... --data ... --yes` manage parent-owned Tests. Actions support test/data, sleep, refresh, reset-workspace, reset, delete, stop and preview-start/stop/restart. Preserve `requestKey` on retry. Stop requires `operationId`; destructive reset/delete actions also require `revision` and `confirm: true` in the body. The server enforces admission and maintenance restrictions. Use shared `project update` and `project settings update` with child targets and current revisions for configuration.
+
+`project budget` and `project budget update` also accept child targets; removing a child allowance does not remove ancestor limits. Run `--help` on a command for its supported options.

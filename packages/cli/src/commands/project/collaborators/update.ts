@@ -8,7 +8,7 @@ export const updateCollaborator = async (options: any) => {
 	const context = await projectContext(options);
 	const target = JSON.stringify({
 		workspace: context.workspaceUuid,
-		project: options.project,
+		project: context.projectResource.uuid,
 		collaborator: options.collaborator,
 	});
 	const data = await input(options, ['role']);

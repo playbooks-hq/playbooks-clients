@@ -146,7 +146,7 @@ export const coreTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['name', 'description', 'thumbnail', 'typeId'],
+		dataFields: ['name', 'description', 'thumbnail', 'typeId', 'revision'],
 		dataOptional: false,
 	},
 	{

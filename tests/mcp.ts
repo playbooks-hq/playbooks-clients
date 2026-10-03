@@ -19,6 +19,11 @@ export async function mcpChecks(state: Json, config: string, mcp: MCP) {
   const get = await mcp.call("playbooks_project", scope);
   assert(!get.isError);
   assert.equal(get.structuredContent.data.uuid, state.projectUuid);
+  const tests = await mcp.call("playbooks_project_tests", scope);
+  assert(!tests.isError);
+  assert.deepEqual(tests.structuredContent.data.tests, []);
+  assert.equal(tests.structuredContent.data.summary.tests, 0);
+  assert(!("environments" in tests.structuredContent.data));
   const updated = await mcp.call("playbooks_project_update", {
     ...scope,
     data: { name: `Clients ${state.id} MCP` },

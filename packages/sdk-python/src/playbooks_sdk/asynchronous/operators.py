@@ -57,6 +57,11 @@ class Messages(Endpoint):
         )
         return result
 
+    async def respond(self, id: Identifier, data: Data) -> Any:
+        if self._sandbox:
+            await self.get(id)
+        return await self._action(f"{self._path}/{identifier(id)}/responses", "POST", data)
+
     async def delete(self, id: Identifier) -> Any:
         if self._sandbox:
             await self.get(id)
@@ -154,6 +159,16 @@ class Conversations(Endpoint):
 
 
 class ProjectConversations(Conversations):
+    async def create(self, data: Data) -> Conversation:
+        result = await self._action(f"{self._path}/conversations", "POST", data)
+        return Conversation(self._transport, result, True)
+
+    async def fork(self, id: Identifier, data: Data) -> Conversation:
+        result = await self._action(
+            f"{self._path}/conversations/{identifier(id)}/fork", "POST", data
+        )
+        return Conversation(self._transport, result, True)
+
     async def list(self) -> ApiResponse:
         response: ApiResponse = await self._transport.request(
             f"{self._path}/conversations", read_only=False
@@ -165,6 +180,16 @@ class ProjectConversations(Conversations):
 
 
 class Runs(ReadCollection):
+    async def control(self, id: Identifier) -> Resource:
+        result: Resource = await self._get(f"{self._path}/{identifier(id)}/control")
+        return result
+
+    async def cancel(self, id: Identifier) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/cancel", "POST")
+
+    async def replace(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/replace", "POST", data)
+
     @asynccontextmanager
     async def stream(
         self,

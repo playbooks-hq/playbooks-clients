@@ -1,8 +1,9 @@
 import { PlaybooksError } from './error.js';
 import type { RecordResource } from './resource.js';
-import { get, identifier, listing, record, Resource } from './resource.js';
+import { action, get, identifier, listing, record, Resource } from './resource.js';
 import { readEvents } from './sse.js';
 import type { Transport } from './transport.js';
+import type { ConversationForkInput, MessageResponseInput } from './types.js';
 import type { ApiResponse } from './types.js';
 import type { ConversationData, MessageData, RunData, RunListOptions } from './types.js';
 import type { Identifier, MessageInput, MessageOptions, MessageUpdate, RecordData, StreamOptions } from './types.js';
@@ -19,6 +20,15 @@ export class Runs {
 	}
 	get(id: Identifier) {
 		return get<RunData>(this.#transport, `${this.#path}/${identifier(id)}`);
+	}
+	control(id: Identifier) {
+		return get(this.#transport, `${this.#path}/${identifier(id)}/control`);
+	}
+	cancel(id: Identifier) {
+		return action(this.#transport, `${this.#path}/${identifier(id)}/cancel`, 'POST');
+	}
+	replace(id: Identifier, input: MessageInput & { idempotencyKey: string }) {
+		return action(this.#transport, `${this.#path}/${identifier(id)}/replace`, 'POST', input);
 	}
 	async *stream(id: Identifier, options: StreamOptions) {
 		const body = await this.#transport.openStream(`${this.#path}/${identifier(id)}/stream`, options.signal);
@@ -71,6 +81,10 @@ export class Messages {
 		return record<MessageData>(
 			(await this.#transport.request(`${this.#path}/${identifier(id)}`, 'PUT', input, this.#params(), false)).data,
 		);
+	}
+	async respond(id: Identifier, input: MessageResponseInput) {
+		if (this.#sandbox) await this.get(id);
+		return action(this.#transport, `${this.#path}/${identifier(id)}/responses`, 'POST', input, this.#params());
 	}
 	async delete(id: Identifier) {
 		if (this.#sandbox) await this.get(id);
@@ -149,6 +163,19 @@ export class ProjectConversations extends Conversations {
 		super(transport, path, ownerId, true);
 		this.#transport = transport;
 		this.#path = path;
+	}
+	async create(input: { branchId: number }) {
+		const data = await action<ConversationData>(this.#transport, `${this.#path}/conversations`, 'POST', input);
+		return new Conversation(this.#transport, data, true);
+	}
+	async fork(id: Identifier, input: ConversationForkInput) {
+		const data = await action<ConversationData>(
+			this.#transport,
+			`${this.#path}/conversations/${identifier(id)}/fork`,
+			'POST',
+			input,
+		);
+		return new Conversation(this.#transport, data, true);
 	}
 	async list(): Promise<ApiResponse<Conversation[]>> {
 		const response = await this.#transport.request(`${this.#path}/conversations`, 'GET', undefined, {}, false);

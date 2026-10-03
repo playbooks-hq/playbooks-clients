@@ -586,6 +586,8 @@ cli
 	.command('project')
 	.describe('Get a project.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--include', 'Comma-separated relations: folder, type, projectOwner, branches, deploy.')
 	.example('project --project abc --include folder,type')
@@ -604,6 +606,8 @@ cli
 	.describe('Update project details.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('project update --project abc --data \'{"description":"Customer support app"}\'')
 	.action(run(project.updateProject));
@@ -613,6 +617,8 @@ cli
 	.describe('Move a project to a folder.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('project move --project abc --data \'{"folderId":123}\'')
 	.action(run(project.moveProject));
@@ -621,6 +627,8 @@ cli
 	.command('project publication')
 	.describe('Inspect publication readiness.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getPublication));
 
@@ -628,6 +636,8 @@ cli
 	.command('project export')
 	.describe('Download project source.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--output', 'New destination file.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.exportProject));
@@ -636,6 +646,8 @@ cli
 	.command('project lifecycle')
 	.describe('Inspect lifecycle state and confirmation requirements.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getProjectLifecycle));
 
@@ -643,6 +655,8 @@ cli
 	.command('project archive')
 	.describe('Archive the project.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -653,6 +667,8 @@ cli
 	.command('project restore')
 	.describe('Restore the project.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -663,6 +679,8 @@ cli
 	.command('project delete')
 	.describe('Permanently delete the project.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -673,6 +691,8 @@ cli
 	.command('project preflight')
 	.describe('Review production publication requirements.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('project preflight --project abc --data \'{"branchId":123}\'')
@@ -682,6 +702,8 @@ cli
 	.command('project publish')
 	.describe('Publish project code to production.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm publication and usage charges.', false)
 	.option('--wait', 'Wait up to five minutes for completion.', false)
@@ -693,6 +715,8 @@ cli
 	.command('project open')
 	.describe('Open this resource in Playbooks.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.openProject));
 
@@ -700,6 +724,8 @@ cli
 	.command('project ownership')
 	.describe('Inspect the pending project ownership request.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getOwnershipRequest));
 
@@ -707,6 +733,8 @@ cli
 	.command('project ownership transfer')
 	.describe('Request project ownership transfer to an active member.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -717,6 +745,8 @@ cli
 	.command('project ownership accept')
 	.describe('Accept a project ownership request addressed to you.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--request', 'Request identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -726,6 +756,8 @@ cli
 	.command('project ownership decline')
 	.describe('Decline a project ownership request.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--request', 'Request identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -735,6 +767,8 @@ cli
 	.command('project ownership cancel')
 	.describe('Cancel a pending project ownership request.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--request', 'Request identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -752,6 +786,8 @@ cli
 	.command('project collaborator add')
 	.describe('Grant project access to an existing workspace member.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -762,6 +798,8 @@ cli
 	.command('project collaborator update')
 	.describe('Update project collaborator access.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--collaborator', 'Collaborator identifier.')
@@ -774,6 +812,8 @@ cli
 	.describe('List project collaborators.')
 	.option('--query', 'Search text.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -785,6 +825,8 @@ cli
 	.describe('List project agents.')
 	.option('--query', 'Search text.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -794,6 +836,8 @@ cli
 	.command('project agent')
 	.describe('Get a project agent.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--agent', 'Agent identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getAgent));
@@ -802,6 +846,8 @@ cli
 	.command('project agent create')
 	.describe('Create a project agent without starting a run.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
@@ -813,6 +859,8 @@ cli
 	.command('project agent update')
 	.describe('Enable or disable a project agent.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--agent', 'Agent identifier.')
@@ -824,6 +872,8 @@ cli
 	.command('project resources state')
 	.describe('Inspect the project resource selection revision.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getResourceState));
 
@@ -831,6 +881,8 @@ cli
 	.command('project resources update')
 	.describe('Update revision-checked project resource selections.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('project resources update --project abc --data \'{"revision":"CURRENT_REVISION","designId":null}\'')
@@ -840,6 +892,8 @@ cli
 	.command('project designs')
 	.describe('List project-owned agent designs.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
@@ -860,6 +914,8 @@ cli
 	.command('project design create')
 	.describe('Create a project agent design from package files.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
@@ -871,6 +927,8 @@ cli
 	.command('project design update')
 	.describe('Update a project-owned agent design.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--design', 'Design identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -883,6 +941,8 @@ cli
 	.command('project skills')
 	.describe('List project-owned skills.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
@@ -903,6 +963,8 @@ cli
 	.command('project skill create')
 	.describe('Create a project skill from package files.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
@@ -914,6 +976,8 @@ cli
 	.command('project skill update')
 	.describe('Update a project-owned skill.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--skill', 'Skill identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -926,6 +990,8 @@ cli
 	.command('project settings')
 	.describe('Get project preferences and instructions.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getProjectPreferences));
 
@@ -933,6 +999,8 @@ cli
 	.command('project settings update')
 	.describe('Update project preferences.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
@@ -944,6 +1012,8 @@ cli
 	.command('project resources')
 	.describe('Inspect project resource assignments.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getProjectResources));
 
@@ -951,6 +1021,8 @@ cli
 	.command('project mcps')
 	.describe('List project-owned MCP connections.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
@@ -963,6 +1035,8 @@ cli
 	.describe('List project connector assignments.')
 	.option('--query', 'Search text.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100 for operational projects).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -976,6 +1050,8 @@ cli
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--available', 'Include available and inherited resources.', false)
 	.action(run(project.listProjectFiles));
@@ -992,6 +1068,8 @@ cli
 	.command('project file download')
 	.describe('Download a project-owned agent file.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--output', 'New destination file.')
 	.option('--file-id', 'File-id identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1004,6 +1082,8 @@ cli
 	.option('--name', 'Relative agent file name.')
 	.option('--revision', 'Existing file revision when replacing.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.uploadProjectFile));
 
@@ -1011,6 +1091,8 @@ cli
 	.command('project source connect')
 	.describe('Connect a repository; source may be replaced unless preserveSource is supported and selected.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1023,6 +1105,8 @@ cli
 	.command('project source disconnect')
 	.describe('Disconnect the project repository.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.disconnectSource));
@@ -1031,6 +1115,8 @@ cli
 	.command('project source sync')
 	.describe('Synchronize source using the reviewed Git head.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1049,6 +1135,8 @@ cli
 	.command('project branch create')
 	.describe('Create a branch from a selected base branch.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('project branch create --project abc --data \'{"name":"feature/customer-portal","baseBranch":"main"}\'')
@@ -1066,6 +1154,8 @@ cli
 	.command('project checkpoint rename')
 	.describe('Rename a project checkpoint.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--checkpoint', 'Checkpoint identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1076,6 +1166,8 @@ cli
 	.command('project checkpoint restore')
 	.describe('Restore a source checkpoint; application data is unchanged.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--checkpoint', 'Checkpoint identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1085,6 +1177,8 @@ cli
 	.command('project source')
 	.describe('Inspect project source control.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getSourceStatus));
 
@@ -1093,6 +1187,8 @@ cli
 	.describe('List project branches.')
 	.option('--query', 'Search text.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1104,6 +1200,8 @@ cli
 	.describe('List project checkpoints.')
 	.option('--query', 'Search text.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1113,6 +1211,8 @@ cli
 	.command('project source import')
 	.describe('Replace project source with a zip archive.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--upload', 'Local source zip.')
 	.option('--yes', 'Confirm source replacement.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1122,6 +1222,8 @@ cli
 	.command('project releases')
 	.describe('List project releases.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
@@ -1132,6 +1234,8 @@ cli
 	.command('project release')
 	.describe('Inspect a release.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--release', 'Release identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getRelease));
@@ -1140,6 +1244,8 @@ cli
 	.command('project release rollback')
 	.describe('Restore release code; application data is not rolled back.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--release', 'Release identifier.')
@@ -1151,6 +1257,8 @@ cli
 	.command('project sandbox')
 	.describe('Inspect project sandbox configuration and resize status.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.sandboxOperations));
 
@@ -1158,6 +1266,8 @@ cli
 	.command('project logs')
 	.describe('Read project logs.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--query', 'Search text.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--page-size', 'Records per page (1-100; default 20).')
@@ -1172,6 +1282,8 @@ cli
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.listWorkflows));
 
@@ -1179,6 +1291,8 @@ cli
 	.command('project workflow')
 	.describe('Inspect a saved workflow and its runs.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workflow', 'Workflow identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.getWorkflow));
@@ -1187,6 +1301,8 @@ cli
 	.command('project workflow create')
 	.describe('Create a workflow with its schedule initially disabled.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('project workflow create --project abc --data \'{"name":"Daily review"}\'')
@@ -1196,6 +1312,8 @@ cli
 	.command('project workflow update')
 	.describe('Update saved workflow steps.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workflow', 'Workflow identifier.')
@@ -1207,6 +1325,8 @@ cli
 	.command('project workflow schedule')
 	.describe('Update recurrence; enabling it authorizes real actions and usage charges.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workflow', 'Workflow identifier.')
@@ -1218,6 +1338,8 @@ cli
 	.command('project workflow run')
 	.describe('Run saved work now; may send notifications, change external systems, and incur usage charges.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workflow', 'Workflow identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1308,6 +1430,8 @@ cli
 	.describe('Get a conversation; the default may initialize the primary conversation.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
 	.action(run(project.getConversation));
 
@@ -1316,6 +1440,8 @@ cli
 	.describe('List project conversations; may initialize the primary conversation.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.action(run(project.listConversations));
 
 cli
@@ -1323,6 +1449,8 @@ cli
 	.describe('List recent operator messages.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--cursor', 'Continuation cursor from meta.nextCursor.')
@@ -1334,6 +1462,8 @@ cli
 	.describe('Get a sandbox conversation message.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--message', 'Numeric message identifier.')
@@ -1344,6 +1474,8 @@ cli
 	.describe('Submit a message; may start or steer execution and incur usage.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--data', 'JSON object or - for stdin.')
@@ -1356,6 +1488,8 @@ cli
 	.describe('Edit a queued sandbox message.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--message', 'Numeric message identifier.')
@@ -1368,6 +1502,8 @@ cli
 	.describe('Cancel a queued message; retains message history.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--message', 'Numeric message identifier.')
@@ -1379,6 +1515,8 @@ cli
 	.describe('List operator runs and attempts.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--conversation', 'Filter by conversation UUID.')
 	.option('--branch', 'Filter by numeric branch identifier.')
 	.option('--message', 'Filter by numeric input message identifier.')
@@ -1392,6 +1530,8 @@ cli
 	.describe('Get an operator run with its available input and output.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--run', 'Numeric run identifier.')
 	.action(run(project.getRun));
 
@@ -1400,6 +1540,8 @@ cli
 	.describe('Observe run output without starting execution.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--run', 'Numeric run identifier.')
 	.option('--timeout', 'Total stream duration in seconds; defaults to 1800.')
 	.example('project run stream --project portal --run 456')
@@ -1433,6 +1575,156 @@ cli
 			'completion',
 		]),
 	);
+
+cli
+	.command('project tests')
+	.describe('List Tests and their operation history.')
+	.option('--project', 'Parent Project UUID.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--search', 'Search operation titles.')
+	.option('--before', 'Operation cursor from the previous response.')
+	.action(run(project.listTests));
+
+cli
+	.command('project test')
+	.describe('Inspect a Test, admission and capabilities.')
+	.option('--project', 'Parent Project UUID.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--test', 'Test UUID.')
+	.action(run(project.getTest));
+
+cli
+	.command('project test operation')
+	.describe('Inspect a Test operation, findings and evidence.')
+	.option('--project', 'Parent Project UUID.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--test', 'Test UUID.')
+	.option('--operation', 'Test operation UUID.')
+	.action(run(project.getTestOperation));
+
+cli
+	.command('project test create')
+	.describe('Create and prepare an isolated Test.')
+	.option('--project', 'Parent Project UUID.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--data', 'JSON body with a durable requestKey, or - for stdin.')
+	.option('--yes', 'Confirm creation and possible usage.', false)
+	.action(run(project.createTest));
+
+cli
+	.command('project test action')
+	.describe('Apply a Test lifecycle action using current capabilities and revisions.')
+	.option('--project', 'Parent Project UUID.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--test', 'Test UUID.')
+	.option(
+		'--action',
+		'test, data, reset, delete, stop, sleep, refresh, reset-workspace, preview-start, preview-stop, preview-restart.',
+	)
+	.option(
+		'--data',
+		'JSON body or - for stdin; preserve requestKey on retries. Stop requires operationId; destructive resets require revision and confirm.',
+	)
+	.option('--yes', 'Confirm the reviewed operation.', false)
+	.action(run(project.testAction));
+
+cli
+	.command('project run control')
+	.describe('Inspect current run controls and unavailable reasons.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
+	.option('--run', 'Run identifier.')
+	.action(run(project.getRunControl));
+
+cli
+	.command('project run cancel')
+	.describe('Request stop for the selected run.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
+	.option('--run', 'Run identifier.')
+	.option('--yes', 'Confirm the reviewed operation.', false)
+	.action(run(project.cancelRun));
+
+cli
+	.command('project run replace')
+	.describe('Replace a terminal turn, retaining history and prior side effects.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
+	.option('--run', 'Run identifier.')
+	.option('--data', 'JSON body or - for stdin.')
+	.option('--yes', 'Confirm the reviewed operation.', false)
+	.action(run(project.replaceRun));
+
+cli
+	.command('project conversation create')
+	.describe('Create a conversation within the selected execution environment.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
+	.option('--data', 'JSON body or - for stdin.')
+	.action(run(project.createConversation));
+
+cli
+	.command('project conversation fork')
+	.describe('Summarize saved context into a new chat in the same environment; starts no run.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
+	.option('--conversation', 'Conversation identifier.')
+	.option('--data', 'JSON body or - for stdin.')
+	.option('--yes', 'Confirm the reviewed operation.', false)
+	.action(run(project.forkConversation));
+
+cli
+	.command('project message respond')
+	.describe('Submit structured prompt responses using the current prompt data.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
+	.option('--conversation', 'Conversation identifier.')
+	.option('--branch', 'Branch identifier.')
+	.option('--message', 'Message identifier.')
+	.option('--data', 'JSON body or - for stdin.')
+	.option('--yes', 'Confirm the reviewed operation.', false)
+	.action(run(project.respondToMessage));
+
+cli
+	.command('project usage')
+	.describe('Inspect scoped Project usage.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID; mutually exclusive with --target-agent.')
+	.action(run(project.getProjectUsage));
+
+cli
+	.command('project budget')
+	.describe('Inspect scoped Project budget.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID; mutually exclusive with --target-agent.')
+	.action(run(project.getProjectBudget));
+
+cli
+	.command('project budget update')
+	.describe('Update scoped Project budget.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID; mutually exclusive with --target-agent.')
+	.option('--data', 'JSON body or - for stdin.')
+	.option('--yes', 'Confirm the reviewed budget update.', false)
+	.action(run(project.updateProjectBudget));
 
 try {
 	const args = process.argv.slice();

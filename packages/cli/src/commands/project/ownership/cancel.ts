@@ -8,7 +8,7 @@ export const cancelOwnership = async (options: any) => {
 	const context = await projectContext(options);
 	const target = JSON.stringify({
 		workspace: context.workspaceUuid,
-		project: options.project,
+		project: context.projectResource.uuid,
 		request: options.request,
 	});
 	await confirm(options, 'Cancel a pending Project ownership request.: ' + target + '?');

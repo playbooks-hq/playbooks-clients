@@ -8,7 +8,7 @@ export const rollbackRelease = async (options: any) => {
 	const context = await projectContext(options);
 	const target = JSON.stringify({
 		workspace: context.workspaceUuid,
-		project: options.project,
+		project: context.projectResource.uuid,
 		release: options.release,
 	});
 	const data = await input(options, ['currentReleaseId']);

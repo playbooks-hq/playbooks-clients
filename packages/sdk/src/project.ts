@@ -4,7 +4,8 @@ import { Collection } from './collection.js';
 import { PlaybooksError } from './error.js';
 import { Files } from './files.js';
 import { ProjectConversations, Runs } from './operators.js';
-import { action, get, identifier, listing, record, Resource } from './resource.js';
+import { ProjectTests } from './project-tests.js';
+import { action, get, identifier, listing, record, Resource, succeeded } from './resource.js';
 import type { Transport } from './transport.js';
 import type { AgentCreate } from './types.js';
 import type { ApiResponse, LogData, LogOptions, PreflightData, RecordData } from './types.js';
@@ -12,6 +13,7 @@ import type { LibraryData, ReleaseData } from './types.js';
 import type { AgentData, AgentUpdate, WorkflowData } from './types.js';
 import type {
 	ActionReceipt,
+	BudgetUpdate,
 	Identifier,
 	LibraryInput,
 	ListOptions,
@@ -37,19 +39,18 @@ export class Project extends Resource<ProjectData> {
 	declare readonly id: number;
 	declare readonly uuid: string;
 	declare readonly name: string;
-	declare readonly executionProfile?: 'application' | 'operational';
+	declare readonly executionProfile?: 'application' | 'operational' | 'test';
 	#transport: Transport;
 	#path: string;
-	#identity: string;
-	constructor(transport: Transport, data: ProjectData) {
+	constructor(transport: Transport, data: ProjectData, path?: string) {
 		super(data);
 		this.#transport = transport;
-		this.#identity = data.uuid;
-		this.#path = `/workspace/projects/${identifier(data.uuid)}`;
+		this.#path = path ?? `/workspace/projects/${identifier(data.uuid)}`;
 	}
 	async update(changes: ProjectUpdate) {
-		const data = await updateProject(this.#transport, this.#identity, changes);
-		if (data.id !== this.id) throw new PlaybooksError(502, 'The updated Project identity did not match.');
+		const data = await action<ProjectData>(this.#transport, this.#path, 'PUT', changes);
+		if (data.id !== this.id || data.uuid !== this.uuid)
+			throw new PlaybooksError(502, 'The updated Project identity did not match.');
 		this.replace(data);
 		return this;
 	}
@@ -71,10 +72,25 @@ export class Project extends Resource<ProjectData> {
 	get publication() {
 		return { get: () => get(this.#transport, `${this.#path}/publication`) };
 	}
+	get usage() {
+		return { get: () => get(this.#transport, `${this.#path}/usage`) };
+	}
+	get budget() {
+		return {
+			get: () => get(this.#transport, `${this.#path}/budget`),
+			update: (input: BudgetUpdate) => action(this.#transport, `${this.#path}/budget`, 'PUT', input),
+		};
+	}
 	get settings() {
 		return {
-			get: () => get(this.#transport, `${this.#path}/preferences`),
-			update: (input: SettingsInput) => action(this.#transport, `${this.#path}/preferences`, 'PUT', input),
+			get: async () => {
+				const response = await this.#transport.request(`${this.#path}/preferences`, 'GET');
+				return record({ ...response.data, ...response.meta });
+			},
+			update: async (input: SettingsInput) => {
+				const response = await this.#transport.request(`${this.#path}/preferences`, 'PUT', input);
+				return { ...succeeded(response.data), ...response.meta };
+			},
 		};
 	}
 	get resources() {
@@ -102,6 +118,9 @@ export class Project extends Resource<ProjectData> {
 			create: (input: AgentCreate) => collection.create(input),
 			update: (id: Identifier, input: AgentUpdate) => collection.update(id, input),
 		};
+	}
+	get tests() {
+		return new ProjectTests(this.#transport, `${this.#path}/tests`);
 	}
 	#library(kind: 'designs' | 'skills') {
 		const collection = new Collection<LibraryData, LibraryInput>(
@@ -139,7 +158,10 @@ export class Project extends Resource<ProjectData> {
 		return new Runs(this.#transport, `${this.#path}/operator/runs`);
 	}
 	get sandbox() {
-		return { get: () => get(this.#transport, `${this.#path}/sandbox/config`) };
+		return {
+			get: () =>
+				get(this.#transport, `${this.#path}/sandbox/${this.executionProfile === 'test' ? 'health' : 'config'}`),
+		};
 	}
 	get logs() {
 		return {
@@ -284,9 +306,22 @@ export class Projects {
 		return { ...response, data: response.data.map(item => new Project(this.#transport, item.toJSON())) };
 	}
 	async get(id: Identifier, options: ProjectGetOptions = {}) {
-		const { data } = await this.#transport.request(`/workspace/projects/${identifier(id)}`, 'GET', undefined, options);
-		if (data.uuid !== String(id)) throw new PlaybooksError(502, 'The Project identity did not match.');
-		return new Project(this.#transport, data);
+		const { agentId, testId, ...params } = options;
+		if (agentId !== undefined && testId !== undefined)
+			throw new PlaybooksError(422, 'Choose either an Agent or a Test.');
+		let path = `/workspace/projects/${identifier(id)}`;
+		if (agentId !== undefined) path += `/agents/${identifier(agentId)}/execution`;
+		if (testId !== undefined) path += `/tests/${identifier(testId)}/execution`;
+		const { data } = await this.#transport.request(path, 'GET', undefined, params);
+		const childId = agentId ?? testId;
+		const matches =
+			childId === undefined
+				? data.uuid === String(id)
+				: data.childContext?.parentId === String(id) &&
+					data.executionProfile === (agentId !== undefined ? 'operational' : 'test') &&
+					data.childContext?.[agentId !== undefined ? 'agentId' : 'testId'] === String(childId);
+		if (!matches) throw new PlaybooksError(502, 'The Project identity did not match.');
+		return new Project(this.#transport, data, path);
 	}
 	async create(input: ProjectCreate) {
 		return new Project(this.#transport, await action(this.#transport, '/workspace/projects', 'POST', input));

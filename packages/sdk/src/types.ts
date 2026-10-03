@@ -50,8 +50,17 @@ export interface ProjectData {
 	description?: string | null;
 	thumbnail?: string | null;
 	status?: string;
-	executionProfile?: 'application' | 'operational';
+	executionProfile?: 'application' | 'operational' | 'test';
 	parentProjectId?: number | null;
+	resourceRevision?: string;
+	childContext?: {
+		profile: 'operational' | 'test';
+		executionProjectId: number;
+		parentProjectId: number;
+		parentId: string;
+		agentId?: string;
+		testId?: string;
+	};
 	workspaceId?: number | null;
 	projectOwnerId?: number | null;
 	folderId?: number | null;
@@ -67,9 +76,12 @@ export interface ProjectData {
 
 export interface ProjectGetOptions {
 	include?: string;
+	agentId?: Identifier;
+	testId?: Identifier;
 }
 
-export interface ProjectListOptions extends ProjectGetOptions {
+export interface ProjectListOptions {
+	include?: string;
 	/** Pages are zero-based. */
 	page?: number;
 	pageSize?: number;
@@ -113,6 +125,7 @@ export interface ProjectCreate {
 	folderId?: number;
 }
 export interface ProjectUpdate {
+	revision?: string;
 	name?: string;
 	description?: string;
 	thumbnail?: string | null;
@@ -132,13 +145,14 @@ export interface SettingsInput {
 	deliveryMode?: 'queue' | 'steer';
 	instructions?: string;
 	modelId?: number;
-	permissions?: Record<string, unknown>;
+	permissions?: 'autonomous' | 'critical' | 'all';
 	opinionPolicy?: string;
 	inferenceProviderMode?: string;
 	inferenceProjectConnectorId?: number | null;
 	revision?: string;
 }
 export interface MessageInput {
+	attachments?: { mediaId: number }[];
 	text: string;
 	mode?: 'plan' | 'execute';
 	modelId?: number;
@@ -186,7 +200,7 @@ export interface WorkflowInput {
 	status?: string;
 	steps?: WorkflowStep[];
 	schedule?: Record<string, unknown>;
-	revision?: string;
+	revision?: number;
 }
 export interface ScheduleInput {
 	enabled?: boolean;
@@ -375,4 +389,49 @@ export interface InboxReadInput {
 	throughMessageId: number;
 	/** Required for Project conversations; omit or use null for unbranched conversations. */
 	branchId?: number | null;
+}
+
+/** Environment lifecycle uses the parent management API; execution uses the child Project. */
+export type ProjectTestAction =
+	| 'test'
+	| 'data'
+	| 'reset'
+	| 'delete'
+	| 'stop'
+	| 'sleep'
+	| 'refresh'
+	| 'reset-workspace'
+	| 'preview-start'
+	| 'preview-stop'
+	| 'preview-restart';
+export interface ProjectTestCreate {
+	requestKey: string;
+	name?: string;
+	instructions?: string;
+	branchId?: number;
+	intent?: 'custom' | 'auth' | 'payments';
+	authMethod?: string;
+}
+export interface ProjectTestActionInput {
+	replacesOperationId?: string;
+	intent?: 'custom' | 'auth' | 'payments';
+	authMethod?: string;
+	requestKey?: string;
+	revision?: string;
+	confirm?: boolean;
+	operationId?: string;
+	instructions?: string;
+	attachments?: { mediaId: number }[];
+}
+
+export interface ConversationForkInput {
+	submissionKey: string;
+	throughMessageId?: number;
+	branchId?: number;
+}
+export interface MessageResponseInput {
+	idempotencyKey: string;
+	parts: Record<string, unknown>[];
+	text?: string;
+	maxCredits?: number | null;
 }

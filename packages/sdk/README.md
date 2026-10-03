@@ -52,6 +52,34 @@ const snapshot = project.toJSON();
 
 `toJSON()` and `JSON.stringify(resource)` serialize API data only, including extra Server fields, and exclude client credentials and transport internals. Mutating a returned snapshot does not change the resource. Returned operation receipts remain receipts: accepting work does not mean execution has finished.
 
+## Agent and Test execution
+
+Select a child using its parent Project UUID and exactly one relationship UUID:
+
+```ts
+const agent = await workspace.projects.get('PARENT_UUID', { agentId: 'AGENT_UUID' });
+const test = await workspace.projects.get('PARENT_UUID', { testId: 'TEST_ENVIRONMENT_UUID' });
+const preferences = await test.settings.get();
+const runs = await test.runs.list();
+const control = await test.runs.control(123);
+const usage = await test.usage.get();
+```
+
+These objects keep the child execution path for subsequent requests. Unsupported capabilities fail; they never fall back to the parent. General settings updates require the child's current `resourceRevision` as `revision`. Preference updates use the revision returned by `settings.get()`. Parent and Workspace policy and budget ceilings remain authoritative. `sandbox.get()` returns health for Tests; application Projects retain Sandbox configuration reads.
+
+`conversations.create({ branchId })` and `conversations.fork(conversationUuid, { submissionKey, throughMessageId, branchId })` stay in the selected environment. Forking summarizes context and starts no run. `runs.cancel(runId)` requests a stop; inspect its status for acknowledgement. `runs.replace(runId, { text, idempotencyKey })` uses server eligibility checks, retains history, and does not undo prior working-copy changes or external effects. `messages.respond(messageId, { idempotencyKey, parts })` sends the current structured prompt response parts to the dedicated response endpoint. Attachments use authorized `mediaId` references.
+
+Manage Tests from their parent:
+
+```ts
+const parent = await workspace.projects.get('PARENT_UUID');
+const inventory = await parent.tests.list(); // Object containing environments and operation history, not a paginated array.
+const environment = await parent.tests.get('TEST_ENVIRONMENT_UUID');
+const operation = await parent.tests.operation('TEST_ENVIRONMENT_UUID', 'OPERATION_UUID');
+```
+
+`tests.create({ requestKey, name, instructions })` prepares an isolated environment and may incur usage. `tests.action(testId, action, input)` supports test/data requests, sleep, refresh, reset-workspace, reset, delete, stop, and preview-start/stop/restart. Preserve request keys on retries. Stop and preview restart require an explicit operation UUID; destructive changes require the current environment revision and explicit confirmation. Read capabilities and unavailable reasons before mutation. Use child `update()` and `settings.update()` for profile/preferences rather than legacy environment configuration actions. Admission closure, maintenance and policy failures remain server errors; clients do not bypass them or retry mutations automatically.
+
 ## Lists and pagination
 
 ```ts

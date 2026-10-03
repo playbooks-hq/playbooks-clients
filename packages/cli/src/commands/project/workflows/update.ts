@@ -8,10 +8,10 @@ export const updateWorkflow = async (options: any) => {
 	const context = await projectContext(options);
 	const target = JSON.stringify({
 		workspace: context.workspaceUuid,
-		project: options.project,
+		project: context.projectResource.uuid,
 		workflow: options.workflow,
 	});
-	const data = await input(options, ['name', 'status', 'steps', 'revision']);
+	const data = await input(options, ['name', 'status', 'steps', 'schedule', 'revision']);
 	await confirm(options, 'Update saved workflow steps.: ' + target + '?');
 	const response = sdkEnvelope(await context.projectResource.workflows.update(identifier(options['workflow']), data));
 	assertOperationSucceeded(response, target);

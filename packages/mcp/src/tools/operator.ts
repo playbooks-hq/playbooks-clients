@@ -170,7 +170,16 @@ export const operatorTools: ToolDefinition[] = [
 				kind: 'boolean',
 			},
 		},
-		dataFields: ['text', 'mode', 'modelId', 'deliveryMode', 'replyToMessageId', 'maxCredits', 'idempotencyKey'],
+		dataFields: [
+			'text',
+			'mode',
+			'modelId',
+			'deliveryMode',
+			'replyToMessageId',
+			'maxCredits',
+			'idempotencyKey',
+			'attachments',
+		],
 		dataOptional: false,
 	},
 	{

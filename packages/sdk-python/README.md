@@ -128,3 +128,11 @@ Catch `PlaybooksError` and inspect `status`, `message`, `source`, `debug`, and `
 ## Development and release
 
 Run `pnpm lint` and `pnpm typecheck` from the root after `pnpm python:setup`. They include Ruff and strict mypy checks. Python shares the repository version. Explicit `pnpm release:prepare` creates a wheel and source distribution alongside npm artifacts and records their integrity; it publishes nothing. The existing isolated package compatibility verifier covers npm packages, not Python runtime acceptance. Live platform behavior requires separately authorized verification. Check PyPI name/version availability and publishing access before any publication.
+
+## Agent and Test Projects
+
+Select an Agent with `workspace.projects.get("PARENT_UUID", agent_id="AGENT_UUID")`, or a Test with `test_id="TEST_ENVIRONMENT_UUID"`. The options are mutually exclusive. Both sync and async clients retain child scope for subsequent settings, resources, conversations, run controls, usage, and budget operations. Unsupported capabilities never fall back to parent execution.
+
+Use `child.update({"name": "Checkout", "revision": child.resourceRevision})` for revision-checked profile edits and `child.settings.update(...)` with the current preference revision. `child.runs.control(id)`, `cancel(id)`, and `replace(id, data)` expose the shared run APIs. Replacement needs an `idempotencyKey`, retains history, and does not undo side effects. `child.conversations.create(data)` and `fork(uuid, data)` remain in the child. Structured decisions use `messages.respond(id, data)` with current response parts and an idempotency key.
+
+The parent exposes `tests.list(**options)`, `get(uuid)`, `create(data)`, `operation(uuid, operation_uuid)`, and `action(uuid, name, data)`. The list response is an inventory object, not a paginated array. Creation may incur usage. Preserve request keys when retrying; stop requires an explicit operation UUID. Destructive resets/deletion require current revision and confirmation. Use child settings for configuration. The [TypeScript SDK guide](../sdk/README.md#agent-and-test-execution) describes the common lifecycle, admission, and policy boundaries. Add `await` for all corresponding async calls.

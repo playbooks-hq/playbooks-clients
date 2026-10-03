@@ -12,6 +12,16 @@ from .core import Endpoint, ReadCollection
 
 
 class Runs(ReadCollection):
+    def control(self, id: Identifier) -> Resource:
+        result: Resource = self._get(f"{self._path}/{identifier(id)}/control")
+        return result
+
+    def cancel(self, id: Identifier) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/cancel", "POST")
+
+    def replace(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/replace", "POST", data)
+
     @contextmanager
     def stream(
         self,
@@ -92,6 +102,11 @@ class Messages(Endpoint):
             )["data"]
         )
         return result
+
+    def respond(self, id: Identifier, data: Data) -> Any:
+        if self._sandbox:
+            self.get(id)
+        return self._action(f"{self._path}/{identifier(id)}/responses", "POST", data)
 
     def delete(self, id: Identifier) -> Any:
         if self._sandbox:
@@ -188,6 +203,14 @@ class Conversations(Endpoint):
 
 
 class ProjectConversations(Conversations):
+    def create(self, data: Data) -> Conversation:
+        result = self._action(f"{self._path}/conversations", "POST", data)
+        return Conversation(self._transport, result, True)
+
+    def fork(self, id: Identifier, data: Data) -> Conversation:
+        result = self._action(f"{self._path}/conversations/{identifier(id)}/fork", "POST", data)
+        return Conversation(self._transport, result, True)
+
     def list(self) -> ApiResponse:
         response: ApiResponse = self._transport.request(
             f"{self._path}/conversations", read_only=False

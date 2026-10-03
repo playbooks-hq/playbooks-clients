@@ -8,7 +8,7 @@ export const runWorkflow = async (options: any) => {
 	const context = await projectContext(options);
 	const target = JSON.stringify({
 		workspace: context.workspaceUuid,
-		project: options.project,
+		project: context.projectResource.uuid,
 		workflow: options.workflow,
 	});
 	await confirm(

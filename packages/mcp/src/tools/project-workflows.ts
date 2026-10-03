@@ -124,7 +124,7 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['name', 'status', 'steps', 'revision'],
+		dataFields: ['name', 'status', 'steps', 'schedule', 'revision'],
 		dataOptional: false,
 	},
 	{
