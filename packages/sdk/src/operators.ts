@@ -104,7 +104,7 @@ export class Conversation extends Resource<ConversationData> {
 	constructor(transport: Transport, data: ConversationData, sandbox: boolean) {
 		super(data);
 		this.#transport = transport;
-		this.#path = `/workspace/conversations/${identifier(data.uuid)}`;
+		this.#path = `/conversations/${identifier(data.uuid)}`;
 		this.#sandbox = sandbox;
 	}
 	get messages() {
@@ -153,7 +153,7 @@ export class Conversations {
 		return this.#fetch(`${this.#path}/conversation`);
 	}
 	get(id: Identifier) {
-		return this.#fetch(`/workspace/conversations/${identifier(id)}`, id);
+		return this.#fetch(`/conversations/${identifier(id)}`, id);
 	}
 }
 export class ProjectConversations extends Conversations {

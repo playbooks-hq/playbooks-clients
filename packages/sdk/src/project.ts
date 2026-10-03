@@ -45,7 +45,7 @@ export class Project extends Resource<ProjectData> {
 	constructor(transport: Transport, data: ProjectData, path?: string) {
 		super(data);
 		this.#transport = transport;
-		this.#path = path ?? `/workspace/projects/${identifier(data.uuid)}`;
+		this.#path = path ?? `/projects/${identifier(data.uuid)}`;
 	}
 	async update(changes: ProjectUpdate) {
 		const data = await action<ProjectData>(this.#transport, this.#path, 'PUT', changes);
@@ -302,14 +302,14 @@ export class Projects {
 		this.#transport = transport;
 	}
 	async list(options: ProjectListOptions = {}) {
-		const response = await listing<ProjectData>(this.#transport, '/workspace/projects', options);
+		const response = await listing<ProjectData>(this.#transport, '/projects', options);
 		return { ...response, data: response.data.map(item => new Project(this.#transport, item.toJSON())) };
 	}
 	async get(id: Identifier, options: ProjectGetOptions = {}) {
 		const { agentId, testId, ...params } = options;
 		if (agentId !== undefined && testId !== undefined)
 			throw new PlaybooksError(422, 'Choose either an Agent or a Test.');
-		let path = `/workspace/projects/${identifier(id)}`;
+		let path = `/projects/${identifier(id)}`;
 		if (agentId !== undefined) path += `/agents/${identifier(agentId)}/execution`;
 		if (testId !== undefined) path += `/tests/${identifier(testId)}/execution`;
 		const { data } = await this.#transport.request(path, 'GET', undefined, params);
@@ -324,7 +324,7 @@ export class Projects {
 		return new Project(this.#transport, data, path);
 	}
 	async create(input: ProjectCreate) {
-		return new Project(this.#transport, await action(this.#transport, '/workspace/projects', 'POST', input));
+		return new Project(this.#transport, await action(this.#transport, '/projects', 'POST', input));
 	}
 	async update(id: Identifier, input: ProjectUpdate) {
 		return new Project(this.#transport, await updateProject(this.#transport, id, input));
@@ -332,7 +332,7 @@ export class Projects {
 }
 
 const updateProject = async (transport: Transport, id: Identifier, changes: ProjectUpdate) => {
-	const data = await action<ProjectData>(transport, `/workspace/projects/${identifier(id)}`, 'PUT', changes);
+	const data = await action<ProjectData>(transport, `/projects/${identifier(id)}`, 'PUT', changes);
 	if (data.uuid !== String(id)) throw new PlaybooksError(502, 'The updated Project identity did not match.');
 	return data;
 };

@@ -120,7 +120,7 @@ export async function cleanup(
   const observer = await login(user.email, user.password);
   assert.equal(observer.uuid, user.uuid);
   const observerToken = observer.token.rawToken;
-  const path = `/workspace/projects/${state.projectUuid}`;
+  const path = `/projects/${state.projectUuid}`;
   let receipt = await api(
     `${path}/lifecycle`,
     observerToken,

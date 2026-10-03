@@ -336,7 +336,7 @@ test(
         try {
           const user = identity();
           const budget = await api(
-            `/workspace/projects/${state.projectUuid}/budget`,
+            `/projects/${state.projectUuid}/budget`,
             user.apiKey,
             user.workspaceUuid,
           );

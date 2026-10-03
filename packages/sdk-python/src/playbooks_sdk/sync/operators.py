@@ -155,7 +155,7 @@ class Conversation(Resource):
         super().__init__(data)
         object.__setattr__(self, "_transport", transport)
         object.__setattr__(self, "_sandbox", sandbox)
-        object.__setattr__(self, "_path", f"/workspace/conversations/{identifier(data['uuid'])}")
+        object.__setattr__(self, "_path", f"/conversations/{identifier(data['uuid'])}")
 
     @property
     def messages(self) -> Messages:
@@ -199,7 +199,7 @@ class Conversations(Endpoint):
         return self._fetch(f"{self._path}/conversation")
 
     def get(self, id: Identifier) -> Conversation:
-        return self._fetch(f"/workspace/conversations/{identifier(id)}", id)
+        return self._fetch(f"/conversations/{identifier(id)}", id)
 
 
 class ProjectConversations(Conversations):

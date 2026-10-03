@@ -47,7 +47,7 @@ class PlaybooksSDK:
 
     @property
     def templates(self) -> ReadCollection:
-        return ReadCollection(self._public_transport, "/templates")
+        return ReadCollection(self._public_transport, "/explore/templates")
 
     @property
     def categories(self) -> Listing:
@@ -55,7 +55,7 @@ class PlaybooksSDK:
 
     @property
     def collections(self) -> Listing:
-        return Listing(self._public_transport, "/collections")
+        return Listing(self._public_transport, "/explore/collections")
 
     @property
     def creators(self) -> Listing:

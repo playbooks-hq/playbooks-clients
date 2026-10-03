@@ -51,16 +51,17 @@ export class PlaybooksSDK {
 	}
 	get templates() {
 		return {
-			list: (options?: TemplateListOptions) => listing<TemplateData>(this.#publicTransport(), '/templates', options),
+			list: (options?: TemplateListOptions) =>
+				listing<TemplateData>(this.#publicTransport(), '/explore/templates', options),
 			get: (id: Identifier, options: { include?: string } = {}) =>
-				get<TemplateData>(this.#publicTransport(), `/templates/${identifier(id)}`, options),
+				get<TemplateData>(this.#publicTransport(), `/explore/templates/${identifier(id)}`, options),
 		};
 	}
 	get categories() {
 		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/categories', options) };
 	}
 	get collections() {
-		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/collections', options) };
+		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/explore/collections', options) };
 	}
 	get creators() {
 		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/workspaces', options) };

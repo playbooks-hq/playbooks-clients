@@ -181,7 +181,7 @@ class Project(Resource):
     def __init__(self, transport: Transport, data: Data, path: str | None = None) -> None:
         super().__init__(data)
         object.__setattr__(self, "_transport", transport)
-        object.__setattr__(self, "_path", path or f"/workspace/projects/{identifier(data['uuid'])}")
+        object.__setattr__(self, "_path", path or f"/projects/{identifier(data['uuid'])}")
 
     @property
     def id(self) -> int:
@@ -340,7 +340,7 @@ class Project(Resource):
 
 class Projects(Endpoint):
     def __init__(self, transport: Transport) -> None:
-        super().__init__(transport, "/workspace/projects")
+        super().__init__(transport, "/projects")
 
     def list(self, **options: Any) -> ApiResponse:
         response = self._list(self._path, options)

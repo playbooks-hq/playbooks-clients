@@ -103,23 +103,23 @@ class Workspace(Resource):
 
     @property
     def conversations(self) -> Conversations:
-        return Conversations(self._transport, "/workspace", self.id, False)
+        return Conversations(self._transport, "", self.id, False)
 
     @property
     def runs(self) -> Runs:
-        return Runs(self._transport, "/workspace/operator/runs")
+        return Runs(self._transport, "/operator/runs")
 
     @property
     def files(self) -> Files:
-        return Files(self._transport, "/workspace/files")
+        return Files(self._transport, "/files")
 
     @property
     def folders(self) -> Collection:
-        return Collection(self._transport, "/workspace/project-folders")
+        return Collection(self._transport, "/project-folders")
 
     @property
     def templates(self) -> Templates:
-        return Templates(self._transport, "/workspace/templates")
+        return Templates(self._transport, "/templates")
 
     @property
     def members(self) -> Members:
@@ -135,31 +135,31 @@ class Workspace(Resource):
 
     @property
     def designs(self) -> Listing:
-        return Listing(self._transport, "/workspace/designs")
+        return Listing(self._transport, "/designs")
 
     @property
     def skills(self) -> Listing:
-        return Listing(self._transport, "/workspace/skills")
+        return Listing(self._transport, "/skills")
 
     @property
     def mcps(self) -> Listing:
-        return Listing(self._transport, "/workspace/mcps")
+        return Listing(self._transport, "/mcps")
 
     @property
     def connectors(self) -> Listing:
-        return Listing(self._transport, "/workspace/connectors")
+        return Listing(self._transport, "/connectors")
 
     @property
     def secrets(self) -> Listing:
-        return Listing(self._transport, "/workspace/secrets")
+        return Listing(self._transport, "/secrets")
 
     @property
     def inbox(self) -> Inbox:
-        return Inbox(self._transport, "/workspace/inbox")
+        return Inbox(self._transport, "/inbox")
 
     @property
     def activity(self) -> Listing:
-        return Listing(self._transport, "/workspace/activities")
+        return Listing(self._transport, "/activities")
 
     @property
     def usage(self) -> ReadEndpoint:
@@ -187,7 +187,7 @@ class Workspace(Resource):
 
     @property
     def domains(self) -> Domains:
-        return Domains(self._transport, "/workspace/domains")
+        return Domains(self._transport, "/domains")
 
 
 class Workspaces(Endpoint):

@@ -8,15 +8,15 @@ export class Inbox {
 		this.#transport = transport;
 	}
 	list(options: InboxListOptions = {}) {
-		return listing<InboxItem>(this.#transport, '/workspace/inbox', options);
+		return listing<InboxItem>(this.#transport, '/inbox', options);
 	}
 	count() {
-		return get<InboxCounts>(this.#transport, '/workspace/inbox/count');
+		return get<InboxCounts>(this.#transport, '/inbox/count');
 	}
 	markRead(conversationId: string, input: InboxReadInput) {
-		return action(this.#transport, `/workspace/inbox/conversations/${identifier(conversationId)}/read`, 'PUT', input);
+		return action(this.#transport, `/inbox/conversations/${identifier(conversationId)}/read`, 'PUT', input);
 	}
 	markAllRead() {
-		return action<{ read: boolean }>(this.#transport, '/workspace/inbox/read', 'PUT');
+		return action<{ read: boolean }>(this.#transport, '/inbox/read', 'PUT');
 	}
 }

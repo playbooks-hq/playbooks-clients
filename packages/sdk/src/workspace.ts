@@ -43,16 +43,16 @@ export class Workspace extends Resource<WorkspaceData> {
 		return new Projects(this.#transport);
 	}
 	get conversations() {
-		return new Conversations(this.#transport, '/workspace', this.id, false);
+		return new Conversations(this.#transport, '', this.id, false);
 	}
 	get runs() {
-		return new Runs(this.#transport, '/workspace/operator/runs');
+		return new Runs(this.#transport, '/operator/runs');
 	}
 	get files() {
-		return new Files(this.#transport, '/workspace/files');
+		return new Files(this.#transport, '/files');
 	}
 	get folders() {
-		const collection = new Collection<FolderData, NamedInput>(this.#transport, '/workspace/project-folders');
+		const collection = new Collection<FolderData, NamedInput>(this.#transport, '/project-folders');
 		return {
 			list: (options?: ListOptions) => collection.list(options),
 			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
@@ -61,15 +61,14 @@ export class Workspace extends Resource<WorkspaceData> {
 		};
 	}
 	get templates() {
-		const collection = new Collection<TemplateData, TemplateUpdate>(this.#transport, '/workspace/templates');
+		const collection = new Collection<TemplateData, TemplateUpdate>(this.#transport, '/templates');
 		return {
 			list: (options?: TemplateListOptions) => collection.list(options),
 			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
 			update: (id: Identifier, input: TemplateUpdate) => collection.update(id, input),
-			publish: (id: Identifier) =>
-				action(this.#transport, `/workspace/templates/${identifier(id)}/publish`, 'POST', {}),
+			publish: (id: Identifier) => action(this.#transport, `/templates/${identifier(id)}/publish`, 'POST', {}),
 			versions: (id: Identifier, options?: ListOptions) =>
-				listing(this.#transport, `/workspace/templates/${identifier(id)}/versions`, options),
+				listing(this.#transport, `/templates/${identifier(id)}/versions`, options),
 		};
 	}
 	get members() {
@@ -104,25 +103,25 @@ export class Workspace extends Resource<WorkspaceData> {
 		};
 	}
 	get designs() {
-		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/designs', options) };
+		return { list: (options?: ListOptions) => listing(this.#transport, '/designs', options) };
 	}
 	get skills() {
-		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/skills', options) };
+		return { list: (options?: ListOptions) => listing(this.#transport, '/skills', options) };
 	}
 	get mcps() {
-		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/mcps', options) };
+		return { list: (options?: ListOptions) => listing(this.#transport, '/mcps', options) };
 	}
 	get connectors() {
-		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/connectors', options) };
+		return { list: (options?: ListOptions) => listing(this.#transport, '/connectors', options) };
 	}
 	get secrets() {
-		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/secrets', options) };
+		return { list: (options?: ListOptions) => listing(this.#transport, '/secrets', options) };
 	}
 	get inbox() {
 		return new Inbox(this.#transport);
 	}
 	get activity() {
-		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/activities', options) };
+		return { list: (options?: ListOptions) => listing(this.#transport, '/activities', options) };
 	}
 	get usage() {
 		return { get: () => get(this.#transport, '/workspace/usage') };
@@ -150,11 +149,11 @@ export class Workspace extends Resource<WorkspaceData> {
 	}
 	get domains() {
 		return {
-			list: (options?: ListOptions) => listing(this.#transport, '/workspace/domains', options),
-			get: (id: Identifier) => get(this.#transport, `/workspace/domains/${identifier(id)}`),
-			add: (input: { name: string }) => action(this.#transport, '/workspace/domains', 'POST', input),
+			list: (options?: ListOptions) => listing(this.#transport, '/domains', options),
+			get: (id: Identifier) => get(this.#transport, `/domains/${identifier(id)}`),
+			add: (input: { name: string }) => action(this.#transport, '/domains', 'POST', input),
 			records: (domainId: Identifier) => {
-				const path = `/workspace/domains/${identifier(domainId)}/dns-records`;
+				const path = `/domains/${identifier(domainId)}/dns-records`;
 				return {
 					list: (options?: ListOptions) => listing(this.#transport, path, options),
 					create: (input: DnsRecordInput) => action(this.#transport, path, 'POST', input),
