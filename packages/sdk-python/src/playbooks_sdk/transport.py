@@ -9,8 +9,8 @@ from urllib.parse import urlsplit
 
 import httpx
 
-from .error import PlaybooksError
-from .resource import Data
+from playbooks_sdk.error import PlaybooksError
+from playbooks_sdk.resource import Data
 
 
 @dataclass(frozen=True)

@@ -27,6 +27,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"paths": {
 			"src/*": ["./src/*"],
+			"package.json": ["./package.json"],
 			"tests/*": ["./tests/*"],
 			"types/*": ["./types/*"]
 		}

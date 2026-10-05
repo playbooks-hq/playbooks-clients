@@ -1,11 +1,11 @@
-import { name, version } from '../package.json';
-import { PlaybooksError } from './error.js';
-import { get, identifier, listing } from './resource.js';
-import { Transport } from './transport.js';
-import type { ApiResponse } from './types.js';
-import type { TemplateData, TemplateListOptions } from './types.js';
-import type { ClientOptions, Identifier, ListOptions, WorkspaceData, WorkspaceUpdate } from './types.js';
-import { updateWorkspace, Workspace } from './workspace.js';
+import { name, version } from 'package.json';
+import { PlaybooksError } from 'src/error.js';
+import { get, identifier, listing } from 'src/resource.js';
+import { Transport } from 'src/transport.js';
+import type { ApiResponse } from 'src/types.js';
+import type { TemplateData, TemplateListOptions } from 'src/types.js';
+import type { ClientOptions, Identifier, ListOptions, WorkspaceData, WorkspaceUpdate } from 'src/types.js';
+import { updateWorkspace, Workspace } from 'src/workspace.js';
 
 export class PlaybooksSDK {
 	#options: ClientOptions;

@@ -2,8 +2,8 @@ import codecs
 import json
 from typing import Any
 
-from .error import PlaybooksError
-from .resource import Data
+from playbooks_sdk.error import PlaybooksError
+from playbooks_sdk.resource import Data
 
 
 class EventParser:

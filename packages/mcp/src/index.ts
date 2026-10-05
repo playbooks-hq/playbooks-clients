@@ -1,11 +1,10 @@
 import process from 'node:process';
 
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
-
-import { AdapterError, CliRunner, resolvePlaybooksCli } from './cli.js';
-import { parseOptions } from './options.js';
-import { createServer } from './server.js';
-import { selectTools } from './tools/catalog.js';
+import { AdapterError, CliRunner, resolvePlaybooksCli } from 'src/cli.js';
+import { parseOptions } from 'src/options.js';
+import { createServer } from 'src/server.js';
+import { selectTools } from 'src/tools/catalog.js';
 
 async function main() {
 	const options = parseOptions(process.argv.slice(2));

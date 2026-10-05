@@ -1,22 +1,22 @@
-import type { ServerOptions } from '../options.js';
-import { coreTools } from './core.js';
-import type { ToolDefinition } from './definition.js';
-import { discoveryTools } from './discovery.js';
-import { localTools } from './local.js';
-import { operatorTools } from './operator.js';
-import { projectAdministrationTools } from './project-administration.js';
-import { projectConfigurationTools } from './project-configuration.js';
-import { projectControlTools } from './project-controls.js';
-import { projectSourceTools } from './project-source.js';
-import { projectTestTools } from './project-tests.js';
-import { projectWorkflowsTools } from './project-workflows.js';
-import { templatesTools } from './templates.js';
-import { workspaceConfigurationTools } from './workspace-configuration.js';
-import { workspaceDomainsTools } from './workspace-domains.js';
-import { workspaceFinanceTools } from './workspace-finance.js';
-import { workspaceInboxTools } from './workspace-inbox.js';
-import { workspaceMembersTools } from './workspace-members.js';
-import { workspaceOperatorTools } from './workspace-operator.js';
+import type { ServerOptions } from 'src/options.js';
+import { coreTools } from 'src/tools/core.js';
+import type { ToolDefinition } from 'src/tools/definition.js';
+import { discoveryTools } from 'src/tools/discovery.js';
+import { localTools } from 'src/tools/local.js';
+import { operatorTools } from 'src/tools/operator.js';
+import { projectAdministrationTools } from 'src/tools/project-administration.js';
+import { projectConfigurationTools } from 'src/tools/project-configuration.js';
+import { projectControlTools } from 'src/tools/project-controls.js';
+import { projectSourceTools } from 'src/tools/project-source.js';
+import { projectTestTools } from 'src/tools/project-tests.js';
+import { projectWorkflowsTools } from 'src/tools/project-workflows.js';
+import { templatesTools } from 'src/tools/templates.js';
+import { workspaceConfigurationTools } from 'src/tools/workspace-configuration.js';
+import { workspaceDomainsTools } from 'src/tools/workspace-domains.js';
+import { workspaceFinanceTools } from 'src/tools/workspace-finance.js';
+import { workspaceInboxTools } from 'src/tools/workspace-inbox.js';
+import { workspaceMembersTools } from 'src/tools/workspace-members.js';
+import { workspaceOperatorTools } from 'src/tools/workspace-operator.js';
 
 export const catalog: ToolDefinition[] = (
 	[

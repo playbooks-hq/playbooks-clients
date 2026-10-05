@@ -1,10 +1,17 @@
 import time
 from typing import Any, Self
 
-from ..error import PlaybooksError
-from ..resource import ApiResponse, Data, Identifier, Resource, identifier, record, succeeded
-from ..transport import Transport
-from .core import (
+from playbooks_sdk.error import PlaybooksError
+from playbooks_sdk.resource import (
+    ApiResponse,
+    Data,
+    Identifier,
+    Resource,
+    identifier,
+    record,
+    succeeded,
+)
+from playbooks_sdk.sync.core import (
     Collection,
     Endpoint,
     Library,
@@ -13,13 +20,14 @@ from .core import (
     ReadEndpoint,
     Settings,
 )
-from .files import Files
-from .operators import ProjectConversations, Runs
+from playbooks_sdk.sync.files import Files
+from playbooks_sdk.sync.operators import ProjectConversations, Runs
+from playbooks_sdk.transport import Transport
 
 
 class ProjectTests(Endpoint):
     def list(self, **options: Any) -> Resource:
-        from ..resource import query_params
+        from playbooks_sdk.resource import query_params
 
         result: Resource = self._get(self._path, query_params(options))
         return result
@@ -68,7 +76,7 @@ class Collaborators(Listing):
 
 class Logs(Endpoint):
     def list(self, **options: Any) -> ApiResponse:
-        from ..resource import query_params
+        from playbooks_sdk.resource import query_params
 
         response: ApiResponse = self._transport.request(self._path, params=query_params(options))
         return response

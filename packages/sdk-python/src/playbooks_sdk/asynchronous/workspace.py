@@ -1,9 +1,6 @@
 from typing import Any, Self, cast
 
-from ..error import PlaybooksError
-from ..resource import ApiResponse, Data, Identifier, Resource, identifier
-from ..transport import AsyncTransport as Transport
-from .core import (
+from playbooks_sdk.asynchronous.core import (
     Collection,
     EditableCollection,
     Endpoint,
@@ -12,10 +9,13 @@ from .core import (
     ReadEndpoint,
     Settings,
 )
-from .files import Files
-from .inbox import Inbox
-from .operators import Conversations, Runs
-from .project import Projects
+from playbooks_sdk.asynchronous.files import Files
+from playbooks_sdk.asynchronous.inbox import Inbox
+from playbooks_sdk.asynchronous.operators import Conversations, Runs
+from playbooks_sdk.asynchronous.project import Projects
+from playbooks_sdk.error import PlaybooksError
+from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
+from playbooks_sdk.transport import AsyncTransport as Transport
 
 
 class Templates(EditableCollection):

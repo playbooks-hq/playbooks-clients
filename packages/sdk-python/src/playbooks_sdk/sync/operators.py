@@ -4,11 +4,19 @@ from typing import Any
 
 import httpx
 
-from ..error import PlaybooksError
-from ..resource import ApiResponse, Data, Identifier, Resource, identifier, query_params, record
-from ..sse import EventParser
-from ..transport import Transport, network_error, response_data
-from .core import Endpoint, ReadCollection
+from playbooks_sdk.error import PlaybooksError
+from playbooks_sdk.resource import (
+    ApiResponse,
+    Data,
+    Identifier,
+    Resource,
+    identifier,
+    query_params,
+    record,
+)
+from playbooks_sdk.sse import EventParser
+from playbooks_sdk.sync.core import Endpoint, ReadCollection
+from playbooks_sdk.transport import Transport, network_error, response_data
 
 
 class Runs(ReadCollection):

@@ -1,1 +1,1 @@
-export { printCompletion } from './print';
+export { printCompletion } from 'src/commands/completion/print';

@@ -1,7 +1,7 @@
-import { PlaybooksError } from './error.js';
-import { identifier, listing } from './resource.js';
-import type { Transport } from './transport.js';
-import type { FileUpload, Identifier, ListOptions, RecordData } from './types.js';
+import { PlaybooksError } from 'src/error.js';
+import { identifier, listing } from 'src/resource.js';
+import type { Transport } from 'src/transport.js';
+import type { FileUpload, Identifier, ListOptions, RecordData } from 'src/types.js';
 
 export class Files {
 	#transport: Transport;

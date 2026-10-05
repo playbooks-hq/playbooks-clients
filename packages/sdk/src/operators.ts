@@ -1,12 +1,12 @@
-import { PlaybooksError } from './error.js';
-import type { RecordResource } from './resource.js';
-import { action, get, identifier, listing, record, Resource } from './resource.js';
-import { readEvents } from './sse.js';
-import type { Transport } from './transport.js';
-import type { ConversationForkInput, MessageResponseInput } from './types.js';
-import type { ApiResponse } from './types.js';
-import type { ConversationData, MessageData, RunData, RunListOptions } from './types.js';
-import type { Identifier, MessageInput, MessageOptions, MessageUpdate, RecordData, StreamOptions } from './types.js';
+import { PlaybooksError } from 'src/error.js';
+import type { RecordResource } from 'src/resource.js';
+import { action, get, identifier, listing, record, Resource } from 'src/resource.js';
+import { readEvents } from 'src/sse.js';
+import type { Transport } from 'src/transport.js';
+import type { ConversationForkInput, MessageResponseInput } from 'src/types.js';
+import type { ApiResponse } from 'src/types.js';
+import type { ConversationData, MessageData, RunData, RunListOptions } from 'src/types.js';
+import type { Identifier, MessageInput, MessageOptions, MessageUpdate, RecordData, StreamOptions } from 'src/types.js';
 
 export class Runs {
 	#transport: Transport;

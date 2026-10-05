@@ -1,4 +1,4 @@
-import type { ToolDefinition } from './definition.js';
+import type { ToolDefinition } from 'src/tools/definition.js';
 
 export const workspaceOperatorTools: ToolDefinition[] = [
 	{

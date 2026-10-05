@@ -1,6 +1,6 @@
-import { action, get, identifier } from './resource.js';
-import type { Transport } from './transport.js';
-import type { Identifier, ProjectTestAction, ProjectTestActionInput, ProjectTestCreate } from './types.js';
+import { action, get, identifier } from 'src/resource.js';
+import type { Transport } from 'src/transport.js';
+import type { Identifier, ProjectTestAction, ProjectTestActionInput, ProjectTestCreate } from 'src/types.js';
 
 /** Management receipts retain Test, operation, evidence and admission metadata. */
 export class ProjectTests {

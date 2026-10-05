@@ -1,6 +1,6 @@
 from typing import Any, Self
 
-from ..resource import (
+from playbooks_sdk.resource import (
     ApiResponse,
     Data,
     Identifier,
@@ -10,7 +10,7 @@ from ..resource import (
     record,
     succeeded,
 )
-from ..transport import AsyncTransport as Transport
+from playbooks_sdk.transport import AsyncTransport as Transport
 
 
 class Endpoint:

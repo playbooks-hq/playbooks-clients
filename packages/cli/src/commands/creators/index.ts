@@ -1,1 +1,1 @@
-export { listWorkspaces } from './list';
+export { listWorkspaces } from 'src/commands/creators/list';

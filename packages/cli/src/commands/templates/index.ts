@@ -1,2 +1,2 @@
-export { listTemplates } from './list';
-export { getTemplate } from './get';
+export { listTemplates } from 'src/commands/templates/list';
+export { getTemplate } from 'src/commands/templates/get';

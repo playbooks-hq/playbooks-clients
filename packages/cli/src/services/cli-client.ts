@@ -1,6 +1,5 @@
 import { PlaybooksError, PlaybooksSDK } from '@playbooks/sdk';
-
-import { name, version } from '../../package.json';
+import { name, version } from 'package.json';
 
 export const apiURL = () =>
 	process.env.PLAYBOOKS_API_URL || import.meta.env.VITE_BASE_URL || 'https://api.playbooks.ai';

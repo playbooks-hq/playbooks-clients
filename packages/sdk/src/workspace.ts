@@ -1,13 +1,13 @@
-import { Collection } from './collection.js';
-import { PlaybooksError } from './error.js';
-import { Files } from './files.js';
-import { Inbox } from './inbox.js';
-import { Conversations, Runs } from './operators.js';
-import { Projects } from './project.js';
-import { action, get, identifier, listing, Resource } from './resource.js';
-import type { Transport } from './transport.js';
-import type { BudgetUpdate, TemplateListOptions } from './types.js';
-import type { FolderData, MemberData, MemberUpdate, TemplateData, TemplateUpdate } from './types.js';
+import { Collection } from 'src/collection.js';
+import { PlaybooksError } from 'src/error.js';
+import { Files } from 'src/files.js';
+import { Inbox } from 'src/inbox.js';
+import { Conversations, Runs } from 'src/operators.js';
+import { Projects } from 'src/project.js';
+import { action, get, identifier, listing, Resource } from 'src/resource.js';
+import type { Transport } from 'src/transport.js';
+import type { BudgetUpdate, TemplateListOptions } from 'src/types.js';
+import type { FolderData, MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
 import type {
 	DnsRecordInput,
 	Identifier,
@@ -16,7 +16,7 @@ import type {
 	SettingsInput,
 	WorkspaceData,
 	WorkspaceUpdate,
-} from './types.js';
+} from 'src/types.js';
 
 export interface Workspace extends Readonly<WorkspaceData> {
 	readonly uuid: string;

@@ -1,6 +1,6 @@
-import { action, get, identifier, listing } from './resource.js';
-import type { Transport } from './transport.js';
-import type { InboxCounts, InboxItem, InboxListOptions, InboxReadInput } from './types.js';
+import { action, get, identifier, listing } from 'src/resource.js';
+import type { Transport } from 'src/transport.js';
+import type { InboxCounts, InboxItem, InboxListOptions, InboxReadInput } from 'src/types.js';
 
 export class Inbox {
 	#transport: Transport;

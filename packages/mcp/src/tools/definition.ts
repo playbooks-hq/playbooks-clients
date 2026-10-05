@@ -1,6 +1,5 @@
+import type { Toolset } from 'src/options.js';
 import { z } from 'zod';
-
-import type { Toolset } from '../options.js';
 
 export interface ToolOption {
 	flag: string;

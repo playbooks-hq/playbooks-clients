@@ -2,7 +2,7 @@ import re
 from copy import deepcopy
 from typing import Any, NotRequired, TypeAlias, TypedDict
 
-from .error import PlaybooksError
+from playbooks_sdk.error import PlaybooksError
 
 Identifier: TypeAlias = str | int
 Data: TypeAlias = dict[str, Any]

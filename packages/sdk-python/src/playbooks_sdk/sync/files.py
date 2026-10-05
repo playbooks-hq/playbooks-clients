@@ -1,9 +1,9 @@
 import json
 from typing import Any
 
-from ..error import PlaybooksError
-from ..resource import Identifier, identifier
-from .core import Listing
+from playbooks_sdk.error import PlaybooksError
+from playbooks_sdk.resource import Identifier, identifier
+from playbooks_sdk.sync.core import Listing
 
 
 class Files(Listing):

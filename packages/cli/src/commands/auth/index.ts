@@ -1,3 +1,3 @@
-export { login } from './login';
-export { status } from './status';
-export { logout } from './logout';
+export { login } from 'src/commands/auth/login';
+export { status } from 'src/commands/auth/status';
+export { logout } from 'src/commands/auth/logout';

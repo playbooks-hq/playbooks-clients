@@ -1,6 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 
+import { version } from 'package.json';
 import sade from 'sade';
 import {
 	auth,
@@ -18,8 +19,6 @@ import { CliError } from 'src/services/cli-client';
 import { run } from 'src/utils/cli-command';
 import { reportError } from 'src/utils/cli-output';
 import { outputMessages } from 'src/utils/message-output';
-
-import { version } from '../package.json';
 
 const cli = sade('playbooks').version(version);
 cli.describe('Manage Playbooks from your terminal.');

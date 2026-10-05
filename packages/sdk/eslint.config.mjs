@@ -13,6 +13,17 @@ export default defineConfig([
 	{
 		ignores: ['build', 'dist', 'node_modules'],
 	},
+	{
+		files: ['src/**/*.ts'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [{ group: ['./*', '../*'], message: 'Use package-root absolute imports.' }],
+				},
+			],
+		},
+	},
 	js.configs.recommended,
 	...tsPlugin.configs['flat/recommended'],
 	{

@@ -3,10 +3,10 @@ from typing import Any, Self
 
 import httpx
 
-from ..resource import Data, identifier
-from ..transport import Config, Transport
-from .core import Listing, ReadCollection, ReadEndpoint
-from .workspace import Workspaces
+from playbooks_sdk.resource import Data, identifier
+from playbooks_sdk.sync.core import Listing, ReadCollection, ReadEndpoint
+from playbooks_sdk.sync.workspace import Workspaces
+from playbooks_sdk.transport import Config, Transport
 
 
 class PlaybooksSDK:

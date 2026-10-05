@@ -1,16 +1,16 @@
 import { setTimeout as delay } from 'node:timers/promises';
 
-import { Collection } from './collection.js';
-import { PlaybooksError } from './error.js';
-import { Files } from './files.js';
-import { ProjectConversations, Runs } from './operators.js';
-import { ProjectTests } from './project-tests.js';
-import { action, get, identifier, listing, record, Resource, succeeded } from './resource.js';
-import type { Transport } from './transport.js';
-import type { AgentCreate } from './types.js';
-import type { ApiResponse, LogData, LogOptions, PreflightData, RecordData } from './types.js';
-import type { LibraryData, ReleaseData } from './types.js';
-import type { AgentData, AgentUpdate, WorkflowData } from './types.js';
+import { Collection } from 'src/collection.js';
+import { PlaybooksError } from 'src/error.js';
+import { Files } from 'src/files.js';
+import { ProjectConversations, Runs } from 'src/operators.js';
+import { ProjectTests } from 'src/project-tests.js';
+import { action, get, identifier, listing, record, Resource, succeeded } from 'src/resource.js';
+import type { Transport } from 'src/transport.js';
+import type { AgentCreate } from 'src/types.js';
+import type { ApiResponse, LogData, LogOptions, PreflightData, RecordData } from 'src/types.js';
+import type { LibraryData, ReleaseData } from 'src/types.js';
+import type { AgentData, AgentUpdate, WorkflowData } from 'src/types.js';
 import type {
 	ActionReceipt,
 	BudgetUpdate,
@@ -29,7 +29,7 @@ import type {
 	SourceInput,
 	WaitOptions,
 	WorkflowInput,
-} from './types.js';
+} from 'src/types.js';
 
 export interface Project extends Readonly<ProjectData> {
 	readonly uuid: string;

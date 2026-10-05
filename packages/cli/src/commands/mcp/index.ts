@@ -1,1 +1,1 @@
-export { installMcp } from './install';
+export { installMcp } from 'src/commands/mcp/install';

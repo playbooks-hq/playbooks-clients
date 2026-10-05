@@ -1,1 +1,1 @@
-export { listCollections } from './list';
+export { listCollections } from 'src/commands/collections/list';

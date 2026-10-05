@@ -12,6 +12,17 @@ export default [
 	{
 		ignores: ['dist', 'node_modules'],
 	},
+	{
+		files: ['src/**/*.ts'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [{ group: ['./*', '../*'], message: 'Use package-root absolute imports.' }],
+				},
+			],
+		},
+	},
 	js.configs.recommended,
 	...tsEslintPlugin.configs['flat/recommended'],
 	{

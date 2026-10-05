@@ -1,6 +1,14 @@
+import path from 'node:path';
+
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+	resolve: {
+		alias: {
+			src: path.resolve(__dirname, 'src'),
+			'package.json': path.resolve(__dirname, 'package.json'),
+		},
+	},
 	build: {
 		ssr: true,
 		lib: {

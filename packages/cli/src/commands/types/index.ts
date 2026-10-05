@@ -1,1 +1,1 @@
-export { listTypes } from './list';
+export { listTypes } from 'src/commands/types/list';

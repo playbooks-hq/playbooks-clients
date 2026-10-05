@@ -1,8 +1,8 @@
 import { setTimeout as delay } from 'node:timers/promises';
 
-import { name, version } from '../package.json';
-import { PlaybooksError } from './error.js';
-import type { ClientOptions } from './types.js';
+import { name, version } from 'package.json';
+import { PlaybooksError } from 'src/error.js';
+import type { ClientOptions } from 'src/types.js';
 
 export class Transport {
 	readonly token?: string;

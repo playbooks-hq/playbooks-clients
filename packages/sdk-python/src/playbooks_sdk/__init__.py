@@ -1,12 +1,12 @@
-from .asynchronous.client import AsyncPlaybooksSDK
-from .asynchronous.project import Project as AsyncProject
-from .asynchronous.workspace import Workspace as AsyncWorkspace
-from .error import PlaybooksError
-from .inbox_types import InboxReadInput, InboxType, InboxView
-from .resource import ApiResponse, Resource
-from .sync.client import PlaybooksSDK
-from .sync.project import Project
-from .sync.workspace import Workspace
+from playbooks_sdk.asynchronous.client import AsyncPlaybooksSDK
+from playbooks_sdk.asynchronous.project import Project as AsyncProject
+from playbooks_sdk.asynchronous.workspace import Workspace as AsyncWorkspace
+from playbooks_sdk.error import PlaybooksError
+from playbooks_sdk.inbox_types import InboxReadInput, InboxType, InboxView
+from playbooks_sdk.resource import ApiResponse, Resource
+from playbooks_sdk.sync.client import PlaybooksSDK
+from playbooks_sdk.sync.project import Project
+from playbooks_sdk.sync.workspace import Workspace
 
 __all__ = [
     "InboxReadInput",

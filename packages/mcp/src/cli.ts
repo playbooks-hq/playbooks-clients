@@ -3,7 +3,7 @@ import { access, readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
-import type { ToolDefinition } from './tools/definition.js';
+import type { ToolDefinition } from 'src/tools/definition.js';
 
 export class AdapterError extends Error {
 	constructor(

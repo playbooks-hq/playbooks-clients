@@ -1,6 +1,6 @@
-import { PlaybooksError } from './error.js';
-import type { Transport } from './transport.js';
-import type { ApiResponse, ListOptions, RecordData } from './types.js';
+import { PlaybooksError } from 'src/error.js';
+import type { Transport } from 'src/transport.js';
+import type { ApiResponse, ListOptions, RecordData } from 'src/types.js';
 
 export const identifier = (value: unknown) => {
 	if (!['string', 'number'].includes(typeof value) || !/^[a-zA-Z0-9_-]+$/.test(String(value)))

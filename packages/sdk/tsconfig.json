@@ -12,7 +12,16 @@
     "types": [
       "node"
     ],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": [
+        "./src/*"
+      ],
+      "package.json": [
+        "./package.json"
+      ]
+    }
   },
   "include": [
     "src"

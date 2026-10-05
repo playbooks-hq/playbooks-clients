@@ -1,1 +1,1 @@
-export { listCategories } from './list';
+export { listCategories } from 'src/commands/categories/list';

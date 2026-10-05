@@ -1,6 +1,6 @@
-import { action, editable, get, identifier, listing } from './resource.js';
-import type { Transport } from './transport.js';
-import type { Identifier, ListOptions, RecordData } from './types.js';
+import { action, editable, get, identifier, listing } from 'src/resource.js';
+import type { Transport } from 'src/transport.js';
+import type { Identifier, ListOptions, RecordData } from 'src/types.js';
 
 /** Shared mechanics; callers expose only operations supported by their resource. */
 export class Collection<Data extends RecordData, Input extends object, Create extends object = Input> {

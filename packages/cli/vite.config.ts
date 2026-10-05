@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => {
 		resolve: {
 			alias: {
 				src: path.resolve(__dirname, 'src'),
+				'package.json': path.resolve(__dirname, 'package.json'),
 			},
 		},
 	};

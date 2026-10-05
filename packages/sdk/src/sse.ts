@@ -1,4 +1,4 @@
-import { PlaybooksError } from './error.js';
+import { PlaybooksError } from 'src/error.js';
 
 export const readEvents = async function* (body: ReadableStream<Uint8Array>, activity: () => void) {
 	const reader = body.getReader();

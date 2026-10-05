@@ -1,12 +1,11 @@
 import { McpServer } from '@modelcontextprotocol/server';
+import { version } from 'package.json';
+import { AdapterError, type CliRunner } from 'src/cli.js';
+import type { ServerOptions } from 'src/options.js';
+import { commandResultToToolResult, envelopeSchema, errorToolResult, jsonToolResult } from 'src/results.js';
+import { selectTools } from 'src/tools/catalog.js';
+import { inputSchema, toolName } from 'src/tools/definition.js';
 import { z } from 'zod';
-
-import { version } from '../package.json';
-import { AdapterError, type CliRunner } from './cli.js';
-import type { ServerOptions } from './options.js';
-import { commandResultToToolResult, envelopeSchema, errorToolResult, jsonToolResult } from './results.js';
-import { selectTools } from './tools/catalog.js';
-import { inputSchema, toolName } from './tools/definition.js';
 
 export const createServer = (options: ServerOptions, runner: CliRunner) => {
 	const server = new McpServer(

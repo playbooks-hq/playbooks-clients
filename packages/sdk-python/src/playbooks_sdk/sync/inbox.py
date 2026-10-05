@@ -1,8 +1,8 @@
 from typing import Any
 
-from ..inbox_types import InboxReadInput, InboxType, InboxView
-from ..resource import ApiResponse, Resource, identifier
-from .core import Endpoint
+from playbooks_sdk.inbox_types import InboxReadInput, InboxType, InboxView
+from playbooks_sdk.resource import ApiResponse, Resource, identifier
+from playbooks_sdk.sync.core import Endpoint
 
 
 class Inbox(Endpoint):

@@ -1,9 +1,8 @@
 import { STATUS_CODES } from 'node:http';
 
 import type { CallToolResult } from '@modelcontextprotocol/server';
+import { AdapterError, type CommandResult } from 'src/cli.js';
 import { z } from 'zod';
-
-import { AdapterError, type CommandResult } from './cli.js';
 
 export const errorSchema = z
 	.object({
