@@ -6,14 +6,16 @@ import type { Identifier, ListOptions, RecordData } from 'src/types.js';
 export class Collection<Data extends RecordData, Input extends object, Create extends object = Input> {
 	#transport: Transport;
 	#path: string;
-	constructor(transport: Transport, path: string) {
+	#updateMethod: 'PUT' | 'PATCH';
+	constructor(transport: Transport, path: string, updateMethod: 'PUT' | 'PATCH' = 'PUT') {
 		this.#transport = transport;
 		this.#path = path;
+		this.#updateMethod = updateMethod;
 	}
 	#wrap(data: Data) {
 		const id = data.uuid ?? data.id;
 		return editable(data, (input: Input) =>
-			action<Data>(this.#transport, `${this.#path}/${identifier(id)}`, 'PUT', input),
+			action<Data>(this.#transport, `${this.#path}/${identifier(id)}`, this.#updateMethod, input),
 		);
 	}
 	async list(options?: ListOptions) {
@@ -27,6 +29,8 @@ export class Collection<Data extends RecordData, Input extends object, Create ex
 		return this.#wrap(await action<Data>(this.#transport, this.#path, 'POST', input));
 	}
 	async update(id: Identifier, input: Input) {
-		return this.#wrap(await action<Data>(this.#transport, `${this.#path}/${identifier(id)}`, 'PUT', input));
+		return this.#wrap(
+			await action<Data>(this.#transport, `${this.#path}/${identifier(id)}`, this.#updateMethod, input),
+		);
 	}
 }

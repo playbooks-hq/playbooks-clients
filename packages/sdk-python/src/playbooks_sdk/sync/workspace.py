@@ -19,6 +19,8 @@ from playbooks_sdk.transport import Transport
 
 
 class Templates(EditableCollection):
+    update_method = "PATCH"
+
     def publish(self, id: Identifier) -> Any:
         return self._action(f"{self._path}/{identifier(id)}/publish", "POST", {})
 

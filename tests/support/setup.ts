@@ -178,7 +178,7 @@ export async function fund() {
   };
   save(identityFile, state);
   const receipt = await adminRequest(
-    `/workspaces/${state.workspaceUuid}/credit-grants?context=admin`,
+    `/admin/workspaces/${state.workspaceUuid}/credit-grants`,
     state.pendingGrant,
   );
   assert.equal(receipt.grants?.[0]?.amount, 100);

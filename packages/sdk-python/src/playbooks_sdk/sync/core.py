@@ -56,22 +56,30 @@ class ReadCollection(Listing):
 class EditableResource(Resource):
     _transport: Transport
     _path: str
+    _update_method: str
 
-    def __init__(self, transport: Transport, path: str, data: Data) -> None:
+    def __init__(
+        self, transport: Transport, path: str, data: Data, update_method: str = "PUT"
+    ) -> None:
         super().__init__(data)
         object.__setattr__(self, "_transport", transport)
         object.__setattr__(self, "_path", path)
+        object.__setattr__(self, "_update_method", update_method)
 
     def update(self, data: Data) -> Self:
-        updated = succeeded(self._transport.request(self._path, "PUT", data)["data"], self._path)
+        updated = succeeded(
+            self._transport.request(self._path, self._update_method, data)["data"], self._path
+        )
         self._replace(updated)
         return self
 
 
 class EditableCollection(ReadCollection):
+    update_method = "PUT"
+
     def _wrap(self, data: Data) -> EditableResource:
         id = identifier(data["uuid"] if data.get("uuid") is not None else data["id"])
-        return EditableResource(self._transport, f"{self._path}/{id}", data)
+        return EditableResource(self._transport, f"{self._path}/{id}", data, self.update_method)
 
     def list(self, **options: Any) -> ApiResponse:
         response = self._list(self._path, options)
@@ -83,7 +91,7 @@ class EditableCollection(ReadCollection):
         )
 
     def update(self, id: Identifier, data: Data) -> EditableResource:
-        return self._wrap(self._action(f"{self._path}/{identifier(id)}", "PUT", data))
+        return self._wrap(self._action(f"{self._path}/{identifier(id)}", self.update_method, data))
 
 
 class Collection(EditableCollection):

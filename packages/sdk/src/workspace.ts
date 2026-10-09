@@ -61,7 +61,7 @@ export class Workspace extends Resource<WorkspaceData> {
 		};
 	}
 	get templates() {
-		const collection = new Collection<TemplateData, TemplateUpdate>(this.#transport, '/templates');
+		const collection = new Collection<TemplateData, TemplateUpdate>(this.#transport, '/templates', 'PATCH');
 		return {
 			list: (options?: TemplateListOptions) => collection.list(options),
 			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),

@@ -16,12 +16,9 @@ try {
   const chunks: Buffer[] = [];
   for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
   const data = JSON.parse(Buffer.concat(chunks).toString());
-  const readiness = path === "/inference-models-readiness";
+  const readiness = path === "/admin/inference-models/readiness";
   if (!readiness) {
-    assert.equal(
-      path,
-      `/workspaces/${user.workspaceUuid}/credit-grants?context=admin`,
-    );
+    assert.equal(path, `/admin/workspaces/${user.workspaceUuid}/credit-grants`);
     assert.equal(data.amount, 100);
     assert.equal(data.idempotencyKey, user.pendingGrant?.idempotencyKey);
     assert.equal(data.reason, "courtesy");

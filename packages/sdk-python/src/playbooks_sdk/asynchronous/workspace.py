@@ -19,6 +19,8 @@ from playbooks_sdk.transport import AsyncTransport as Transport
 
 
 class Templates(EditableCollection):
+    update_method = "PATCH"
+
     async def publish(self, id: Identifier) -> Any:
         return await self._action(f"{self._path}/{identifier(id)}/publish", "POST", {})
 

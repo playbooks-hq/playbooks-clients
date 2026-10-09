@@ -88,7 +88,7 @@ export async function check() {
   // Project creation requires at least one supported application type.
   const types = await sdk.types.list();
   assert(types.data.length > 0, "BLOCKED: no Project Types available");
-  const readiness = await adminRequest("/inference-models-readiness");
+  const readiness = await adminRequest("/admin/inference-models/readiness");
   assert(
     readiness.productionKeyReachable &&
       readiness.operator?.some(
