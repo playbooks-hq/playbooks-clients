@@ -210,9 +210,6 @@ class Project(Resource):
         self._replace(updated)
         return self
 
-    def move(self, data: Data) -> Any:
-        return Endpoint(self._transport, self._path)._action(f"{self._path}/folder", "PUT", data)
-
     def archive(self, data: Data) -> Any:
         return Endpoint(self._transport, self._path)._action(
             f"{self._path}/lifecycle/archive", "POST", data

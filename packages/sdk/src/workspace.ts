@@ -7,12 +7,11 @@ import { Projects } from 'src/project.js';
 import { action, get, identifier, listing, Resource } from 'src/resource.js';
 import type { Transport } from 'src/transport.js';
 import type { BudgetUpdate, TemplateListOptions } from 'src/types.js';
-import type { FolderData, MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
+import type { MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
 import type {
 	DnsRecordInput,
 	Identifier,
 	ListOptions,
-	NamedInput,
 	SettingsInput,
 	WorkspaceData,
 	WorkspaceUpdate,
@@ -50,15 +49,6 @@ export class Workspace extends Resource<WorkspaceData> {
 	}
 	get files() {
 		return new Files(this.#transport, '/files');
-	}
-	get folders() {
-		const collection = new Collection<FolderData, NamedInput>(this.#transport, '/project-folders');
-		return {
-			list: (options?: ListOptions) => collection.list(options),
-			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
-			create: (input: NamedInput) => collection.create(input),
-			update: (id: Identifier, input: NamedInput) => collection.update(id, input),
-		};
 	}
 	get templates() {
 		const collection = new Collection<TemplateData, TemplateUpdate>(this.#transport, '/templates', 'PATCH');

@@ -3,7 +3,6 @@ from typing import Any, Self
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
 from playbooks_sdk.sync.core import (
-    Collection,
     EditableCollection,
     Endpoint,
     Listing,
@@ -114,10 +113,6 @@ class Workspace(Resource):
     @property
     def files(self) -> Files:
         return Files(self._transport, "/files")
-
-    @property
-    def folders(self) -> Collection:
-        return Collection(self._transport, "/project-folders")
 
     @property
     def templates(self) -> Templates:

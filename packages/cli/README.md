@@ -83,7 +83,7 @@ playbooks project update --project abc --data '{"description":"Customer support 
 
 Public discovery uses `templates`, `categories`, `collections`, `creators`, and `types`. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
 
-Use category and type identifiers returned by `categories` and `types`; example identifiers are placeholders. Filter projects with `--folder <folder-uuid>` or `--owner <numeric-user-id>`. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
+Use category and type identifiers returned by `categories` and `types`; example identifiers are placeholders. Filter projects with `--owner <numeric-user-id>`. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
 
 Plural resource names list records; singular names address one record, such as `project release --project abc --release def`. Mutations follow the resource name. `--file-id` identifies an Agent File; binary transfers continue to use `--upload` and `--output`.
 
@@ -99,7 +99,7 @@ Piped output is JSON automatically. Responses retain `{ data, meta? }`; errors g
 
 Resource lists are always paginated: `--page` defaults to 0 and `--page-size` defaults to 20 (maximum 100). Use `meta.hasMore` to continue.
 
-`--include` fetches allowed inline relations on templates and projects; `--select` selects fields from the returned data, including nested fields. For example: `playbooks project --project abc --include folder,type --select uuid,name,folder.name`. File lists and project design/skill libraries support `--available` to include available or inherited resources.
+`--include` fetches allowed inline relations on templates and projects; `--select` selects fields from the returned data, including nested fields. For example: `playbooks project --project abc --include type --select uuid,name,type.name`. File lists and project design/skill libraries support `--available` to include available or inherited resources.
 
 Project logs use cursor pagination: `playbooks project logs --project abc --query error --page-size 50`. Pass the returned `meta.nextCursor` as `--cursor` to fetch the next page; a null cursor means there is no next page. Logs accept `--cursor` and `--page-size`, with sizes from 1–100 (default 20).
 
@@ -151,7 +151,7 @@ playbooks workspace inbox read --workspace WORKSPACE_UUID --conversation CONVERS
 playbooks workspace inbox read-all --workspace WORKSPACE_UUID --yes
 ```
 
-List filters mirror the web Inbox: `--view attention|mentions|all`, `--scope all|workspace|project:<uuid>|folder:<uuid>`, `--type all|approval|question|review|failure|mention|reply|report`, and `--search`. `--conversation` selects a conversation directly and bypasses other filters. JSON output preserves counts and source scopes in page metadata. Listing does not mark conversations read.
+List filters mirror the web Inbox: `--view attention|mentions|all`, `--scope all|workspace|project:<uuid>`, `--type all|approval|question|review|failure|mention|reply|report`, and `--search`. `--conversation` selects a conversation directly and bypasses other filters. JSON output preserves counts and source scopes in page metadata. Listing does not mark conversations read.
 
 Use the actual loaded message ID when marking read; Project conversations also require the matching branch ID. Read receipts do not approve requests or execute work. `read-all` applies to every accessible conversation in the Workspace, regardless of list filters, and requires confirmation in noninteractive use.
 

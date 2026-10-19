@@ -103,7 +103,7 @@ Only operations already supported by CLI are exposed; not every resource has eve
 | Owner | Resources and operations |
 | --- | --- |
 | `client` | `session.get()`, `workspaces.list/get/update()`, public `templates.list/get()`, `categories`, `collections`, `creators`, `types` |
-| `workspace` | `projects`, `folders`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
+| `workspace` | `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
 | Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
 | `project` | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `ownership`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
 | Project development | `files`, `source`, `branches`, `checkpoints`, `workflows`, `sandbox`, `logs` |
@@ -113,8 +113,6 @@ Only operations already supported by CLI are exposed; not every resource has eve
 Examples of named actions:
 
 ```ts
-const folder = await workspace.folders.create({ name: 'Client work' });
-await workspace.folders.update('FOLDER_UUID', { name: 'Active clients' });
 
 const preview = await workspace.members.previewDeparture('MEMBER_ID');
 // After reviewing preview, supply its revision and the selected recipient.
@@ -140,7 +138,7 @@ await workspace.inbox.markRead('CONVERSATION_UUID', { throughMessageId: 456, bra
 await workspace.inbox.markAllRead();
 ```
 
-Inbox supports `view` (`attention`, `mentions`, `all`), `scope` (`all`, `workspace`, `project:<uuid>`, `folder:<uuid>`), request `type`, `search`, and `conversation` filters. The default view is `attention`; `type: 'report'` uses all activity. A conversation UUID selects that conversation directly, bypassing other filters. Page metadata preserves Server counts and available scopes. `count()` returns Workspace-wide totals for the current user.
+Inbox supports `view` (`attention`, `mentions`, `all`), `scope` (`all`, `workspace`, `project:<uuid>`), request `type`, `search`, and `conversation` filters. The default view is `attention`; `type: 'report'` uses all activity. A conversation UUID selects that conversation directly, bypassing other filters. Page metadata preserves Server counts and available scopes. `count()` returns Workspace-wide totals for the current user.
 
 Reading is an explicit mutation: supply the actual loaded `throughMessageId` and the matching `branchId` for Project conversations. Omit the branch for unbranched conversations. Marking read acknowledges receipts; it does not approve requests or execute work. Server enforces conversation access and message/branch ownership.
 

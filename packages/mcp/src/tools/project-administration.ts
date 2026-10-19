@@ -2,31 +2,6 @@ import type { ToolDefinition } from 'src/tools/definition.js';
 
 export const projectAdministrationTools: ToolDefinition[] = [
 	{
-		command: 'project move',
-		description: 'Move a project to a folder.',
-		toolset: 'project',
-		readOnly: false,
-		destructive: true,
-		options: {
-			select: {
-				flag: 'select',
-				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
-			},
-			project: {
-				flag: 'project',
-				description: 'Project identifier.',
-				required: true,
-			},
-			workspace: {
-				flag: 'workspace',
-				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
-				required: true,
-			},
-		},
-		dataFields: ['folderId'],
-		dataOptional: false,
-	},
-	{
 		command: 'project archive',
 		description: 'Archive the project.',
 		toolset: 'project',

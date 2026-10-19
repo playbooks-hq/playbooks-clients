@@ -12,7 +12,6 @@ export { streamOperatorRun } from 'src/commands/project/runs/stream';
 export { getProject } from 'src/commands/project/get';
 export { createProject } from 'src/commands/project/create';
 export { updateProject } from 'src/commands/project/update';
-export { moveProject } from 'src/commands/project/move';
 export { getPublication } from 'src/commands/project/publication';
 export { exportProject } from 'src/commands/project/export';
 export { getProjectLifecycle } from 'src/commands/project/lifecycle';

@@ -43,14 +43,14 @@ Both clients have matching resource methods. Async I/O methods must be awaited; 
 | Owner | Resources and operations |
 | --- | --- |
 | Client | `session.get()`, `workspaces.list/get/update()`, public `templates.list/get()`, `categories`, `collections`, `creators`, `types` |
-| Workspace | `projects`, `folders`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
+| Workspace | `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
 | Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
 | Project | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `ownership`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
 | Project development | `files`, `source`, `branches`, `checkpoints`, `workflows`, `sandbox`, `logs` |
 | Publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
 | Operators | `conversations`, `runs`; verified conversations expose messages, with a selected branch for Project messages |
 
-Methods and keyword arguments use Python names: `preview_departure`, `page_size`, `expected_revision`, `timeout_ms`, and `on_activity`. `source.import_()` uses a trailing underscore because `import` is a Python keyword. Payload dictionaries, response attributes, snapshots, and page metadata retain Server field names such as `expectedRevision`, `folderId`, and `hasMore`. Arbitrary nested data is never renamed.
+Methods and keyword arguments use Python names: `preview_departure`, `page_size`, `expected_revision`, `timeout_ms`, and `on_activity`. `source.import_()` uses a trailing underscore because `import` is a Python keyword. Payload dictionaries, response attributes, snapshots, and page metadata retain Server field names such as `expectedRevision`, `projectId`, and `hasMore`. Arbitrary nested data is never renamed.
 
 `get()` returns a resource directly. Successful resource `update(data)` refreshes that same object and returns it. Failed updates preserve the previous snapshot. Resource fields are read-only; use `to_dict()` for an independent snapshot, including extra Server fields and excluding transport internals and credentials. Use `json.dumps(resource.to_dict())` for JSON serialization. Collection updates do not require fetching the resource first.
 
@@ -66,7 +66,7 @@ workspace.inbox.mark_read("CONVERSATION_UUID", {"throughMessageId": 456, "branch
 workspace.inbox.mark_all_read()
 ```
 
-Await these methods when using the async client. Inbox supports `view` (`attention`, `mentions`, `all`), `scope` (`all`, `workspace`, `project:<uuid>`, `folder:<uuid>`), request `type`, `search`, and `conversation` filters. The default view is `attention`; reports use all activity. A conversation UUID bypasses other filters. Page metadata retains counts and available scopes; `count()` returns Workspace-wide totals for the current user.
+Await these methods when using the async client. Inbox supports `view` (`attention`, `mentions`, `all`), `scope` (`all`, `workspace`, `project:<uuid>`), request `type`, `search`, and `conversation` filters. The default view is `attention`; reports use all activity. A conversation UUID bypasses other filters. Page metadata retains counts and available scopes; `count()` returns Workspace-wide totals for the current user.
 
 Supply the actual loaded `throughMessageId` and matching `branchId` for Project conversations; omit the branch for unbranched conversations. Marking read acknowledges receipts, without approving requests or executing work. Server checks access and message/branch ownership.
 

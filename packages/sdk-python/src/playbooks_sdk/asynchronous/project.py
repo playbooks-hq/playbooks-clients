@@ -219,11 +219,6 @@ class Project(Resource):
         self._replace(updated)
         return self
 
-    async def move(self, data: Data) -> Any:
-        return await Endpoint(self._transport, self._path)._action(
-            f"{self._path}/folder", "PUT", data
-        )
-
     async def archive(self, data: Data) -> Any:
         return await Endpoint(self._transport, self._path)._action(
             f"{self._path}/lifecycle/archive", "POST", data

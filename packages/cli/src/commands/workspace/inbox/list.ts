@@ -17,8 +17,8 @@ export const listInbox = async (options: any) => {
 	}
 	if (options.scope !== undefined) {
 		const scope = textOption(options.scope, 'scope');
-		if (!['all', 'workspace'].includes(scope) && !/^(project|folder):[a-zA-Z0-9_-]+$/.test(scope))
-			throw new CliError(422, 'Use --scope all, workspace, project:<uuid>, or folder:<uuid>.');
+		if (!['all', 'workspace'].includes(scope) && !/^project:[a-zA-Z0-9_-]+$/.test(scope))
+			throw new CliError(422, 'Use --scope all, workspace, or project:<uuid>.');
 		params.scope = scope;
 	}
 	if (options.search !== undefined) params.search = textOption(options.search, 'search');

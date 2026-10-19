@@ -193,9 +193,7 @@ class Conversations(Endpoint):
         wrong_owner = (
             str(data.get("projectId")) != str(self._owner_id)
             if self._project
-            else str(data.get("workspaceId")) != str(self._owner_id)
-            or data.get("projectId")
-            or data.get("folderId")
+            else str(data.get("workspaceId")) != str(self._owner_id) or data.get("projectId")
         )
         if wrong_owner:
             raise PlaybooksError(403, "The conversation does not belong to the requested Operator.")

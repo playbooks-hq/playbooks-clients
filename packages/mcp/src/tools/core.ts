@@ -65,11 +65,7 @@ export const coreTools: ToolDefinition[] = [
 			},
 			include: {
 				flag: 'include',
-				description: 'Comma-separated relations: folder, type, projectOwner, branches, deploy.',
-			},
-			folder: {
-				flag: 'folder',
-				description: 'Folder identifier from workspace folders.',
+				description: 'Comma-separated relations: type, projectOwner, branches, deploy.',
 			},
 			owner: {
 				flag: 'owner',
@@ -100,7 +96,7 @@ export const coreTools: ToolDefinition[] = [
 			},
 			include: {
 				flag: 'include',
-				description: 'Comma-separated relations: folder, type, projectOwner, branches, deploy.',
+				description: 'Comma-separated relations: type, projectOwner, branches, deploy.',
 			},
 		},
 	},
@@ -121,7 +117,7 @@ export const coreTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['name', 'description', 'typeId', 'folderId'],
+		dataFields: ['name', 'description', 'typeId'],
 		dataOptional: false,
 	},
 	{

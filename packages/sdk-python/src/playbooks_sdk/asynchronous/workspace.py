@@ -1,7 +1,6 @@
 from typing import Any, Self, cast
 
 from playbooks_sdk.asynchronous.core import (
-    Collection,
     EditableCollection,
     Endpoint,
     Listing,
@@ -114,10 +113,6 @@ class Workspace(Resource):
     @property
     def files(self) -> Files:
         return Files(self._transport, "/files")
-
-    @property
-    def folders(self) -> Collection:
-        return Collection(self._transport, "/project-folders")
 
     @property
     def templates(self) -> Templates:

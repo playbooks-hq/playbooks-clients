@@ -54,9 +54,6 @@ export class Project extends Resource<ProjectData> {
 		this.replace(data);
 		return this;
 	}
-	move(input: { folderId?: number | null }) {
-		return action(this.#transport, `${this.#path}/folder`, 'PUT', input);
-	}
 	archive(input: { confirmation: string }) {
 		return action<ActionReceipt>(this.#transport, `${this.#path}/lifecycle/archive`, 'POST', input);
 	}

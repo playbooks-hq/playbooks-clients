@@ -142,7 +142,7 @@ export class Conversations {
 		if (
 			this.#project
 				? String(data.projectId) !== String(this.#ownerId)
-				: String(data.workspaceId) !== String(this.#ownerId) || data.projectId || data.folderId
+				: String(data.workspaceId) !== String(this.#ownerId) || data.projectId
 		)
 			throw new PlaybooksError(403, 'The conversation does not belong to the requested Operator.');
 		if (selected !== undefined && data.uuid !== String(selected))

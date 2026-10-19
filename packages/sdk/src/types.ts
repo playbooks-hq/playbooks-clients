@@ -63,7 +63,6 @@ export interface ProjectData {
 	};
 	workspaceId?: number | null;
 	projectOwnerId?: number | null;
-	folderId?: number | null;
 	typeId?: number | null;
 	promptId?: number | null;
 	archived?: boolean;
@@ -88,7 +87,6 @@ export interface ProjectListOptions {
 	query?: string;
 	sortProp?: 'id' | 'name' | 'createdAt' | 'updatedAt';
 	sortValue?: 'asc' | 'desc';
-	folderId?: number;
 	projectOwnerId?: number;
 }
 
@@ -122,7 +120,6 @@ export interface ProjectCreate {
 	name?: string;
 	description?: string;
 	typeId?: number;
-	folderId?: number;
 }
 export interface ProjectUpdate {
 	revision?: string;
@@ -242,9 +239,6 @@ export interface TemplateData extends RecordData {
 	licenseId?: number;
 	categoryIds?: number[];
 }
-export interface FolderData extends RecordData {
-	description?: string | null;
-}
 export interface MemberData extends RecordData {
 	userId?: number;
 	memberRole?: string;
@@ -272,7 +266,6 @@ export interface WorkflowStep {
 export interface ConversationData extends RecordData {
 	workspaceId?: number;
 	projectId?: number | null;
-	folderId?: number | null;
 	latestBranchId?: number | null;
 }
 export interface MessageData extends RecordData {
@@ -359,7 +352,7 @@ export interface InboxListOptions {
 	page?: number;
 	pageSize?: number;
 	view?: 'attention' | 'mentions' | 'all';
-	scope?: 'all' | 'workspace' | `project:${string}` | `folder:${string}`;
+	scope?: 'all' | 'workspace' | `project:${string}`;
 	type?: 'all' | 'approval' | 'question' | 'review' | 'failure' | 'mention' | 'reply' | 'report';
 	search?: string;
 	conversation?: string;

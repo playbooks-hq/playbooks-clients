@@ -131,39 +131,6 @@ cli
 	.action(run(workspace.openWorkspace));
 
 cli
-	.command('workspace folders')
-	.describe('List workspace folders.')
-	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page (default 0).')
-	.option('--page-size', 'Records per page (1-100; default 20).')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(workspace.listFolders));
-
-cli
-	.command('workspace folder')
-	.describe('Get a folder.')
-	.option('--folder', 'Folder identifier.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(workspace.getFolder));
-
-cli
-	.command('workspace folder create')
-	.describe('Create a folder.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('workspace folder create --data \'{"name":"Customer projects"}\'')
-	.action(run(workspace.createFolder));
-
-cli
-	.command('workspace folder update')
-	.describe('Update a folder.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--folder', 'Folder identifier.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('workspace folder update --folder abc --data \'{"name":"Customer projects"}\'')
-	.action(run(workspace.updateFolder));
-
-cli
 	.command('workspace template update')
 	.describe('Update an owned template listing.')
 	.option('--data', 'JSON object or - for stdin.')
@@ -393,7 +360,7 @@ cli
 	.command('workspace inbox')
 	.describe('List Inbox conversations and requests (defaults to needs attention).')
 	.option('--view', 'attention, mentions, or all.')
-	.option('--scope', 'all, workspace, project:<uuid>, or folder:<uuid>.')
+	.option('--scope', 'all, workspace, or project:<uuid>.')
 	.option('--type', 'all, approval, question, review, failure, mention, reply, or report.')
 	.option('--search', 'Search Inbox text.')
 	.option('--conversation', 'Filter by conversation UUID; bypasses view and source filters.')
@@ -575,10 +542,9 @@ cli
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
-	.option('--include', 'Comma-separated relations: folder, type, projectOwner, branches, deploy.')
-	.option('--folder', 'Folder identifier from workspace folders.')
+	.option('--include', 'Comma-separated relations: type, projectOwner, branches, deploy.')
 	.option('--owner', 'Numeric user ID of the project owner.')
-	.example('projects --folder abc --sort name:asc')
+	.example('projects --sort name:asc')
 	.action(run(project.listProjects));
 
 cli
@@ -588,8 +554,8 @@ cli
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--include', 'Comma-separated relations: folder, type, projectOwner, branches, deploy.')
-	.example('project --project abc --include folder,type')
+	.option('--include', 'Comma-separated relations: type, projectOwner, branches, deploy.')
+	.example('project --project abc --include type')
 	.action(run(project.getProject));
 
 cli
@@ -610,17 +576,6 @@ cli
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('project update --project abc --data \'{"description":"Customer support app"}\'')
 	.action(run(project.updateProject));
-
-cli
-	.command('project move')
-	.describe('Move a project to a folder.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project move --project abc --data \'{"folderId":123}\'')
-	.action(run(project.moveProject));
 
 cli
 	.command('project publication')
@@ -1735,7 +1690,7 @@ try {
 	if (args.length === 2) cli.help();
 	else
 		cli.parse(args, {
-			string: ['data', 'query', 'sort', 'include', 'category', 'type', 'folder', 'owner', 'cursor'],
+			string: ['data', 'query', 'sort', 'include', 'category', 'type', 'owner', 'cursor'],
 			unknown: flag => {
 				throw new CliError(422, `Unknown option: ${flag}`);
 			},

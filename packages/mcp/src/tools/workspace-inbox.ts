@@ -15,7 +15,7 @@ export const workspaceInboxTools: ToolDefinition[] = [
 				required: true,
 			},
 			view: { flag: 'view', description: 'attention, mentions, or all.' },
-			scope: { flag: 'scope', description: 'all, workspace, project:<uuid>, or folder:<uuid>.' },
+			scope: { flag: 'scope', description: 'all, workspace, or project:<uuid>.' },
 			type: {
 				flag: 'type',
 				description: 'all, approval, question, review, failure, mention, reply, or report.',
