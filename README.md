@@ -93,9 +93,3 @@ This updates all manifest versions, refreshes the workspace lockfile, runs lint/
 Before a public release, verify the chosen version is unused for every package and verify publishing access to npm and PyPI, including availability of the `playbooks-sdk` Python distribution name. Prepare and review the artifacts from the intended release commit. Publish those exact tarballs in SDK → CLI → MCP order, confirming each registry artifact and exact dependency before continuing. Publish the exact prepared Python wheel and source distribution to PyPI and verify their hashes against the manifest. Only after all npm and Python artifacts match should the shared `v<version>` release tag be created and pushed. Do not run package-local version/deploy scripts.
 
 If publication stops partway, keep the original artifacts and compare already-published `dist.integrity` values with `release.json`. Resume only missing packages when all existing artifacts match. Never overwrite or rebuild a published version; an integrity mismatch requires investigation and a new shared version. Publication is not atomic across packages or registries.
-
-## Repository cutover
-
-CLI history is the base; MCP history is merged without rewriting and its tags use the `mcp/` prefix. The local migration retains original checkouts. The GitHub repository is `playbooks-hq/playbooks-clients`, renamed from `playbooks-cli` with its existing history preserved. Archive the former MCP repository only after consumers and published artifacts are verified. No forwarding packages or duplicate maintenance paths are required.
-
-Harness repository maps and test-ownership references need a separately authorized harness update. Platform tests remain in Auto; CLI alone retains independent test ownership. The Clients repository owns its explicitly authorized local integration suite. Package verification alone is release acceptance, not evidence of live platform behavior.

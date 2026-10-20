@@ -8,7 +8,7 @@ Use Playbooks Workspaces, Projects, Templates, and Operators from an MCP client.
 ## Requirements
 
 - Node.js 22.12 or newer.
-- The Workspace/Project rewrite of `@playbooks/cli`. Legacy CLI releases are incompatible and rejected at startup.
+- A compatible `@playbooks/cli` from the same coordinated Clients release. Startup verifies the required CLI capabilities.
 - A scoped developer API key, configured through the CLI or supplied as `PLAYBOOKS_TOKEN` by your secret manager. Application API keys are not supported.
 
 Authenticate outside the agent conversation:
