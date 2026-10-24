@@ -298,7 +298,7 @@ export interface WorkspaceAgentData extends RecordData {
 	revision: number;
 	mainConversationId: number;
 	composerOverrides: AgentComposerOverrides;
-	resourceSelection: { skillIds?: number[] | null; mcpIds?: number[] | null };
+	resourceSelection: { skillIds?: number[] | null; mcpIds?: number[] | null; connectorIds?: number[] };
 	conversation?: ConversationData;
 }
 export interface WorkspaceAgentCreate {
@@ -313,7 +313,7 @@ export type WorkspaceAgentUpdate = { revision: number } & (
 			action?: 'configure';
 			name?: string;
 			composerOverrides?: AgentComposerOverrides;
-			resourceSelection?: { skillIds?: number[] | null; mcpIds?: number[] | null };
+			resourceSelection?: { skillIds?: number[] | null; mcpIds?: number[] | null; connectorIds?: number[] };
 			designSelection?: { designId: number | null };
 	  }
 	| { action: 'main'; conversationId: number }

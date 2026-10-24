@@ -47,7 +47,7 @@ export const workspaceAgentsTools: ToolDefinition[] = [
 	{
 		command: 'workspace agent update',
 		description:
-			'Update an Agent using its current revision. Actions are configure, main, archive, restore and delete. Main requires an owned conversation numeric ID. Delete requires the exact Agent name in confirmation. Archive/delete block schedules and reject active work. Configuration never grants underlying resource access.',
+			'Update an Agent using its current revision. Actions are configure, main, archive, restore and delete. Main requires an owned conversation numeric ID. Delete requires the exact Agent name in confirmation. Archive/delete block schedules and reject active work. Configuration never grants underlying resource access. resourceSelection.connectorIds explicitly selects eligible Workspace connection IDs; omitted or empty grants none. Changing connectorIds requires Workspace connector management authority and connectors.manage for API keys.',
 		toolset: 'workspace',
 		readOnly: false,
 		destructive: true,
