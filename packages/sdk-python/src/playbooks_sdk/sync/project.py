@@ -141,12 +141,22 @@ class Ownership(ReadEndpoint):
         return self._action(f"{self._path}/{identifier(id)}/cancel", "POST")
 
 
-class Workflows(Collection):
-    def schedule(self, id: Identifier, data: Data) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/schedule", "PUT", data)
+class Schedules(Collection):
+    def run(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/runs", "POST", data)
 
-    def run(self, id: Identifier) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/runs", "POST")
+    def delete(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}", "DELETE", data)
+
+    def runs(self, id: Identifier, **options: Any) -> ApiResponse:
+        return self._list(f"{self._path}/{identifier(id)}/runs", options)
+
+    def occurrences(self, id: Identifier, **options: Any) -> ApiResponse:
+        return self._list(f"{self._path}/{identifier(id)}/occurrences", options)
+
+    def get_run(self, id: Identifier, run_id: Identifier) -> Resource:
+        result: Resource = self._get(f"{self._path}/{identifier(id)}/runs/{identifier(run_id)}")
+        return result
 
 
 class Releases(ReadCollection):
@@ -315,8 +325,8 @@ class Project(Resource):
         return Ownership(self._transport, f"{self._path}/ownership-request")
 
     @property
-    def workflows(self) -> Workflows:
-        return Workflows(self._transport, f"{self._path}/workflows")
+    def schedules(self) -> Schedules:
+        return Schedules(self._transport, f"{self._path}/schedules")
 
     @property
     def releases(self) -> Releases:

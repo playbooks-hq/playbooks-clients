@@ -41,7 +41,7 @@ Private tools require an explicit `workspace`. Tools targeting an existing Proje
 | `discovery` | Public Templates, categories, collections, creators, types | Yes |
 | `templates` | Workspace-owned Templates and publication | No |
 | `workspace` | Workspace administration, configuration, financial observations, Workspace Operator | No |
-| `project` | Project configuration, source, checkpoints, administration, workflows | No |
+| `project` | Project configuration, source, checkpoints, administration, scheduled messages | No |
 | `local` | Browser opening, file transfers, source import, export | No |
 
 `--toolsets` replaces the default selection; `all` enables every group. `--read-only` removes mutating tools regardless of group selection, including local file writes and conversation reads that may initialize state. It narrows the MCP tool surface; Server permissions remain authoritative. Restart the MCP connection after changing options.
@@ -126,6 +126,10 @@ Development and shared release preparation are documented in the [workspace READ
 Tool calls flow through **MCP → CLI → SDK → Server**. MCP retains its existing tool names, schemas, explicit Workspace/Project targets, toolset filtering, confirmations, and cancellation behavior. The CLI now uses resource-oriented SDK methods underneath; agents do not need to construct SDK objects or change tool calls.
 
 Authenticate through the CLI or `PLAYBOOKS_TOKEN`, never through tool arguments. A mutation may start remote work before observation ends. Inspect its returned identifiers and status; a canceled tool call does not imply that accepted work was canceled. A read-only toolset limits exposed tools but does not replace Server authorization.
+
+## Agent scheduled messages
+
+The `workspace` toolset provides `playbooks_workspace_agent-schedules`, `playbooks_workspace_agent-schedule`, and its `preview`, `create`, and `update` operations. Save one self-contained instruction with durable references, model selection, timing, and destination. Creation does not run work. Inspect the revision before changing it; reuse the same run idempotency key after an uncertain response. Read occurrence history to verify completion and the resolved model.
 
 ## Workspace Inbox
 

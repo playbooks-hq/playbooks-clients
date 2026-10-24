@@ -96,6 +96,8 @@ for (const project of projects) console.log(project.uuid, project.name);
 
 SDK pages start at **0**, matching the Server, CLI, and MCP. Resource lists default to 20 records and accept page sizes from 1–100. No pages are fetched automatically. Follow `meta.hasMore`; numbered pages return `meta.pagination: "page"`. Messages, logs, and dedicated search use `cursor`/`pageSize` and return `meta.pagination: "cursor"`; pass `meta.nextCursor` unchanged. Additional Server metadata is preserved.
 
+Agent scheduled messages use `workspace.agentSchedules.list/get/preview/create/update`. Creation requires a stable `idempotencyKey`, a self-contained instruction, timing, and an Agent or originating conversation. Mutations require `expectedRevision`; `action: "run"` also requires a stable `idempotencyKey`. Reuse that key after an uncertain response. Destination controls delivery, not executable context. Inspect occurrence history for completion and the actual model.
+
 ## Resource families
 
 Only operations already supported by CLI are exposed; not every resource has every CRUD operation.
@@ -106,7 +108,7 @@ Only operations already supported by CLI are exposed; not every resource has eve
 | `workspace` | `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
 | Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
 | `project` | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `ownership`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
-| Project development | `files`, `source`, `branches`, `checkpoints`, `workflows`, `sandbox`, `logs` |
+| Project development | `files`, `source`, `branches`, `checkpoints`, `schedules`, `sandbox`, `logs` |
 | Project publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
 | Workspace/Project Operators | `conversations`, `runs`; verified conversations provide messages, with Project messages scoped to a selected branch |
 
@@ -123,7 +125,7 @@ await workspace.members.depart('MEMBER_ID', {
 
 const records = await workspace.domains.records('DOMAIN_UUID').list();
 const source = await project.source.status();
-const workflows = await project.workflows.list();
+const schedules = await project.schedules.list();
 ```
 
 Consequential methods are explicit programmatic actions: the SDK does not prompt. Preserve the required revisions, recipients, confirmation values, and idempotency keys when calling them. Server validates authority and current state. SDK resource access never grants additional permissions.

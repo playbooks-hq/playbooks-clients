@@ -192,19 +192,56 @@ export interface StreamEvent {
 	event: string;
 	data: any;
 }
-export interface WorkflowInput {
-	name?: string;
-	status?: string;
-	steps?: WorkflowStep[];
-	schedule?: Record<string, unknown>;
-	revision?: number;
+export interface ScheduleReference {
+	type: string;
+	uuid: string;
+	start: number;
+	length: number;
+	label: string;
 }
+
+export interface AgentScheduleTiming {
+	frequency: 'daily' | 'weekly' | 'monthly';
+	weekday?: number | null;
+	monthDay?: number | null;
+	time: string;
+	timezone: string;
+}
+export interface AgentScheduleInput extends AgentScheduleTiming {
+	name: string;
+	instructions: string;
+	references?: ScheduleReference[];
+	modelId?: number;
+	destination?: 'existing-conversation' | 'new-conversation';
+	destinationConversationId?: number | null;
+	enabled: boolean;
+}
+export type AgentScheduleCreate = AgentScheduleInput & {
+	idempotencyKey: string;
+	originMessageId?: number;
+} & ({ agentId: string; conversationId?: string } | { agentId?: string; conversationId: string });
+export type AgentScheduleMutation = { expectedRevision: number } & (
+	| { action: 'update'; changes: AgentScheduleInput }
+	| { action: 'pause' | 'resume' | 'delete' }
+	| { action: 'run'; idempotencyKey: string }
+);
 export interface ScheduleInput {
+	name: string;
+	instructions: string;
+	references?: ScheduleReference[];
+	modelId?: number;
+	branchId?: number;
+	destination?: 'existing-conversation' | 'new-conversation';
+	destinationConversationId?: number | null;
 	enabled?: boolean;
-	recurrence?: string;
-	time?: string;
-	timezone?: string;
-	actingUserId?: number;
+	recurrence?: string | null;
+	time?: string | null;
+	timezone?: string | null;
+}
+export type ScheduleUpdate = Partial<ScheduleInput> & { revision: number };
+export interface ScheduleRunInput {
+	revision: number;
+	requestKey: string;
 }
 export interface DnsRecordInput {
 	type?: string;
@@ -248,20 +285,52 @@ export interface AgentData extends RecordData {
 	revision?: string | number;
 	projectId?: number;
 }
+export interface AgentComposerOverrides {
+	instructions?: string | null;
+	modelId?: number | null;
+	mode?: 'plan' | 'execute' | null;
+	deliveryMode?: 'queue' | 'steer' | null;
+	permissions?: 'autonomous' | 'critical' | 'all' | null;
+}
+export interface WorkspaceAgentData extends RecordData {
+	id: number;
+	uuid: string;
+	revision: number;
+	mainConversationId: number;
+	composerOverrides: AgentComposerOverrides;
+	resourceSelection: { skillIds?: number[] | null; mcpIds?: number[] | null };
+	conversation?: ConversationData;
+}
+export interface WorkspaceAgentCreate {
+	idempotencyKey: string;
+	name?: string;
+	composerOverrides?: AgentComposerOverrides;
+	designSelection?: { designId: number | null };
+	blankStart?: boolean;
+}
+export type WorkspaceAgentUpdate = { revision: number } & (
+	| {
+			action?: 'configure';
+			name?: string;
+			composerOverrides?: AgentComposerOverrides;
+			resourceSelection?: { skillIds?: number[] | null; mcpIds?: number[] | null };
+			designSelection?: { designId: number | null };
+	  }
+	| { action: 'main'; conversationId: number }
+	| { action: 'archive' | 'restore' }
+	| { action: 'delete'; confirmation: string }
+);
 export interface LibraryData extends RecordData {
 	files?: Record<string, string>;
 	revision?: string;
 }
-export interface WorkflowData extends RecordData {
-	revision?: number;
-	projectId?: number;
-	conversationId?: number;
-	steps?: WorkflowStep[];
-}
-export interface WorkflowStep {
-	key?: string;
-	title: string;
-	instructions: string;
+export interface ScheduleData extends Omit<RecordData, keyof ScheduleInput>, ScheduleInput {
+	revision: number;
+	projectId: number;
+	projectAgentId?: number | null;
+	projectTestId?: number | null;
+	configurationIssue?: string | null;
+	nextOccurrenceAt?: string | null;
 }
 export interface ConversationData extends RecordData {
 	workspaceId?: number;
@@ -298,6 +367,13 @@ export interface ReleaseData extends RecordData {
 export interface TemplateListOptions extends ListOptions {
 	category?: string;
 	projectType?: string;
+	kind?: 'agent' | 'project';
+}
+export interface TemplatePublish {
+	acknowledgment: true;
+	notes?: string;
+	bump?: 'patch' | 'minor' | 'major';
+	action?: 'restore-current';
 }
 export interface TemplateUpdate {
 	name?: string;
@@ -307,6 +383,8 @@ export interface TemplateUpdate {
 	cover?: string | null;
 	licenseId?: number;
 	categoryIds?: number[];
+	visibility?: 'private' | 'unlisted' | 'public';
+	packageSelection?: { fileIds?: number[]; scheduleIds?: number[]; artifactIds?: string[] };
 }
 export interface BudgetUpdate {
 	creditBudget?: number | null;

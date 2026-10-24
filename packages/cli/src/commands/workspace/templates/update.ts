@@ -14,6 +14,8 @@ export const updateTemplate = async (options: any) => {
 		'thumbnail',
 		'licenseId',
 		'categoryIds',
+		'visibility',
+		'packageSelection',
 	]);
 	const response = sdkEnvelope(await context.workspaceResource.templates.update(identifier(options['template']), data));
 	assertOperationSucceeded(response, target);

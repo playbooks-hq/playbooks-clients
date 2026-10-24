@@ -4,15 +4,22 @@ import { Files } from 'src/files.js';
 import { Inbox } from 'src/inbox.js';
 import { Conversations, Runs } from 'src/operators.js';
 import { Projects } from 'src/project.js';
-import { action, get, identifier, listing, Resource } from 'src/resource.js';
+import { action, get, identifier, listing, record, Resource } from 'src/resource.js';
 import type { Transport } from 'src/transport.js';
-import type { BudgetUpdate, TemplateListOptions } from 'src/types.js';
+import type { BudgetUpdate, TemplateListOptions, TemplatePublish } from 'src/types.js';
 import type { MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
 import type {
+	AgentScheduleCreate,
+	AgentScheduleMutation,
+	AgentScheduleTiming,
+	ConversationData,
 	DnsRecordInput,
 	Identifier,
 	ListOptions,
 	SettingsInput,
+	WorkspaceAgentCreate,
+	WorkspaceAgentData,
+	WorkspaceAgentUpdate,
 	WorkspaceData,
 	WorkspaceUpdate,
 } from 'src/types.js';
@@ -47,6 +54,55 @@ export class Workspace extends Resource<WorkspaceData> {
 	get runs() {
 		return new Runs(this.#transport, '/operator/runs');
 	}
+	get agents() {
+		const path = '/agents';
+		return {
+			list: (options?: ListOptions & { archived?: boolean }) =>
+				listing<WorkspaceAgentData>(this.#transport, path, options),
+			get: (id: Identifier, options: { conversationId?: string; configuration?: boolean } = {}) =>
+				get<WorkspaceAgentData>(this.#transport, `${path}/${identifier(id)}`, options),
+			create: (input: WorkspaceAgentCreate) => action<WorkspaceAgentData>(this.#transport, path, 'POST', input),
+			update: (id: Identifier, input: WorkspaceAgentUpdate) =>
+				action<WorkspaceAgentData>(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
+			conversations: (id: Identifier) => ({
+				list: () => listing<ConversationData>(this.#transport, `${path}/${identifier(id)}/conversations`),
+				create: (input: { title?: string; idempotencyKey: string }) =>
+					action<ConversationData>(this.#transport, `${path}/${identifier(id)}/conversations`, 'POST', input),
+			}),
+			files: (id: Identifier) => new Files(this.#transport, `${path}/${identifier(id)}/files`),
+		};
+	}
+	get savedAssets() {
+		return {
+			list: (options: { page?: number } = {}) => listing(this.#transport, '/workspace/artifacts/saved', options),
+			save: (conversationId: Identifier, assetId: Identifier) =>
+				action(
+					this.#transport,
+					`/conversations/${identifier(conversationId)}/assets/${identifier(assetId)}/save`,
+					'POST',
+				),
+			remove: (conversationId: Identifier, assetId: Identifier) =>
+				action(
+					this.#transport,
+					`/conversations/${identifier(conversationId)}/assets/${identifier(assetId)}/save`,
+					'DELETE',
+				),
+		};
+	}
+	get agentSchedules() {
+		const path = '/workspace/conversation-schedules';
+		return {
+			list: async (options: { conversationId?: string } = {}) => {
+				const response = await this.#transport.request(path, 'GET', undefined, options);
+				return { ...response, data: response.data.map(record) };
+			},
+			get: (id: Identifier) => get(this.#transport, `${path}/${identifier(id)}`),
+			preview: (input: AgentScheduleTiming) => action(this.#transport, `${path}/preview`, 'POST', input),
+			create: (input: AgentScheduleCreate) => action(this.#transport, path, 'POST', input),
+			update: (id: Identifier, input: AgentScheduleMutation) =>
+				action(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
+		};
+	}
 	get files() {
 		return new Files(this.#transport, '/files');
 	}
@@ -56,7 +112,8 @@ export class Workspace extends Resource<WorkspaceData> {
 			list: (options?: TemplateListOptions) => collection.list(options),
 			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
 			update: (id: Identifier, input: TemplateUpdate) => collection.update(id, input),
-			publish: (id: Identifier) => action(this.#transport, `/templates/${identifier(id)}/publish`, 'POST', {}),
+			publish: (id: Identifier, input: TemplatePublish) =>
+				action(this.#transport, `/templates/${identifier(id)}/publish`, 'POST', input),
 			versions: (id: Identifier, options?: ListOptions) =>
 				listing(this.#transport, `/templates/${identifier(id)}/versions`, options),
 		};

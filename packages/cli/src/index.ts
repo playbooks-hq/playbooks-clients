@@ -48,6 +48,7 @@ cli
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
 	.option('--type', 'Project type identifier from types.')
+	.option('--kind', 'Template kind: agent or project.')
 	.example('templates --category business --type website')
 	.action(run(templates.listTemplates));
 
@@ -116,6 +117,117 @@ cli
 
 cli.command('workspace current').describe('Show the active workspace.').action(run(workspace.currentWorkspace));
 
+cli
+	.command('workspace agents')
+	.describe('List Workspace Agents.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--page', 'Zero-based page (default 0).')
+	.option('--page-size', 'Records per page (1-100).')
+	.option('--query', 'Search Agent names.')
+	.option('--archived', 'List archived Agents.', false)
+	.action(run(workspace.listWorkspaceChats));
+
+cli
+	.command('workspace agent')
+	.describe('Read an Agent and its Main or selected conversation.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--conversation', 'Optional conversation UUID.')
+	.option('--configuration', 'Include eligible configuration resources.', false)
+	.action(run(workspace.getWorkspaceChat));
+
+cli
+	.command('workspace agent create')
+	.describe('Create an Agent with a fresh Main conversation; does not dispatch inference.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--data', 'JSON name, stable idempotencyKey and configuration or - for stdin.')
+	.action(run(workspace.createWorkspaceChat));
+
+cli
+	.command('workspace agent update')
+	.describe('Configure, designate Main, archive, restore or delete an Agent using its revision.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON action and revision or - for stdin; deletion also requires the exact name in confirmation.')
+	.option('--yes', 'Confirm archival or deletion.', false)
+	.action(run(workspace.updateWorkspaceChat));
+
+cli
+	.command('workspace agent conversations')
+	.describe('List conversations belonging to an Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(workspace.listWorkspaceChatConversations));
+
+cli
+	.command('workspace agent conversation create')
+	.describe('Create another conversation in an Agent; does not dispatch inference.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON title and stable idempotencyKey or - for stdin.')
+	.action(run(workspace.createWorkspaceChatConversation));
+
+cli
+	.command('workspace saved-assets')
+	.describe('List explicitly saved Agent artifact revisions.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--page', 'Zero-based page; follow hasMore.')
+	.action(run(workspace.listSavedAssets));
+
+cli
+	.command('workspace asset save')
+	.describe('Save an authorized artifact revision to your Library.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Originating conversation UUID.')
+	.option('--asset', 'Artifact revision UUID.')
+	.action(run(workspace.saveAsset));
+
+cli
+	.command('workspace asset unsave')
+	.describe('Remove your Library reference without deleting the artifact.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Originating conversation UUID.')
+	.option('--asset', 'Artifact revision UUID.')
+	.action(run(workspace.removeSavedAsset));
+
+cli
+	.command('workspace agent-schedules')
+	.describe('List Agent scheduled messages.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--conversation', 'Filter by the Agent owning this conversation UUID.')
+	.action(run(workspace.listAgentSchedules));
+
+cli
+	.command('workspace agent-schedule')
+	.describe('Read a saved Agent message and occurrence history.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--schedule', 'Schedule UUID.')
+	.action(run(workspace.getAgentSchedule));
+
+cli
+	.command('workspace agent-schedule preview')
+	.describe('Preview recurrence without scheduling execution.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--data', 'JSON timing configuration or - for stdin.')
+	.action(run(workspace.previewAgentSchedule));
+
+cli
+	.command('workspace agent-schedule create')
+	.describe('Save a self-contained Agent scheduled message; does not run it now.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--data', 'JSON instruction, origin, model, destination and timing or - for stdin.')
+	.option('--yes', 'Confirm enabling future scheduled execution.', false)
+	.action(run(workspace.createAgentSchedule));
+
+cli
+	.command('workspace agent-schedule update')
+	.describe('Update, pause, resume, delete or run a saved Agent message using its expectedRevision.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--schedule', 'Schedule UUID.')
+	.option('--data', 'JSON action and expectedRevision; run also requires a stable idempotencyKey.')
+	.option('--yes', 'Confirm execution or deletion effects.', false)
+	.action(run(workspace.updateAgentSchedule));
+
 cli.command('workspace clear').describe('Exit local workspace context.').action(run(workspace.clearWorkspace));
 
 cli
@@ -146,7 +258,9 @@ cli
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example("workspace template publish --template abc --data '{}' --yes")
+	.example(
+		'workspace template publish --template abc --data \'{"acknowledgment":true,"notes":"Updated scheduled message"}\' --yes',
+	)
 	.action(run(workspace.publishTemplate));
 
 cli
@@ -160,6 +274,7 @@ cli
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
 	.option('--type', 'Project type identifier from types.')
+	.option('--kind', 'Template kind: agent or project.')
 	.example('workspace templates --category business --type website')
 	.action(run(workspace.listTemplates));
 
@@ -1230,8 +1345,8 @@ cli
 	.action(run(project.logsOperations));
 
 cli
-	.command('project workflows')
-	.describe('List saved project workflows.')
+	.command('project schedules')
+	.describe('List saved project schedules.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100; default 20).')
@@ -1239,65 +1354,104 @@ cli
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(project.listWorkflows));
+	.action(run(project.listSchedules));
 
 cli
-	.command('project workflow')
-	.describe('Inspect a saved workflow and its runs.')
+	.command('project schedule')
+	.describe('Inspect a saved schedule and its runs.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--workflow', 'Workflow identifier.')
+	.option('--schedule', 'Schedule identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(project.getWorkflow));
+	.action(run(project.getSchedule));
 
 cli
-	.command('project workflow create')
-	.describe('Create a workflow with its schedule initially disabled.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project workflow create --project abc --data \'{"name":"Daily review"}\'')
-	.action(run(project.createWorkflow));
-
-cli
-	.command('project workflow update')
-	.describe('Update saved workflow steps.')
+	.command('project schedule create')
+	.describe('Create a self-contained scheduled message.')
+	.option('--yes', 'Confirm enabling scheduled execution.', false)
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
-	.option('--yes', 'Confirm this operation.', false)
-	.option('--workflow', 'Workflow identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project workflow update --project abc --data \'{"name":"Daily review","revision":1}\' --yes')
-	.action(run(project.updateWorkflow));
+	.example(
+		'project schedule create --project abc --data \'{"name":"Daily review","instructions":"Summarize the saved Project changes."}\'',
+	)
+	.action(run(project.createSchedule));
 
 cli
-	.command('project workflow schedule')
-	.describe('Update recurrence; enabling it authorizes real actions and usage charges.')
+	.command('project schedule update')
+	.describe('Update a scheduled message atomically.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
-	.option('--workflow', 'Workflow identifier.')
+	.option('--schedule', 'Schedule identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project workflow schedule --project abc --data \'{"enabled":false}\' --yes')
-	.action(run(project.scheduleWorkflow));
+	.example('project schedule update --project abc --data \'{"name":"Daily review","revision":1}\' --yes')
+	.action(run(project.updateSchedule));
 
 cli
-	.command('project workflow run')
+	.command('project schedule delete')
+	.describe('Delete a saved scheduled message; retain execution history.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
+	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.option('--schedule', 'Schedule identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.example('project schedule delete --project abc --data \'{"revision":1}\' --yes')
+	.action(run(project.deleteSchedule));
+
+cli
+	.command('project schedule run')
+	.option('--data', 'JSON object containing revision and a stable requestKey; reuse for retries.')
 	.describe('Run saved work now; may send notifications, change external systems, and incur usage charges.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--yes', 'Confirm this operation.', false)
-	.option('--workflow', 'Workflow identifier.')
+	.option('--schedule', 'Schedule identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(project.runWorkflow));
+	.action(run(project.runSchedule));
+
+cli
+	.command('project schedule runs')
+	.describe('Read scheduled-message runs.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project.')
+	.option('--target-test', 'Test UUID under this Project.')
+	.option('--schedule', 'Schedule UUID.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Records per page (1-100).')
+	.action(run(project.listScheduleRuns));
+
+cli
+	.command('project schedule occurrences')
+	.describe('Read scheduled-message occurrences.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project.')
+	.option('--target-test', 'Test UUID under this Project.')
+	.option('--schedule', 'Schedule UUID.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Records per page (1-100).')
+	.action(run(project.listScheduleOccurrences));
+
+cli
+	.command('project schedule run-detail')
+	.describe('Read scheduled-message run-detail.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project.')
+	.option('--target-test', 'Test UUID under this Project.')
+	.option('--schedule', 'Schedule UUID.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--run', 'Run UUID.')
+	.action(run(project.getScheduleRun));
 
 // Operator conversations, messages, and runs
 cli

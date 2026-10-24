@@ -4,16 +4,19 @@ import { identifier, input } from 'src/utils/cli-input';
 import { assertOperationSucceeded } from 'src/utils/cli-operation';
 import { sdkEnvelope } from 'src/utils/sdk-output';
 
-export const scheduleWorkflow = async (options: any) => {
+export const runSchedule = async (options: any) => {
 	const context = await projectContext(options);
 	const target = JSON.stringify({
 		workspace: context.workspaceUuid,
 		project: context.projectResource.uuid,
-		workflow: options.workflow,
+		schedule: options.schedule,
 	});
-	const data = await input(options, ['enabled', 'recurrence', 'time', 'timezone', 'actingUserId']);
-	await confirm(options, 'Update recurrence; enabling it authorizes real actions and usage charges.: ' + target + '?');
-	const response = sdkEnvelope(await context.projectResource.workflows.schedule(identifier(options['workflow']), data));
+	const data = await input(options, ['revision', 'requestKey']);
+	await confirm(
+		options,
+		'Run saved work now; may send notifications, change external systems, and incur usage charges.: ' + target + '?',
+	);
+	const response = sdkEnvelope(await context.projectResource.schedules.run(identifier(options['schedule']), data));
 	assertOperationSucceeded(response, target);
 	return response;
 };

@@ -1,4 +1,22 @@
+export {
+	listWorkspaceChats,
+	getWorkspaceChat,
+	createWorkspaceChat,
+	updateWorkspaceChat,
+	listWorkspaceChatConversations,
+	createWorkspaceChatConversation,
+	listSavedAssets,
+	saveAsset,
+	removeSavedAsset,
+} from 'src/commands/workspace/agents';
 export { updateWorkspace } from 'src/commands/workspace/update';
+export {
+	listAgentSchedules,
+	getAgentSchedule,
+	previewAgentSchedule,
+	createAgentSchedule,
+	updateAgentSchedule,
+} from 'src/commands/workspace/schedules';
 export { getConversation } from 'src/commands/workspace/conversations/get';
 export { listMessages } from 'src/commands/workspace/messages/list';
 export { createMessage } from 'src/commands/workspace/messages/create';

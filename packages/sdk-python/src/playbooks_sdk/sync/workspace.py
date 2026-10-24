@@ -17,11 +17,61 @@ from playbooks_sdk.sync.project import Projects
 from playbooks_sdk.transport import Transport
 
 
+class WorkspaceAgents(Listing):
+    def get(
+        self, id: Identifier, *, conversation_id: str | None = None, configuration: bool = False
+    ) -> Any:
+        return self._get(
+            f"{self._path}/{identifier(id)}",
+            {"conversationId": conversation_id, "configuration": configuration},
+        )
+
+    def create(self, data: Data) -> Any:
+        return self._action(self._path, "POST", data)
+
+    def update(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}", "PUT", data)
+
+    def conversations(self, id: Identifier) -> ApiResponse:
+        return self._list(f"{self._path}/{identifier(id)}/conversations", {})
+
+    def create_conversation(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/conversations", "POST", data)
+
+    def files(self, id: Identifier) -> Files:
+        return Files(self._transport, f"{self._path}/{identifier(id)}/files")
+
+
+class SavedAssets(Listing):
+    def save(self, conversation_id: Identifier, asset_id: Identifier) -> Any:
+        return self._action(
+            f"/conversations/{identifier(conversation_id)}/assets/{identifier(asset_id)}/save",
+            "POST",
+        )
+
+    def remove(self, conversation_id: Identifier, asset_id: Identifier) -> Any:
+        return self._action(
+            f"/conversations/{identifier(conversation_id)}/assets/{identifier(asset_id)}/save",
+            "DELETE",
+        )
+
+
+class AgentSchedules(ReadCollection):
+    def create(self, data: Data) -> Any:
+        return self._action(self._path, "POST", data)
+
+    def preview(self, data: Data) -> Any:
+        return self._action(f"{self._path}/preview", "POST", data)
+
+    def update(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}", "PUT", data)
+
+
 class Templates(EditableCollection):
     update_method = "PATCH"
 
-    def publish(self, id: Identifier) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/publish", "POST", {})
+    def publish(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/publish", "POST", data)
 
     def versions(self, id: Identifier, **options: Any) -> ApiResponse:
         return self._list(f"{self._path}/{identifier(id)}/versions", options)
@@ -109,6 +159,18 @@ class Workspace(Resource):
     @property
     def runs(self) -> Runs:
         return Runs(self._transport, "/operator/runs")
+
+    @property
+    def agents(self) -> WorkspaceAgents:
+        return WorkspaceAgents(self._transport, "/agents")
+
+    @property
+    def saved_assets(self) -> SavedAssets:
+        return SavedAssets(self._transport, "/workspace/artifacts/saved")
+
+    @property
+    def agent_schedules(self) -> AgentSchedules:
+        return AgentSchedules(self._transport, "/workspace/conversation-schedules")
 
     @property
     def files(self) -> Files:

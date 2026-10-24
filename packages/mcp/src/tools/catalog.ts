@@ -7,22 +7,26 @@ import { operatorTools } from 'src/tools/operator.js';
 import { projectAdministrationTools } from 'src/tools/project-administration.js';
 import { projectConfigurationTools } from 'src/tools/project-configuration.js';
 import { projectControlTools } from 'src/tools/project-controls.js';
+import { projectSchedulesTools } from 'src/tools/project-schedules.js';
 import { projectSourceTools } from 'src/tools/project-source.js';
 import { projectTestTools } from 'src/tools/project-tests.js';
-import { projectWorkflowsTools } from 'src/tools/project-workflows.js';
 import { templatesTools } from 'src/tools/templates.js';
+import { workspaceAgentsTools } from 'src/tools/workspace-agents.js';
 import { workspaceConfigurationTools } from 'src/tools/workspace-configuration.js';
 import { workspaceDomainsTools } from 'src/tools/workspace-domains.js';
 import { workspaceFinanceTools } from 'src/tools/workspace-finance.js';
 import { workspaceInboxTools } from 'src/tools/workspace-inbox.js';
 import { workspaceMembersTools } from 'src/tools/workspace-members.js';
 import { workspaceOperatorTools } from 'src/tools/workspace-operator.js';
+import { workspaceSchedulesTools } from 'src/tools/workspace-schedules.js';
 
 export const catalog: ToolDefinition[] = (
 	[
 		...coreTools,
 		...discoveryTools,
 		...workspaceConfigurationTools,
+		...workspaceSchedulesTools,
+		...workspaceAgentsTools,
 		...localTools,
 		...templatesTools,
 		...workspaceMembersTools,
@@ -32,7 +36,7 @@ export const catalog: ToolDefinition[] = (
 		...projectAdministrationTools,
 		...projectConfigurationTools,
 		...projectSourceTools,
-		...projectWorkflowsTools,
+		...projectSchedulesTools,
 		...workspaceOperatorTools,
 		...operatorTools,
 		...projectControlTools,

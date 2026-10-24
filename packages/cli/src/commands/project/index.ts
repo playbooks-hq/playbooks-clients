@@ -64,12 +64,13 @@ export { getRelease } from 'src/commands/project/releases/get';
 export { rollbackRelease } from 'src/commands/project/releases/rollback';
 export { sandboxOperations } from 'src/commands/project/sandbox';
 export { logsOperations } from 'src/commands/project/logs';
-export { listWorkflows } from 'src/commands/project/workflows/list';
-export { getWorkflow } from 'src/commands/project/workflows/get';
-export { createWorkflow } from 'src/commands/project/workflows/create';
-export { updateWorkflow } from 'src/commands/project/workflows/update';
-export { scheduleWorkflow } from 'src/commands/project/workflows/schedule';
-export { runWorkflow } from 'src/commands/project/workflows/run';
+export { listSchedules } from 'src/commands/project/schedules/list';
+export { getSchedule } from 'src/commands/project/schedules/get';
+export { createSchedule } from 'src/commands/project/schedules/create';
+export { updateSchedule } from 'src/commands/project/schedules/update';
+export { deleteSchedule } from 'src/commands/project/schedules/delete';
+export { listScheduleRuns, listScheduleOccurrences, getScheduleRun } from 'src/commands/project/schedules/history';
+export { runSchedule } from 'src/commands/project/schedules/run';
 export { listTests, getTest, getTestOperation, createTest, testAction } from 'src/commands/project/tests';
 export {
 	getRunControl,

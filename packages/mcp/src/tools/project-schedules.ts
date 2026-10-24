@@ -1,9 +1,9 @@
 import type { ToolDefinition } from 'src/tools/definition.js';
 
-export const projectWorkflowsTools: ToolDefinition[] = [
+export const projectSchedulesTools: ToolDefinition[] = [
 	{
-		command: 'project workflows',
-		description: 'List saved project workflows.',
+		command: 'project schedules',
+		description: 'List saved project schedules.',
 		toolset: 'project',
 		readOnly: true,
 		destructive: false,
@@ -39,8 +39,8 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'project workflow',
-		description: 'Inspect a saved workflow and its runs.',
+		command: 'project schedule',
+		description: 'Inspect a saved scheduled message. Use runs or occurrences to read execution history.',
 		toolset: 'project',
 		readOnly: true,
 		destructive: false,
@@ -54,9 +54,9 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 				description: 'Project identifier.',
 				required: true,
 			},
-			workflow: {
-				flag: 'workflow',
-				description: 'Workflow identifier.',
+			schedule: {
+				flag: 'schedule',
+				description: 'Schedule identifier.',
 				required: true,
 			},
 			workspace: {
@@ -67,12 +67,17 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'project workflow create',
-		description: 'Create a workflow with its schedule initially disabled.',
+		command: 'project schedule create',
+		description: 'Create a self-contained scheduled message.',
 		toolset: 'project',
 		readOnly: false,
 		destructive: false,
 		options: {
+			confirm: {
+				flag: 'yes',
+				kind: 'boolean',
+				description: 'Confirm enabling future execution and usage. Required when enabled is true.',
+			},
 			select: {
 				flag: 'select',
 				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
@@ -88,12 +93,24 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['name', 'status', 'steps', 'schedule'],
+		dataFields: [
+			'name',
+			'instructions',
+			'references',
+			'modelId',
+			'branchId',
+			'destination',
+			'destinationConversationId',
+			'enabled',
+			'recurrence',
+			'time',
+			'timezone',
+		],
 		dataOptional: false,
 	},
 	{
-		command: 'project workflow update',
-		description: 'Update saved workflow steps.',
+		command: 'project schedule update',
+		description: 'Update the saved message, model, branch, destination, and timing atomically.',
 		toolset: 'project',
 		readOnly: false,
 		destructive: true,
@@ -113,9 +130,9 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 					'Confirm the reviewed operation and its possible side effects or usage charges. Defaults to false.',
 				kind: 'boolean',
 			},
-			workflow: {
-				flag: 'workflow',
-				description: 'Workflow identifier.',
+			schedule: {
+				flag: 'schedule',
+				description: 'Schedule identifier.',
 				required: true,
 			},
 			workspace: {
@@ -124,12 +141,25 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['name', 'status', 'steps', 'schedule', 'revision'],
+		dataFields: [
+			'name',
+			'instructions',
+			'references',
+			'modelId',
+			'branchId',
+			'destination',
+			'destinationConversationId',
+			'enabled',
+			'recurrence',
+			'time',
+			'timezone',
+			'revision',
+		],
 		dataOptional: false,
 	},
 	{
-		command: 'project workflow schedule',
-		description: 'Update recurrence; enabling it authorizes real actions and usage charges.',
+		command: 'project schedule delete',
+		description: 'Delete a saved scheduled message; retain execution history.',
 		toolset: 'project',
 		readOnly: false,
 		destructive: true,
@@ -149,9 +179,9 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 					'Confirm the reviewed operation and its possible side effects or usage charges. Defaults to false.',
 				kind: 'boolean',
 			},
-			workflow: {
-				flag: 'workflow',
-				description: 'Workflow identifier.',
+			schedule: {
+				flag: 'schedule',
+				description: 'Schedule identifier.',
 				required: true,
 			},
 			workspace: {
@@ -160,11 +190,11 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['enabled', 'recurrence', 'time', 'timezone', 'actingUserId'],
+		dataFields: ['revision'],
 		dataOptional: false,
 	},
 	{
-		command: 'project workflow run',
+		command: 'project schedule run',
 		description: 'Run saved work now; may send notifications, change external systems, and incur usage charges.',
 		toolset: 'project',
 		readOnly: false,
@@ -185,9 +215,9 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 					'Confirm the reviewed operation and its possible side effects or usage charges. Defaults to false.',
 				kind: 'boolean',
 			},
-			workflow: {
-				flag: 'workflow',
-				description: 'Workflow identifier.',
+			schedule: {
+				flag: 'schedule',
+				description: 'Schedule identifier.',
 				required: true,
 			},
 			workspace: {
@@ -196,5 +226,25 @@ export const projectWorkflowsTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
+		dataFields: ['revision', 'requestKey'],
+		dataOptional: false,
 	},
+	...(['runs', 'occurrences', 'run-detail'] as const).map(kind => ({
+		command: `project schedule ${kind}`,
+		description: `Read scheduled-message ${kind}.`,
+		toolset: 'project' as const,
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', required: true, description: 'Explicit authorized Workspace UUID.' },
+			project: { flag: 'project', required: true, description: 'Project UUID.' },
+			schedule: { flag: 'schedule', required: true, description: 'Schedule UUID.' },
+			...(kind === 'run-detail'
+				? { run: { flag: 'run', required: true, description: 'Run UUID.' } }
+				: {
+						page: { flag: 'page', kind: 'number' as const, description: 'Zero-based page.' },
+						pageSize: { flag: 'page-size', kind: 'number' as const, description: 'Records per page (1-100).' },
+					}),
+		},
+	})),
 ];

@@ -13,7 +13,7 @@ export class Files {
 	list(options?: ListOptions) {
 		return listing(this.#transport, this.#path, options);
 	}
-	async upload(input: FileUpload): Promise<RecordData> {
+	async upload(input: FileUpload): Promise<RecordData[]> {
 		const { name, expectedRevision } = input;
 		if (
 			!name ||

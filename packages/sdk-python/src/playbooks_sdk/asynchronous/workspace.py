@@ -17,11 +17,61 @@ from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, iden
 from playbooks_sdk.transport import AsyncTransport as Transport
 
 
+class WorkspaceAgents(Listing):
+    async def get(
+        self, id: Identifier, *, conversation_id: str | None = None, configuration: bool = False
+    ) -> Any:
+        return await self._get(
+            f"{self._path}/{identifier(id)}",
+            {"conversationId": conversation_id, "configuration": configuration},
+        )
+
+    async def create(self, data: Data) -> Any:
+        return await self._action(self._path, "POST", data)
+
+    async def update(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}", "PUT", data)
+
+    async def conversations(self, id: Identifier) -> ApiResponse:
+        return await self._list(f"{self._path}/{identifier(id)}/conversations", {})
+
+    async def create_conversation(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/conversations", "POST", data)
+
+    def files(self, id: Identifier) -> Files:
+        return Files(self._transport, f"{self._path}/{identifier(id)}/files")
+
+
+class SavedAssets(Listing):
+    async def save(self, conversation_id: Identifier, asset_id: Identifier) -> Any:
+        return await self._action(
+            f"/conversations/{identifier(conversation_id)}/assets/{identifier(asset_id)}/save",
+            "POST",
+        )
+
+    async def remove(self, conversation_id: Identifier, asset_id: Identifier) -> Any:
+        return await self._action(
+            f"/conversations/{identifier(conversation_id)}/assets/{identifier(asset_id)}/save",
+            "DELETE",
+        )
+
+
+class AgentSchedules(ReadCollection):
+    async def create(self, data: Data) -> Any:
+        return await self._action(self._path, "POST", data)
+
+    async def preview(self, data: Data) -> Any:
+        return await self._action(f"{self._path}/preview", "POST", data)
+
+    async def update(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}", "PUT", data)
+
+
 class Templates(EditableCollection):
     update_method = "PATCH"
 
-    async def publish(self, id: Identifier) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/publish", "POST", {})
+    async def publish(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/publish", "POST", data)
 
     async def versions(self, id: Identifier, **options: Any) -> ApiResponse:
         return await self._list(f"{self._path}/{identifier(id)}/versions", options)
@@ -109,6 +159,18 @@ class Workspace(Resource):
     @property
     def runs(self) -> Runs:
         return Runs(self._transport, "/operator/runs")
+
+    @property
+    def agents(self) -> WorkspaceAgents:
+        return WorkspaceAgents(self._transport, "/agents")
+
+    @property
+    def saved_assets(self) -> SavedAssets:
+        return SavedAssets(self._transport, "/workspace/artifacts/saved")
+
+    @property
+    def agent_schedules(self) -> AgentSchedules:
+        return AgentSchedules(self._transport, "/workspace/conversation-schedules")
 
     @property
     def files(self) -> Files:

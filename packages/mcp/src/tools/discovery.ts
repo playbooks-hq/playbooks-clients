@@ -38,6 +38,7 @@ export const discoveryTools: ToolDefinition[] = [
 				flag: 'category',
 				description: 'Category identifier from categories.',
 			},
+			kind: { flag: 'kind', description: 'Template kind: agent or project.' },
 			type: {
 				flag: 'type',
 				description: 'Project type identifier from types.',

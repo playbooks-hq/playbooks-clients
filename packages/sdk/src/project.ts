@@ -10,7 +10,7 @@ import type { Transport } from 'src/transport.js';
 import type { AgentCreate } from 'src/types.js';
 import type { ApiResponse, LogData, LogOptions, PreflightData, RecordData } from 'src/types.js';
 import type { LibraryData, ReleaseData } from 'src/types.js';
-import type { AgentData, AgentUpdate, WorkflowData } from 'src/types.js';
+import type { AgentData, AgentUpdate, ScheduleData } from 'src/types.js';
 import type {
 	ActionReceipt,
 	BudgetUpdate,
@@ -25,10 +25,11 @@ import type {
 	ProjectUpdate,
 	PublishInput,
 	ScheduleInput,
+	ScheduleRunInput,
+	ScheduleUpdate,
 	SettingsInput,
 	SourceInput,
 	WaitOptions,
-	WorkflowInput,
 } from 'src/types.js';
 
 export interface Project extends Readonly<ProjectData> {
@@ -216,16 +217,24 @@ export class Project extends Resource<ProjectData> {
 				action(this.#transport, `${this.#path}/ownership-request/${identifier(id)}/cancel`, 'POST'),
 		};
 	}
-	get workflows() {
-		const collection = new Collection<WorkflowData, WorkflowInput>(this.#transport, `${this.#path}/workflows`);
+	get schedules() {
+		const path = `${this.#path}/schedules`;
+		const collection = new Collection<ScheduleData, ScheduleUpdate, ScheduleInput>(this.#transport, path);
 		return {
 			list: (options?: ListOptions) => collection.list(options),
-			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
-			create: (input: WorkflowInput) => collection.create(input),
-			update: (id: Identifier, input: WorkflowInput) => collection.update(id, input),
-			schedule: (id: Identifier, input: ScheduleInput) =>
-				action(this.#transport, `${this.#path}/workflows/${identifier(id)}/schedule`, 'PUT', input),
-			run: (id: Identifier) => action(this.#transport, `${this.#path}/workflows/${identifier(id)}/runs`, 'POST'),
+			get: (id: Identifier) => collection.get(id),
+			create: (input: ScheduleInput) => collection.create(input),
+			update: (id: Identifier, input: ScheduleUpdate) => collection.update(id, input),
+			delete: (id: Identifier, input: { revision: number }) =>
+				action(this.#transport, `${path}/${identifier(id)}`, 'DELETE', input),
+			run: (id: Identifier, input: ScheduleRunInput) =>
+				action(this.#transport, `${path}/${identifier(id)}/runs`, 'POST', input),
+			runs: (id: Identifier, options?: ListOptions) =>
+				listing(this.#transport, `${path}/${identifier(id)}/runs`, options),
+			occurrences: (id: Identifier, options?: ListOptions) =>
+				listing(this.#transport, `${path}/${identifier(id)}/occurrences`, options),
+			getRun: (id: Identifier, runId: Identifier) =>
+				get(this.#transport, `${path}/${identifier(id)}/runs/${identifier(runId)}`),
 		};
 	}
 	async #deployPath() {

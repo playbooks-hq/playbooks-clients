@@ -36,6 +36,8 @@ The application reads the environment in these examples. The SDK never reads API
 
 Use context managers to close connections. Explicit `client.close()` and `await client.aclose()` are also available. Resources depend on their originating client's lifetime.
 
+Agent scheduled messages use `workspace.agent_schedules.list/get/preview/create/update`. Both sync and async clients use the Server fields: creation requires `idempotencyKey`, and mutation requires `action` and `expectedRevision`. Run-now also requires a stable `idempotencyKey`; reuse it after an uncertain response. Save the complete instruction and explicit model selection rather than relying on conversation history.
+
 ## Resources and inputs
 
 Both clients have matching resource methods. Async I/O methods must be awaited; resource properties and `domains.records(id)` are immediate. Streams have their own context managers.
@@ -46,7 +48,7 @@ Both clients have matching resource methods. Async I/O methods must be awaited; 
 | Workspace | `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
 | Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
 | Project | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `ownership`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
-| Project development | `files`, `source`, `branches`, `checkpoints`, `workflows`, `sandbox`, `logs` |
+| Project development | `files`, `source`, `branches`, `checkpoints`, `schedules`, `sandbox`, `logs` |
 | Publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
 | Operators | `conversations`, `runs`; verified conversations expose messages, with a selected branch for Project messages |
 

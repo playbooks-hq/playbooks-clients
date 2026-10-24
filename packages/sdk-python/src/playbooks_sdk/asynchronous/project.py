@@ -150,12 +150,24 @@ class Ownership(ReadEndpoint):
         return await self._action(f"{self._path}/{identifier(id)}/cancel", "POST")
 
 
-class Workflows(Collection):
-    async def schedule(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/schedule", "PUT", data)
+class Schedules(Collection):
+    async def run(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/runs", "POST", data)
 
-    async def run(self, id: Identifier) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/runs", "POST")
+    async def delete(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}", "DELETE", data)
+
+    async def runs(self, id: Identifier, **options: Any) -> ApiResponse:
+        return await self._list(f"{self._path}/{identifier(id)}/runs", options)
+
+    async def occurrences(self, id: Identifier, **options: Any) -> ApiResponse:
+        return await self._list(f"{self._path}/{identifier(id)}/occurrences", options)
+
+    async def get_run(self, id: Identifier, run_id: Identifier) -> Resource:
+        result: Resource = await self._get(
+            f"{self._path}/{identifier(id)}/runs/{identifier(run_id)}"
+        )
+        return result
 
 
 class Releases(ReadCollection):
@@ -324,8 +336,8 @@ class Project(Resource):
         return Ownership(self._transport, f"{self._path}/ownership-request")
 
     @property
-    def workflows(self) -> Workflows:
-        return Workflows(self._transport, f"{self._path}/workflows")
+    def schedules(self) -> Schedules:
+        return Schedules(self._transport, f"{self._path}/schedules")
 
     @property
     def releases(self) -> Releases:
