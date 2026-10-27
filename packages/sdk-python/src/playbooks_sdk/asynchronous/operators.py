@@ -102,7 +102,7 @@ class ConversationBranches(Endpoint):
 
     async def get(self, id: Identifier) -> ConversationBranch:
         if not self._sandbox:
-            raise PlaybooksError(422, "Workspace Operator messages are not branch-scoped.")
+            raise PlaybooksError(422, "Agent messages are not branch-scoped.")
         path = f"{self._path}/{identifier(id)}"
         data = (await self._get(path)).to_dict()
         return ConversationBranch(

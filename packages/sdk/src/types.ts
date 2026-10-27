@@ -280,7 +280,7 @@ export interface MemberData extends RecordData {
 	userId?: number;
 	memberRole?: string;
 }
-export interface AgentData extends RecordData {
+export interface ProjectAgentData extends RecordData {
 	description?: string | null;
 	revision?: string | number;
 	projectId?: number;
@@ -292,7 +292,7 @@ export interface AgentComposerOverrides {
 	deliveryMode?: 'queue' | 'steer' | null;
 	permissions?: 'autonomous' | 'critical' | 'all' | null;
 }
-export interface WorkspaceAgentData extends RecordData {
+export interface AgentData extends RecordData {
 	id: number;
 	uuid: string;
 	revision: number;
@@ -301,14 +301,14 @@ export interface WorkspaceAgentData extends RecordData {
 	resourceSelection: { skillIds?: number[] | null; mcpIds?: number[] | null; connectorIds?: number[] };
 	conversation?: ConversationData;
 }
-export interface WorkspaceAgentCreate {
+export interface AgentCreate {
 	idempotencyKey: string;
 	name?: string;
 	composerOverrides?: AgentComposerOverrides;
 	designSelection?: { designId: number | null };
 	blankStart?: boolean;
 }
-export type WorkspaceAgentUpdate = { revision: number } & (
+export type AgentUpdate = { revision: number } & (
 	| {
 			action?: 'configure';
 			name?: string;
@@ -415,13 +415,13 @@ export interface LogData extends RecordData {
 	message?: string;
 	timestamp?: string;
 }
-export interface AgentCreate {
+export interface ProjectAgentCreate {
 	name: string;
 	description?: string;
 	thumbnail?: string;
 	creationKey?: string;
 }
-export interface AgentUpdate {
+export interface ProjectAgentUpdate {
 	status: string;
 	revision: string | number;
 }

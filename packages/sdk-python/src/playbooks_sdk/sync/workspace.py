@@ -17,7 +17,7 @@ from playbooks_sdk.sync.project import Projects
 from playbooks_sdk.transport import Transport
 
 
-class WorkspaceAgents(Listing):
+class Agents(Listing):
     def get(
         self, id: Identifier, *, conversation_id: str | None = None, configuration: bool = False
     ) -> Any:
@@ -158,11 +158,11 @@ class Workspace(Resource):
 
     @property
     def runs(self) -> Runs:
-        return Runs(self._transport, "/operator/runs")
+        return Runs(self._transport, "/agents/runs")
 
     @property
-    def agents(self) -> WorkspaceAgents:
-        return WorkspaceAgents(self._transport, "/agents")
+    def agents(self) -> Agents:
+        return Agents(self._transport, "/agents")
 
     @property
     def saved_assets(self) -> SavedAssets:
@@ -170,7 +170,7 @@ class Workspace(Resource):
 
     @property
     def agent_schedules(self) -> AgentSchedules:
-        return AgentSchedules(self._transport, "/workspace/conversation-schedules")
+        return AgentSchedules(self._transport, "/agents/schedules")
 
     @property
     def files(self) -> Files:

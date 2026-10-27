@@ -7,10 +7,10 @@ import { ProjectConversations, Runs } from 'src/operators.js';
 import { ProjectTests } from 'src/project-tests.js';
 import { action, get, identifier, listing, record, Resource, succeeded } from 'src/resource.js';
 import type { Transport } from 'src/transport.js';
-import type { AgentCreate } from 'src/types.js';
+import type { ProjectAgentCreate } from 'src/types.js';
 import type { ApiResponse, LogData, LogOptions, PreflightData, RecordData } from 'src/types.js';
 import type { LibraryData, ReleaseData } from 'src/types.js';
-import type { AgentData, AgentUpdate, ScheduleData } from 'src/types.js';
+import type { ProjectAgentData, ProjectAgentUpdate, ScheduleData } from 'src/types.js';
 import type {
 	ActionReceipt,
 	BudgetUpdate,
@@ -109,12 +109,15 @@ export class Project extends Resource<ProjectData> {
 		};
 	}
 	get agents() {
-		const collection = new Collection<AgentData, AgentUpdate, AgentCreate>(this.#transport, `${this.#path}/agents`);
+		const collection = new Collection<ProjectAgentData, ProjectAgentUpdate, ProjectAgentCreate>(
+			this.#transport,
+			`${this.#path}/agents`,
+		);
 		return {
 			list: (options?: ListOptions) => collection.list(options),
 			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
-			create: (input: AgentCreate) => collection.create(input),
-			update: (id: Identifier, input: AgentUpdate) => collection.update(id, input),
+			create: (input: ProjectAgentCreate) => collection.create(input),
+			update: (id: Identifier, input: ProjectAgentUpdate) => collection.update(id, input),
 		};
 	}
 	get tests() {

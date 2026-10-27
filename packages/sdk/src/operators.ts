@@ -114,7 +114,7 @@ export class Conversation extends Resource<ConversationData> {
 	get branches() {
 		return {
 			get: async (id: Identifier) => {
-				if (!this.#sandbox) throw new PlaybooksError(422, 'Workspace Operator messages are not branch-scoped.');
+				if (!this.#sandbox) throw new PlaybooksError(422, 'Agent messages are not branch-scoped.');
 				const path = `${this.#path}/branches/${identifier(id)}`;
 				const response = await get(this.#transport, path);
 				return new ConversationBranch(

@@ -9,17 +9,17 @@ import type { Transport } from 'src/transport.js';
 import type { BudgetUpdate, TemplateListOptions, TemplatePublish } from 'src/types.js';
 import type { MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
 import type {
+	AgentCreate,
+	AgentData,
 	AgentScheduleCreate,
 	AgentScheduleMutation,
 	AgentScheduleTiming,
+	AgentUpdate,
 	ConversationData,
 	DnsRecordInput,
 	Identifier,
 	ListOptions,
 	SettingsInput,
-	WorkspaceAgentCreate,
-	WorkspaceAgentData,
-	WorkspaceAgentUpdate,
 	WorkspaceData,
 	WorkspaceUpdate,
 } from 'src/types.js';
@@ -52,18 +52,17 @@ export class Workspace extends Resource<WorkspaceData> {
 		return new Conversations(this.#transport, '', this.id, false);
 	}
 	get runs() {
-		return new Runs(this.#transport, '/operator/runs');
+		return new Runs(this.#transport, '/agents/runs');
 	}
 	get agents() {
 		const path = '/agents';
 		return {
-			list: (options?: ListOptions & { archived?: boolean }) =>
-				listing<WorkspaceAgentData>(this.#transport, path, options),
+			list: (options?: ListOptions & { archived?: boolean }) => listing<AgentData>(this.#transport, path, options),
 			get: (id: Identifier, options: { conversationId?: string; configuration?: boolean } = {}) =>
-				get<WorkspaceAgentData>(this.#transport, `${path}/${identifier(id)}`, options),
-			create: (input: WorkspaceAgentCreate) => action<WorkspaceAgentData>(this.#transport, path, 'POST', input),
-			update: (id: Identifier, input: WorkspaceAgentUpdate) =>
-				action<WorkspaceAgentData>(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
+				get<AgentData>(this.#transport, `${path}/${identifier(id)}`, options),
+			create: (input: AgentCreate) => action<AgentData>(this.#transport, path, 'POST', input),
+			update: (id: Identifier, input: AgentUpdate) =>
+				action<AgentData>(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
 			conversations: (id: Identifier) => ({
 				list: () => listing<ConversationData>(this.#transport, `${path}/${identifier(id)}/conversations`),
 				create: (input: { title?: string; idempotencyKey: string }) =>
@@ -90,7 +89,7 @@ export class Workspace extends Resource<WorkspaceData> {
 		};
 	}
 	get agentSchedules() {
-		const path = '/workspace/conversation-schedules';
+		const path = '/agents/schedules';
 		return {
 			list: async (options: { conversationId?: string } = {}) => {
 				const response = await this.#transport.request(path, 'GET', undefined, options);
