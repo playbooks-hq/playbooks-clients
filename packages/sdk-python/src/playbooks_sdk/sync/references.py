@@ -6,7 +6,7 @@ from playbooks_sdk.resource import Identifier, identifier
 from playbooks_sdk.sync.core import Listing
 
 
-class Files(Listing):
+class References(Listing):
     def upload(self, *, name: str, content: bytes, expected_revision: str | None = None) -> Any:
         if (
             not name
@@ -14,9 +14,9 @@ class Files(Listing):
             or name.startswith("/")
             or any(part in ("", ".", "..") for part in name.split("/"))
         ):
-            raise PlaybooksError(422, "Provide a safe relative Agent File name.")
+            raise PlaybooksError(422, "Provide a safe relative Reference name.")
         if len(content) > 20 * 1024 * 1024:
-            raise PlaybooksError(422, "Agent Files must not exceed 20 MB.")
+            raise PlaybooksError(422, "References must not exceed 20 MB.")
         return self._transport.request(
             self._path,
             "POST",

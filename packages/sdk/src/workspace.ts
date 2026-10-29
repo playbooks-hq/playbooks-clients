@@ -1,9 +1,10 @@
+import { Assets } from 'src/assets.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
-import { Files } from 'src/files.js';
 import { Inbox } from 'src/inbox.js';
 import { Conversations, Runs } from 'src/operators.js';
 import { Projects } from 'src/project.js';
+import { References } from 'src/references.js';
 import { action, get, identifier, listing, record, Resource } from 'src/resource.js';
 import type { Transport } from 'src/transport.js';
 import type { BudgetUpdate, TemplateListOptions, TemplatePublish } from 'src/types.js';
@@ -23,6 +24,7 @@ import type {
 	WorkspaceData,
 	WorkspaceUpdate,
 } from 'src/types.js';
+import { ConversationPlans, WorkingFiles } from 'src/working-documents.js';
 
 export interface Workspace extends Readonly<WorkspaceData> {
 	readonly uuid: string;
@@ -44,6 +46,9 @@ export class Workspace extends Resource<WorkspaceData> {
 		if (data.id !== this.id) throw new PlaybooksError(502, 'The updated Workspace identity did not match.');
 		this.replace(data);
 		return this;
+	}
+	get assets() {
+		return new Assets(this.#transport);
 	}
 	get projects() {
 		return new Projects(this.#transport);
@@ -68,25 +73,16 @@ export class Workspace extends Resource<WorkspaceData> {
 				create: (input: { title?: string; idempotencyKey: string }) =>
 					action<ConversationData>(this.#transport, `${path}/${identifier(id)}/conversations`, 'POST', input),
 			}),
-			files: (id: Identifier) => new Files(this.#transport, `${path}/${identifier(id)}/files`),
+			workingFiles: (id: Identifier) => new WorkingFiles(this.#transport, `${path}/${identifier(id)}/working-files`),
+			/** Persistent background References. */
+			references: (id: Identifier) => new References(this.#transport, `${path}/${identifier(id)}/references`),
 		};
 	}
-	get savedAssets() {
-		return {
-			list: (options: { page?: number } = {}) => listing(this.#transport, '/workspace/artifacts/saved', options),
-			save: (conversationId: Identifier, assetId: Identifier) =>
-				action(
-					this.#transport,
-					`/conversations/${identifier(conversationId)}/assets/${identifier(assetId)}/save`,
-					'POST',
-				),
-			remove: (conversationId: Identifier, assetId: Identifier) =>
-				action(
-					this.#transport,
-					`/conversations/${identifier(conversationId)}/assets/${identifier(assetId)}/save`,
-					'DELETE',
-				),
-		};
+	conversationPlans(conversationId: Identifier, projectId?: Identifier) {
+		return new ConversationPlans(
+			this.#transport,
+			`${projectId ? `/projects/${identifier(projectId)}` : ''}/conversations/${identifier(conversationId)}/plans`,
+		);
 	}
 	get agentSchedules() {
 		const path = '/agents/schedules';
@@ -102,8 +98,8 @@ export class Workspace extends Resource<WorkspaceData> {
 				action(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
 		};
 	}
-	get files() {
-		return new Files(this.#transport, '/files');
+	get references() {
+		return new References(this.#transport, '/references');
 	}
 	get templates() {
 		const collection = new Collection<TemplateData, TemplateUpdate>(this.#transport, '/templates', 'PATCH');

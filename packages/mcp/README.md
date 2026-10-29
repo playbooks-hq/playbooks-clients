@@ -19,7 +19,7 @@ playbooks status
 playbooks mcp install codex
 ```
 
-The installer also accepts `claude`, `cursor`, and `vscode`. Never put credentials in tool arguments or project files.
+The installer also accepts `claude`, `cursor`, and `vscode`. Never put credentials in tool arguments or project references.
 
 ## Configuration
 

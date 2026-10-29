@@ -384,7 +384,7 @@ export interface TemplateUpdate {
 	licenseId?: number;
 	categoryIds?: number[];
 	visibility?: 'private' | 'unlisted' | 'public';
-	packageSelection?: { fileIds?: number[]; scheduleIds?: number[]; artifactIds?: string[] };
+	packageSelection?: { referenceIds?: number[]; scheduleIds?: number[]; assetIds?: string[] };
 }
 export interface BudgetUpdate {
 	creditBudget?: number | null;

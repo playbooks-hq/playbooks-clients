@@ -1,6 +1,74 @@
 import type { ToolDefinition } from 'src/tools/definition.js';
 
 export const workspaceAgentsTools: ToolDefinition[] = [
+	...['list', 'get', 'versions', 'source', 'preview', 'save'].map(
+		(operation): ToolDefinition => ({
+			command: `workspace asset ${operation}`,
+			description:
+				'Read authorized Asset versions. Save creates an independent Workspace snapshot of an exact version using a stable requestId; it never publishes, executes, moves or synchronizes the source. Requires assets.read and assets.save for saving.',
+			toolset: 'workspace',
+			readOnly: operation !== 'save',
+			destructive: false,
+			options: {
+				workspace: { flag: 'workspace', description: 'Workspace UUID.', required: true },
+				asset: { flag: 'asset', description: 'Asset identity UUID.', required: operation !== 'list' },
+				version: {
+					flag: 'version',
+					description: 'Immutable version UUID.',
+					required: ['source', 'preview'].includes(operation),
+				},
+				page: { flag: 'page', description: 'Zero-based page.', kind: 'number' },
+			},
+			...(operation === 'save' ? { dataFields: ['version', 'requestId'], dataOptional: false } : {}),
+		}),
+	),
+	...['get', 'download', 'replace', 'preview', 'save'].map(
+		(operation): ToolDefinition => ({
+			command: `workspace agent working-files ${operation}`,
+			description:
+				'Agent working tree, separate from background References. Replace requires the exact revision. Save requires a stable requestId and creates an independent Workspace snapshot. Preview HTML requires a credential-free isolated renderer.',
+			toolset: 'workspace',
+			readOnly: ['get', 'download'].includes(operation),
+			destructive: operation === 'replace',
+			options: {
+				workspace: { flag: 'workspace', description: 'Workspace UUID.', required: true },
+				agent: { flag: 'agent', description: 'Agent UUID.', required: true },
+				...(operation === 'download'
+					? {
+							output: {
+								flag: 'output',
+								description: 'New local ZIP path; never overwrites existing files.',
+								required: true,
+							},
+						}
+					: {}),
+			},
+			...(['get', 'download'].includes(operation)
+				? {}
+				: { dataFields: ['revision', 'files', 'path', 'entryPoint', 'name', 'requestId'], dataOptional: false }),
+		}),
+	),
+	...['get', 'create', 'revise', 'save'].map(
+		(operation): ToolDefinition => ({
+			command: `workspace plan ${operation}`,
+			description:
+				'Conversation-owned Plan revisions. Reads and edits never grant execution authority; changes invalidate older pending approval. Save snapshots the selected revision independently to the Workspace.',
+			toolset: 'workspace',
+			readOnly: operation === 'get',
+			destructive: false,
+			options: {
+				workspace: { flag: 'workspace', description: 'Workspace UUID.', required: true },
+				conversation: { flag: 'conversation', description: 'Conversation UUID.', required: true },
+				project: { flag: 'project', description: 'Owning Project UUID where applicable.' },
+				plan: { flag: 'plan', description: 'Plan UUID; omit for current on reads.' },
+				revision: { flag: 'revision', description: 'Exact revision to read.' },
+			},
+			...(operation === 'get'
+				? {}
+				: { dataFields: ['title', 'content', 'revision', 'requestId'], dataOptional: false }),
+		}),
+	),
+
 	{
 		command: 'workspace agents',
 		description: 'List durable Workspace Agents. Project-owned operational Agents remain under their Projects.',
@@ -93,31 +161,4 @@ export const workspaceAgentsTools: ToolDefinition[] = [
 		dataFields: ['title', 'idempotencyKey'],
 		dataOptional: false,
 	},
-	{
-		command: 'workspace saved-assets',
-		description:
-			'List the acting user’s explicitly saved Agent artifact revisions. Current source access still applies. Follow hasMore even when a page contains fewer than 25 results.',
-		toolset: 'workspace',
-		readOnly: true,
-		destructive: false,
-		options: {
-			workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
-			page: { flag: 'page', description: 'Zero-based page.', kind: 'number' },
-		},
-	},
-	...(['save', 'unsave'] as const).map(action => ({
-		command: `workspace asset ${action}`,
-		description:
-			action === 'save'
-				? 'Save an authorized ready artifact revision to your Library. Does not copy, share or execute it.'
-				: 'Remove your Library reference. Does not delete the source artifact.',
-		toolset: 'workspace' as const,
-		readOnly: false,
-		destructive: false,
-		options: {
-			workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
-			conversation: { flag: 'conversation', description: 'Originating conversation UUID.', required: true },
-			asset: { flag: 'asset', description: 'Artifact revision UUID.', required: true },
-		},
-	})),
 ];

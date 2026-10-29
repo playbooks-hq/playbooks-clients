@@ -44,7 +44,7 @@ export const localTools: ToolDefinition[] = [
 	},
 	{
 		command: 'workspace file download',
-		description: 'Download a workspace-owned agent file.',
+		description: 'Download a Workspace-owned Reference.',
 		toolset: 'local',
 		readOnly: false,
 		destructive: true,
@@ -72,7 +72,7 @@ export const localTools: ToolDefinition[] = [
 	},
 	{
 		command: 'workspace file upload',
-		description: 'Upload an agent file; replacement requires its current revision.',
+		description: 'Upload a Reference; replacement requires its current revision.',
 		toolset: 'local',
 		readOnly: false,
 		destructive: true,
@@ -88,7 +88,7 @@ export const localTools: ToolDefinition[] = [
 			},
 			name: {
 				flag: 'name',
-				description: 'Relative agent file name.',
+				description: 'Relative Reference filename.',
 			},
 			revision: {
 				flag: 'revision',
@@ -154,7 +154,7 @@ export const localTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project file download',
-		description: 'Download a project-owned agent file.',
+		description: 'Download a Project-owned Reference.',
 		toolset: 'local',
 		readOnly: false,
 		destructive: true,
@@ -187,7 +187,7 @@ export const localTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project file upload',
-		description: 'Upload an agent file; replacement requires its current revision.',
+		description: 'Upload a Reference; replacement requires its current revision.',
 		toolset: 'local',
 		readOnly: false,
 		destructive: true,
@@ -203,7 +203,7 @@ export const localTools: ToolDefinition[] = [
 			},
 			name: {
 				flag: 'name',
-				description: 'Relative agent file name.',
+				description: 'Relative Reference filename.',
 			},
 			revision: {
 				flag: 'revision',

@@ -11,8 +11,8 @@ from playbooks_sdk.asynchronous.core import (
     ReadEndpoint,
     Settings,
 )
-from playbooks_sdk.asynchronous.files import Files
 from playbooks_sdk.asynchronous.operators import ProjectConversations, Runs
+from playbooks_sdk.asynchronous.references import References
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import (
     ApiResponse,
@@ -299,8 +299,8 @@ class Project(Resource):
         return Listing(self._transport, f"{self._path}/connectors")
 
     @property
-    def files(self) -> Files:
-        return Files(self._transport, f"{self._path}/files")
+    def references(self) -> References:
+        return References(self._transport, f"{self._path}/references")
 
     @property
     def conversations(self) -> ProjectConversations:

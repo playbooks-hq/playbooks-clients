@@ -236,8 +236,8 @@ export const workspaceConfigurationTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'workspace files',
-		description: 'List workspace-owned agent files.',
+		command: 'workspace references',
+		description: 'List Workspace References.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,

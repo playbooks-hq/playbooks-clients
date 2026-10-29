@@ -179,7 +179,7 @@ const bytes = await project.files.download('FILE_ID');
 const archive = await project.source.export();
 ```
 
-Uploads accept `Blob` or `Uint8Array`, a relative name, and an expected revision when replacing an Agent File. Workspace files expose the same methods. Downloads return bytes; reading and writing local paths is the caller's responsibility. Agent Files are private reference context, separate from project source. `project.source.import({ content, name })` replaces source using a supplied archive and is a consequential action.
+Uploads accept `Blob` or `Uint8Array`, a relative name, and an expected revision when replacing an Reference. Workspace files expose the same methods. Downloads return bytes; reading and writing local paths is the caller's responsibility. References are private reference context, separate from project source. `project.source.import({ content, name })` replaces source using a supplied archive and is a consequential action.
 
 ## Publication
 

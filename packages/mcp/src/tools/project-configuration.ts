@@ -518,8 +518,8 @@ export const projectConfigurationTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'project files',
-		description: 'List project-owned agent files.',
+		command: 'project references',
+		description: 'List Project References.',
 		toolset: 'project',
 		readOnly: true,
 		destructive: false,

@@ -168,27 +168,43 @@ cli
 	.action(run(workspace.createWorkspaceChatConversation));
 
 cli
-	.command('workspace saved-assets')
-	.describe('List explicitly saved Agent artifact revisions.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--page', 'Zero-based page; follow hasMore.')
-	.action(run(workspace.listSavedAssets));
+	.command('workspace agent working-files')
+	.describe('Agent working files: get, download, replace, preview, or save.')
+	.action(() => cli.help('workspace agent working-files'));
 
-cli
-	.command('workspace asset save')
-	.describe('Save an authorized artifact revision to your Library.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Originating conversation UUID.')
-	.option('--asset', 'Artifact revision UUID.')
-	.action(run(workspace.saveAsset));
+for (const operation of ['get', 'download', 'replace', 'preview', 'save'])
+	cli
+		.command(`workspace agent working-files ${operation}`)
+		.describe('Inspect, edit, preview or snapshot Agent working files. Background References are unchanged.')
+		.option('--workspace', 'Explicit Workspace UUID.')
+		.option('--agent', 'Agent UUID.')
+		.option('--output', 'Destination ZIP path for download; existing files are never overwritten.')
+		.option('--data', 'JSON revision and operation input or - for stdin; saves require a stable requestId.')
+		.action(run(options => workspace.workingFiles(options, operation)));
+for (const operation of ['get', 'create', 'revise', 'save'])
+	cli
+		.command(`workspace plan ${operation}`)
+		.describe('Read or edit a conversation Plan; never grants execution approval.')
+		.option('--workspace', 'Explicit Workspace UUID.')
+		.option('--project', 'Owning Project UUID when applicable.')
+		.option('--conversation', 'Conversation UUID.')
+		.option('--plan', 'Plan UUID; omit to read the current Plan.')
+		.option('--revision', 'Exact revision to read.')
+		.option('--data', 'JSON content, revision or save requestId, or - for stdin.')
+		.action(run(options => workspace.conversationPlans(options, operation)));
 
-cli
-	.command('workspace asset unsave')
-	.describe('Remove your Library reference without deleting the artifact.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Originating conversation UUID.')
-	.option('--asset', 'Artifact revision UUID.')
-	.action(run(workspace.removeSavedAsset));
+for (const operation of ['list', 'get', 'versions', 'source', 'preview', 'save'])
+	cli
+		.command(`workspace asset ${operation}`)
+		.describe('Read Asset versions or save an independent Workspace snapshot.')
+		.option('--workspace', 'Workspace UUID.')
+		.option('--asset', 'Asset identity UUID.')
+		.option('--version', 'Exact immutable version UUID.')
+		.option('--offset', 'Source pagination offset.')
+		.option('--page', 'Zero-based page.')
+		.option('--search', 'Asset name search.')
+		.option('--data', 'JSON version and stable requestId for saving, or - for stdin.')
+		.action(run(options => workspace.workspaceAssets(options, operation)));
 
 cli
 	.command('workspace agent-schedules')
@@ -436,18 +452,18 @@ cli
 	.action(run(workspace.listWorkspaceSecrets));
 
 cli
-	.command('workspace files')
-	.describe('List workspace-owned agent files.')
+	.command('workspace references')
+	.describe('List Workspace References.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--available', 'Include available and inherited resources.', false)
-	.action(run(workspace.listWorkspaceFiles));
+	.action(run(workspace.listWorkspaceReferences));
 
 cli
 	.command('workspace file download')
-	.describe('Download a workspace-owned agent file.')
+	.describe('Download a Workspace-owned Reference.')
 	.option('--output', 'New destination file.')
 	.option('--file-id', 'File-id identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -455,9 +471,9 @@ cli
 
 cli
 	.command('workspace file upload')
-	.describe('Upload an agent file; replacement requires its current revision.')
+	.describe('Upload a Reference; replacement requires its current revision.')
 	.option('--upload', 'Local file path.')
-	.option('--name', 'Relative agent file name.')
+	.option('--name', 'Relative Reference filename.')
 	.option('--revision', 'Existing file revision when replacing.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.uploadWorkspaceFile));
@@ -1113,8 +1129,8 @@ cli
 	.action(run(project.listProjectConnectors));
 
 cli
-	.command('project files')
-	.describe('List project-owned agent files.')
+	.command('project references')
+	.describe('List Project References.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100; default 20).')
@@ -1123,19 +1139,19 @@ cli
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--available', 'Include available and inherited resources.', false)
-	.action(run(project.listProjectFiles));
+	.action(run(project.listProjectReferences));
 
 cli
 	.command('project file')
 	.describe('Agent file commands: project file download, upload.')
 	.action(options => {
-		if (options._?.length) throw new CliError(422, 'Unknown Agent File action. See project file --help.');
+		if (options._?.length) throw new CliError(422, 'Unknown Reference action. See project file --help.');
 		cli.help('project file');
 	});
 
 cli
 	.command('project file download')
-	.describe('Download a project-owned agent file.')
+	.describe('Download a Project-owned Reference.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
@@ -1146,9 +1162,9 @@ cli
 
 cli
 	.command('project file upload')
-	.describe('Upload an agent file; replacement requires its current revision.')
+	.describe('Upload a Reference; replacement requires its current revision.')
 	.option('--upload', 'Local file path.')
-	.option('--name', 'Relative agent file name.')
+	.option('--name', 'Relative Reference filename.')
 	.option('--revision', 'Existing file revision when replacing.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')

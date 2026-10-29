@@ -8,13 +8,57 @@ from playbooks_sdk.asynchronous.core import (
     ReadEndpoint,
     Settings,
 )
-from playbooks_sdk.asynchronous.files import Files
 from playbooks_sdk.asynchronous.inbox import Inbox
 from playbooks_sdk.asynchronous.operators import Conversations, Runs
 from playbooks_sdk.asynchronous.project import Projects
+from playbooks_sdk.asynchronous.references import References
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
 from playbooks_sdk.transport import AsyncTransport as Transport
+
+
+class Assets(Listing):
+    async def get(self, id: Identifier, version: str | None = None) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}", {"version": version})
+
+    async def versions(self, id: Identifier) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}/versions")
+
+    async def source(self, id: Identifier, version: str, offset: int = 0) -> Any:
+        return await self._get(
+            f"{self._path}/{identifier(id)}/source", {"version": version, "offset": offset}
+        )
+
+    async def preview(self, id: Identifier, version: str) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}/preview", {"version": version})
+
+    async def save(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/save", "POST", data)
+
+    async def download(self, id: Identifier, version: str, companion: str | None = None) -> bytes:
+        result: bytes = await self._transport.request(
+            f"{self._path}/{identifier(id)}/download",
+            params={"version": version, "companion": companion},
+            binary=True,
+        )
+        return result
+
+
+class ConversationPlans(Endpoint):
+    async def current(self) -> Any:
+        return await self._get(f"{self._path}/current")
+
+    async def get(self, id: Identifier, revision: str | None = None) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}", {"revision": revision})
+
+    async def create(self, data: Data) -> Any:
+        return await self._action(self._path, "POST", data)
+
+    async def revise(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}", "PUT", data)
+
+    async def save(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/save", "POST", data)
 
 
 class Agents(Listing):
@@ -38,22 +82,31 @@ class Agents(Listing):
     async def create_conversation(self, id: Identifier, data: Data) -> Any:
         return await self._action(f"{self._path}/{identifier(id)}/conversations", "POST", data)
 
-    def files(self, id: Identifier) -> Files:
-        return Files(self._transport, f"{self._path}/{identifier(id)}/files")
+    async def working_files(self, id: Identifier) -> Any:
+        """Read working content, separate from background References."""
+        return await self._get(f"{self._path}/{identifier(id)}/working-files")
 
+    async def download_working_files(self, id: Identifier) -> bytes:
+        result: bytes = await self._transport.request(
+            f"{self._path}/{identifier(id)}/working-files",
+            params={"download": True},
+            binary=True,
+        )
+        return result
 
-class SavedAssets(Listing):
-    async def save(self, conversation_id: Identifier, asset_id: Identifier) -> Any:
+    async def replace_working_files(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/working-files", "PUT", data)
+
+    async def preview_working_files(self, id: Identifier, data: Data) -> Any:
         return await self._action(
-            f"/conversations/{identifier(conversation_id)}/assets/{identifier(asset_id)}/save",
-            "POST",
+            f"{self._path}/{identifier(id)}/working-files/preview", "POST", data
         )
 
-    async def remove(self, conversation_id: Identifier, asset_id: Identifier) -> Any:
-        return await self._action(
-            f"/conversations/{identifier(conversation_id)}/assets/{identifier(asset_id)}/save",
-            "DELETE",
-        )
+    async def save_working_files(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/working-files/save", "POST", data)
+
+    def references(self, id: Identifier) -> References:
+        return References(self._transport, f"{self._path}/{identifier(id)}/references")
 
 
 class AgentSchedules(ReadCollection):
@@ -161,20 +214,28 @@ class Workspace(Resource):
         return Runs(self._transport, "/agents/runs")
 
     @property
+    def assets(self) -> Assets:
+        return Assets(self._transport, "/workspace/assets")
+
+    @property
     def agents(self) -> Agents:
         return Agents(self._transport, "/agents")
 
-    @property
-    def saved_assets(self) -> SavedAssets:
-        return SavedAssets(self._transport, "/workspace/artifacts/saved")
+    def conversation_plans(
+        self, conversation_id: Identifier, project_id: Identifier | None = None
+    ) -> ConversationPlans:
+        root = f"/projects/{identifier(project_id)}" if project_id is not None else ""
+        return ConversationPlans(
+            self._transport, f"{root}/conversations/{identifier(conversation_id)}/plans"
+        )
 
     @property
     def agent_schedules(self) -> AgentSchedules:
         return AgentSchedules(self._transport, "/agents/schedules")
 
     @property
-    def files(self) -> Files:
-        return Files(self._transport, "/files")
+    def references(self) -> References:
+        return References(self._transport, "/references")
 
     @property
     def templates(self) -> Templates:

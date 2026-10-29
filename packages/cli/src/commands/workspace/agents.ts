@@ -1,3 +1,6 @@
+import { writeFile } from 'node:fs/promises';
+
+import { CliError } from 'src/services/cli-client';
 import { workspaceContext } from 'src/services/command-context';
 import { confirm } from 'src/utils/cli-confirm';
 import { identifier, input, listParams } from 'src/utils/cli-input';
@@ -50,19 +53,50 @@ export const createWorkspaceChatConversation = async (options: any) => {
 	const data = await input(options, ['title', 'idempotencyKey']);
 	return sdkEnvelope(await workspaceResource.agents.conversations(identifier(options.agent)).create(data));
 };
-export const listSavedAssets = async (options: any) => {
+export const workingFiles = async (options: any, operation = 'get') => {
 	const { workspaceResource } = await workspaceContext(options);
-	return sdkList(await workspaceResource.savedAssets.list(listParams(options, { search: false })));
-};
-export const saveAsset = async (options: any) => {
-	const { workspaceResource } = await workspaceContext(options);
+	const files = workspaceResource.agents.workingFiles(identifier(options.agent));
+	if (operation === 'download') {
+		if (typeof options.output !== 'string')
+			throw new CliError(422, 'Provide a destination with --output. Existing files are never overwritten.');
+		const response = await files.download();
+		await writeFile(options.output, response, { flag: 'wx', mode: 0o600 });
+		return { data: { path: options.output, bytes: response.length } };
+	}
 	return sdkEnvelope(
-		await workspaceResource.savedAssets.save(identifier(options.conversation), identifier(options.asset)),
+		operation === 'get'
+			? await files.get()
+			: await files[operation](await input(options, ['revision', 'files', 'path', 'entryPoint', 'name', 'requestId'])),
 	);
 };
-export const removeSavedAsset = async (options: any) => {
+export const conversationPlans = async (options: any, operation = 'get') => {
 	const { workspaceResource } = await workspaceContext(options);
-	return sdkEnvelope(
-		await workspaceResource.savedAssets.remove(identifier(options.conversation), identifier(options.asset)),
+	const plans = workspaceResource.conversationPlans(
+		identifier(options.conversation),
+		options.project ? identifier(options.project) : undefined,
 	);
+	if (operation === 'get')
+		return sdkEnvelope(
+			options.plan ? await plans.get(identifier(options.plan), options.revision) : await plans.current(),
+		);
+	const data = await input(options, ['title', 'content', 'revision', 'requestId']);
+	return sdkEnvelope(
+		operation === 'create'
+			? await plans.create(data as { title: string; content: string })
+			: await plans[operation](identifier(options.plan), data),
+	);
+};
+
+export const workspaceAssets = async (options: any, operation: string) => {
+	const { workspaceResource } = await workspaceContext(options);
+	const assets = workspaceResource.assets;
+	if (operation === 'list') return sdkList(await assets.list(listParams(options)));
+	const id = identifier(options.asset);
+	if (operation === 'get') return sdkEnvelope(await assets.get(id, options.version));
+	if (operation === 'versions') return sdkEnvelope(await assets.versions(id));
+	if (operation === 'source')
+		return sdkEnvelope(await assets.source(id, identifier(options.version), Number(options.offset || 0)));
+	if (operation === 'preview') return sdkEnvelope(await assets.preview(id, identifier(options.version)));
+	const data = await input(options, ['version', 'requestId']);
+	return sdkEnvelope(await assets.save(id, data as { version: string; requestId: string }));
 };

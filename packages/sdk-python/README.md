@@ -110,7 +110,7 @@ content = project.files.download("FILE_ID")
 archive = project.source.export()
 ```
 
-Files use bytes; local filesystem access belongs to the caller. Agent Files have a 20 MB limit and safe relative names; replacement requires the expected revision. `source.import_(name="source.zip", content=archive)` replaces project source and is consequential.
+Files use bytes; local filesystem access belongs to the caller. References have a 20 MB limit and safe relative names; replacement requires the expected revision. `source.import_(name="source.zip", content=archive)` replaces project source and is consequential.
 
 ```python
 preflight = project.preflight()

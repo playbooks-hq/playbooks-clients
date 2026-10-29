@@ -2,9 +2,9 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
-import { Files } from 'src/files.js';
 import { ProjectConversations, Runs } from 'src/operators.js';
 import { ProjectTests } from 'src/project-tests.js';
+import { References } from 'src/references.js';
 import { action, get, identifier, listing, record, Resource, succeeded } from 'src/resource.js';
 import type { Transport } from 'src/transport.js';
 import type { ProjectAgentCreate } from 'src/types.js';
@@ -149,8 +149,8 @@ export class Project extends Resource<ProjectData> {
 			list: (options?: ListOptions) => listing(this.#transport, `${this.#path}/connectors`, options),
 		};
 	}
-	get files() {
-		return new Files(this.#transport, `${this.#path}/files`);
+	get references() {
+		return new References(this.#transport, `${this.#path}/references`);
 	}
 	get conversations() {
 		return new ProjectConversations(this.#transport, this.#path, this.id);

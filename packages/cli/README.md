@@ -25,7 +25,7 @@ playbooks projects
 
 Browser sign-in is awaiting a dedicated Server/App CLI handoff. Application API keys cannot authenticate this CLI.
 
-For automation, provide `PLAYBOOKS_TOKEN` through your secret manager. Alternatively, pipe a key to `login --token-stdin` to store it locally. Never put keys in command arguments or project files.
+For automation, provide `PLAYBOOKS_TOKEN` through your secret manager. Alternatively, pipe a key to `login --token-stdin` to store it locally. Never put keys in command arguments or project references.
 
 `workspace current` shows the saved workspace. `workspace clear` clears local selection without leaving membership or signing out. Commands never silently switch tenants.
 
@@ -85,7 +85,7 @@ Public discovery uses `templates`, `categories`, `collections`, `creators`, and 
 
 Use category and type identifiers returned by `categories` and `types`; example identifiers are placeholders. Filter projects with `--owner <numeric-user-id>`. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
 
-Plural resource names list records; singular names address one record, such as `project release --project abc --release def`. Mutations follow the resource name. `--file-id` identifies an Agent File; binary transfers continue to use `--upload` and `--output`.
+Plural resource names list records; singular names address one record, such as `project release --project abc --release def`. Mutations follow the resource name. `--file-id` identifies an Reference; binary transfers continue to use `--upload` and `--output`.
 
 Structured input uses `--data` with a JSON object or `--data -` for stdin, up to 1 MB. Paths are not interpreted as input files:
 

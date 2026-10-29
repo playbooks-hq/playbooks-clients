@@ -88,12 +88,12 @@ test(
       await scenario("Files across all clients", async () => {
         state.fileIntent = "reference/clients-smoke.txt";
         save(runPath(state.id), state);
-        await project.files.upload({
+        await project.references.upload({
           name: state.fileIntent,
           content: new Blob([marker]),
           expectedRevision: null,
         });
-        const files = await project.files.list();
+        const files = await project.references.list();
         const file = files.data.find((item) => item.name === state.fileIntent);
         assert(file?.uuid);
         state.fileId = file.uuid;
@@ -122,7 +122,7 @@ test(
           ),
         );
         await assert.rejects(
-          project.files.upload({
+          project.references.upload({
             name: state.fileIntent,
             content: new Blob(["wrong"]),
             expectedRevision: randomUUID(),
@@ -131,7 +131,7 @@ test(
             error instanceof PlaybooksError && error.status === 409,
         );
         assert.equal(
-          Buffer.from(await project.files.download(file.uuid)).toString(),
+          Buffer.from(await project.references.download(file.uuid)).toString(),
           marker,
         );
       });

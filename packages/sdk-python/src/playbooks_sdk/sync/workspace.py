@@ -10,11 +10,55 @@ from playbooks_sdk.sync.core import (
     ReadEndpoint,
     Settings,
 )
-from playbooks_sdk.sync.files import Files
 from playbooks_sdk.sync.inbox import Inbox
 from playbooks_sdk.sync.operators import Conversations, Runs
 from playbooks_sdk.sync.project import Projects
+from playbooks_sdk.sync.references import References
 from playbooks_sdk.transport import Transport
+
+
+class Assets(Listing):
+    def get(self, id: Identifier, version: str | None = None) -> Any:
+        return self._get(f"{self._path}/{identifier(id)}", {"version": version})
+
+    def versions(self, id: Identifier) -> Any:
+        return self._get(f"{self._path}/{identifier(id)}/versions")
+
+    def source(self, id: Identifier, version: str, offset: int = 0) -> Any:
+        return self._get(
+            f"{self._path}/{identifier(id)}/source", {"version": version, "offset": offset}
+        )
+
+    def preview(self, id: Identifier, version: str) -> Any:
+        return self._get(f"{self._path}/{identifier(id)}/preview", {"version": version})
+
+    def save(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/save", "POST", data)
+
+    def download(self, id: Identifier, version: str, companion: str | None = None) -> bytes:
+        result: bytes = self._transport.request(
+            f"{self._path}/{identifier(id)}/download",
+            params={"version": version, "companion": companion},
+            binary=True,
+        )
+        return result
+
+
+class ConversationPlans(Endpoint):
+    def current(self) -> Any:
+        return self._get(f"{self._path}/current")
+
+    def get(self, id: Identifier, revision: str | None = None) -> Any:
+        return self._get(f"{self._path}/{identifier(id)}", {"revision": revision})
+
+    def create(self, data: Data) -> Any:
+        return self._action(self._path, "POST", data)
+
+    def revise(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}", "PUT", data)
+
+    def save(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/save", "POST", data)
 
 
 class Agents(Listing):
@@ -38,22 +82,29 @@ class Agents(Listing):
     def create_conversation(self, id: Identifier, data: Data) -> Any:
         return self._action(f"{self._path}/{identifier(id)}/conversations", "POST", data)
 
-    def files(self, id: Identifier) -> Files:
-        return Files(self._transport, f"{self._path}/{identifier(id)}/files")
+    def working_files(self, id: Identifier) -> Any:
+        """Read working content, separate from background References."""
+        return self._get(f"{self._path}/{identifier(id)}/working-files")
 
-
-class SavedAssets(Listing):
-    def save(self, conversation_id: Identifier, asset_id: Identifier) -> Any:
-        return self._action(
-            f"/conversations/{identifier(conversation_id)}/assets/{identifier(asset_id)}/save",
-            "POST",
+    def download_working_files(self, id: Identifier) -> bytes:
+        result: bytes = self._transport.request(
+            f"{self._path}/{identifier(id)}/working-files",
+            params={"download": True},
+            binary=True,
         )
+        return result
 
-    def remove(self, conversation_id: Identifier, asset_id: Identifier) -> Any:
-        return self._action(
-            f"/conversations/{identifier(conversation_id)}/assets/{identifier(asset_id)}/save",
-            "DELETE",
-        )
+    def replace_working_files(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/working-files", "PUT", data)
+
+    def preview_working_files(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/working-files/preview", "POST", data)
+
+    def save_working_files(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/working-files/save", "POST", data)
+
+    def references(self, id: Identifier) -> References:
+        return References(self._transport, f"{self._path}/{identifier(id)}/references")
 
 
 class AgentSchedules(ReadCollection):
@@ -161,20 +212,28 @@ class Workspace(Resource):
         return Runs(self._transport, "/agents/runs")
 
     @property
+    def assets(self) -> Assets:
+        return Assets(self._transport, "/workspace/assets")
+
+    @property
     def agents(self) -> Agents:
         return Agents(self._transport, "/agents")
 
-    @property
-    def saved_assets(self) -> SavedAssets:
-        return SavedAssets(self._transport, "/workspace/artifacts/saved")
+    def conversation_plans(
+        self, conversation_id: Identifier, project_id: Identifier | None = None
+    ) -> ConversationPlans:
+        root = f"/projects/{identifier(project_id)}" if project_id is not None else ""
+        return ConversationPlans(
+            self._transport, f"{root}/conversations/{identifier(conversation_id)}/plans"
+        )
 
     @property
     def agent_schedules(self) -> AgentSchedules:
         return AgentSchedules(self._transport, "/agents/schedules")
 
     @property
-    def files(self) -> Files:
-        return Files(self._transport, "/files")
+    def references(self) -> References:
+        return References(self._transport, "/references")
 
     @property
     def templates(self) -> Templates:
