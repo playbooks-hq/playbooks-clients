@@ -17,33 +17,6 @@ from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, iden
 from playbooks_sdk.transport import AsyncTransport as Transport
 
 
-class Assets(Listing):
-    async def get(self, id: Identifier, version: str | None = None) -> Any:
-        return await self._get(f"{self._path}/{identifier(id)}", {"version": version})
-
-    async def versions(self, id: Identifier) -> Any:
-        return await self._get(f"{self._path}/{identifier(id)}/versions")
-
-    async def source(self, id: Identifier, version: str, offset: int = 0) -> Any:
-        return await self._get(
-            f"{self._path}/{identifier(id)}/source", {"version": version, "offset": offset}
-        )
-
-    async def preview(self, id: Identifier, version: str) -> Any:
-        return await self._get(f"{self._path}/{identifier(id)}/preview", {"version": version})
-
-    async def save(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/save", "POST", data)
-
-    async def download(self, id: Identifier, version: str, companion: str | None = None) -> bytes:
-        result: bytes = await self._transport.request(
-            f"{self._path}/{identifier(id)}/download",
-            params={"version": version, "companion": companion},
-            binary=True,
-        )
-        return result
-
-
 class ConversationPlans(Endpoint):
     async def current(self) -> Any:
         return await self._get(f"{self._path}/current")
@@ -81,6 +54,10 @@ class Agents(Listing):
 
     async def create_conversation(self, id: Identifier, data: Data) -> Any:
         return await self._action(f"{self._path}/{identifier(id)}/conversations", "POST", data)
+
+    def channels(self, id: Identifier) -> Listing:
+        """Inspect inbound channel assignments; credentials remain in secure setup."""
+        return Listing(self._transport, f"{self._path}/{identifier(id)}/channels")
 
     async def working_files(self, id: Identifier) -> Any:
         """Read working content, separate from background References."""
@@ -212,10 +189,6 @@ class Workspace(Resource):
     @property
     def runs(self) -> Runs:
         return Runs(self._transport, "/agents/runs")
-
-    @property
-    def assets(self) -> Assets:
-        return Assets(self._transport, "/workspace/assets")
 
     @property
     def agents(self) -> Agents:

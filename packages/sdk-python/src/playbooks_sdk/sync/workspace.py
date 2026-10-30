@@ -17,33 +17,6 @@ from playbooks_sdk.sync.references import References
 from playbooks_sdk.transport import Transport
 
 
-class Assets(Listing):
-    def get(self, id: Identifier, version: str | None = None) -> Any:
-        return self._get(f"{self._path}/{identifier(id)}", {"version": version})
-
-    def versions(self, id: Identifier) -> Any:
-        return self._get(f"{self._path}/{identifier(id)}/versions")
-
-    def source(self, id: Identifier, version: str, offset: int = 0) -> Any:
-        return self._get(
-            f"{self._path}/{identifier(id)}/source", {"version": version, "offset": offset}
-        )
-
-    def preview(self, id: Identifier, version: str) -> Any:
-        return self._get(f"{self._path}/{identifier(id)}/preview", {"version": version})
-
-    def save(self, id: Identifier, data: Data) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/save", "POST", data)
-
-    def download(self, id: Identifier, version: str, companion: str | None = None) -> bytes:
-        result: bytes = self._transport.request(
-            f"{self._path}/{identifier(id)}/download",
-            params={"version": version, "companion": companion},
-            binary=True,
-        )
-        return result
-
-
 class ConversationPlans(Endpoint):
     def current(self) -> Any:
         return self._get(f"{self._path}/current")
@@ -81,6 +54,10 @@ class Agents(Listing):
 
     def create_conversation(self, id: Identifier, data: Data) -> Any:
         return self._action(f"{self._path}/{identifier(id)}/conversations", "POST", data)
+
+    def channels(self, id: Identifier) -> Listing:
+        """Inspect inbound channel assignments; credentials remain in secure setup."""
+        return Listing(self._transport, f"{self._path}/{identifier(id)}/channels")
 
     def working_files(self, id: Identifier) -> Any:
         """Read working content, separate from background References."""
@@ -210,10 +187,6 @@ class Workspace(Resource):
     @property
     def runs(self) -> Runs:
         return Runs(self._transport, "/agents/runs")
-
-    @property
-    def assets(self) -> Assets:
-        return Assets(self._transport, "/workspace/assets")
 
     @property
     def agents(self) -> Agents:

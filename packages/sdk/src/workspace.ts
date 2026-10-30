@@ -1,4 +1,4 @@
-import { Assets } from 'src/assets.js';
+import { Channels } from 'src/channels.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
 import { Inbox } from 'src/inbox.js';
@@ -47,9 +47,6 @@ export class Workspace extends Resource<WorkspaceData> {
 		this.replace(data);
 		return this;
 	}
-	get assets() {
-		return new Assets(this.#transport);
-	}
 	get projects() {
 		return new Projects(this.#transport);
 	}
@@ -74,6 +71,7 @@ export class Workspace extends Resource<WorkspaceData> {
 					action<ConversationData>(this.#transport, `${path}/${identifier(id)}/conversations`, 'POST', input),
 			}),
 			workingFiles: (id: Identifier) => new WorkingFiles(this.#transport, `${path}/${identifier(id)}/working-files`),
+			channels: (id: Identifier) => new Channels(this.#transport, `${path}/${identifier(id)}/channels`),
 			/** Persistent background References. */
 			references: (id: Identifier) => new References(this.#transport, `${path}/${identifier(id)}/references`),
 		};

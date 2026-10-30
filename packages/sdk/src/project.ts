@@ -1,5 +1,6 @@
 import { setTimeout as delay } from 'node:timers/promises';
 
+import { Channels } from 'src/channels.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
 import { ProjectConversations, Runs } from 'src/operators.js';
@@ -151,6 +152,9 @@ export class Project extends Resource<ProjectData> {
 	}
 	get references() {
 		return new References(this.#transport, `${this.#path}/references`);
+	}
+	get channels() {
+		return new Channels(this.#transport, `${this.#path}/channels`);
 	}
 	get conversations() {
 		return new ProjectConversations(this.#transport, this.#path, this.id);

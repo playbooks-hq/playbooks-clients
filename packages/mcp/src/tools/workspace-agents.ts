@@ -1,25 +1,18 @@
 import type { ToolDefinition } from 'src/tools/definition.js';
 
 export const workspaceAgentsTools: ToolDefinition[] = [
-	...['list', 'get', 'versions', 'source', 'preview', 'save'].map(
-		(operation): ToolDefinition => ({
-			command: `workspace asset ${operation}`,
+	...['agent', 'project'].map(
+		(owner): ToolDefinition => ({
+			command: `${owner === 'agent' ? 'workspace agent' : 'project'} channels`,
 			description:
-				'Read authorized Asset versions. Save creates an independent Workspace snapshot of an exact version using a stable requestId; it never publishes, executes, moves or synchronizes the source. Requires assets.read and assets.save for saving.',
+				'Inspect channel assignments and readiness. Channel access is distinct from outbound connector tools; account setup and personal verification use secure controls.',
 			toolset: 'workspace',
-			readOnly: operation !== 'save',
+			readOnly: true,
 			destructive: false,
 			options: {
 				workspace: { flag: 'workspace', description: 'Workspace UUID.', required: true },
-				asset: { flag: 'asset', description: 'Asset identity UUID.', required: operation !== 'list' },
-				version: {
-					flag: 'version',
-					description: 'Immutable version UUID.',
-					required: ['source', 'preview'].includes(operation),
-				},
-				page: { flag: 'page', description: 'Zero-based page.', kind: 'number' },
+				[owner]: { flag: owner, description: `${owner} UUID.`, required: true },
 			},
-			...(operation === 'save' ? { dataFields: ['version', 'requestId'], dataOptional: false } : {}),
 		}),
 	),
 	...['get', 'download', 'replace', 'preview', 'save'].map(

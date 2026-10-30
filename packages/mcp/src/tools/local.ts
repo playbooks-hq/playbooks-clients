@@ -43,7 +43,7 @@ export const localTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'workspace file download',
+		command: 'workspace reference download',
 		description: 'Download a Workspace-owned Reference.',
 		toolset: 'local',
 		readOnly: false,
@@ -58,9 +58,9 @@ export const localTools: ToolDefinition[] = [
 				description: 'New destination file.',
 				required: true,
 			},
-			fileId: {
-				flag: 'file-id',
-				description: 'File-id identifier.',
+			reference: {
+				flag: 'reference',
+				description: 'Reference identifier.',
 				required: true,
 			},
 			workspace: {
@@ -71,7 +71,7 @@ export const localTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'workspace file upload',
+		command: 'workspace reference upload',
 		description: 'Upload a Reference; replacement requires its current revision.',
 		toolset: 'local',
 		readOnly: false,

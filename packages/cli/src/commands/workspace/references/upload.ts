@@ -5,7 +5,7 @@ import { CliError } from 'src/services/cli-client';
 import { workspaceContext } from 'src/services/command-context';
 import { sdkEnvelope } from 'src/utils/sdk-output';
 
-export const uploadWorkspaceFile = async (options: any) => {
+export const uploadWorkspaceReference = async (options: any) => {
 	if (typeof options.upload !== 'string') throw new CliError(422, 'Provide a local file with --upload.');
 	const context = await workspaceContext(options);
 	const name = options.name || path.basename(options.upload);

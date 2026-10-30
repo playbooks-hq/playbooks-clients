@@ -1,5 +1,5 @@
 export {
-	workspaceAssets,
+	listChannels,
 	workingFiles,
 	conversationPlans,
 	listWorkspaceChats,
@@ -51,8 +51,8 @@ export { listWorkspaceMcps } from 'src/commands/workspace/mcps/list';
 export { listWorkspaceConnectors } from 'src/commands/workspace/connectors/list';
 export { listWorkspaceSecrets } from 'src/commands/workspace/secrets/list';
 export { listWorkspaceReferences } from 'src/commands/workspace/references/list';
-export { downloadWorkspaceFile } from 'src/commands/workspace/references/download';
-export { uploadWorkspaceFile } from 'src/commands/workspace/references/upload';
+export { downloadWorkspaceReference } from 'src/commands/workspace/references/download';
+export { uploadWorkspaceReference } from 'src/commands/workspace/references/upload';
 export { updateBudgetOperations } from 'src/commands/workspace/budget/update';
 export { activityOperations } from 'src/commands/workspace/activity';
 export { usageOperations } from 'src/commands/workspace/usage';

@@ -288,6 +288,10 @@ class Project(Resource):
         return Listing(self._transport, f"{self._path}/connectors")
 
     @property
+    def channels(self) -> Listing:
+        return Listing(self._transport, f"{self._path}/channels")
+
+    @property
     def references(self) -> References:
         return References(self._transport, f"{self._path}/references")
 

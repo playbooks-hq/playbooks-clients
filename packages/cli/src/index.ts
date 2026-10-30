@@ -159,6 +159,14 @@ cli
 	.option('--agent', 'Agent UUID.')
 	.action(run(workspace.listWorkspaceChatConversations));
 
+for (const owner of ['agent', 'project'])
+	cli
+		.command(`${owner === 'agent' ? 'workspace agent' : 'project'} channels`)
+		.describe('Inspect channel assignments, destinations and setup readiness. Credentials remain in secure setup.')
+		.option('--workspace', 'Workspace UUID.')
+		.option(`--${owner}`, `${owner} UUID.`)
+		.action(run(workspace.listChannels));
+
 cli
 	.command('workspace agent conversation create')
 	.describe('Create another conversation in an Agent; does not dispatch inference.')
@@ -192,19 +200,6 @@ for (const operation of ['get', 'create', 'revise', 'save'])
 		.option('--revision', 'Exact revision to read.')
 		.option('--data', 'JSON content, revision or save requestId, or - for stdin.')
 		.action(run(options => workspace.conversationPlans(options, operation)));
-
-for (const operation of ['list', 'get', 'versions', 'source', 'preview', 'save'])
-	cli
-		.command(`workspace asset ${operation}`)
-		.describe('Read Asset versions or save an independent Workspace snapshot.')
-		.option('--workspace', 'Workspace UUID.')
-		.option('--asset', 'Asset identity UUID.')
-		.option('--version', 'Exact immutable version UUID.')
-		.option('--offset', 'Source pagination offset.')
-		.option('--page', 'Zero-based page.')
-		.option('--search', 'Asset name search.')
-		.option('--data', 'JSON version and stable requestId for saving, or - for stdin.')
-		.action(run(options => workspace.workspaceAssets(options, operation)));
 
 cli
 	.command('workspace agent-schedules')
@@ -462,21 +457,21 @@ cli
 	.action(run(workspace.listWorkspaceReferences));
 
 cli
-	.command('workspace file download')
+	.command('workspace reference download')
 	.describe('Download a Workspace-owned Reference.')
 	.option('--output', 'New destination file.')
-	.option('--file-id', 'File-id identifier.')
+	.option('--reference', 'Reference identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(workspace.downloadWorkspaceFile));
+	.action(run(workspace.downloadWorkspaceReference));
 
 cli
-	.command('workspace file upload')
+	.command('workspace reference upload')
 	.describe('Upload a Reference; replacement requires its current revision.')
 	.option('--upload', 'Local file path.')
 	.option('--name', 'Relative Reference filename.')
 	.option('--revision', 'Existing file revision when replacing.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(workspace.uploadWorkspaceFile));
+	.action(run(workspace.uploadWorkspaceReference));
 
 cli
 	.command('workspace budget update')

@@ -1,10 +1,19 @@
 import { writeFile } from 'node:fs/promises';
 
 import { CliError } from 'src/services/cli-client';
-import { workspaceContext } from 'src/services/command-context';
+import { projectContext, workspaceContext } from 'src/services/command-context';
 import { confirm } from 'src/utils/cli-confirm';
 import { identifier, input, listParams } from 'src/utils/cli-input';
 import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
+
+export const listChannels = async (options: any) => {
+	if (options.agent) {
+		const { workspaceResource } = await workspaceContext(options);
+		return sdkList(await workspaceResource.agents.channels(identifier(options.agent)).list());
+	}
+	const { projectResource } = await projectContext(options);
+	return sdkList(await projectResource.channels.list());
+};
 
 export const listWorkspaceChats = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
@@ -85,18 +94,4 @@ export const conversationPlans = async (options: any, operation = 'get') => {
 			? await plans.create(data as { title: string; content: string })
 			: await plans[operation](identifier(options.plan), data),
 	);
-};
-
-export const workspaceAssets = async (options: any, operation: string) => {
-	const { workspaceResource } = await workspaceContext(options);
-	const assets = workspaceResource.assets;
-	if (operation === 'list') return sdkList(await assets.list(listParams(options)));
-	const id = identifier(options.asset);
-	if (operation === 'get') return sdkEnvelope(await assets.get(id, options.version));
-	if (operation === 'versions') return sdkEnvelope(await assets.versions(id));
-	if (operation === 'source')
-		return sdkEnvelope(await assets.source(id, identifier(options.version), Number(options.offset || 0)));
-	if (operation === 'preview') return sdkEnvelope(await assets.preview(id, identifier(options.version)));
-	const data = await input(options, ['version', 'requestId']);
-	return sdkEnvelope(await assets.save(id, data as { version: string; requestId: string }));
 };
