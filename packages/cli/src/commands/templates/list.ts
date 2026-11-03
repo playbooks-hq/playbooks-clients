@@ -9,7 +9,6 @@ export const listTemplates = async (options: any) => {
 	};
 	if (options.kind !== undefined) params.kind = identifier(options.kind, '--kind');
 	if (options.category !== undefined) params.category = identifier(options.category, '--category');
-	if (options.type !== undefined) params.projectType = identifier(options.type, '--type');
 	const client = new CliClient();
 	return sdkList(await client.templates.list(params));
 };

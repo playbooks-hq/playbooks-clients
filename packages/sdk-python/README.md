@@ -44,7 +44,7 @@ Both clients have matching resource methods. Async I/O methods must be awaited; 
 
 | Owner | Resources and operations |
 | --- | --- |
-| Client | `session.get()`, `workspaces.list/get/update()`, public `templates.list/get()`, `categories`, `collections`, `creators`, `types` |
+| Client | `session.get()`, `workspaces.list/get/update()`, public `templates.list/get()`, `categories`, `collections`, `creators` |
 | Workspace | `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
 | Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
 | Project | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `ownership`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
@@ -113,13 +113,20 @@ archive = project.source.export()
 Files use bytes; local filesystem access belongs to the caller. References have a 20 MB limit and safe relative names; replacement requires the expected revision. `source.import_(name="source.zip", content=archive)` replaces project source and is consequential.
 
 ```python
-preflight = project.preflight()
-# Review blockers, warnings, the revision, and cost impact before publishing.
-release = project.publish({"expectedRevision": "REVIEWED_REVISION"})
-completed = project.releases.wait(release["uuid"], timeout_ms=300_000)
+site = workspace.sites.get("SITE_UUID")
+options = site.release_options()
+# Select an explicit component and saved revision, then resolve setup blockers.
+preflight = site.preflight({"sourceRevision": "SAVED_REVISION", "componentKey": "website"})
+release = site.releases.create({
+    "sourceRevision": preflight["sourceRevision"],
+    "componentKey": preflight["componentKey"],
+    "expectedCurrentReleaseId": preflight["expectedCurrentReleaseId"],
+    "expectedConfigRevision": preflight["configRevision"],
+})
+completed = site.releases.wait(release["uuid"], timeout_ms=300_000)
 ```
 
-Publication requires configured Production and may incur charges. `wait()` observes the existing release without replaying publication. It returns on success and raises on unsuccessful completion or timeout. Rollback requires `currentReleaseId`. Other consequential operations retain required confirmation, revision, recipient, and idempotency inputs. The SDK does not prompt or grant authority.
+Sites own production independently of their source. Discover connections with `project.sites.list()` or `workspace.agents.sites(agent_uuid).list()`. Deployment may incur charges. `wait()` observes the existing release without replaying publication. `site.redeploy()` applies current Site configuration to retained content; disconnecting `site.source_connection` preserves the live Site and history. The asynchronous SDK exposes the same methods with `await` for requests.
 
 ## Errors and lower-level requests
 

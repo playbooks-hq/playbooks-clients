@@ -1,5 +1,3 @@
-import { setTimeout as delay } from 'node:timers/promises';
-
 import { Channels } from 'src/channels.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
@@ -7,10 +5,11 @@ import { ProjectConversations, Runs } from 'src/operators.js';
 import { ProjectTests } from 'src/project-tests.js';
 import { References } from 'src/references.js';
 import { action, get, identifier, listing, record, Resource, succeeded } from 'src/resource.js';
+import type { SiteData } from 'src/sites.js';
 import type { Transport } from 'src/transport.js';
 import type { ProjectAgentCreate } from 'src/types.js';
-import type { ApiResponse, LogData, LogOptions, PreflightData, RecordData } from 'src/types.js';
-import type { LibraryData, ReleaseData } from 'src/types.js';
+import type { ApiResponse, LogData, LogOptions, RecordData } from 'src/types.js';
+import type { LibraryData } from 'src/types.js';
 import type { ProjectAgentData, ProjectAgentUpdate, ScheduleData } from 'src/types.js';
 import type {
 	ActionReceipt,
@@ -18,24 +17,41 @@ import type {
 	Identifier,
 	LibraryInput,
 	ListOptions,
-	PreflightInput,
 	ProjectCreate,
 	ProjectData,
 	ProjectGetOptions,
 	ProjectListOptions,
 	ProjectUpdate,
-	PublishInput,
 	ScheduleInput,
 	ScheduleRunInput,
 	ScheduleUpdate,
 	SettingsInput,
 	SourceInput,
-	WaitOptions,
 } from 'src/types.js';
 
 export interface Project extends Readonly<ProjectData> {
 	readonly uuid: string;
 }
+
+export type SandboxServiceInput = {
+	uuid?: string;
+	key: string;
+	status?: 'active' | 'disabled';
+	commands: string[];
+	port?: number | null;
+	env?: Record<string, string>;
+	dependsOn?: string[];
+	position?: number;
+};
+
+export type SandboxConfigInput = {
+	expectedVersionId?: number | null;
+	services?: SandboxServiceInput[];
+	primaryServiceId?: number;
+	runtimeUuid?: string;
+	lifecycleUuid?: string;
+	network?: Record<string, unknown>;
+};
 
 export class Project extends Resource<ProjectData> {
 	declare readonly id: number;
@@ -166,6 +182,11 @@ export class Project extends Resource<ProjectData> {
 		return {
 			get: () =>
 				get(this.#transport, `${this.#path}/sandbox/${this.executionProfile === 'test' ? 'health' : 'config'}`),
+			configure: (input: SandboxConfigInput) => {
+				if (this.executionProfile === 'test')
+					throw new PlaybooksError(422, 'Test Projects do not support Sandbox service configuration.');
+				return action(this.#transport, `${this.#path}/sandbox/config`, 'PUT', input);
+			},
 		};
 	}
 	get logs() {
@@ -244,68 +265,8 @@ export class Project extends Resource<ProjectData> {
 				get(this.#transport, `${path}/${identifier(id)}/runs/${identifier(runId)}`),
 		};
 	}
-	async #deployPath() {
-		const { data } = await this.#transport.request(this.#path, 'GET', undefined, { include: 'deploy' });
-		if (!data.deploy?.uuid)
-			throw new PlaybooksError(422, 'Configure Production for this Project in Playbooks before publishing.');
-		return `/deploys/${identifier(data.deploy.uuid)}/release`;
-	}
-	async preflight(input: PreflightInput = {}): Promise<PreflightData> {
-		return (
-			await this.#transport.request(`${await this.#deployPath()}/preflight`, 'POST', input, {}, false, false, true)
-		).data;
-	}
-	async publish(input: PublishInput) {
-		if (!input.expectedRevision)
-			throw new PlaybooksError(422, 'Review preflight and provide expectedRevision before publishing.');
-		return (await this.#transport.request(await this.#deployPath(), 'POST', input, {}, false)).data as ReleaseData;
-	}
-	get releases() {
-		return {
-			list: (options: ListOptions = {}) => {
-				const { query, ...params } = options;
-				return listing<ReleaseData>(this.#transport, `${this.#path}/releases`, {
-					...params,
-					...(query === undefined ? {} : { search: query }),
-				});
-			},
-			get: (id: Identifier) => get<ReleaseData>(this.#transport, `${this.#path}/releases/${identifier(id)}`),
-			rollback: (id: Identifier, input: { currentReleaseId: Identifier }) =>
-				action(this.#transport, `${this.#path}/releases/${identifier(id)}/rollback`, 'POST', input),
-			wait: async (id: Identifier, options: WaitOptions = {}) => {
-				const deadline = Date.now() + (options.timeoutMs ?? 300000);
-				for (;;) {
-					const result = await this.#transport.request(
-						`${this.#path}/releases/${identifier(id)}`,
-						'GET',
-						undefined,
-						{},
-						true,
-						false,
-						false,
-						options.signal,
-					);
-					if (!['pending', 'draft'].includes(result.data.status)) {
-						if (result.data.status !== 'succeeded')
-							throw new PlaybooksError(
-								422,
-								'Publication did not succeed. Inspect the release for failure details.',
-								'release',
-								String(id),
-							);
-						return record<ReleaseData>(result.data);
-					}
-					if (Date.now() >= deadline)
-						throw new PlaybooksError(
-							408,
-							'Publication is still pending. Inspect the release to resume observation.',
-							'release',
-							String(id),
-						);
-					await delay(2000, undefined, { signal: options.signal });
-				}
-			},
-		};
+	get sites() {
+		return { list: () => listing<SiteData>(this.#transport, `${this.#path}/sites`) };
 	}
 }
 

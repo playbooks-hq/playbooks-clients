@@ -49,7 +49,7 @@ playbooks project logs --workspace acme --project abc
 
 An explicit `--workspace` overrides the saved workspace for one invocation without changing it. If neither is available, the command fails. Invalid or unauthorized targets never fall back to another workspace.
 
-Publication starts with `project preflight --project abc`. Supply the reviewed `expectedRevision` to `project publish --project abc --data '{"expectedRevision":"CURRENT_REVISION"}' --yes`; replace the placeholder with the value returned by preflight. Add `--wait` to observe completion for up to five minutes. Publication and other remote operations can incur usage charges. Interrupting the CLI does not cancel accepted remote work. Inspect `project releases --project abc` or `project lifecycle --project abc` to follow outstanding work.
+Sites own production independently of Projects. Use `project sites --project abc` or `sites --workspace WORKSPACE_UUID` to discover destinations. Inspect `site release-options --site SITE_UUID`, select the saved source revision and component, then run `site preflight --site SITE_UUID --data '{"sourceRevision":"SAVED_REVISION","componentKey":"website"}'`. Resolve blockers and pass its exact source, component, current release and configuration revisions to `site deploy --site SITE_UUID --data <reviewed-json> --yes`. Add `--wait` to observe completion for up to five minutes. `site redeploy` deploys retained content with updated Site configuration. These operations can incur charges; interruption does not cancel accepted remote work. Inspect `site releases --site SITE_UUID` to resume observation.
 
 ## Operator messages and runs
 
@@ -77,15 +77,15 @@ Streams stop after 1,800 seconds by default; use `--timeout <seconds>` to change
 
 ```sh
 playbooks projects --json --select uuid,name,status
-playbooks templates --category business --type website --query portal
+playbooks templates --category business --kind project --query portal
 playbooks project update --project abc --data '{"description":"Customer support app"}'
 ```
 
-Public discovery uses `templates`, `categories`, `collections`, `creators`, and `types`. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
+Public discovery uses `templates`, `categories`, `collections`, and `creators`. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
 
-Use category and type identifiers returned by `categories` and `types`; example identifiers are placeholders. Filter projects with `--owner <numeric-user-id>`. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
+Use category identifiers returned by `categories`; example identifiers are placeholders. Filter projects with `--owner <numeric-user-id>`. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
 
-Plural resource names list records; singular names address one record, such as `project release --project abc --release def`. Mutations follow the resource name. `--file-id` identifies an Reference; binary transfers continue to use `--upload` and `--output`.
+Plural resource names list records; singular names address one record, such as `site release --site abc --release def`. Mutations follow the resource name. `--file-id` identifies an Reference; binary transfers continue to use `--upload` and `--output`.
 
 Structured input uses `--data` with a JSON object or `--data -` for stdin, up to 1 MB. Paths are not interpreted as input files:
 

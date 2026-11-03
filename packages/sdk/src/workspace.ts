@@ -6,6 +6,8 @@ import { Conversations, Runs } from 'src/operators.js';
 import { Projects } from 'src/project.js';
 import { References } from 'src/references.js';
 import { action, get, identifier, listing, record, Resource } from 'src/resource.js';
+import type { SiteData } from 'src/sites.js';
+import { Sites } from 'src/sites.js';
 import type { Transport } from 'src/transport.js';
 import type { BudgetUpdate, TemplateListOptions, TemplatePublish } from 'src/types.js';
 import type { MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
@@ -50,6 +52,9 @@ export class Workspace extends Resource<WorkspaceData> {
 	get projects() {
 		return new Projects(this.#transport);
 	}
+	get sites() {
+		return new Sites(this.#transport);
+	}
 	get conversations() {
 		return new Conversations(this.#transport, '', this.id, false);
 	}
@@ -59,6 +64,7 @@ export class Workspace extends Resource<WorkspaceData> {
 	get agents() {
 		const path = '/agents';
 		return {
+			sites: (id: Identifier) => listing<SiteData>(this.#transport, `${path}/${identifier(id)}/sites`),
 			list: (options?: ListOptions & { archived?: boolean }) => listing<AgentData>(this.#transport, path, options),
 			get: (id: Identifier, options: { conversationId?: string; configuration?: boolean } = {}) =>
 				get<AgentData>(this.#transport, `${path}/${identifier(id)}`, options),

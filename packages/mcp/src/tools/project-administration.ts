@@ -1,4 +1,27 @@
 import type { ToolDefinition } from 'src/tools/definition.js';
+import { z } from 'zod';
+
+const sandboxService = z.strictObject({
+	uuid: z.uuid().optional(),
+	key: z.string().min(1),
+	status: z.enum(['active', 'disabled']).optional(),
+	commands: z.array(z.string().min(1)),
+	port: z.number().int().min(1).max(65535).nullable().optional(),
+	dependsOn: z.array(z.string()).optional(),
+	position: z.number().int().nonnegative().optional(),
+});
+
+const sandboxConfiguration = z
+	.strictObject({
+		expectedVersionId: z.number().int().positive().nullable().optional(),
+		services: z.array(sandboxService).optional(),
+		primaryServiceId: z.number().int().positive().optional(),
+		runtimeUuid: z.uuid().optional(),
+		lifecycleUuid: z.uuid().optional(),
+	})
+	.describe(
+		'Version-checked Sandbox configuration. Service environment values and secrets use the private credential flow.',
+	);
 
 export const projectAdministrationTools: ToolDefinition[] = [
 	{
@@ -359,42 +382,6 @@ export const projectAdministrationTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'project release rollback',
-		description: 'Restore release code; application data is not rolled back.',
-		toolset: 'project',
-		readOnly: false,
-		destructive: true,
-		options: {
-			select: {
-				flag: 'select',
-				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
-			},
-			project: {
-				flag: 'project',
-				description: 'Project identifier.',
-				required: true,
-			},
-			confirm: {
-				flag: 'yes',
-				description:
-					'Confirm the reviewed operation and its possible side effects or usage charges. Defaults to false.',
-				kind: 'boolean',
-			},
-			release: {
-				flag: 'release',
-				description: 'Release identifier.',
-				required: true,
-			},
-			workspace: {
-				flag: 'workspace',
-				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
-				required: true,
-			},
-		},
-		dataFields: ['currentReleaseId'],
-		dataOptional: false,
-	},
-	{
 		command: 'project sandbox',
 		description: 'Inspect project sandbox configuration and resize status.',
 		toolset: 'project',
@@ -416,5 +403,25 @@ export const projectAdministrationTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
+	},
+	{
+		command: 'project sandbox configure',
+		description: 'Configure Sandbox services and primary service using the current expectedVersionId.',
+		toolset: 'project',
+		readOnly: false,
+		destructive: false,
+		options: {
+			project: {
+				flag: 'project',
+				description: 'Project identifier.',
+				required: true,
+			},
+			workspace: {
+				flag: 'workspace',
+				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
+				required: true,
+			},
+		},
+		dataSchema: sandboxConfiguration,
 	},
 ];

@@ -61,10 +61,6 @@ class PlaybooksSDK:
     def creators(self) -> Listing:
         return Listing(self._public_transport, "/workspaces")
 
-    @property
-    def types(self) -> Listing:
-        return Listing(self._public_transport, "/project-types")
-
     def request(
         self,
         path: str,

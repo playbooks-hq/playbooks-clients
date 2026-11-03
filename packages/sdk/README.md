@@ -104,7 +104,7 @@ Only operations already supported by CLI are exposed; not every resource has eve
 
 | Owner | Resources and operations |
 | --- | --- |
-| `client` | `session.get()`, `workspaces.list/get/update()`, public `templates.list/get()`, `categories`, `collections`, `creators`, `types` |
+| `client` | `session.get()`, `workspaces.list/get/update()`, public `templates.list/get()`, `categories`, `collections`, `creators` |
 | `workspace` | `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
 | Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
 | `project` | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `ownership`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
@@ -181,21 +181,26 @@ const archive = await project.source.export();
 
 Uploads accept `Blob` or `Uint8Array`, a relative name, and an expected revision when replacing an Reference. Workspace files expose the same methods. Downloads return bytes; reading and writing local paths is the caller's responsibility. References are private reference context, separate from project source. `project.source.import({ content, name })` replaces source using a supplied archive and is a consequential action.
 
-## Publication
+## Sites and releases
+
+Projects contain development source; Sites own production. Discover connected Sites through `project.sites.list()` or `workspace.agents.sites(agentUuid)`.
 
 ```ts
-const preflight = await project.preflight();
-// Review blockers, warnings, source revision, and cost impact first.
-const release = await project.publish({
-  expectedRevision: 'REVIEWED_PREFLIGHT_REVISION',
+const site = await workspace.sites.get('SITE_UUID');
+const options = await site.releaseOptions();
+// Select an explicitly declared component and saved revision from options.
+const preflight = await site.preflight({ sourceRevision: 'SAVED_REVISION', componentKey: 'website' });
+// Resolve blockers and review the exact destination, content and configuration.
+const release = await site.releases.create({
+  sourceRevision: preflight.sourceRevision,
+  componentKey: preflight.componentKey,
+  expectedCurrentReleaseId: preflight.expectedCurrentReleaseId,
+  expectedConfigRevision: preflight.configRevision,
 });
-
-const completed = await project.releases.wait('RELEASE_UUID', {
-  timeoutMs: 300_000,
-});
+const completed = await site.releases.wait(release.uuid, { timeoutMs: 300_000 });
 ```
 
-Supply the actual reviewed revision and returned release UUID. Publishing requires configured Production and can incur usage charges. `wait()` observes a release, returns on success, and reports timeout or unsuccessful completion; it does not replay publication. Rollback requires the current release identifier.
+Deployment can incur usage charges. `wait()` observes the accepted release without replaying it. `site.redeploy()` uses retained content with validated current Site configuration and does not require source access. Disconnecting `site.sourceConnection` preserves live content, data and release history. Site management, source release authority and visitor access are separate.
 
 ## Errors and lower-level access
 

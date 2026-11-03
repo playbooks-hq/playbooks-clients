@@ -10,6 +10,7 @@ import { projectControlTools } from 'src/tools/project-controls.js';
 import { projectSchedulesTools } from 'src/tools/project-schedules.js';
 import { projectSourceTools } from 'src/tools/project-source.js';
 import { projectTestTools } from 'src/tools/project-tests.js';
+import { siteTools } from 'src/tools/sites.js';
 import { templatesTools } from 'src/tools/templates.js';
 import { workspaceAgentsTools } from 'src/tools/workspace-agents.js';
 import { workspaceConfigurationTools } from 'src/tools/workspace-configuration.js';
@@ -23,6 +24,7 @@ import { workspaceSchedulesTools } from 'src/tools/workspace-schedules.js';
 export const catalog: ToolDefinition[] = (
 	[
 		...coreTools,
+		...siteTools,
 		...discoveryTools,
 		...workspaceConfigurationTools,
 		...workspaceSchedulesTools,

@@ -62,10 +62,6 @@ class AsyncPlaybooksSDK:
     def creators(self) -> Listing:
         return Listing(self._public_transport, "/workspaces")
 
-    @property
-    def types(self) -> Listing:
-        return Listing(self._public_transport, "/project-types")
-
     async def request(
         self,
         path: str,

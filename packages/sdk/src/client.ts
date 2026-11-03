@@ -66,9 +66,6 @@ export class PlaybooksSDK {
 	get creators() {
 		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/workspaces', options) };
 	}
-	get types() {
-		return { list: (options?: ListOptions) => listing(this.#publicTransport(), '/project-types', options) };
-	}
 	/** Low-level escape hatch. Named resources provide the supported typed surface. */
 	request(
 		path: string,

@@ -18,6 +18,7 @@ export interface ToolDefinition {
 	positional?: string;
 	dataFields?: string[];
 	dataOptional?: boolean;
+	dataSchema?: z.ZodType;
 }
 
 export const toolName = (tool: ToolDefinition) => `playbooks_${tool.command.replaceAll(' ', '_')}`;
@@ -35,7 +36,9 @@ export const inputSchema = (tool: ToolDefinition) => {
 		field = field.describe(option.description);
 		shape[name] = name === 'confirm' ? field.default(false) : option.required ? field : field.optional();
 	}
-	if (tool.dataFields) {
+	if (tool.dataSchema) {
+		shape.data = tool.dataOptional ? tool.dataSchema.optional() : tool.dataSchema;
+	} else if (tool.dataFields) {
 		const field = z
 			.record(z.string(), z.json())
 			.describe(

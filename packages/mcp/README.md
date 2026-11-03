@@ -38,7 +38,7 @@ Private tools require an explicit `workspace`. Tools targeting an existing Proje
 | --- | --- | --- |
 | `core` | Identity, Workspace discovery, Projects, preflight, publication, releases, logs | Yes |
 | `operator` | Project conversations, messages, and run inspection | Yes |
-| `discovery` | Public Templates, categories, collections, creators, types | Yes |
+| `discovery` | Public Templates, categories, collections, creators | Yes |
 | `templates` | Workspace-owned Templates and publication | No |
 | `workspace` | Workspace administration, configuration, financial observations, Workspace Operator | No |
 | `project` | Project configuration, source, checkpoints, administration, scheduled messages | No |

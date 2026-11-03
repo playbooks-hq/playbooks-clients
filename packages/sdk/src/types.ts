@@ -63,7 +63,6 @@ export interface ProjectData {
 	};
 	workspaceId?: number | null;
 	projectOwnerId?: number | null;
-	typeId?: number | null;
 	promptId?: number | null;
 	archived?: boolean;
 	archivedAt?: string | null;
@@ -119,14 +118,12 @@ export interface WorkspaceUpdate {
 export interface ProjectCreate {
 	name?: string;
 	description?: string;
-	typeId?: number;
 }
 export interface ProjectUpdate {
 	revision?: string;
 	name?: string;
 	description?: string;
 	thumbnail?: string | null;
-	typeId?: number;
 }
 export interface NamedInput {
 	name?: string;
@@ -171,14 +168,6 @@ export interface FileUpload {
 	name: string;
 	content: Blob | Uint8Array;
 	expectedRevision?: string | null;
-}
-export interface PublishInput {
-	branchId?: number;
-	expectedRevision: string;
-}
-export interface PreflightInput {
-	branchId?: number;
-	expectedRevision?: string;
 }
 export interface WaitOptions {
 	timeoutMs?: number;
@@ -366,7 +355,6 @@ export interface ReleaseData extends RecordData {
 }
 export interface TemplateListOptions extends ListOptions {
 	category?: string;
-	projectType?: string;
 	kind?: 'agent' | 'project';
 }
 export interface TemplatePublish {
@@ -384,7 +372,7 @@ export interface TemplateUpdate {
 	licenseId?: number;
 	categoryIds?: number[];
 	visibility?: 'private' | 'unlisted' | 'public';
-	packageSelection?: { referenceIds?: number[]; scheduleIds?: number[]; outputIds?: string[] };
+	packageSelection?: { referenceIds?: number[]; scheduleIds?: number[] };
 }
 export interface BudgetUpdate {
 	creditBudget?: number | null;
@@ -399,13 +387,6 @@ export interface MemberUpdate {
 	memberRole: string;
 }
 
-export interface PreflightData extends RecordData {
-	status?: 'ready' | 'blocked';
-	expectedRevision?: string;
-	blockers?: { code: string; message: string }[];
-	warnings?: string[];
-	costImpact?: boolean;
-}
 export interface LogOptions {
 	query?: string;
 	pageSize?: number;

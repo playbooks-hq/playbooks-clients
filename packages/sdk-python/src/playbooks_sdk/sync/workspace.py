@@ -14,6 +14,7 @@ from playbooks_sdk.sync.inbox import Inbox
 from playbooks_sdk.sync.operators import Conversations, Runs
 from playbooks_sdk.sync.project import Projects
 from playbooks_sdk.sync.references import References
+from playbooks_sdk.sync.sites import Sites
 from playbooks_sdk.transport import Transport
 
 
@@ -35,6 +36,9 @@ class ConversationPlans(Endpoint):
 
 
 class Agents(Listing):
+    def sites(self, id: Identifier) -> Listing:
+        return Listing(self._transport, f"{self._path}/{identifier(id)}/sites")
+
     def get(
         self, id: Identifier, *, conversation_id: str | None = None, configuration: bool = False
     ) -> Any:
@@ -175,6 +179,10 @@ class Workspace(Resource):
         updated = Endpoint(self._transport, "/workspace")._action("/workspace", "PUT", data)
         self._replace(updated)
         return self
+
+    @property
+    def sites(self) -> Sites:
+        return Sites(self._transport)
 
     @property
     def projects(self) -> Projects:

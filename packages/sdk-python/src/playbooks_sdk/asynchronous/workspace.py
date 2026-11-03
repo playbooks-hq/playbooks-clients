@@ -12,6 +12,7 @@ from playbooks_sdk.asynchronous.inbox import Inbox
 from playbooks_sdk.asynchronous.operators import Conversations, Runs
 from playbooks_sdk.asynchronous.project import Projects
 from playbooks_sdk.asynchronous.references import References
+from playbooks_sdk.asynchronous.sites import Sites
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
 from playbooks_sdk.transport import AsyncTransport as Transport
@@ -35,6 +36,9 @@ class ConversationPlans(Endpoint):
 
 
 class Agents(Listing):
+    def sites(self, id: Identifier) -> Listing:
+        return Listing(self._transport, f"{self._path}/{identifier(id)}/sites")
+
     async def get(
         self, id: Identifier, *, conversation_id: str | None = None, configuration: bool = False
     ) -> Any:
@@ -177,6 +181,10 @@ class Workspace(Resource):
         updated = await Endpoint(self._transport, "/workspace")._action("/workspace", "PUT", data)
         self._replace(updated)
         return self
+
+    @property
+    def sites(self) -> Sites:
+        return Sites(self._transport)
 
     @property
     def projects(self) -> Projects:

@@ -3,6 +3,20 @@ export { PlaybooksError } from 'src/error.js';
 export { Resource, EditableResource } from 'src/resource.js';
 export { Workspace } from 'src/workspace.js';
 export { Project, Projects } from 'src/project.js';
+export type { SandboxConfigInput, SandboxServiceInput } from 'src/project.js';
+export { Site, Sites } from 'src/sites.js';
+export type {
+	SiteData,
+	SiteSource,
+	SiteCreate,
+	SiteReleaseInput,
+	SiteReleaseCreateInput,
+	SiteReleaseData,
+	SiteAnalyticsData,
+	SiteRedeployInput,
+	SiteConfigInput,
+	SitePreflight,
+} from 'src/sites.js';
 export { Conversation, Conversations, ProjectConversations, Messages, Runs } from 'src/operators.js';
 export { References } from 'src/references.js';
 export { Channels } from 'src/channels.js';

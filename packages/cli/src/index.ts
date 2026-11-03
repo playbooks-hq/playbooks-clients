@@ -11,8 +11,8 @@ import {
 	creators,
 	mcp,
 	project,
+	site,
 	templates,
-	types,
 	workspace,
 } from 'src/commands';
 import { CliError } from 'src/services/cli-client';
@@ -25,6 +25,267 @@ cli.describe('Manage Playbooks from your terminal.');
 cli.option('--config', 'Isolated context file.', path.join(os.homedir(), '.config', 'playbooks', 'config.json'));
 cli.option('--json', 'Print JSON; run streams use newline-delimited JSON.', false);
 cli.option('--select', 'Select comma-separated output fields; unavailable for run streams.');
+
+// Independent production Sites
+cli
+	.command('sites')
+	.describe('List authorized Sites.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(site.listSites));
+
+cli
+	.command('site')
+	.describe('Inspect a Site.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.action(run(site.getSite));
+
+cli
+	.command('site create')
+	.describe('Create an independent Site.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(site.createSite));
+
+cli
+	.command('site update')
+	.describe('Rename a Site.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(site.updateSite));
+
+cli
+	.command('site source')
+	.describe('Inspect the connected source.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.action(run(site.getSource));
+
+cli
+	.command('site source connect')
+	.describe('Connect a Project component or Agent static output.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(site.connectSource));
+
+cli
+	.command('site source disconnect')
+	.describe('Disconnect source while preserving the Site.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--yes', 'Confirm this operation.', false)
+	.action(run(site.disconnectSource));
+
+cli
+	.command('site release-options')
+	.describe('Inspect saved source revisions and declared components.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.action(run(site.releaseOptions));
+
+cli
+	.command('site preflight')
+	.describe('Review component requirements and exact source/configuration revisions.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(site.preflightSite));
+
+cli
+	.command('site deploy')
+	.describe('Release the reviewed component to this Site.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.option('--wait', 'Wait up to five minutes for release completion.', false)
+	.action(run(site.deploySite));
+
+cli
+	.command('site redeploy')
+	.describe('Redeploy retained content with current Site configuration.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.option('--wait', 'Wait up to five minutes for release completion.', false)
+	.action(run(site.redeploySite));
+
+cli
+	.command('site rollback')
+	.describe('Restore an eligible retained Site release.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.option('--wait', 'Wait up to five minutes for release completion.', false)
+	.action(run(site.rollbackSite));
+
+cli
+	.command('site releases')
+	.describe('List releases owned by a Site.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.action(run(site.listReleases));
+
+cli
+	.command('site release')
+	.describe('Inspect a Site release.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--release', 'Release UUID.')
+	.action(run(site.getRelease));
+
+cli
+	.command('project sites')
+	.describe('List Sites connected to this Project.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Project UUID.')
+	.action(run(site.projectSites));
+
+cli
+	.command('workspace agent sites')
+	.describe('List Sites connected to this Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(site.agentSites));
+
+const siteOperations = [
+	['site config', 'Inspect Site production configuration.', site.getConfig],
+	['site config update', 'Update Site production configuration.', site.updateConfig, null, true],
+	['site visitor-policy', 'Inspect Site visitor access policy.', site.getVisitorPolicy],
+	['site visitor-policy update', 'Update Site visitor access policy.', site.updateVisitorPolicy, null, true],
+	['site credentials', 'List Site credential metadata.', site.listCredentials],
+	['site credential put', 'Set a Site production credential.', site.putCredential, 'key', true],
+	['site credential delete', 'Remove a Site production credential.', site.deleteCredential, 'key', true, true],
+	['site domains', 'List Site domain bindings.', site.listDomains],
+	['site domain bind', 'Assign a Workspace domain hostname.', site.bindDomain, null, true],
+	['site domain unbind', 'Remove a Site domain binding.', site.unbindDomain, 'binding', false, true],
+	['site domain recheck', 'Check Site domain DNS and TLS readiness.', site.recheckDomain, 'binding'],
+	['site collaborators', 'List Site collaborators.', site.listCollaborators],
+	['site collaborator put', 'Grant or update accepted Site access.', site.putCollaborator, null, true],
+	[
+		'site collaborator delete',
+		'Remove Site collaborator access.',
+		site.deleteCollaborator,
+		'collaborator',
+		false,
+		true,
+	],
+	['site invitations', 'List pending Site invitations.', site.listInvitations],
+	['site invitation create', 'Invite a person to this Site.', site.createInvitation, null, true],
+	['site invitation resend', 'Resend a pending Site invitation.', site.resendInvitation, 'invitation'],
+	['site invitation revoke', 'Revoke a pending Site invitation.', site.revokeInvitation, 'invitation', false, true],
+	['site connections', 'List Site production connections.', site.listConnections],
+	['site connection create', 'Assign a Workspace connection to this Site.', site.createConnection, null, true],
+	['site connection update', 'Configure a Site production connection.', site.updateConnection, 'connection', true],
+	['site connection delete', 'Remove a Site production connection.', site.deleteConnection, 'connection', false, true],
+	['site database', 'Inspect Site database status.', site.getDatabase],
+	['site storage', 'Inspect Site storage status.', site.getStorage],
+	['site logs', 'Inspect Site production logs.', site.listLogs],
+	['site monitoring config', 'Inspect Site monitoring configuration.', site.getMonitoringConfig],
+	['site monitoring config set', 'Configure Site monitoring.', site.setMonitoringConfig, null, true],
+	['site monitoring synchronize', 'Synchronize Site monitoring.', site.synchronizeMonitoring],
+	['site monitoring overview', 'Inspect Site request performance.', site.getMonitoringOverview, null, true],
+	['site monitoring issues', 'List Site monitoring issues.', site.listMonitoringIssues, null, true],
+	['site monitoring issue', 'Inspect a Site monitoring issue.', site.getMonitoringIssue, 'issue'],
+	[
+		'site monitoring issue resolve',
+		'Resolve a Site monitoring issue.',
+		site.resolveMonitoringIssue,
+		'issue',
+		false,
+		true,
+	],
+	['site monitoring', 'Inspect Site production health.', site.getMonitoring],
+	['site analytics', 'Inspect Site traffic and performance.', site.getAnalytics],
+	['site jobs', 'List Site production job runs.', site.listJobs],
+	['site job', 'Inspect a Site job run.', site.getJob, 'job'],
+	['site job retry', 'Retry a failed Site job.', site.retryJob, 'job', false, true],
+	['site job cancel', 'Cancel a pending Site job.', site.cancelJob, 'job', false, true],
+	['site schedules', 'List Site recurring jobs.', site.listSchedules],
+	['site schedule activate', 'Activate or pause a Site schedule.', site.activateSchedule, 'schedule', true],
+	['site auth', 'Inspect Site application authentication.', site.getAuth],
+	['site auth configure', 'Save Site application sign-in draft.', site.configureAuth, null, true],
+	['site auth clerk connect', 'Connect Clerk production keys from stdin.', site.connectClerk, null, true],
+	['site auth verify', 'Verify a Site visitor session.', site.verifyAuth, null, true],
+	['site lifecycle', 'Inspect Site lifecycle and cleanup receipts.', site.getLifecycle],
+	['site start', 'Start a released Site.', site.startSite],
+	['site stop', 'Stop Site compute.', site.stopSite, null, false, true],
+	['site archive', 'Archive a Site.', site.archiveSite, null, false, true],
+	['site restore', 'Restore an archived Site.', site.restoreSite],
+	['site delete', 'Delete a Site and purge managed resources.', site.deleteSite, null, false, true],
+	['site database provision', 'Provision a managed Site database.', site.provisionDatabase, null, true],
+	['site storage provision', 'Provision managed Site storage.', site.provisionStorage, null, true],
+	['site maps', 'List Site map capabilities.', site.listMaps],
+	['site map set', 'Configure a Site map capability.', site.setMap, 'capability', true],
+	['site database tables', 'List production database tables.', site.listTables],
+	['site database table create', 'Create a production database table.', site.createTable, null, true],
+	['site database table', 'Inspect a production database table.', site.getTable, 'table'],
+	['site database table update', 'Update a production database table.', site.updateTable, 'table', true],
+	['site database table delete', 'Delete a production database table.', site.deleteTable, 'table', false, true],
+	['site database rows', 'List production database rows.', site.listRows, 'table', true],
+	['site database row create', 'Create a production database row.', site.createRow, 'table', true],
+	['site database rows update', 'Update production database rows.', site.updateRows, 'table', true],
+	['site database rows delete', 'Delete production database rows.', site.deleteRows, 'table', true, true],
+	['site database inspect-query', 'Inspect a read-only production SQL query.', site.inspectQuery, null, true],
+	['site database query', 'Execute a production SQL query.', site.executeQuery, null, true, true],
+	['site database migrations', 'List Site database migrations.', site.listMigrations],
+	['site storage files', 'List Site files.', site.listFiles, null, true],
+	['site storage metadata', 'Inspect Site file metadata.', site.getFileMetadata, 'path'],
+	['site storage content', 'Read Site file content as base64.', site.getFileContent, 'path'],
+	['site storage download', 'Download Site file content as base64.', site.downloadFile, 'path'],
+	['site storage upload', 'Upload a Site file from encoded content.', site.uploadFile, null, true],
+	['site storage rename', 'Rename a Site file.', site.renameFile, null, true],
+	['site storage delete', 'Delete a Site file.', site.deleteFile, null, true, true],
+	['site storage folder create', 'Create a Site storage folder.', site.createFolder, null, true],
+	['site storage usage', 'Inspect Site storage usage.', site.getStorageUsage],
+	['site analytics config', 'Inspect Site analytics source configuration.', site.getAnalyticsConfig],
+	['site analytics config set', 'Enable or disable Site analytics.', site.setAnalyticsConfig, null, true],
+	[
+		'site analytics source rotate',
+		'Rotate the Site analytics source key.',
+		site.rotateAnalyticsSource,
+		null,
+		false,
+		true,
+	],
+	['site analytics providers', 'List Site analytics providers.', site.listAnalyticsProviders],
+	['site analytics provider create', 'Create a Site analytics provider.', site.createAnalyticsProvider, null, true],
+	['site analytics provider', 'Inspect a Site analytics provider.', site.getAnalyticsProvider, 'provider'],
+	[
+		'site analytics provider update',
+		'Update a Site analytics provider.',
+		site.updateAnalyticsProvider,
+		'provider',
+		true,
+	],
+	[
+		'site analytics provider delete',
+		'Delete a Site analytics provider.',
+		site.deleteAnalyticsProvider,
+		'provider',
+		false,
+		true,
+	],
+	['site analytics events', 'List Site analytics events.', site.listAnalyticsEvents, null, true],
+	['site analytics event', 'Inspect a Site analytics event.', site.getAnalyticsEvent, 'event'],
+	['site analytics deliveries', 'List Site analytics deliveries.', site.listAnalyticsDeliveries, null, true],
+	['site analytics delivery', 'Inspect a Site analytics delivery.', site.getAnalyticsDelivery, 'delivery'],
+] as const;
+for (const [name, description, handler, extra, hasData, needsConfirmation] of siteOperations) {
+	const command = cli
+		.command(name)
+		.describe(description)
+		.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+		.option('--site', 'Site UUID.');
+	if (extra) command.option(`--${extra}`, `${extra} identifier.`);
+	if (hasData) command.option('--data', 'JSON object or - for stdin.');
+	if (needsConfirmation) command.option('--yes', 'Confirm this operation.', false);
+	command.action(run(handler));
+}
 
 // Auth
 cli
@@ -47,9 +308,8 @@ cli
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
-	.option('--type', 'Project type identifier from types.')
 	.option('--kind', 'Template kind: agent or project.')
-	.example('templates --category business --type website')
+	.example('templates --category business --kind project')
 	.action(run(templates.listTemplates));
 
 cli
@@ -88,16 +348,6 @@ cli
 	.option('--page-size', 'Records per page.')
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.action(run(creators.listWorkspaces));
-
-// Types
-cli
-	.command('types')
-	.describe('List curated project types.')
-	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
-	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt, position.')
-	.action(run(types.listTypes));
 
 // Workspace
 cli
@@ -284,9 +534,8 @@ cli
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
-	.option('--type', 'Project type identifier from types.')
 	.option('--kind', 'Template kind: agent or project.')
-	.example('workspace templates --category business --type website')
+	.example('workspace templates --category business --kind project')
 	.action(run(workspace.listTemplates));
 
 cli
@@ -766,30 +1015,6 @@ cli
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('project delete --project abc --data \'{"confirmation":"Customer portal"}\' --yes')
 	.action(run(project.deleteProject));
-
-cli
-	.command('project preflight')
-	.describe('Review production publication requirements.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project preflight --project abc --data \'{"branchId":123}\'')
-	.action(run(project.preflightProject));
-
-cli
-	.command('project publish')
-	.describe('Publish project code to production.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--yes', 'Confirm publication and usage charges.', false)
-	.option('--wait', 'Wait up to five minutes for completion.', false)
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project publish --project abc --data \'{"expectedRevision":"CURRENT_REVISION"}\' --yes')
-	.action(run(project.publishProject));
 
 cli
 	.command('project open')
@@ -1299,41 +1524,6 @@ cli
 	.action(run(project.importSource));
 
 cli
-	.command('project releases')
-	.describe('List project releases.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--query', 'Search text.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Records per page.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(project.listReleases));
-
-cli
-	.command('project release')
-	.describe('Inspect a release.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--release', 'Release identifier.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(project.getRelease));
-
-cli
-	.command('project release rollback')
-	.describe('Restore release code; application data is not rolled back.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--yes', 'Confirm this operation.', false)
-	.option('--release', 'Release identifier.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project release rollback --project abc --release abc --data \'{"currentReleaseId":123}\' --yes')
-	.action(run(project.rollbackRelease));
-
-cli
 	.command('project sandbox')
 	.describe('Inspect project sandbox configuration and resize status.')
 	.option('--project', 'Project identifier.')
@@ -1341,6 +1531,15 @@ cli
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(project.sandboxOperations));
+
+cli
+	.command('project sandbox configure')
+	.describe('Configure version-checked Sandbox services, primary service, runtime, lifecycle, or network.')
+	.option('--project', 'Project identifier.')
+	.option('--target-agent', 'Agent UUID under this Project.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--data', 'JSON configuration object, or - to read stdin.')
+	.action(run(project.configureSandbox));
 
 cli
 	.command('project logs')
@@ -1689,7 +1888,6 @@ cli
 			'categories',
 			'collections',
 			'creators',
-			'types',
 			'mcp',
 			'completion',
 		]),

@@ -39,10 +39,6 @@ export const discoveryTools: ToolDefinition[] = [
 				description: 'Category identifier from categories.',
 			},
 			kind: { flag: 'kind', description: 'Template kind: agent or project.' },
-			type: {
-				flag: 'type',
-				description: 'Project type identifier from types.',
-			},
 		},
 	},
 	{
@@ -157,37 +153,6 @@ export const discoveryTools: ToolDefinition[] = [
 			sort: {
 				flag: 'sort',
 				description: 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.',
-			},
-		},
-	},
-	{
-		command: 'types',
-		description: 'List curated project types.',
-		toolset: 'discovery',
-		readOnly: true,
-		destructive: false,
-		options: {
-			select: {
-				flag: 'select',
-				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
-			},
-			query: {
-				flag: 'query',
-				description: 'Search text.',
-			},
-			page: {
-				flag: 'page',
-				description: 'Zero-based page.',
-				kind: 'number',
-			},
-			pageSize: {
-				flag: 'page-size',
-				description: 'Records per page.',
-				kind: 'number',
-			},
-			sort: {
-				flag: 'sort',
-				description: 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt, position.',
 			},
 		},
 	},

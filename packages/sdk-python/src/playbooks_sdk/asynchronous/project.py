@@ -1,5 +1,3 @@
-import asyncio
-import time
 from typing import Any, Self, cast
 
 from playbooks_sdk.asynchronous.core import (
@@ -7,7 +5,6 @@ from playbooks_sdk.asynchronous.core import (
     Endpoint,
     Library,
     Listing,
-    ReadCollection,
     ReadEndpoint,
     Settings,
 )
@@ -48,6 +45,17 @@ class ProjectTests(Endpoint):
 
     async def action(self, id: Identifier, name: str, data: Data) -> Any:
         return await self._action(f"{self._path}/{identifier(id)}/{identifier(name)}", "POST", data)
+
+
+class ProjectSandbox(ReadEndpoint):
+    def __init__(self, transport: Transport, path: str, *, test: bool = False) -> None:
+        super().__init__(transport, path)
+        self._test = test
+
+    async def configure(self, data: Data) -> Any:
+        if self._test:
+            raise PlaybooksError(422, "Test Projects do not support Sandbox service configuration.")
+        return await self._action(self._path, "PUT", data)
 
 
 class ProjectSettings(Settings):
@@ -170,39 +178,6 @@ class Schedules(Collection):
         return result
 
 
-class Releases(ReadCollection):
-    async def list(self, **options: Any) -> ApiResponse:
-        if "query" in options:
-            options["search"] = options.pop("query")
-        return await self._list(self._path, options)
-
-    async def rollback(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/rollback", "POST", data)
-
-    async def wait(self, id: Identifier, *, timeout_ms: float = 300000) -> Resource:
-        deadline = time.monotonic() + timeout_ms / 1000
-        while True:
-            result = await self.get(id)
-            status = result.to_dict().get("status")
-            if status not in ("pending", "draft"):
-                if status != "succeeded":
-                    raise PlaybooksError(
-                        422,
-                        "Publication did not succeed. Inspect the release for failure details.",
-                        "release",
-                        str(id),
-                    )
-                return result
-            if time.monotonic() >= deadline:
-                raise PlaybooksError(
-                    408,
-                    "Publication is still pending. Inspect the release to resume observation.",
-                    "release",
-                    str(id),
-                )
-            await asyncio.sleep(2)
-
-
 class Project(Resource):
     _transport: Transport
     _path: str
@@ -315,9 +290,10 @@ class Project(Resource):
         return Runs(self._transport, f"{self._path}/operator/runs")
 
     @property
-    def sandbox(self) -> ReadEndpoint:
-        suffix = "health" if self.to_dict().get("executionProfile") == "test" else "config"
-        return ReadEndpoint(self._transport, f"{self._path}/sandbox/{suffix}")
+    def sandbox(self) -> ProjectSandbox:
+        test = self.to_dict().get("executionProfile") == "test"
+        suffix = "health" if test else "config"
+        return ProjectSandbox(self._transport, f"{self._path}/sandbox/{suffix}", test=test)
 
     @property
     def logs(self) -> Logs:
@@ -344,35 +320,8 @@ class Project(Resource):
         return Schedules(self._transport, f"{self._path}/schedules")
 
     @property
-    def releases(self) -> Releases:
-        return Releases(self._transport, f"{self._path}/releases")
-
-    async def _deploy_path(self) -> str:
-        data = (await self._transport.request(self._path, params={"include": "deploy"}))["data"]
-        if not (data.get("deploy") or {}).get("uuid"):
-            raise PlaybooksError(422, "Configure Production for this Project before publishing.")
-        return f"/deploys/{identifier(data['deploy']['uuid'])}/release"
-
-    async def preflight(self, data: Data | None = None) -> Data:
-        result: Data = (
-            await self._transport.request(
-                f"{await self._deploy_path()}/preflight",
-                "POST",
-                {} if data is None else data,
-                raw=True,
-            )
-        )["data"]
-        return result
-
-    async def publish(self, data: Data) -> Data:
-        if not data.get("expectedRevision"):
-            raise PlaybooksError(
-                422, "Review preflight and provide expectedRevision before publishing."
-            )
-        result: Data = (await self._transport.request(await self._deploy_path(), "POST", data))[
-            "data"
-        ]
-        return result
+    def sites(self) -> Listing:
+        return Listing(self._transport, f"{self._path}/sites")
 
 
 class Projects(Endpoint):

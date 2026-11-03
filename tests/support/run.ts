@@ -85,9 +85,6 @@ export async function check() {
       6,
     "BLOCKED: insufficient funding; run test:setup",
   );
-  // Project creation requires at least one supported application type.
-  const types = await sdk.types.list();
-  assert(types.data.length > 0, "BLOCKED: no Project Types available");
   const readiness = await adminRequest("/admin/inference-models/readiness");
   assert(
     readiness.productionKeyReachable &&
@@ -96,7 +93,7 @@ export async function check() {
       ),
     "BLOCKED: local Operator routing is not ready",
   );
-  return { workspace, types };
+  return { workspace };
 }
 export async function cleanup(
   state: Json,

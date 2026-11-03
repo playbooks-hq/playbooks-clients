@@ -111,10 +111,6 @@ export const templatesTools: ToolDefinition[] = [
 				description: 'Category identifier from categories.',
 			},
 			kind: { flag: 'kind', description: 'Template kind: agent or project.' },
-			type: {
-				flag: 'type',
-				description: 'Project type identifier from types.',
-			},
 		},
 	},
 	{

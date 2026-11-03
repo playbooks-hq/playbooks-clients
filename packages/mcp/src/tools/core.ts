@@ -117,7 +117,7 @@ export const coreTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['name', 'description', 'typeId'],
+		dataFields: ['name', 'description'],
 		dataOptional: false,
 	},
 	{
@@ -142,7 +142,7 @@ export const coreTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['name', 'description', 'thumbnail', 'typeId', 'revision'],
+		dataFields: ['name', 'description', 'thumbnail', 'revision'],
 		dataOptional: false,
 	},
 	{
@@ -190,63 +190,6 @@ export const coreTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-	},
-	{
-		command: 'project preflight',
-		description: 'Review production publication requirements.',
-		toolset: 'core',
-		readOnly: false,
-		destructive: false,
-		options: {
-			select: {
-				flag: 'select',
-				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
-			},
-			project: {
-				flag: 'project',
-				description: 'Project identifier.',
-				required: true,
-			},
-			workspace: {
-				flag: 'workspace',
-				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
-				required: true,
-			},
-		},
-		dataFields: ['branchId', 'expectedRevision'],
-		dataOptional: true,
-	},
-	{
-		command: 'project publish',
-		description:
-			'Publish project code to production. Supply the expectedRevision from preflight and confirm. Returns acceptance; inspect the release for completion.',
-		toolset: 'core',
-		readOnly: false,
-		destructive: true,
-		options: {
-			select: {
-				flag: 'select',
-				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
-			},
-			project: {
-				flag: 'project',
-				description: 'Project identifier.',
-				required: true,
-			},
-			confirm: {
-				flag: 'yes',
-				description:
-					'Confirm the reviewed operation and its possible side effects or usage charges. Defaults to false.',
-				kind: 'boolean',
-			},
-			workspace: {
-				flag: 'workspace',
-				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
-				required: true,
-			},
-		},
-		dataFields: ['branchId', 'expectedRevision'],
-		dataOptional: false,
 	},
 	{
 		command: 'project settings',
@@ -309,71 +252,6 @@ export const coreTools: ToolDefinition[] = [
 			sort: {
 				flag: 'sort',
 				description: 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt, position.',
-			},
-		},
-	},
-	{
-		command: 'project releases',
-		description: 'List project releases.',
-		toolset: 'core',
-		readOnly: true,
-		destructive: false,
-		options: {
-			select: {
-				flag: 'select',
-				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
-			},
-			project: {
-				flag: 'project',
-				description: 'Project identifier.',
-				required: true,
-			},
-			query: {
-				flag: 'query',
-				description: 'Search text.',
-			},
-			page: {
-				flag: 'page',
-				description: 'Zero-based page.',
-				kind: 'number',
-			},
-			pageSize: {
-				flag: 'page-size',
-				description: 'Records per page.',
-				kind: 'number',
-			},
-			workspace: {
-				flag: 'workspace',
-				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
-				required: true,
-			},
-		},
-	},
-	{
-		command: 'project release',
-		description: 'Inspect a release.',
-		toolset: 'core',
-		readOnly: true,
-		destructive: false,
-		options: {
-			select: {
-				flag: 'select',
-				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
-			},
-			project: {
-				flag: 'project',
-				description: 'Project identifier.',
-				required: true,
-			},
-			release: {
-				flag: 'release',
-				description: 'Release identifier.',
-				required: true,
-			},
-			workspace: {
-				flag: 'workspace',
-				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
-				required: true,
 			},
 		},
 	},
