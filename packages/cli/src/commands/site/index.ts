@@ -1,13 +1,19 @@
 import { CliError } from 'src/services/cli-client';
 import { projectContext, workspaceContext } from 'src/services/command-context';
-import { identifier, input, listParams } from 'src/utils/cli-input';
+import { identifier, input, integerOption, listParams, textOption } from 'src/utils/cli-input';
 import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
 
 const siteContext = async (options: any) => {
 	const context = await workspaceContext(options);
 	return { ...context, site: await context.workspaceResource.sites.get(identifier(options.site, '--site')) };
 };
-const releaseFields = ['sourceRevision', 'componentKey', 'expectedCurrentReleaseId', 'expectedConfigRevision'];
+const releaseFields = [
+	'expectedSource',
+	'sourceRevision',
+	'componentKey',
+	'expectedCurrentReleaseId',
+	'expectedConfigRevision',
+];
 const confirmRelease = (options: any) => {
 	if (!options.yes)
 		throw new CliError(
@@ -28,19 +34,22 @@ export const updateSite = async (options: any) =>
 	sdkEnvelope(await (await siteContext(options)).site.update(await input(options, ['name'])));
 export const getSource = async (options: any) =>
 	sdkEnvelope(await (await siteContext(options)).site.sourceConnection.get());
-export const connectSource = async (options: any) =>
-	sdkEnvelope(
-		await (
-			await siteContext(options)
-		).site.sourceConnection.connect(await input(options, ['type', 'id', 'componentKey'])),
-	);
+export const connectSource = async (options: any) => {
+	const data = await input(options, ['type', 'id', 'componentKey', 'expectedSource']);
+	const { expectedSource, ...source } = data;
+	return sdkEnvelope(await (await siteContext(options)).site.sourceConnection.connect(source, expectedSource));
+};
 export const disconnectSource = async (options: any) => {
 	if (!options.yes)
 		throw new CliError(
 			422,
 			'Confirm disconnecting this Site source with --yes. The live Site and retained releases remain available.',
 		);
-	return sdkEnvelope(await (await siteContext(options)).site.sourceConnection.disconnect());
+	return sdkEnvelope(
+		await (
+			await siteContext(options)
+		).site.sourceConnection.disconnect((await input(options, ['expectedSource'])).expectedSource),
+	);
 };
 export const preflightSite = async (options: any) =>
 	sdkEnvelope(await (await siteContext(options)).site.preflight(await input(options, releaseFields)));
@@ -176,9 +185,28 @@ export const deleteConnection = async (options: any) => {
 };
 export const getDatabase = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.database());
 export const getStorage = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.storage());
-export const listLogs = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.logs());
+export const listLogs = async (options: any) => {
+	const params: Record<string, unknown> = {};
+	if (options.release !== undefined) params.releaseId = identifier(options.release, '--release');
+	if (options.query !== undefined) params.query = textOption(options.query, 'query');
+	if (options.cursor !== undefined) params.cursor = textOption(options.cursor, 'cursor');
+	if (options.after !== undefined) params.after = textOption(options.after, 'after');
+	if (options['page-size'] !== undefined) params.pageSize = integerOption(options['page-size'], 'page-size', 1, 500);
+	if (options.from !== undefined) params.from = textOption(options.from, 'from');
+	if (options.to !== undefined) params.to = textOption(options.to, 'to');
+	return sdkList(await (await siteContext(options)).site.logs(params));
+};
+export const getLog = async (options: any) => {
+	const params = options.release === undefined ? {} : { releaseId: identifier(options.release, '--release') };
+	return sdkEnvelope(await (await siteContext(options)).site.log(identifier(options.log, '--log'), params));
+};
 export const getMonitoring = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.monitoring());
-export const getAnalytics = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.analytics());
+export const getAnalytics = async (options: any) => {
+	const params: { days?: number; path?: string } = {};
+	if (options.days !== undefined) params.days = integerOption(options.days, 'days', 1, 90);
+	if (options.path !== undefined) params.path = textOption(options.path, 'path');
+	return sdkEnvelope(await (await siteContext(options)).site.analytics(params));
+};
 export const listJobs = async (options: any) =>
 	sdkList(await (await siteContext(options)).site.jobs.list(listParams(options)));
 export const getJob = async (options: any) =>

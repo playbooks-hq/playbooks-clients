@@ -4,22 +4,40 @@ from typing import Any, Self, cast
 
 from playbooks_sdk.asynchronous.core import Endpoint, ReadCollection, ReadEndpoint
 from playbooks_sdk.error import PlaybooksError
-from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
+from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier, query_params
 from playbooks_sdk.transport import AsyncTransport as Transport
 
 
-class SiteSource(ReadEndpoint):
-    async def connect(self, data: Data) -> Any:
-        return await self._action(self._path, "PUT", {"source": data})
+def _normalize_expected_source(data: Data) -> Data:
+    if "expectedSource" not in data or not isinstance(data["expectedSource"], dict):
+        return data
+    source = data["expectedSource"]
+    return {
+        **data,
+        "expectedSource": {
+            key: source[key] for key in ("type", "id", "componentKey") if key in source
+        },
+    }
 
-    async def disconnect(self) -> Any:
-        return await self._action(self._path, "DELETE")
+
+class SiteSource(ReadEndpoint):
+    async def connect(self, data: Data, *, expected_source: Data | None) -> Any:
+        return await self._action(
+            self._path,
+            "PUT",
+            _normalize_expected_source({"source": data, "expectedSource": expected_source}),
+        )
+
+    async def disconnect(self, *, expected_source: Data | None) -> Any:
+        return await self._action(
+            self._path, "DELETE", _normalize_expected_source({"expectedSource": expected_source})
+        )
 
 
 class SiteReleases(ReadCollection):
     async def create(self, data: Data, *, request_id: str | None = None) -> Any:
         payload = {**data, **({"requestId": request_id} if request_id is not None else {})}
-        return await self._action(self._path, "POST", payload)
+        return await self._action(self._path, "POST", _normalize_expected_source(payload))
 
     async def wait(self, id: Identifier, *, timeout_ms: float = 300_000) -> Resource:
         deadline = time.monotonic() + timeout_ms / 1000
@@ -73,9 +91,11 @@ class Site(Resource):
         return await Endpoint(self._transport, self._path)._get(f"{self._path}/release-options")
 
     async def preflight(self, data: Data) -> Data:
-        result: Data = (await self._transport.request(f"{self._path}/preflight", "POST", data))[
-            "data"
-        ]
+        result: Data = (
+            await self._transport.request(
+                f"{self._path}/preflight", "POST", _normalize_expected_source(data)
+            )
+        )["data"]
         return result
 
     async def redeploy(self, data: Data, *, request_id: str | None = None) -> Any:
@@ -169,8 +189,16 @@ class Site(Resource):
     async def storage(self) -> Any:
         return await self._site_get("storage")
 
-    async def logs(self) -> Any:
-        return await self._site_get("logs")
+    async def logs(self, **options: Any) -> ApiResponse:
+        response: ApiResponse = await self._transport.request(
+            f"{self._path}/logs", "GET", params=query_params(options)
+        )
+        return response
+
+    async def log(self, id: Identifier, **options: Any) -> Any:
+        return await Endpoint(self._transport, self._path)._get(
+            f"{self._path}/logs/{identifier(id)}", query_params(options)
+        )
 
     async def monitoring(self) -> Any:
         return await self._site_get("monitoring")
@@ -200,8 +228,12 @@ class Site(Resource):
     async def resolve_monitoring_issue(self, id: Identifier) -> Any:
         return await self._site_action(f"monitoring/issues/{identifier(id)}/resolve", "POST", {})
 
-    async def analytics(self) -> Any:
-        return await self._site_get("analytics")
+    async def analytics(self, *, days: int | None = None, path: str | None = None) -> Any:
+        options = {
+            **({"days": days} if days is not None else {}),
+            **({"path": path} if path is not None else {}),
+        }
+        return await Endpoint(self._transport, self._path)._get(f"{self._path}/analytics", options)
 
     async def jobs(self, **options: Any) -> ApiResponse:
         return await Endpoint(self._transport, self._path)._list(f"{self._path}/jobs", options)

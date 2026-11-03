@@ -115,18 +115,32 @@ Files use bytes; local filesystem access belongs to the caller. References have 
 ```python
 site = workspace.sites.get("SITE_UUID")
 options = site.release_options()
-# Select an explicit component and saved revision, then resolve setup blockers.
-preflight = site.preflight({"sourceRevision": "SAVED_REVISION", "componentKey": "website"})
+source = site.source_connection.get()
+if source is None:
+    raise RuntimeError("Connect a Site source before releasing.")
+# Select the component and saved revision from options.components and options.revisions.
+selection = {
+    "expectedSource": source.to_dict(),
+    "sourceRevision": "SAVED_REVISION",
+    "componentKey": "website",
+    "expectedCurrentReleaseId": options.expectedCurrentReleaseId,
+    "expectedConfigRevision": options.configRevision,
+}
+preflight = site.preflight(selection)
+if preflight["status"] != "ready":
+    raise RuntimeError("Resolve the preflight blockers before releasing.")
+# Review the exact destination, source, component and configuration before submitting.
 release = site.releases.create({
-    "sourceRevision": preflight["sourceRevision"],
-    "componentKey": preflight["componentKey"],
+    **selection,
+    "sourceRevision": preflight["source"]["revision"],
+    "componentKey": preflight["component"]["key"],
     "expectedCurrentReleaseId": preflight["expectedCurrentReleaseId"],
     "expectedConfigRevision": preflight["configRevision"],
 })
 completed = site.releases.wait(release["uuid"], timeout_ms=300_000)
 ```
 
-Sites own production independently of their source. Discover connections with `project.sites.list()` or `workspace.agents.sites(agent_uuid).list()`. Deployment may incur charges. `wait()` observes the existing release without replaying publication. `site.redeploy()` applies current Site configuration to retained content; disconnecting `site.source_connection` preserves the live Site and history. The asynchronous SDK exposes the same methods with `await` for requests.
+Sites own production independently of their source. Discover connections with `project.sites.list()` or `workspace.agents.sites(agent_uuid).list()`. The source must be explicitly connected before preflight. `source_connection.get()` can include display fields; the SDK sends only `type`, `id`, and `componentKey` when comparing the current source during connect, disconnect, preflight, and release. A source change requires the current source as `expected_source`; use `None` only when the Site has no source. Deployment may incur charges. `wait()` observes the accepted release without replaying it. `site.redeploy()` applies current Site configuration to retained content; disconnecting the source preserves the live Site and history. The asynchronous SDK exposes the same methods with `await` for requests.
 
 ## Errors and lower-level requests
 

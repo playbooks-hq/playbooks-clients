@@ -188,19 +188,30 @@ Projects contain development source; Sites own production. Discover connected Si
 ```ts
 const site = await workspace.sites.get('SITE_UUID');
 const options = await site.releaseOptions();
-// Select an explicitly declared component and saved revision from options.
-const preflight = await site.preflight({ sourceRevision: 'SAVED_REVISION', componentKey: 'website' });
-// Resolve blockers and review the exact destination, content and configuration.
+const expectedSource = await site.sourceConnection.get();
+if (!expectedSource) throw new Error('Connect a Site source before releasing.');
+// Select the component and saved revision from options.components and options.revisions.
+const selection = {
+  expectedSource,
+  sourceRevision: 'SAVED_REVISION',
+  componentKey: 'website',
+  expectedCurrentReleaseId: options.expectedCurrentReleaseId as string | null,
+  expectedConfigRevision: options.configRevision as string,
+};
+const preflight = await site.preflight(selection);
+if (preflight.status !== 'ready') throw new Error('Resolve the preflight blockers before releasing.');
+// Review the exact destination, source, component and configuration before submitting.
 const release = await site.releases.create({
-  sourceRevision: preflight.sourceRevision,
-  componentKey: preflight.componentKey,
+  ...selection,
+  sourceRevision: preflight.source.revision,
+  componentKey: preflight.component.key,
   expectedCurrentReleaseId: preflight.expectedCurrentReleaseId,
   expectedConfigRevision: preflight.configRevision,
 });
 const completed = await site.releases.wait(release.uuid, { timeoutMs: 300_000 });
 ```
 
-Deployment can incur usage charges. `wait()` observes the accepted release without replaying it. `site.redeploy()` uses retained content with validated current Site configuration and does not require source access. Disconnecting `site.sourceConnection` preserves live content, data and release history. Site management, source release authority and visitor access are separate.
+The Site source must be explicitly connected before preflight. `sourceConnection.get()` includes optional display fields; the SDK sends only `type`, `id`, and `componentKey` when comparing the current source during connect, disconnect, preflight, and release. A source change requires the current source as `expectedSource`; use `null` only when the Site has no source. Deployment can incur usage charges. `wait()` observes the accepted release without replaying it. `site.redeploy()` uses retained content with validated current Site configuration and does not require source access. Disconnecting the source preserves live content, data and release history. Site management, source release authority and visitor access are separate.
 
 ## Errors and lower-level access
 

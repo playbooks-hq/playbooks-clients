@@ -2,23 +2,41 @@ import time
 from typing import Any, Self, cast
 
 from playbooks_sdk.error import PlaybooksError
-from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
+from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier, query_params
 from playbooks_sdk.sync.core import Endpoint, ReadCollection, ReadEndpoint
 from playbooks_sdk.transport import Transport
 
 
-class SiteSource(ReadEndpoint):
-    def connect(self, data: Data) -> Any:
-        return self._action(self._path, "PUT", {"source": data})
+def _normalize_expected_source(data: Data) -> Data:
+    if "expectedSource" not in data or not isinstance(data["expectedSource"], dict):
+        return data
+    source = data["expectedSource"]
+    return {
+        **data,
+        "expectedSource": {
+            key: source[key] for key in ("type", "id", "componentKey") if key in source
+        },
+    }
 
-    def disconnect(self) -> Any:
-        return self._action(self._path, "DELETE")
+
+class SiteSource(ReadEndpoint):
+    def connect(self, data: Data, *, expected_source: Data | None) -> Any:
+        return self._action(
+            self._path,
+            "PUT",
+            _normalize_expected_source({"source": data, "expectedSource": expected_source}),
+        )
+
+    def disconnect(self, *, expected_source: Data | None) -> Any:
+        return self._action(
+            self._path, "DELETE", _normalize_expected_source({"expectedSource": expected_source})
+        )
 
 
 class SiteReleases(ReadCollection):
     def create(self, data: Data, *, request_id: str | None = None) -> Any:
         payload = {**data, **({"requestId": request_id} if request_id is not None else {})}
-        return self._action(self._path, "POST", payload)
+        return self._action(self._path, "POST", _normalize_expected_source(payload))
 
     def wait(self, id: Identifier, *, timeout_ms: float = 300_000) -> Resource:
         deadline = time.monotonic() + timeout_ms / 1000
@@ -72,7 +90,9 @@ class Site(Resource):
         return Endpoint(self._transport, self._path)._get(f"{self._path}/release-options")
 
     def preflight(self, data: Data) -> Data:
-        result: Data = self._transport.request(f"{self._path}/preflight", "POST", data)["data"]
+        result: Data = self._transport.request(
+            f"{self._path}/preflight", "POST", _normalize_expected_source(data)
+        )["data"]
         return result
 
     def redeploy(self, data: Data, *, request_id: str | None = None) -> Any:
@@ -162,8 +182,16 @@ class Site(Resource):
     def storage(self) -> Any:
         return self._site_get("storage")
 
-    def logs(self) -> Any:
-        return self._site_get("logs")
+    def logs(self, **options: Any) -> ApiResponse:
+        response: ApiResponse = self._transport.request(
+            f"{self._path}/logs", "GET", params=query_params(options)
+        )
+        return response
+
+    def log(self, id: Identifier, **options: Any) -> Any:
+        return Endpoint(self._transport, self._path)._get(
+            f"{self._path}/logs/{identifier(id)}", query_params(options)
+        )
 
     def monitoring(self) -> Any:
         return self._site_get("monitoring")
@@ -193,8 +221,12 @@ class Site(Resource):
     def resolve_monitoring_issue(self, id: Identifier) -> Any:
         return self._site_action(f"monitoring/issues/{identifier(id)}/resolve", "POST", {})
 
-    def analytics(self) -> Any:
-        return self._site_get("analytics")
+    def analytics(self, *, days: int | None = None, path: str | None = None) -> Any:
+        options = {
+            **({"days": days} if days is not None else {}),
+            **({"path": path} if path is not None else {}),
+        }
+        return Endpoint(self._transport, self._path)._get(f"{self._path}/analytics", options)
 
     def jobs(self, **options: Any) -> ApiResponse:
         return Endpoint(self._transport, self._path)._list(f"{self._path}/jobs", options)

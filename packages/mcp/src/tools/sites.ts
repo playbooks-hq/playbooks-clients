@@ -106,7 +106,7 @@ export const siteTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['type', 'id', 'componentKey'],
+		dataFields: ['type', 'id', 'componentKey', 'expectedSource'],
 	},
 	{
 		command: 'site source disconnect',
@@ -131,6 +131,7 @@ export const siteTools: ToolDefinition[] = [
 				description: 'Confirm this exact reviewed action when requested by the user.',
 			},
 		},
+		dataFields: ['expectedSource'],
 	},
 	{
 		command: 'site release-options',
@@ -171,7 +172,13 @@ export const siteTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['sourceRevision', 'componentKey', 'expectedCurrentReleaseId', 'expectedConfigRevision'],
+		dataFields: [
+			'expectedSource',
+			'sourceRevision',
+			'componentKey',
+			'expectedCurrentReleaseId',
+			'expectedConfigRevision',
+		],
 	},
 	{
 		command: 'site deploy',
@@ -202,7 +209,14 @@ export const siteTools: ToolDefinition[] = [
 				description: 'Observe completion for up to five minutes; inspect the same release after timeout.',
 			},
 		},
-		dataFields: ['sourceRevision', 'componentKey', 'expectedCurrentReleaseId', 'expectedConfigRevision', 'requestId'],
+		dataFields: [
+			'expectedSource',
+			'sourceRevision',
+			'componentKey',
+			'expectedCurrentReleaseId',
+			'expectedConfigRevision',
+			'requestId',
+		],
 	},
 	{
 		command: 'site redeploy',
@@ -348,6 +362,53 @@ export const siteTools: ToolDefinition[] = [
 	},
 ];
 
+siteTools.push(
+	{
+		command: 'site logs',
+		description: 'Read Site production logs retained for seven days, optionally for one release.',
+		toolset: 'core',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			site: { flag: 'site', description: 'Site UUID.', required: true },
+			release: { flag: 'release', description: 'Release UUID for historical logs.' },
+			query: { flag: 'query', description: 'Search messages and request or trace identifiers.' },
+			pageSize: { flag: 'page-size', description: 'Entries per page (1-500).', kind: 'number' },
+			cursor: { flag: 'cursor', description: 'Cursor for older entries.' },
+			after: { flag: 'after', description: 'Ingestion cursor for incremental reads.' },
+			from: { flag: 'from', description: 'Earliest timestamp (ISO 8601).' },
+			to: { flag: 'to', description: 'Latest timestamp (ISO 8601).' },
+		},
+	},
+	{
+		command: 'site log',
+		description: 'Inspect one Site log entry and related request output.',
+		toolset: 'core',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			site: { flag: 'site', description: 'Site UUID.', required: true },
+			log: { flag: 'log', description: 'Log entry identifier.', required: true },
+			release: { flag: 'release', description: 'Release UUID.' },
+		},
+	},
+	{
+		command: 'site analytics',
+		description: 'Inspect Site traffic by day, page and referrer.',
+		toolset: 'core',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			site: { flag: 'site', description: 'Site UUID.', required: true },
+			days: { flag: 'days', description: 'UTC days to include (1-90; default 14).', kind: 'number' },
+			path: { flag: 'path', description: 'Exact Site path, beginning with /.' },
+		},
+	},
+);
+
 const operationalTools: Array<{
 	command: string;
 	description: string;
@@ -436,7 +497,6 @@ const operationalTools: Array<{
 	},
 	{ command: 'site database', description: 'Inspect Site database status.' },
 	{ command: 'site storage', description: 'Inspect Site storage status.' },
-	{ command: 'site logs', description: 'Read Site production logs.' },
 	{ command: 'site monitoring config', description: 'Inspect Site monitoring configuration.' },
 	{
 		command: 'site monitoring config set',
@@ -464,7 +524,6 @@ const operationalTools: Array<{
 		confirm: true,
 	},
 	{ command: 'site monitoring', description: 'Read Site production health.' },
-	{ command: 'site analytics', description: 'Read Site traffic and performance counts.' },
 	{ command: 'site jobs', description: 'List Site production job runs.' },
 	{ command: 'site job', description: 'Inspect a Site job run.', id: 'job' },
 	{

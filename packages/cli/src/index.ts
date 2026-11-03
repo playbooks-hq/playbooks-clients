@@ -75,6 +75,7 @@ cli
 	.describe('Disconnect source while preserving the Site.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--site', 'Site UUID.')
+	.option('--data', 'JSON object with the expected source, or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.action(run(site.disconnectSource));
 
@@ -152,6 +153,38 @@ cli
 	.option('--agent', 'Agent UUID.')
 	.action(run(site.agentSites));
 
+cli
+	.command('site logs')
+	.describe('Read Site production logs retained for seven days, optionally for one release.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--release', 'Release UUID.')
+	.option('--query', 'Search log messages and request or trace identifiers.')
+	.option('--page-size', 'Entries per page (1-500).')
+	.option('--cursor', 'Cursor from meta.nextCursor for older entries.')
+	.option('--after', 'Ingestion cursor for incremental reads.')
+	.option('--from', 'Earliest timestamp (ISO 8601).')
+	.option('--to', 'Latest timestamp (ISO 8601).')
+	.action(run(site.listLogs));
+
+cli
+	.command('site log')
+	.describe('Inspect one Site log entry and related request output.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--log', 'Log entry identifier.')
+	.option('--release', 'Release UUID.')
+	.action(run(site.getLog));
+
+cli
+	.command('site analytics')
+	.describe('Inspect Site traffic by day, page and referrer.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--site', 'Site UUID.')
+	.option('--days', 'UTC days to include (1-90; default 14).')
+	.option('--path', 'Exact Site path, beginning with /.')
+	.action(run(site.getAnalytics));
+
 const siteOperations = [
 	['site config', 'Inspect Site production configuration.', site.getConfig],
 	['site config update', 'Update Site production configuration.', site.updateConfig, null, true],
@@ -184,7 +217,6 @@ const siteOperations = [
 	['site connection delete', 'Remove a Site production connection.', site.deleteConnection, 'connection', false, true],
 	['site database', 'Inspect Site database status.', site.getDatabase],
 	['site storage', 'Inspect Site storage status.', site.getStorage],
-	['site logs', 'Inspect Site production logs.', site.listLogs],
 	['site monitoring config', 'Inspect Site monitoring configuration.', site.getMonitoringConfig],
 	['site monitoring config set', 'Configure Site monitoring.', site.setMonitoringConfig, null, true],
 	['site monitoring synchronize', 'Synchronize Site monitoring.', site.synchronizeMonitoring],
@@ -200,7 +232,6 @@ const siteOperations = [
 		true,
 	],
 	['site monitoring', 'Inspect Site production health.', site.getMonitoring],
-	['site analytics', 'Inspect Site traffic and performance.', site.getAnalytics],
 	['site jobs', 'List Site production job runs.', site.listJobs],
 	['site job', 'Inspect a Site job run.', site.getJob, 'job'],
 	['site job retry', 'Retry a failed Site job.', site.retryJob, 'job', false, true],

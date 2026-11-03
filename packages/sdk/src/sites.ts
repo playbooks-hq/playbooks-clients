@@ -11,16 +11,31 @@ export interface SiteSource {
 	componentKey: string | null;
 }
 
+export interface SiteSourceRead extends SiteSource {
+	name?: string | null;
+	href?: string | null;
+	path?: string | null;
+}
+
+const expectedSourceTuple = (source: SiteSource | null | undefined) =>
+	source === null || source === undefined
+		? source
+		: { type: source.type, id: source.id, componentKey: source.componentKey };
+
 export interface SiteData {
 	id: string;
 	uuid: string;
 	workspaceUuid: string;
-	name: string;
+	name: string | null;
 	kind: 'runtime' | 'static';
 	status: string;
 	url: string | null;
-	source: SiteSource | null;
+	primaryHostname: string | null;
+	createdAt: string | null;
+	updatedAt: string | null;
+	source: SiteSourceRead | null;
 	currentRelease: ReleaseData | null;
+	latestRelease: SiteReleaseData | null;
 	health: { observedState: string | null; error: string | null };
 	access: { role: string | null };
 	capabilities: { canView: boolean; canManage: boolean; canRelease: boolean };
@@ -34,6 +49,7 @@ export interface SiteCreate {
 }
 
 export interface SiteReleaseInput {
+	expectedSource: SiteSource | null;
 	sourceRevision: string;
 	componentKey: string;
 	expectedCurrentReleaseId: string | null;
@@ -45,12 +61,55 @@ export interface SiteReleaseCreateInput extends SiteReleaseInput {
 }
 
 export interface SiteReleaseData extends ReleaseData {
+	releaseNumber: number | null;
+	sourceRevision: string | null;
+	progress: {
+		percent: number | null;
+		failedPhase: string | null;
+		reason: string | null;
+		cleanupPending: boolean;
+		interrupted: boolean;
+	} | null;
+	provenance: {
+		sourceType: string | null;
+		sourceId: string | null;
+		componentKey: string | null;
+		sourceBranch: string | null;
+		sourceRevision: string | null;
+		checkpointId: number | null;
+		retainedReleaseId: string | null;
+	};
+	startedAt: string | null;
+	activatedAt: string | null;
+	finishedAt: string | null;
 	capabilities: { canRedeploy: boolean; canRollback: boolean };
 }
 
 export interface SiteAnalyticsData {
-	views: number | null;
-	metrics: number | null;
+	days: number;
+	path: string | null;
+	collectionEnabled: boolean;
+	pageViews: number;
+	estimatedVisitors: number;
+	daily: { date: string; pageViews: number; estimatedVisitors: number }[];
+	topPages: { path: string; pageViews: number; estimatedVisitors: number }[];
+	referrers: { referrer: string; pageViews: number; estimatedVisitors: number }[];
+}
+
+export interface SiteLogOptions {
+	releaseId?: string;
+	query?: string;
+	cursor?: string;
+	after?: string;
+	pageSize?: number;
+	from?: string;
+	to?: string;
+	source?: string;
+	service?: string;
+	stream?: string;
+	severity?: string;
+	requestId?: string;
+	traceId?: string;
 }
 
 export interface SiteRedeployInput {
@@ -100,26 +159,39 @@ export class Site extends Resource<SiteData> {
 		return this;
 	}
 	get sourceConnection(): {
-		get: () => Promise<SiteSource | null>;
-		connect: (source: SiteSource) => Promise<Site>;
-		disconnect: () => Promise<Site>;
+		get: () => Promise<SiteSourceRead | null>;
+		connect: (source: SiteSource, expectedSource: SiteSource | null) => Promise<Site>;
+		disconnect: (expectedSource: SiteSource | null) => Promise<Site>;
 	} {
 		return {
-			get: async (): Promise<SiteSource | null> => (await this.#transport.request(`${this.#path}/source`)).data,
-			connect: async (source: SiteSource) => {
-				const data = await action<SiteData>(this.#transport, `${this.#path}/source`, 'PUT', { source });
+			get: async (): Promise<SiteSourceRead | null> => (await this.#transport.request(`${this.#path}/source`)).data,
+			connect: async (source: SiteSource, expectedSource: SiteSource | null) => {
+				const data = await action<SiteData>(this.#transport, `${this.#path}/source`, 'PUT', {
+					source,
+					expectedSource: expectedSourceTuple(expectedSource),
+				});
 				this.replace(data);
 				return this;
 			},
-			disconnect: async () => {
-				const data = await action<SiteData>(this.#transport, `${this.#path}/source`, 'DELETE');
+			disconnect: async (expectedSource: SiteSource | null) => {
+				const data = await action<SiteData>(this.#transport, `${this.#path}/source`, 'DELETE', {
+					expectedSource: expectedSourceTuple(expectedSource),
+				});
 				this.replace(data);
 				return this;
 			},
 		};
 	}
 	async preflight(input: SiteReleaseInput): Promise<SitePreflight> {
-		return (await this.#transport.request(`${this.#path}/preflight`, 'POST', input, {}, false)).data;
+		return (
+			await this.#transport.request(
+				`${this.#path}/preflight`,
+				'POST',
+				{ ...input, expectedSource: expectedSourceTuple(input.expectedSource) },
+				{},
+				false,
+			)
+		).data;
 	}
 	releaseOptions() {
 		return get(this.#transport, `${this.#path}/release-options`);
@@ -129,7 +201,11 @@ export class Site extends Resource<SiteData> {
 		return {
 			list: (options?: ListOptions) => listing<SiteReleaseData>(this.#transport, path, options),
 			get: (id: Identifier) => get<SiteReleaseData>(this.#transport, `${path}/${identifier(id)}`),
-			create: (input: SiteReleaseCreateInput) => action<SiteReleaseData>(this.#transport, path, 'POST', input),
+			create: (input: SiteReleaseCreateInput) =>
+				action<SiteReleaseData>(this.#transport, path, 'POST', {
+					...input,
+					expectedSource: expectedSourceTuple(input.expectedSource),
+				}),
 			wait: async (id: Identifier, options: WaitOptions = {}) => {
 				const deadline = Date.now() + (options.timeoutMs ?? 300000);
 				for (;;) {
@@ -351,8 +427,11 @@ export class Site extends Resource<SiteData> {
 			usage: () => get(this.#transport, `${path}/usage`),
 		};
 	}
-	logs() {
-		return this.#transport.request(`${this.#path}/logs`).then(response => response.data);
+	logs(options: SiteLogOptions = {}) {
+		return this.#transport.request(`${this.#path}/logs`, 'GET', undefined, options);
+	}
+	log(id: Identifier, options: Pick<SiteLogOptions, 'releaseId' | 'cursor'> = {}) {
+		return get(this.#transport, `${this.#path}/logs/${identifier(id)}`, options);
 	}
 	monitoring() {
 		return get(this.#transport, `${this.#path}/monitoring`);
@@ -371,8 +450,8 @@ export class Site extends Resource<SiteData> {
 			resolve: (id: Identifier) => action(this.#transport, `${path}/issues/${identifier(id)}/resolve`, 'POST', {}),
 		};
 	}
-	analytics() {
-		return get<SiteAnalyticsData>(this.#transport, `${this.#path}/analytics`);
+	analytics(options: { days?: number; path?: string } = {}) {
+		return get<SiteAnalyticsData>(this.#transport, `${this.#path}/analytics`, options);
 	}
 	get analyticsData() {
 		const path = `${this.#path}/analytics`;

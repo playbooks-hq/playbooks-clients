@@ -8,11 +8,13 @@ export { Site, Sites } from 'src/sites.js';
 export type {
 	SiteData,
 	SiteSource,
+	SiteSourceRead,
 	SiteCreate,
 	SiteReleaseInput,
 	SiteReleaseCreateInput,
 	SiteReleaseData,
 	SiteAnalyticsData,
+	SiteLogOptions,
 	SiteRedeployInput,
 	SiteConfigInput,
 	SitePreflight,
