@@ -189,14 +189,14 @@ export interface ScheduleReference {
 	label: string;
 }
 
-export interface AgentScheduleTiming {
+export interface ChatScheduleTiming {
 	frequency: 'daily' | 'weekly' | 'monthly';
 	weekday?: number | null;
 	monthDay?: number | null;
 	time: string;
 	timezone: string;
 }
-export interface AgentScheduleInput extends AgentScheduleTiming {
+export interface ChatScheduleInput extends ChatScheduleTiming {
 	name: string;
 	instructions: string;
 	references?: ScheduleReference[];
@@ -205,12 +205,12 @@ export interface AgentScheduleInput extends AgentScheduleTiming {
 	destinationConversationId?: number | null;
 	enabled: boolean;
 }
-export type AgentScheduleCreate = AgentScheduleInput & {
+export type ChatScheduleCreate = ChatScheduleInput & {
 	idempotencyKey: string;
 	originMessageId?: number;
-} & ({ agentId: string; conversationId?: string } | { agentId?: string; conversationId: string });
-export type AgentScheduleMutation = { expectedRevision: number } & (
-	| { action: 'update'; changes: AgentScheduleInput }
+} & ({ chatId: string; conversationId?: string } | { chatId?: string; conversationId: string });
+export type ChatScheduleMutation = { expectedRevision: number } & (
+	| { action: 'update'; changes: ChatScheduleInput }
 	| { action: 'pause' | 'resume' | 'delete' }
 	| { action: 'run'; idempotencyKey: string }
 );
@@ -274,34 +274,34 @@ export interface ProjectAgentData extends RecordData {
 	revision?: string | number;
 	projectId?: number;
 }
-export interface AgentComposerOverrides {
+export interface ChatComposerOverrides {
 	instructions?: string | null;
 	modelId?: number | null;
 	mode?: 'plan' | 'execute' | null;
 	deliveryMode?: 'queue' | 'steer' | null;
 	permissions?: 'autonomous' | 'critical' | 'all' | null;
 }
-export interface AgentData extends RecordData {
+export interface ChatData extends RecordData {
 	id: number;
 	uuid: string;
 	revision: number;
 	mainConversationId: number;
-	composerOverrides: AgentComposerOverrides;
+	composerOverrides: ChatComposerOverrides;
 	resourceSelection: { skillIds?: number[] | null; mcpIds?: number[] | null; connectorIds?: number[] };
 	conversation?: ConversationData;
 }
-export interface AgentCreate {
+export interface ChatCreate {
 	idempotencyKey: string;
 	name?: string;
-	composerOverrides?: AgentComposerOverrides;
+	composerOverrides?: ChatComposerOverrides;
 	designSelection?: { designId: number | null };
 	blankStart?: boolean;
 }
-export type AgentUpdate = { revision: number } & (
+export type ChatUpdate = { revision: number } & (
 	| {
 			action?: 'configure';
 			name?: string;
-			composerOverrides?: AgentComposerOverrides;
+			composerOverrides?: ChatComposerOverrides;
 			resourceSelection?: { skillIds?: number[] | null; mcpIds?: number[] | null; connectorIds?: number[] };
 			designSelection?: { designId: number | null };
 	  }
@@ -355,7 +355,7 @@ export interface ReleaseData extends RecordData {
 }
 export interface TemplateListOptions extends ListOptions {
 	category?: string;
-	kind?: 'agent' | 'project';
+	kind?: 'chat' | 'project';
 }
 export interface TemplatePublish {
 	acknowledgment: true;

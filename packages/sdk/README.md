@@ -96,7 +96,7 @@ for (const project of projects) console.log(project.uuid, project.name);
 
 SDK pages start at **0**, matching the Server, CLI, and MCP. Resource lists default to 20 records and accept page sizes from 1–100. No pages are fetched automatically. Follow `meta.hasMore`; numbered pages return `meta.pagination: "page"`. Messages, logs, and dedicated search use `cursor`/`pageSize` and return `meta.pagination: "cursor"`; pass `meta.nextCursor` unchanged. Additional Server metadata is preserved.
 
-Agent scheduled messages use `workspace.agentSchedules.list/get/preview/create/update`. Creation requires a stable `idempotencyKey`, a self-contained instruction, timing, and an Agent or originating conversation. Mutations require `expectedRevision`; `action: "run"` also requires a stable `idempotencyKey`. Reuse that key after an uncertain response. Destination controls delivery, not executable context. Inspect occurrence history for completion and the actual model.
+Chat scheduled messages use `workspace.chatSchedules.list/get/preview/create/update`. Creation requires a stable `idempotencyKey`, a self-contained instruction, timing, and a Chat or originating conversation. Mutations require `expectedRevision`; `action: "run"` also requires a stable `idempotencyKey`. Reuse that key after an uncertain response. Destination controls delivery, not executable context. Inspect occurrence history for completion and the actual model.
 
 ## Resource families
 
@@ -183,7 +183,7 @@ Uploads accept `Blob` or `Uint8Array`, a relative name, and an expected revision
 
 ## Sites and releases
 
-Projects contain development source; Sites own production. Discover connected Sites through `project.sites.list()` or `workspace.agents.sites(agentUuid)`.
+Projects contain development source; Sites own production. Discover connected Sites through `project.sites.list()` or `workspace.chats.sites(chatUuid)`.
 
 ```ts
 const site = await workspace.sites.get('SITE_UUID');

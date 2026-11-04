@@ -35,7 +35,7 @@ class ConversationPlans(Endpoint):
         return await self._action(f"{self._path}/{identifier(id)}/save", "POST", data)
 
 
-class Agents(Listing):
+class Chats(Listing):
     def sites(self, id: Identifier) -> Listing:
         return Listing(self._transport, f"{self._path}/{identifier(id)}/sites")
 
@@ -90,7 +90,7 @@ class Agents(Listing):
         return References(self._transport, f"{self._path}/{identifier(id)}/references")
 
 
-class AgentSchedules(ReadCollection):
+class ChatSchedules(ReadCollection):
     async def create(self, data: Data) -> Any:
         return await self._action(self._path, "POST", data)
 
@@ -196,11 +196,11 @@ class Workspace(Resource):
 
     @property
     def runs(self) -> Runs:
-        return Runs(self._transport, "/agents/runs")
+        return Runs(self._transport, "/chats/runs")
 
     @property
-    def agents(self) -> Agents:
-        return Agents(self._transport, "/agents")
+    def chats(self) -> Chats:
+        return Chats(self._transport, "/chats")
 
     def conversation_plans(
         self, conversation_id: Identifier, project_id: Identifier | None = None
@@ -211,8 +211,8 @@ class Workspace(Resource):
         )
 
     @property
-    def agent_schedules(self) -> AgentSchedules:
-        return AgentSchedules(self._transport, "/agents/schedules")
+    def chat_schedules(self) -> ChatSchedules:
+        return ChatSchedules(self._transport, "/chats/schedules")
 
     @property
     def references(self) -> References:

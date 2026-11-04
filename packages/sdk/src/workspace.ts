@@ -12,12 +12,12 @@ import type { Transport } from 'src/transport.js';
 import type { BudgetUpdate, TemplateListOptions, TemplatePublish } from 'src/types.js';
 import type { MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
 import type {
-	AgentCreate,
-	AgentData,
-	AgentScheduleCreate,
-	AgentScheduleMutation,
-	AgentScheduleTiming,
-	AgentUpdate,
+	ChatCreate,
+	ChatData,
+	ChatScheduleCreate,
+	ChatScheduleMutation,
+	ChatScheduleTiming,
+	ChatUpdate,
 	ConversationData,
 	DnsRecordInput,
 	Identifier,
@@ -59,21 +59,21 @@ export class Workspace extends Resource<WorkspaceData> {
 		return new Conversations(this.#transport, '', this.id, false);
 	}
 	get runs() {
-		return new Runs(this.#transport, '/agents/runs');
+		return new Runs(this.#transport, '/chats/runs');
 	}
-	get agents() {
-		const path = '/agents';
+	get chats() {
+		const path = '/chats';
 		return {
 			template: (id: Identifier) => get<TemplateData>(this.#transport, `${path}/${identifier(id)}/template`),
 			createTemplate: (id: Identifier) =>
 				action<TemplateData>(this.#transport, `${path}/${identifier(id)}/template`, 'POST'),
 			sites: (id: Identifier) => listing<SiteData>(this.#transport, `${path}/${identifier(id)}/sites`),
-			list: (options?: ListOptions & { archived?: boolean }) => listing<AgentData>(this.#transport, path, options),
+			list: (options?: ListOptions & { archived?: boolean }) => listing<ChatData>(this.#transport, path, options),
 			get: (id: Identifier, options: { conversationId?: string; configuration?: boolean } = {}) =>
-				get<AgentData>(this.#transport, `${path}/${identifier(id)}`, options),
-			create: (input: AgentCreate) => action<AgentData>(this.#transport, path, 'POST', input),
-			update: (id: Identifier, input: AgentUpdate) =>
-				action<AgentData>(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
+				get<ChatData>(this.#transport, `${path}/${identifier(id)}`, options),
+			create: (input: ChatCreate) => action<ChatData>(this.#transport, path, 'POST', input),
+			update: (id: Identifier, input: ChatUpdate) =>
+				action<ChatData>(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
 			conversations: (id: Identifier) => ({
 				list: () => listing<ConversationData>(this.#transport, `${path}/${identifier(id)}/conversations`),
 				create: (input: { title?: string; idempotencyKey: string }) =>
@@ -91,17 +91,17 @@ export class Workspace extends Resource<WorkspaceData> {
 			`${projectId ? `/projects/${identifier(projectId)}` : ''}/conversations/${identifier(conversationId)}/plans`,
 		);
 	}
-	get agentSchedules() {
-		const path = '/agents/schedules';
+	get chatSchedules() {
+		const path = '/chats/schedules';
 		return {
 			list: async (options: { conversationId?: string } = {}) => {
 				const response = await this.#transport.request(path, 'GET', undefined, options);
 				return { ...response, data: response.data.map(record) };
 			},
 			get: (id: Identifier) => get(this.#transport, `${path}/${identifier(id)}`),
-			preview: (input: AgentScheduleTiming) => action(this.#transport, `${path}/preview`, 'POST', input),
-			create: (input: AgentScheduleCreate) => action(this.#transport, path, 'POST', input),
-			update: (id: Identifier, input: AgentScheduleMutation) =>
+			preview: (input: ChatScheduleTiming) => action(this.#transport, `${path}/preview`, 'POST', input),
+			create: (input: ChatScheduleCreate) => action(this.#transport, path, 'POST', input),
+			update: (id: Identifier, input: ChatScheduleMutation) =>
 				action(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
 		};
 	}
@@ -117,7 +117,7 @@ export class Workspace extends Resource<WorkspaceData> {
 			publish: (id: Identifier, input: TemplatePublish) =>
 				action(this.#transport, `/templates/${identifier(id)}/publish`, 'POST', input),
 			remix: (id: Identifier, input: { versionId: string; idempotencyKey: string; name?: string }) =>
-				action<AgentData>(this.#transport, `/explore/templates/${identifier(id)}/remix`, 'POST', input),
+				action<ChatData>(this.#transport, `/explore/templates/${identifier(id)}/remix`, 'POST', input),
 			versions: (id: Identifier, options?: ListOptions) =>
 				listing(this.#transport, `/templates/${identifier(id)}/versions`, options),
 		};

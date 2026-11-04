@@ -7,9 +7,9 @@ import { identifier, input, listParams } from 'src/utils/cli-input';
 import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
 
 export const listChannels = async (options: any) => {
-	if (options.agent) {
+	if (options.chat) {
 		const { workspaceResource } = await workspaceContext(options);
-		return sdkList(await workspaceResource.agents.channels(identifier(options.agent)).list());
+		return sdkList(await workspaceResource.chats.channels(identifier(options.chat)).list());
 	}
 	const { projectResource } = await projectContext(options);
 	return sdkList(await projectResource.channels.list());
@@ -17,12 +17,12 @@ export const listChannels = async (options: any) => {
 
 export const listWorkspaceChats = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
-	return sdkList(await workspaceResource.agents.list({ ...listParams(options), archived: Boolean(options.archived) }));
+	return sdkList(await workspaceResource.chats.list({ ...listParams(options), archived: Boolean(options.archived) }));
 };
 export const getWorkspaceChat = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
 	return sdkEnvelope(
-		await workspaceResource.agents.get(identifier(options.agent), {
+		await workspaceResource.chats.get(identifier(options.chat), {
 			...(options.conversation ? { conversationId: identifier(options.conversation) } : {}),
 			configuration: Boolean(options.configuration),
 		}),
@@ -31,11 +31,11 @@ export const getWorkspaceChat = async (options: any) => {
 export const createWorkspaceChat = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
 	const data = await input(options, ['name', 'idempotencyKey', 'composerOverrides', 'designSelection', 'blankStart']);
-	return sdkEnvelope(await workspaceResource.agents.create(data));
+	return sdkEnvelope(await workspaceResource.chats.create(data));
 };
 export const updateWorkspaceChat = async (options: any) => {
 	const { workspaceResource, workspaceUuid } = await workspaceContext(options);
-	const agent = identifier(options.agent);
+	const chat = identifier(options.chat);
 	const data = await input(options, [
 		'revision',
 		'action',
@@ -47,24 +47,21 @@ export const updateWorkspaceChat = async (options: any) => {
 		'confirmation',
 	]);
 	if (['archive', 'delete'].includes(data.action))
-		await confirm(
-			options,
-			`${data.action} Agent ${agent} in Workspace ${workspaceUuid}? Its schedules will be blocked.`,
-		);
-	return sdkEnvelope(await workspaceResource.agents.update(agent, data));
+		await confirm(options, `${data.action} Chat ${chat} in Workspace ${workspaceUuid}? Its schedules will be blocked.`);
+	return sdkEnvelope(await workspaceResource.chats.update(chat, data));
 };
 export const listWorkspaceChatConversations = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
-	return sdkList(await workspaceResource.agents.conversations(identifier(options.agent)).list());
+	return sdkList(await workspaceResource.chats.conversations(identifier(options.chat)).list());
 };
 export const createWorkspaceChatConversation = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
 	const data = await input(options, ['title', 'idempotencyKey']);
-	return sdkEnvelope(await workspaceResource.agents.conversations(identifier(options.agent)).create(data));
+	return sdkEnvelope(await workspaceResource.chats.conversations(identifier(options.chat)).create(data));
 };
 export const workingFiles = async (options: any, operation = 'get') => {
 	const { workspaceResource } = await workspaceContext(options);
-	const files = workspaceResource.agents.workingFiles(identifier(options.agent));
+	const files = workspaceResource.chats.workingFiles(identifier(options.chat));
 	if (operation === 'download') {
 		if (typeof options.output !== 'string')
 			throw new CliError(422, 'Provide a destination with --output. Existing files are never overwritten.');

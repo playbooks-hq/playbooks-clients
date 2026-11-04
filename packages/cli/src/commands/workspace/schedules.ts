@@ -3,27 +3,27 @@ import { confirm } from 'src/utils/cli-confirm';
 import { identifier, input } from 'src/utils/cli-input';
 import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
 
-export const listAgentSchedules = async (options: any) => {
+export const listChatSchedules = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
 	return sdkList(
-		await workspaceResource.agentSchedules.list(
+		await workspaceResource.chatSchedules.list(
 			options.conversation ? { conversationId: identifier(options.conversation) } : {},
 		),
 	);
 };
-export const getAgentSchedule = async (options: any) => {
+export const getChatSchedule = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
-	return sdkEnvelope(await workspaceResource.agentSchedules.get(identifier(options.schedule)));
+	return sdkEnvelope(await workspaceResource.chatSchedules.get(identifier(options.schedule)));
 };
-export const previewAgentSchedule = async (options: any) => {
+export const previewChatSchedule = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
 	const data = await input(options, ['frequency', 'weekday', 'monthDay', 'time', 'timezone']);
-	return sdkEnvelope(await workspaceResource.agentSchedules.preview(data));
+	return sdkEnvelope(await workspaceResource.chatSchedules.preview(data));
 };
-export const createAgentSchedule = async (options: any) => {
+export const createChatSchedule = async (options: any) => {
 	const { workspaceResource, workspaceUuid } = await workspaceContext(options);
 	const data = await input(options, [
-		'agentId',
+		'chatId',
 		'conversationId',
 		'originMessageId',
 		'idempotencyKey',
@@ -40,17 +40,17 @@ export const createAgentSchedule = async (options: any) => {
 		'time',
 		'timezone',
 	]);
-	if (data.enabled) await confirm(options, `Enable Agent schedule execution and usage in Workspace ${workspaceUuid}?`);
-	return sdkEnvelope(await workspaceResource.agentSchedules.create(data));
+	if (data.enabled) await confirm(options, `Enable Chat schedule execution and usage in Workspace ${workspaceUuid}?`);
+	return sdkEnvelope(await workspaceResource.chatSchedules.create(data));
 };
-export const updateAgentSchedule = async (options: any) => {
+export const updateChatSchedule = async (options: any) => {
 	const { workspaceResource, workspaceUuid } = await workspaceContext(options);
 	const schedule = identifier(options.schedule);
 	const data = await input(options, ['action', 'expectedRevision', 'changes', 'idempotencyKey']);
 	if (['run', 'resume', 'delete'].includes(data.action) || data.changes?.enabled)
 		await confirm(
 			options,
-			`Apply ${data.action} to Agent schedule ${schedule} in Workspace ${workspaceUuid}, including its execution effects and usage?`,
+			`Apply ${data.action} to Chat schedule ${schedule} in Workspace ${workspaceUuid}, including its execution effects and usage?`,
 		);
-	return sdkEnvelope(await workspaceResource.agentSchedules.update(schedule, data));
+	return sdkEnvelope(await workspaceResource.chatSchedules.update(schedule, data));
 };

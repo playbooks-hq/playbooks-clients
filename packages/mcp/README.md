@@ -127,9 +127,9 @@ Tool calls flow through **MCP → CLI → SDK → Server**. MCP retains its exis
 
 Authenticate through the CLI or `PLAYBOOKS_TOKEN`, never through tool arguments. A mutation may start remote work before observation ends. Inspect its returned identifiers and status; a canceled tool call does not imply that accepted work was canceled. A read-only toolset limits exposed tools but does not replace Server authorization.
 
-## Agent scheduled messages
+## Chat scheduled messages
 
-The `workspace` toolset provides `playbooks_workspace_agent-schedules`, `playbooks_workspace_agent-schedule`, and its `preview`, `create`, and `update` operations. Save one self-contained instruction with durable references, model selection, timing, and destination. Creation does not run work. Inspect the revision before changing it; reuse the same run idempotency key after an uncertain response. Read occurrence history to verify completion and the resolved model.
+The `workspace` toolset provides `playbooks_workspace_chat-schedules`, `playbooks_workspace_chat-schedule`, and its `preview`, `create`, and `update` operations. Save one self-contained instruction with durable references, model selection, timing, and destination. Creation does not run work. Inspect the revision before changing it; reuse the same run idempotency key after an uncertain response. Read occurrence history to verify completion and the resolved model.
 
 ## Workspace Inbox
 

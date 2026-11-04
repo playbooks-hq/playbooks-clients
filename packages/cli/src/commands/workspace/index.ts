@@ -8,14 +8,14 @@ export {
 	updateWorkspaceChat,
 	listWorkspaceChatConversations,
 	createWorkspaceChatConversation,
-} from 'src/commands/workspace/agents';
+} from 'src/commands/workspace/chats';
 export { updateWorkspace } from 'src/commands/workspace/update';
 export {
-	listAgentSchedules,
-	getAgentSchedule,
-	previewAgentSchedule,
-	createAgentSchedule,
-	updateAgentSchedule,
+	listChatSchedules,
+	getChatSchedule,
+	previewChatSchedule,
+	createChatSchedule,
+	updateChatSchedule,
 } from 'src/commands/workspace/schedules';
 export { getConversation } from 'src/commands/workspace/conversations/get';
 export { listMessages } from 'src/commands/workspace/messages/list';

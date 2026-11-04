@@ -36,7 +36,7 @@ The application reads the environment in these examples. The SDK never reads API
 
 Use context managers to close connections. Explicit `client.close()` and `await client.aclose()` are also available. Resources depend on their originating client's lifetime.
 
-Agent scheduled messages use `workspace.agent_schedules.list/get/preview/create/update`. Both sync and async clients use the Server fields: creation requires `idempotencyKey`, and mutation requires `action` and `expectedRevision`. Run-now also requires a stable `idempotencyKey`; reuse it after an uncertain response. Save the complete instruction and explicit model selection rather than relying on conversation history.
+Chat scheduled messages use `workspace.chat_schedules.list/get/preview/create/update`. Both sync and async clients use the Server fields: creation requires `idempotencyKey`, and mutation requires `action` and `expectedRevision`. Run-now also requires a stable `idempotencyKey`; reuse it after an uncertain response. Save the complete instruction and explicit model selection rather than relying on conversation history.
 
 ## Resources and inputs
 
@@ -140,7 +140,7 @@ release = site.releases.create({
 completed = site.releases.wait(release["uuid"], timeout_ms=300_000)
 ```
 
-Sites own production independently of their source. Discover connections with `project.sites.list()` or `workspace.agents.sites(agent_uuid).list()`. The source must be explicitly connected before preflight. `source_connection.get()` can include display fields; the SDK sends only `type`, `id`, and `componentKey` when comparing the current source during connect, disconnect, preflight, and release. A source change requires the current source as `expected_source`; use `None` only when the Site has no source. Deployment may incur charges. `wait()` observes the accepted release without replaying it. `site.redeploy()` applies current Site configuration to retained content; disconnecting the source preserves the live Site and history. The asynchronous SDK exposes the same methods with `await` for requests.
+Sites own production independently of their source. Discover connections with `project.sites.list()` or `workspace.chats.sites(chat_uuid).list()`. The source must be explicitly connected before preflight. `source_connection.get()` can include display fields; the SDK sends only `type`, `id`, and `componentKey` when comparing the current source during connect, disconnect, preflight, and release. A source change requires the current source as `expected_source`; use `None` only when the Site has no source. Deployment may incur charges. `wait()` observes the accepted release without replaying it. `site.redeploy()` applies current Site configuration to retained content; disconnecting the source preserves the live Site and history. The asynchronous SDK exposes the same methods with `await` for requests.
 
 ## Errors and lower-level requests
 

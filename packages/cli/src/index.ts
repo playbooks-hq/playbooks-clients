@@ -147,11 +147,11 @@ cli
 	.action(run(site.projectSites));
 
 cli
-	.command('workspace agent sites')
-	.describe('List Sites connected to this Agent.')
+	.command('workspace chat sites')
+	.describe('List Sites connected to this Chat.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--agent', 'Agent UUID.')
-	.action(run(site.agentSites));
+	.option('--chat', 'Chat UUID.')
+	.action(run(site.chatSites));
 
 cli
 	.command('site logs')
@@ -341,7 +341,7 @@ cli
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
-	.option('--kind', 'Template kind: agent or project.')
+	.option('--kind', 'Template kind: chat or project.')
 	.example('templates --category business --kind project')
 	.action(run(templates.listTemplates));
 
@@ -401,74 +401,74 @@ cli
 cli.command('workspace current').describe('Show the active workspace.').action(run(workspace.currentWorkspace));
 
 cli
-	.command('workspace agents')
-	.describe('List Workspace Agents.')
+	.command('workspace chats')
+	.describe('List Workspace Chats.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100).')
-	.option('--query', 'Search Agent names.')
-	.option('--archived', 'List archived Agents.', false)
+	.option('--query', 'Search Chat names.')
+	.option('--archived', 'List archived Chats.', false)
 	.action(run(workspace.listWorkspaceChats));
 
 cli
-	.command('workspace agent')
-	.describe('Read an Agent and its Main or selected conversation.')
+	.command('workspace chat')
+	.describe('Read a Chat and its Main or selected conversation.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--agent', 'Agent UUID.')
+	.option('--chat', 'Chat UUID.')
 	.option('--conversation', 'Optional conversation UUID.')
 	.option('--configuration', 'Include eligible configuration resources.', false)
 	.action(run(workspace.getWorkspaceChat));
 
 cli
-	.command('workspace agent create')
-	.describe('Create an Agent with a fresh Main conversation; does not dispatch inference.')
+	.command('workspace chat create')
+	.describe('Create a Chat with a fresh Main conversation; does not dispatch inference.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--data', 'JSON name, stable idempotencyKey and configuration or - for stdin.')
 	.action(run(workspace.createWorkspaceChat));
 
 cli
-	.command('workspace agent update')
-	.describe('Configure, designate Main, archive, restore or delete an Agent using its revision.')
+	.command('workspace chat update')
+	.describe('Configure, designate Main, archive, restore or delete a Chat using its revision.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--agent', 'Agent UUID.')
+	.option('--chat', 'Chat UUID.')
 	.option('--data', 'JSON action and revision or - for stdin; deletion also requires the exact name in confirmation.')
 	.option('--yes', 'Confirm archival or deletion.', false)
 	.action(run(workspace.updateWorkspaceChat));
 
 cli
-	.command('workspace agent conversations')
-	.describe('List conversations belonging to an Agent.')
+	.command('workspace chat conversations')
+	.describe('List conversations belonging to a Chat.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--agent', 'Agent UUID.')
+	.option('--chat', 'Chat UUID.')
 	.action(run(workspace.listWorkspaceChatConversations));
 
-for (const owner of ['agent', 'project'])
+for (const owner of ['chat', 'project'])
 	cli
-		.command(`${owner === 'agent' ? 'workspace agent' : 'project'} channels`)
+		.command(`${owner === 'chat' ? 'workspace chat' : 'project'} channels`)
 		.describe('Inspect channel assignments, destinations and setup readiness. Credentials remain in secure setup.')
 		.option('--workspace', 'Workspace UUID.')
 		.option(`--${owner}`, `${owner} UUID.`)
 		.action(run(workspace.listChannels));
 
 cli
-	.command('workspace agent conversation create')
-	.describe('Create another conversation in an Agent; does not dispatch inference.')
+	.command('workspace chat conversation create')
+	.describe('Create another conversation in a Chat; does not dispatch inference.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--agent', 'Agent UUID.')
+	.option('--chat', 'Chat UUID.')
 	.option('--data', 'JSON title and stable idempotencyKey or - for stdin.')
 	.action(run(workspace.createWorkspaceChatConversation));
 
 cli
-	.command('workspace agent working-files')
-	.describe('Agent working files: get, download, replace, preview, or save.')
-	.action(() => cli.help('workspace agent working-files'));
+	.command('workspace chat working-files')
+	.describe('Chat working files: get, download, replace, preview, or save.')
+	.action(() => cli.help('workspace chat working-files'));
 
 for (const operation of ['get', 'download', 'replace', 'preview', 'save'])
 	cli
-		.command(`workspace agent working-files ${operation}`)
-		.describe('Inspect, edit, preview or snapshot Agent working files. Background References are unchanged.')
+		.command(`workspace chat working-files ${operation}`)
+		.describe('Inspect, edit, preview or snapshot Chat working files. Background References are unchanged.')
 		.option('--workspace', 'Explicit Workspace UUID.')
-		.option('--agent', 'Agent UUID.')
+		.option('--chat', 'Chat UUID.')
 		.option('--output', 'Destination ZIP path for download; existing files are never overwritten.')
 		.option('--data', 'JSON revision and operation input or - for stdin; saves require a stable requestId.')
 		.action(run(options => workspace.workingFiles(options, operation)));
@@ -485,42 +485,42 @@ for (const operation of ['get', 'create', 'revise', 'save'])
 		.action(run(options => workspace.conversationPlans(options, operation)));
 
 cli
-	.command('workspace agent-schedules')
-	.describe('List Agent scheduled messages.')
+	.command('workspace chat-schedules')
+	.describe('List Chat scheduled messages.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Filter by the Agent owning this conversation UUID.')
-	.action(run(workspace.listAgentSchedules));
+	.option('--conversation', 'Filter by the Chat owning this conversation UUID.')
+	.action(run(workspace.listChatSchedules));
 
 cli
-	.command('workspace agent-schedule')
-	.describe('Read a saved Agent message and occurrence history.')
+	.command('workspace chat-schedule')
+	.describe('Read a saved Chat message and occurrence history.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--schedule', 'Schedule UUID.')
-	.action(run(workspace.getAgentSchedule));
+	.action(run(workspace.getChatSchedule));
 
 cli
-	.command('workspace agent-schedule preview')
+	.command('workspace chat-schedule preview')
 	.describe('Preview recurrence without scheduling execution.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--data', 'JSON timing configuration or - for stdin.')
-	.action(run(workspace.previewAgentSchedule));
+	.action(run(workspace.previewChatSchedule));
 
 cli
-	.command('workspace agent-schedule create')
-	.describe('Save a self-contained Agent scheduled message; does not run it now.')
+	.command('workspace chat-schedule create')
+	.describe('Save a self-contained Chat scheduled message; does not run it now.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--data', 'JSON instruction, origin, model, destination and timing or - for stdin.')
 	.option('--yes', 'Confirm enabling future scheduled execution.', false)
-	.action(run(workspace.createAgentSchedule));
+	.action(run(workspace.createChatSchedule));
 
 cli
-	.command('workspace agent-schedule update')
-	.describe('Update, pause, resume, delete or run a saved Agent message using its expectedRevision.')
+	.command('workspace chat-schedule update')
+	.describe('Update, pause, resume, delete or run a saved Chat message using its expectedRevision.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--schedule', 'Schedule UUID.')
 	.option('--data', 'JSON action and expectedRevision; run also requires a stable idempotencyKey.')
 	.option('--yes', 'Confirm execution or deletion effects.', false)
-	.action(run(workspace.updateAgentSchedule));
+	.action(run(workspace.updateChatSchedule));
 
 cli.command('workspace clear').describe('Exit local workspace context.').action(run(workspace.clearWorkspace));
 
@@ -567,7 +567,7 @@ cli
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
-	.option('--kind', 'Template kind: agent or project.')
+	.option('--kind', 'Template kind: chat or project.')
 	.example('workspace templates --category business --kind project')
 	.action(run(workspace.listTemplates));
 

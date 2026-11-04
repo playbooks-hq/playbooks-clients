@@ -79,8 +79,8 @@ export const getRelease = async (options: any) =>
 	sdkEnvelope(await (await siteContext(options)).site.releases.get(identifier(options.release, '--release')));
 export const projectSites = async (options: any) =>
 	sdkList(await (await projectContext(options)).projectResource.sites.list());
-export const agentSites = async (options: any) =>
-	sdkList(await (await workspaceContext(options)).workspaceResource.agents.sites(identifier(options.agent, '--agent')));
+export const chatSites = async (options: any) =>
+	sdkList(await (await workspaceContext(options)).workspaceResource.chats.sites(identifier(options.chat, '--chat')));
 
 export const releaseOptions = async (options: any) =>
 	sdkEnvelope(await (await siteContext(options)).site.releaseOptions());

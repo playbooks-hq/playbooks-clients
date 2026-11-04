@@ -12,7 +12,7 @@ import { projectSourceTools } from 'src/tools/project-source.js';
 import { projectTestTools } from 'src/tools/project-tests.js';
 import { siteTools } from 'src/tools/sites.js';
 import { templatesTools } from 'src/tools/templates.js';
-import { workspaceAgentsTools } from 'src/tools/workspace-agents.js';
+import { workspaceChatsTools } from 'src/tools/workspace-chats.js';
 import { workspaceConfigurationTools } from 'src/tools/workspace-configuration.js';
 import { workspaceDomainsTools } from 'src/tools/workspace-domains.js';
 import { workspaceFinanceTools } from 'src/tools/workspace-finance.js';
@@ -28,7 +28,7 @@ export const catalog: ToolDefinition[] = (
 		...discoveryTools,
 		...workspaceConfigurationTools,
 		...workspaceSchedulesTools,
-		...workspaceAgentsTools,
+		...workspaceChatsTools,
 		...localTools,
 		...templatesTools,
 		...workspaceMembersTools,

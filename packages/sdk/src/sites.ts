@@ -6,7 +6,7 @@ import type { Transport } from 'src/transport.js';
 import type { Identifier, ListOptions, ReleaseData, WaitOptions } from 'src/types.js';
 
 export interface SiteSource {
-	type: 'project' | 'agent';
+	type: 'project' | 'chat';
 	id: string;
 	componentKey: string | null;
 }

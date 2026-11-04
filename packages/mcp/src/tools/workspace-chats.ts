@@ -1,9 +1,9 @@
 import type { ToolDefinition } from 'src/tools/definition.js';
 
-export const workspaceAgentsTools: ToolDefinition[] = [
-	...['agent', 'project'].map(
+export const workspaceChatsTools: ToolDefinition[] = [
+	...['chat', 'project'].map(
 		(owner): ToolDefinition => ({
-			command: `${owner === 'agent' ? 'workspace agent' : 'project'} channels`,
+			command: `${owner === 'chat' ? 'workspace chat' : 'project'} channels`,
 			description:
 				'Inspect channel assignments and readiness. Channel access is distinct from outbound connector tools; account setup and personal verification use secure controls.',
 			toolset: 'workspace',
@@ -17,15 +17,15 @@ export const workspaceAgentsTools: ToolDefinition[] = [
 	),
 	...['get', 'download', 'replace', 'preview', 'save'].map(
 		(operation): ToolDefinition => ({
-			command: `workspace agent working-files ${operation}`,
+			command: `workspace chat working-files ${operation}`,
 			description:
-				'Agent working tree, separate from background References. Replace requires the exact revision. Save requires a stable requestId and creates an independent Workspace snapshot. Preview HTML requires a credential-free isolated renderer.',
+				'Chat working tree, separate from background References. Replace requires the exact revision. Save requires a stable requestId and creates an independent Workspace snapshot. Preview HTML requires a credential-free isolated renderer.',
 			toolset: 'workspace',
 			readOnly: ['get', 'download'].includes(operation),
 			destructive: operation === 'replace',
 			options: {
 				workspace: { flag: 'workspace', description: 'Workspace UUID.', required: true },
-				agent: { flag: 'agent', description: 'Agent UUID.', required: true },
+				chat: { flag: 'chat', description: 'Chat UUID.', required: true },
 				...(operation === 'download'
 					? {
 							output: {
@@ -63,8 +63,8 @@ export const workspaceAgentsTools: ToolDefinition[] = [
 	),
 
 	{
-		command: 'workspace agents',
-		description: 'List durable Workspace Agents. Project-owned operational Agents remain under their Projects.',
+		command: 'workspace chats',
+		description: 'List durable Workspace Chats. Project-owned operational Agents remain under their Projects.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
@@ -72,21 +72,21 @@ export const workspaceAgentsTools: ToolDefinition[] = [
 			workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
 			page: { flag: 'page', description: 'Zero-based page.', kind: 'number' },
 			pageSize: { flag: 'page-size', description: 'Records per page (1-100).', kind: 'number' },
-			query: { flag: 'query', description: 'Search Agent names.' },
-			archived: { flag: 'archived', description: 'List archived Agents.', kind: 'boolean' },
+			query: { flag: 'query', description: 'Search Chat names.' },
+			archived: { flag: 'archived', description: 'List archived Chats.', kind: 'boolean' },
 		},
 	},
 	{
-		command: 'workspace agent',
+		command: 'workspace chat',
 		description:
-			'Read Agent identity, configuration, revision and capabilities. Opens Main unless another owned conversation is specified.',
+			'Read Chat identity, configuration, revision and capabilities. Opens Main unless another owned conversation is specified.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
-			agent: { flag: 'agent', description: 'Workspace Agent UUID.', required: true },
-			conversation: { flag: 'conversation', description: 'Optional conversation UUID belonging to this Agent.' },
+			chat: { flag: 'chat', description: 'Workspace Chat UUID.', required: true },
+			conversation: { flag: 'conversation', description: 'Optional conversation UUID belonging to this Chat.' },
 			configuration: {
 				flag: 'configuration',
 				description: 'Include eligible configuration resources.',
@@ -95,9 +95,9 @@ export const workspaceAgentsTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'workspace agent create',
+		command: 'workspace chat create',
 		description:
-			'Create a Workspace Agent and fresh Main conversation without provisioning an application environment or running inference. Reuse the same idempotencyKey after an uncertain response.',
+			'Create a Workspace Chat and fresh Main conversation without provisioning an application environment or running inference. Reuse the same idempotencyKey after an uncertain response.',
 		toolset: 'workspace',
 		readOnly: false,
 		destructive: false,
@@ -106,15 +106,15 @@ export const workspaceAgentsTools: ToolDefinition[] = [
 		dataOptional: false,
 	},
 	{
-		command: 'workspace agent update',
+		command: 'workspace chat update',
 		description:
-			'Update an Agent using its current revision. Actions are configure, main, archive, restore and delete. Main requires an owned conversation numeric ID. Delete requires the exact Agent name in confirmation. Archive/delete block schedules and reject active work. Configuration never grants underlying resource access. resourceSelection.connectorIds explicitly selects eligible Workspace connection IDs; omitted or empty grants none. Changing connectorIds requires Workspace connector management authority and connectors.manage for API keys.',
+			'Update a Chat using its current revision. Actions are configure, main, archive, restore and delete. Main requires an owned conversation numeric ID. Delete requires the exact Chat name in confirmation. Archive/delete block schedules and reject active work. Configuration never grants underlying resource access. resourceSelection.connectorIds explicitly selects eligible Workspace connection IDs; omitted or empty grants none. Changing connectorIds requires Workspace connector management authority and connectors.manage for API keys.',
 		toolset: 'workspace',
 		readOnly: false,
 		destructive: true,
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
-			agent: { flag: 'agent', description: 'Workspace Agent UUID.', required: true },
+			chat: { flag: 'chat', description: 'Workspace Chat UUID.', required: true },
 			confirm: { flag: 'yes', description: 'Confirm archival or deletion.', kind: 'boolean' },
 		},
 		dataFields: [
@@ -130,26 +130,26 @@ export const workspaceAgentsTools: ToolDefinition[] = [
 		dataOptional: false,
 	},
 	{
-		command: 'workspace agent conversations',
-		description: 'List active conversations belonging to an Agent, including which conversation is Main.',
+		command: 'workspace chat conversations',
+		description: 'List active conversations belonging to a Chat, including which conversation is Main.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
-			agent: { flag: 'agent', description: 'Workspace Agent UUID.', required: true },
+			chat: { flag: 'chat', description: 'Workspace Chat UUID.', required: true },
 		},
 	},
 	{
-		command: 'workspace agent conversation create',
+		command: 'workspace chat conversation create',
 		description:
-			'Create an alternate Agent conversation without running inference. Reuse the same idempotencyKey after uncertain responses. Main and existing schedule destinations remain unchanged.',
+			'Create an alternate Chat conversation without running inference. Reuse the same idempotencyKey after uncertain responses. Main and existing schedule destinations remain unchanged.',
 		toolset: 'workspace',
 		readOnly: false,
 		destructive: false,
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
-			agent: { flag: 'agent', description: 'Workspace Agent UUID.', required: true },
+			chat: { flag: 'chat', description: 'Workspace Chat UUID.', required: true },
 		},
 		dataFields: ['title', 'idempotencyKey'],
 		dataOptional: false,
