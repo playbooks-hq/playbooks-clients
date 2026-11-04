@@ -39,7 +39,7 @@ export const templatesTools: ToolDefinition[] = [
 	{
 		command: 'workspace template publish',
 		description:
-			'Publish a reviewed Agent or Project template package. acknowledgment must confirm sharing rights and review for private information. Later versions require notes; bump defaults to patch. Publication uses the listing visibility and does not copy conversations or credentials.',
+			'Publish a reviewed Agent template package. Supply expectedRevision from the listing and sourceRevision from the Agent working tree. acknowledgment confirms sharing rights and review for private information. Publication uses the listing visibility; bump defaults to patch. Existing adopters keep their selected version.',
 		toolset: 'templates',
 		readOnly: false,
 		destructive: true,
@@ -65,7 +65,7 @@ export const templatesTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['acknowledgment', 'notes', 'bump', 'action'],
+		dataFields: ['acknowledgment', 'expectedRevision', 'sourceRevision', 'notes', 'bump'],
 		dataOptional: false,
 	},
 	{

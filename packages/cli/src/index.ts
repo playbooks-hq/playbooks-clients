@@ -551,7 +551,7 @@ cli
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
-		'workspace template publish --template abc --data \'{"acknowledgment":true,"notes":"Updated scheduled message"}\' --yes',
+		'workspace template publish --template abc --data \'{"acknowledgment":true,"expectedRevision":"2026-11-03T12:00:00.000Z","sourceRevision":"revision-from-working-tree","notes":"Updated scheduled message"}\' --yes',
 	)
 	.action(run(workspace.publishTemplate));
 

@@ -64,6 +64,9 @@ export class Workspace extends Resource<WorkspaceData> {
 	get agents() {
 		const path = '/agents';
 		return {
+			template: (id: Identifier) => get<TemplateData>(this.#transport, `${path}/${identifier(id)}/template`),
+			createTemplate: (id: Identifier) =>
+				action<TemplateData>(this.#transport, `${path}/${identifier(id)}/template`, 'POST'),
 			sites: (id: Identifier) => listing<SiteData>(this.#transport, `${path}/${identifier(id)}/sites`),
 			list: (options?: ListOptions & { archived?: boolean }) => listing<AgentData>(this.#transport, path, options),
 			get: (id: Identifier, options: { conversationId?: string; configuration?: boolean } = {}) =>
@@ -113,6 +116,8 @@ export class Workspace extends Resource<WorkspaceData> {
 			update: (id: Identifier, input: TemplateUpdate) => collection.update(id, input),
 			publish: (id: Identifier, input: TemplatePublish) =>
 				action(this.#transport, `/templates/${identifier(id)}/publish`, 'POST', input),
+			remix: (id: Identifier, input: { versionId: string; idempotencyKey: string; name?: string }) =>
+				action<AgentData>(this.#transport, `/explore/templates/${identifier(id)}/remix`, 'POST', input),
 			versions: (id: Identifier, options?: ListOptions) =>
 				listing(this.#transport, `/templates/${identifier(id)}/versions`, options),
 		};

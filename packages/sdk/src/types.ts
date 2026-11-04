@@ -359,9 +359,10 @@ export interface TemplateListOptions extends ListOptions {
 }
 export interface TemplatePublish {
 	acknowledgment: true;
+	expectedRevision: string;
+	sourceRevision: string;
 	notes?: string;
 	bump?: 'patch' | 'minor' | 'major';
-	action?: 'restore-current';
 }
 export interface TemplateUpdate {
 	name?: string;
@@ -372,7 +373,7 @@ export interface TemplateUpdate {
 	licenseId?: number;
 	categoryIds?: number[];
 	visibility?: 'private' | 'unlisted' | 'public';
-	packageSelection?: { referenceIds?: number[]; scheduleIds?: number[] };
+	packageSelection?: { referenceIds?: number[]; scheduleIds?: number[]; workingFiles?: string[] };
 }
 export interface BudgetUpdate {
 	creditBudget?: number | null;

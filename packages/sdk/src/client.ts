@@ -51,6 +51,10 @@ export class PlaybooksSDK {
 	}
 	get templates() {
 		return {
+			versions: (id: Identifier, options?: ListOptions) =>
+				listing(this.#publicTransport(), `/explore/templates/${identifier(id)}/versions`, options),
+			version: (id: Identifier, versionId: Identifier) =>
+				get(this.#publicTransport(), `/explore/templates/${identifier(id)}/versions/${identifier(versionId)}`),
 			list: (options?: TemplateListOptions) =>
 				listing<TemplateData>(this.#publicTransport(), '/explore/templates', options),
 			get: (id: Identifier, options: { include?: string } = {}) =>
