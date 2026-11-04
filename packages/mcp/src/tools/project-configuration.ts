@@ -177,7 +177,7 @@ export const projectConfigurationTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project designs',
-		description: 'List project-owned agent designs.',
+		description: 'List project-owned designs.',
 		toolset: 'project',
 		readOnly: true,
 		destructive: false,
@@ -223,7 +223,7 @@ export const projectConfigurationTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project design create',
-		description: 'Create a project agent design from package files.',
+		description: 'Create a project design from package files.',
 		toolset: 'project',
 		readOnly: false,
 		destructive: false,
@@ -248,7 +248,7 @@ export const projectConfigurationTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project design update',
-		description: 'Update a project-owned agent design.',
+		description: 'Update a project-owned design.',
 		toolset: 'project',
 		readOnly: false,
 		destructive: true,

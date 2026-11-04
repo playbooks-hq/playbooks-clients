@@ -61,7 +61,7 @@ export const workspaceConfigurationTools: ToolDefinition[] = [
 	},
 	{
 		command: 'workspace designs',
-		description: 'List available workspace agent designs.',
+		description: 'List available workspace designs.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,

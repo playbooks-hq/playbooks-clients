@@ -236,11 +236,11 @@ class Workspace(Resource):
 
     @property
     def designs(self) -> Listing:
-        return Listing(self._transport, "/designs")
+        return Listing(self._transport, "/workspace/designs")
 
     @property
     def skills(self) -> Listing:
-        return Listing(self._transport, "/skills")
+        return Listing(self._transport, "/workspace/skills")
 
     @property
     def mcps(self) -> Listing:

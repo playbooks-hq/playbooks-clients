@@ -681,7 +681,7 @@ cli
 
 cli
 	.command('workspace designs')
-	.describe('List available workspace agent designs.')
+	.describe('List available workspace designs.')
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--query', 'Search text.')
@@ -1228,7 +1228,7 @@ cli
 
 cli
 	.command('project designs')
-	.describe('List project-owned agent designs.')
+	.describe('List project-owned designs.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
@@ -1242,15 +1242,15 @@ cli
 
 cli
 	.command('project design')
-	.describe('Agent design commands: project design create, update.')
+	.describe('Design commands: project design create, update.')
 	.action(options => {
-		if (options._?.length) throw new CliError(422, 'Unknown Agent Design action. See project design --help.');
+		if (options._?.length) throw new CliError(422, 'Unknown Design action. See project design --help.');
 		cli.help('project design');
 	});
 
 cli
 	.command('project design create')
-	.describe('Create a project agent design from package files.')
+	.describe('Create a project design from package files.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
@@ -1263,7 +1263,7 @@ cli
 
 cli
 	.command('project design update')
-	.describe('Update a project-owned agent design.')
+	.describe('Update a project-owned design.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')

@@ -154,10 +154,10 @@ export class Workspace extends Resource<WorkspaceData> {
 		};
 	}
 	get designs() {
-		return { list: (options?: ListOptions) => listing(this.#transport, '/designs', options) };
+		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/designs', options) };
 	}
 	get skills() {
-		return { list: (options?: ListOptions) => listing(this.#transport, '/skills', options) };
+		return { list: (options?: ListOptions) => listing(this.#transport, '/workspace/skills', options) };
 	}
 	get mcps() {
 		return { list: (options?: ListOptions) => listing(this.#transport, '/mcps', options) };
