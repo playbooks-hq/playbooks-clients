@@ -40,6 +40,24 @@ export interface SiteData {
 	access: { role: string | null };
 	capabilities: { canView: boolean; canManage: boolean; canRelease: boolean };
 	config: Record<string, unknown>;
+	lifecycleActions?: { archive: SiteLifecycleAction; restore: SiteLifecycleAction };
+}
+
+export interface SiteLifecycleAction {
+	allowed: boolean;
+	reason: string | null;
+}
+
+export interface SitePreviewData {
+	status: 'ready' | 'pending' | 'unavailable';
+	reason: string | null;
+	releaseId: string | null;
+	pageUrl: string | null;
+	fetchedAt: string | null;
+	title: string | null;
+	description: string | null;
+	imageUrl: string | null;
+	faviconUrl: string | null;
 }
 
 export interface SiteCreate {
@@ -192,6 +210,12 @@ export class Site extends Resource<SiteData> {
 				false,
 			)
 		).data;
+	}
+	get preview() {
+		return {
+			get: () => get<SitePreviewData>(this.#transport, `${this.#path}/preview`),
+			refresh: () => action<SitePreviewData>(this.#transport, `${this.#path}/preview`, 'POST', {}),
+		};
 	}
 	releaseOptions() {
 		return get(this.#transport, `${this.#path}/release-options`);

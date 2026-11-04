@@ -7,6 +7,8 @@ export type { SandboxConfigInput, SandboxServiceInput } from 'src/project.js';
 export { Site, Sites } from 'src/sites.js';
 export type {
 	SiteData,
+	SitePreviewData,
+	SiteLifecycleAction,
 	SiteSource,
 	SiteSourceRead,
 	SiteCreate,

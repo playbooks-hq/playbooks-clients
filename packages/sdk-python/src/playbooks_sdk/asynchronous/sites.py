@@ -267,6 +267,12 @@ class Site(Resource):
     async def verify_auth(self, data: Data) -> Any:
         return await self._site_action("auth/verify", "POST", data)
 
+    async def preview(self) -> Any:
+        return await self._site_get("preview")
+
+    async def refresh_preview(self) -> Any:
+        return await self._site_action("preview", "POST", {})
+
     async def lifecycle(self) -> Any:
         return await self._site_get("lifecycle")
 

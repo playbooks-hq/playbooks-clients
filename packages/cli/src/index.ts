@@ -242,6 +242,8 @@ const siteOperations = [
 	['site auth configure', 'Save Site application sign-in draft.', site.configureAuth, null, true],
 	['site auth clerk connect', 'Connect Clerk production keys from stdin.', site.connectClerk, null, true],
 	['site auth verify', 'Verify a Site visitor session.', site.verifyAuth, null, true],
+	['site preview', 'Read deployed page preview metadata.', site.getPreview],
+	['site preview refresh', 'Refresh deployed page preview metadata.', site.refreshPreview],
 	['site lifecycle', 'Inspect Site lifecycle and cleanup receipts.', site.getLifecycle],
 	['site start', 'Start a released Site.', site.startSite],
 	['site stop', 'Stop Site compute.', site.stopSite, null, false, true],

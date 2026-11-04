@@ -260,6 +260,12 @@ class Site(Resource):
     def verify_auth(self, data: Data) -> Any:
         return self._site_action("auth/verify", "POST", data)
 
+    def preview(self) -> Any:
+        return self._site_get("preview")
+
+    def refresh_preview(self) -> Any:
+        return self._site_action("preview", "POST", {})
+
     def lifecycle(self) -> Any:
         return self._site_get("lifecycle")
 

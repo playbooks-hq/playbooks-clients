@@ -449,3 +449,7 @@ export const resolveMonitoringIssue = async (options: any) => {
 		await (await siteContext(options)).site.monitoringData.resolve(identifier(options.issue, '--issue')),
 	);
 };
+
+export const getPreview = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.preview.get());
+export const refreshPreview = async (options: any) =>
+	sdkEnvelope(await (await siteContext(options)).site.preview.refresh());

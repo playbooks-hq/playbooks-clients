@@ -2,6 +2,28 @@ import type { ToolDefinition } from 'src/tools/definition.js';
 
 export const siteTools: ToolDefinition[] = [
 	{
+		command: 'site preview',
+		description: 'Read the current deployed page preview metadata.',
+		toolset: 'core',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			site: { flag: 'site', description: 'Site UUID.', required: true },
+		},
+	},
+	{
+		command: 'site preview refresh',
+		description: 'Refresh deployed page preview metadata without changing the release.',
+		toolset: 'core',
+		readOnly: false,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			site: { flag: 'site', description: 'Site UUID.', required: true },
+		},
+	},
+	{
 		command: 'sites',
 		description: 'List Sites independently of Project access.',
 		toolset: 'core',
