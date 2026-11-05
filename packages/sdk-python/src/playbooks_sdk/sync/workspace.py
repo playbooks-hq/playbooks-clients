@@ -294,9 +294,25 @@ class Workspace(Resource):
         return Domains(self._transport, "/domains")
 
 
+class WorkspaceReference:
+    """A scoped Agent operation handle without Workspace metadata."""
+
+    __slots__ = ("_transport",)
+
+    def __init__(self, transport: Transport) -> None:
+        self._transport = transport
+
+    @property
+    def agents(self) -> Agents:
+        return Agents(self._transport, "/agents")
+
+
 class Workspaces(Endpoint):
     def __init__(self, transport: Transport) -> None:
         super().__init__(transport, "/session/workspaces")
+
+    def reference(self, id: Identifier) -> WorkspaceReference:
+        return WorkspaceReference(self._transport.scoped(identifier(id)))
 
     def list(self, **options: Any) -> ApiResponse:
         response = self._list(self._path, options)

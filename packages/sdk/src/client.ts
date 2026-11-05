@@ -1,4 +1,5 @@
 import { name, version } from 'package.json';
+import { Agents } from 'src/agents.js';
 import { PlaybooksError } from 'src/error.js';
 import { get, identifier, listing } from 'src/resource.js';
 import { Transport } from 'src/transport.js';
@@ -26,6 +27,11 @@ export class PlaybooksSDK {
 	}
 	get workspaces() {
 		return {
+			/** Scope operations to a known Workspace without fetching its metadata. */
+			reference: (id: Identifier) => {
+				identifier(id);
+				return { agents: new Agents(this.#transport(String(id))) };
+			},
 			list: async (options: ListOptions = {}): Promise<ApiResponse<Workspace[]>> => {
 				const response = await this.#transport().request('/session/workspaces', 'GET', undefined, options);
 				return {

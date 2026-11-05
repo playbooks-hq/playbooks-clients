@@ -12,20 +12,26 @@ export const authenticated = async (options: any) => {
 	return { store, token, client: new CliClient(token) };
 };
 
-export const workspaceContext = async (options: any) => {
+/** Select an explicit tenant for operation handles without requiring Workspace metadata access. */
+export const workspaceReferenceContext = async (options: any) => {
 	const explicitWorkspace = options.workspace !== undefined ? identifier(options.workspace, '--workspace') : undefined;
-	const { store, token } = await authenticated(options);
+	const { store, client } = await authenticated(options);
 	const state = await store.read();
 	const workspaceValue = explicitWorkspace ?? state.workspace;
 	if (workspaceValue === undefined)
 		throw new CliError(422, 'Provide --workspace <id> or select a workspace with playbooks workspace use.');
 	const workspaceUuid = identifier(workspaceValue, '--workspace');
-	const client = new CliClient(token);
+	return { store, state, client, workspaceUuid, workspaceReference: client.workspaces.reference(workspaceUuid) };
+};
+
+export const workspaceContext = async (options: any) => {
+	const context = await workspaceReferenceContext(options);
+	const { client, workspaceUuid } = context;
 	const workspaceResource = await client.workspaces.get(workspaceUuid);
 	const workspace = sdkEnvelope(workspaceResource);
 	if (workspace.data.uuid !== workspaceUuid)
 		throw new CliError(403, 'The server did not resolve the requested workspace.');
-	return { store, state, client, workspace, workspaceUuid, workspaceResource };
+	return { ...context, workspace, workspaceResource };
 };
 
 export const projectContext = async (options: any, params: { include?: string } = {}) => {

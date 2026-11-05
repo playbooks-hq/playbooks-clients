@@ -1,26 +1,22 @@
 from typing import Any, Self
 
-from playbooks_sdk.asynchronous.core import Endpoint
+from playbooks_sdk.asynchronous.core import Endpoint, Listing
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
 from playbooks_sdk.transport import AsyncTransport as Transport
 
 
-class Agent(Resource):
+class AgentReference:
+    """Operations for a known Agent identifier without a metadata snapshot."""
+
+    __slots__ = ("_transport", "_path")
+
     _transport: Transport
     _path: str
 
-    def __init__(self, transport: Transport, data: Data) -> None:
-        super().__init__(data)
+    def __init__(self, transport: Transport, id: Identifier) -> None:
         object.__setattr__(self, "_transport", transport)
-        object.__setattr__(self, "_path", f"/agents/{identifier(data['uuid'])}")
-
-    async def update(self, data: Data) -> Self:
-        updated = await Endpoint(self._transport, self._path)._action(self._path, "PATCH", data)
-        if updated["uuid"] != self.to_dict()["uuid"]:
-            raise PlaybooksError(502, "The updated Agent identity did not match.")
-        self._replace(updated)
-        return self
+        object.__setattr__(self, "_path", f"/agents/{identifier(id)}")
 
     async def archive(self, revision: int) -> Any:
         return await Endpoint(self._transport, self._path)._action(
@@ -35,6 +31,99 @@ class Agent(Resource):
     async def delete(self, revision: int) -> Any:
         return await Endpoint(self._transport, self._path)._action(
             self._path, "DELETE", {"revision": revision}
+        )
+
+    async def mentions(self, **options: Any) -> ApiResponse:
+        return await Endpoint(self._transport, self._path)._list(f"{self._path}/mentions", options)
+
+    def channels(self) -> Listing:
+        """Inspect channels with signed-in user authority, not Agent credentials."""
+        return Listing(self._transport, f"{self._path}/channels")
+
+    async def artifacts(self, **options: Any) -> ApiResponse:
+        return await Endpoint(self._transport, self._path)._list(f"{self._path}/artifacts", options)
+
+    async def artifact(self, artifact_id: Identifier, *, version: str | None = None) -> Any:
+        response = await self._transport.request(
+            f"{self._path}/artifacts/{identifier(artifact_id)}", params={"version": version}
+        )
+        return response["data"]
+
+    async def artifact_versions(self, artifact_id: Identifier, **options: Any) -> ApiResponse:
+        return await Endpoint(self._transport, self._path)._list(
+            f"{self._path}/artifacts/{identifier(artifact_id)}/versions", options
+        )
+
+    async def prepare_artifact(self, data: Data) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/artifacts/prepare", "POST", data
+        )
+
+    async def update_artifact(self, artifact_id: Identifier, data: Data) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/artifacts/{identifier(artifact_id)}", "PUT", data
+        )
+
+    async def export_artifact(
+        self, artifact_id: Identifier, *, version: str | None = None
+    ) -> bytes:
+        result: bytes = await self._transport.request(
+            f"{self._path}/artifacts/{identifier(artifact_id)}/export",
+            params={"version": version},
+            binary=True,
+        )
+        return result
+
+    async def delete_artifact(self, artifact_id: Identifier, *, confirmation: str) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/artifacts/{identifier(artifact_id)}",
+            "DELETE",
+            {"confirmation": confirmation},
+        )
+
+    async def sources(self, **options: Any) -> ApiResponse:
+        return await Endpoint(self._transport, self._path)._list(f"{self._path}/sources", options)
+
+    async def source(self, source_id: Identifier, *, version: str, conversation_id: str) -> Any:
+        response = await self._transport.request(
+            f"{self._path}/sources/{identifier(source_id)}",
+            params={"version": version, "conversationId": conversation_id},
+        )
+        return response["data"]
+
+    async def download_source(
+        self, source_id: Identifier, *, version: str, conversation_id: str
+    ) -> bytes:
+        result: bytes = await self._transport.request(
+            f"{self._path}/sources/{identifier(source_id)}/download",
+            params={"version": version, "conversationId": conversation_id},
+            binary=True,
+        )
+        return result
+
+    async def preview_source(
+        self, source_id: Identifier, *, version: str, conversation_id: str
+    ) -> bytes:
+        result: bytes = await self._transport.request(
+            f"{self._path}/sources/{identifier(source_id)}/preview",
+            params={"version": version, "conversationId": conversation_id},
+            binary=True,
+        )
+        return result
+
+    async def rename_source(self, source_id: Identifier, data: Data) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/sources/{identifier(source_id)}/rename", "POST", data
+        )
+
+    async def duplicate_source(self, source_id: Identifier, data: Data) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/sources/{identifier(source_id)}/duplicate", "POST", data
+        )
+
+    async def delete_source(self, source_id: Identifier, data: Data) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/sources/{identifier(source_id)}/delete", "POST", data
         )
 
     async def conversations(self, **options: Any) -> ApiResponse:
@@ -58,6 +147,68 @@ class Agent(Resource):
             f"{self._path}/conversations/{identifier(id)}"
         )
 
+    async def download_conversation_attachment(
+        self, conversation_id: Identifier, attachment_id: Identifier
+    ) -> bytes:
+        result: bytes = await self._transport.request(
+            f"{self._path}/conversations/{identifier(conversation_id)}/attachments/{identifier(attachment_id)}/download",
+            binary=True,
+        )
+        return result
+
+    async def preview_conversation_attachment(
+        self, conversation_id: Identifier, attachment_id: Identifier
+    ) -> bytes:
+        result: bytes = await self._transport.request(
+            f"{self._path}/conversations/{identifier(conversation_id)}/attachments/{identifier(attachment_id)}/preview",
+            binary=True,
+        )
+        return result
+
+    async def fork_conversation(
+        self,
+        conversation_id: Identifier,
+        *,
+        submission_key: str,
+        through_message_id: int | None = None,
+    ) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/fork",
+            "POST",
+            {
+                "submissionKey": submission_key,
+                **(
+                    {"throughMessageId": through_message_id}
+                    if through_message_id is not None
+                    else {}
+                ),
+            },
+        )
+
+    async def conversation_run_control(
+        self, conversation_id: Identifier, execution_id: Identifier
+    ) -> Any:
+        return await Endpoint(self._transport, self._path)._get(
+            f"{self._path}/conversations/{identifier(conversation_id)}/executions/{identifier(execution_id)}/control"
+        )
+
+    async def retry_conversation_execution(
+        self, conversation_id: Identifier, execution_id: Identifier
+    ) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/executions/{identifier(execution_id)}/retry",
+            "POST",
+        )
+
+    async def continue_conversation_queue(
+        self, conversation_id: Identifier, execution_id: Identifier, *, hold_id: str
+    ) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/executions/{identifier(execution_id)}/continue",
+            "POST",
+            {"holdId": hold_id},
+        )
+
     async def update_conversation(self, id: Identifier, *, title: str) -> Any:
         return await Endpoint(self._transport, self._path)._action(
             f"{self._path}/conversations/{identifier(id)}", "PATCH", {"title": title}
@@ -73,14 +224,45 @@ class Agent(Resource):
             f"{self._path}/conversations/{identifier(conversation_id)}/restore", "POST"
         )
 
-    async def delete_conversation(self, conversation_id: Identifier) -> Any:
+    async def delete_conversation(self, conversation_id: Identifier, *, confirmation: str) -> Any:
         return await Endpoint(self._transport, self._path)._action(
-            f"{self._path}/conversations/{identifier(conversation_id)}", "DELETE"
+            f"{self._path}/conversations/{identifier(conversation_id)}",
+            "DELETE",
+            {"confirmation": confirmation},
         )
 
-    async def mark_conversation_read(self, conversation_id: Identifier) -> Any:
+    async def mark_conversation_read(
+        self, conversation_id: Identifier, *, through_message_id: int
+    ) -> Any:
         return await Endpoint(self._transport, self._path)._action(
-            f"{self._path}/conversations/{identifier(conversation_id)}/read", "PUT"
+            f"{self._path}/conversations/{identifier(conversation_id)}/read",
+            "PUT",
+            {"throughMessageId": through_message_id},
+        )
+
+    async def mark_conversation_unread(self, conversation_id: Identifier) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/unread", "PUT"
+        )
+
+    async def conversation_queue(self, conversation_id: Identifier, **options: Any) -> ApiResponse:
+        return await Endpoint(self._transport, self._path)._list(
+            f"{self._path}/conversations/{identifier(conversation_id)}/messages/queue", options
+        )
+
+    async def reorder_conversation_queue(
+        self, conversation_id: Identifier, message_ids: list[int]
+    ) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/messages/queue",
+            "PUT",
+            {"messageIds": message_ids},
+        )
+
+    async def steer_conversation(self, conversation_id: Identifier, message_id: Identifier) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/messages/{identifier(message_id)}/steer",
+            "POST",
         )
 
     async def answer_conversation(
@@ -107,6 +289,43 @@ class Agent(Resource):
             "POST",
         )
 
+    async def edit_queued_message(
+        self,
+        conversation_id: Identifier,
+        message_id: Identifier,
+        text: str,
+        *,
+        expected_edit_revision: str,
+        attachments: list[Data] | None = None,
+        targets: list[Data] | None = None,
+        model_id: int | None = None,
+        mode: str | None = None,
+        delivery_mode: str | None = None,
+        permissions: str | None = None,
+    ) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/messages/{identifier(message_id)}",
+            "PUT",
+            {
+                "text": text,
+                "expectedEditRevision": expected_edit_revision,
+                **({"modelId": model_id} if model_id is not None else {}),
+                **({"mode": mode} if mode is not None else {}),
+                **({"deliveryMode": delivery_mode} if delivery_mode is not None else {}),
+                **({"permissions": permissions} if permissions is not None else {}),
+                **({"targets": targets} if targets is not None else {}),
+                **({"attachments": attachments} if attachments is not None else {}),
+            },
+        )
+
+    async def cancel_queued_message(
+        self, conversation_id: Identifier, message_id: Identifier
+    ) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/messages/{identifier(message_id)}",
+            "DELETE",
+        )
+
     async def messages(self, conversation_id: Identifier, **options: Any) -> ApiResponse:
         return await Endpoint(self._transport, self._path)._list(
             f"{self._path}/conversations/{identifier(conversation_id)}/messages", options
@@ -119,11 +338,26 @@ class Agent(Resource):
         *,
         idempotency_key: str,
         attachments: list[Data] | None = None,
+        targets: list[Data] | None = None,
+        model_id: int | None = None,
+        mode: str | None = None,
+        delivery_mode: str | None = None,
+        permissions: str | None = None,
+        replace_run_id: int | None = None,
     ) -> Any:
         response = await self._transport.request(
             f"{self._path}/conversations/{identifier(conversation_id)}/messages",
             "POST",
-            {"text": text, **({"attachments": attachments} if attachments is not None else {})},
+            {
+                "text": text,
+                **({"modelId": model_id} if model_id is not None else {}),
+                **({"mode": mode} if mode is not None else {}),
+                **({"deliveryMode": delivery_mode} if delivery_mode is not None else {}),
+                **({"permissions": permissions} if permissions is not None else {}),
+                **({"targets": targets} if targets is not None else {}),
+                **({"attachments": attachments} if attachments is not None else {}),
+                **({"replaceRunId": replace_run_id} if replace_run_id is not None else {}),
+            },
             extra_headers={"Idempotency-Key": idempotency_key},
         )
         return response["data"]
@@ -141,6 +375,11 @@ class Agent(Resource):
     async def execution(self, id: Identifier) -> Any:
         return await Endpoint(self._transport, self._path)._get(
             f"{self._path}/executions/{identifier(id)}"
+        )
+
+    async def execution_progress(self, id: Identifier, *, after: str = "0") -> Any:
+        return await Endpoint(self._transport, self._path)._get(
+            f"{self._path}/executions/{identifier(id)}/progress", {"after": after}
         )
 
     async def invoke(self, instruction: str, *, idempotency_key: str) -> Any:
@@ -239,6 +478,11 @@ class Agent(Resource):
             f"{self._path}/working-files", "PUT", data
         )
 
+    async def preview_working_files(self, data: Data) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/working-files/preview", "POST", data
+        )
+
     async def outputs(self) -> ApiResponse:
         return await Endpoint(self._transport, self._path)._list(f"{self._path}/outputs", {})
 
@@ -262,6 +506,18 @@ class Agent(Resource):
             f"{self._path}/schedules", "POST", data
         )
 
+    async def schedule_occurrences(
+        self, id: Identifier, *, page: int | None = None, page_size: int | None = None
+    ) -> ApiResponse:
+        params: Data = {}
+        if page is not None:
+            params["page"] = page
+        if page_size is not None:
+            params["page_size"] = page_size
+        return await Endpoint(self._transport, self._path)._list(
+            f"{self._path}/schedules/{identifier(id)}/occurrences", params
+        )
+
     async def update_schedule(self, id: Identifier, data: Data) -> Any:
         return await Endpoint(self._transport, self._path)._action(
             f"{self._path}/schedules/{identifier(id)}", "PATCH", data
@@ -271,7 +527,23 @@ class Agent(Resource):
         return await Endpoint(self._transport, self._path)._get(f"{self._path}/usage")
 
 
+class Agent(AgentReference, Resource):
+    def __init__(self, transport: Transport, data: Data) -> None:
+        Resource.__init__(self, data)
+        AgentReference.__init__(self, transport, data["uuid"])
+
+    async def update(self, data: Data) -> Self:
+        updated = await Endpoint(self._transport, self._path)._action(self._path, "PATCH", data)
+        if updated["uuid"] != self.to_dict()["uuid"]:
+            raise PlaybooksError(502, "The updated Agent identity did not match.")
+        self._replace(updated)
+        return self
+
+
 class Agents(Endpoint):
+    def reference(self, id: Identifier) -> AgentReference:
+        return AgentReference(self._transport, id)
+
     async def integration_facets(self, **options: Any) -> ApiResponse:
         return await self._list("/agents/integration-facets", options)
 

@@ -1,11 +1,14 @@
+import { randomUUID } from 'node:crypto';
+
 import { CliError } from 'src/services/cli-client';
-import { workspaceContext } from 'src/services/command-context';
-import { identifier, input, listParams, textOption } from 'src/utils/cli-input';
+import { workspaceContext, workspaceReferenceContext } from 'src/services/command-context';
+import { identifier, input, integerOption, listParams, shellArgument, textOption } from 'src/utils/cli-input';
+import { redact } from 'src/utils/cli-output';
 import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
 
 const agentContext = async (options: any) => {
-	const context = await workspaceContext(options);
-	return { ...context, agent: await context.workspaceResource.agents.get(identifier(options.agent, '--agent')) };
+	const context = await workspaceReferenceContext(options);
+	return { ...context, agent: context.workspaceReference.agents.reference(identifier(options.agent, '--agent')) };
 };
 const confirm = (options: any, description: string) => {
 	if (!options.yes) throw new CliError(422, `Review ${description}, then confirm with --yes.`);
@@ -22,7 +25,10 @@ export const listAgents = async (options: any) => {
 	};
 	return sdkList(await workspaceResource.agents.list(params));
 };
-export const getAgent = async (options: any) => sdkEnvelope((await agentContext(options)).agent);
+export const getAgent = async (options: any) => {
+	const context = await workspaceReferenceContext(options);
+	return sdkEnvelope(await context.workspaceReference.agents.get(identifier(options.agent, '--agent')));
+};
 export const createAgent = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
 	return sdkEnvelope(
@@ -39,12 +45,15 @@ export const createAgent = async (options: any) => {
 		),
 	);
 };
-export const updateAgent = async (options: any) =>
-	sdkEnvelope(
-		await (
-			await agentContext(options)
-		).agent.update(await input(options, ['revision', 'name', 'description', 'configuration'])),
+export const updateAgent = async (options: any) => {
+	const context = await workspaceReferenceContext(options);
+	return sdkEnvelope(
+		await context.workspaceReference.agents.update(
+			identifier(options.agent, '--agent'),
+			await input(options, ['revision', 'name', 'description', 'configuration']),
+		),
 	);
+};
 export const archiveAgent = async (options: any) => {
 	const agent = (await agentContext(options)).agent;
 	return sdkEnvelope(await agent.archive((await input(options, ['revision'])).revision));
@@ -78,14 +87,127 @@ export const conversationMessages = async (options: any) =>
 			...(options.cursor && { cursor: textOption(options.cursor, 'cursor') }),
 		}),
 	);
+export const streamConversation = async (options: any) => {
+	if (options.select !== undefined) throw new CliError(422, '--select is not supported for conversation streams.');
+	const timeout = integerOption(options.timeout ?? 1800, 'timeout', 1, 2147483) * 1000;
+	const agentId = identifier(options.agent, '--agent');
+	const conversationId = identifier(options.conversation, '--conversation');
+	const context = await agentContext(options);
+	await context.agent.conversations.get(conversationId);
+	const inspect = `playbooks agent conversation messages --workspace ${context.workspaceUuid} --agent ${agentId} --conversation ${conversationId} --config ${shellArgument(options.config)}`;
+	const controller = new AbortController();
+	const interrupt = () => {
+		process.exitCode = 130;
+		controller.abort();
+	};
+	const outputError = (error: Error) => controller.abort(error);
+	process.prependOnceListener('SIGINT', interrupt);
+	process.stdout.on('error', outputError);
+	const abort = () => controller.abort(new CliError(504, 'Conversation stream timed out.'));
+	const total = setTimeout(abort, timeout);
+	let idle = setTimeout(abort, 30000);
+	try {
+		const activity = () => {
+			clearTimeout(idle);
+			idle = setTimeout(abort, 90000);
+		};
+		for await (const event of context.agent.conversations.stream(conversationId, {
+			signal: controller.signal,
+			onActivity: activity,
+		})) {
+			await new Promise<void>((resolve, reject) => {
+				if (controller.signal.aborted) return reject(controller.signal.reason);
+				const interrupted = () => reject(controller.signal.reason);
+				controller.signal.addEventListener('abort', interrupted, { once: true });
+				process.stdout.write(JSON.stringify(redact(event)) + '\n', error => {
+					controller.signal.removeEventListener('abort', interrupted);
+					if (error) reject(error);
+					else resolve();
+				});
+			});
+			if (event.data?.type === 'error')
+				throw new CliError(event.data.status || 503, event.data.errorText || 'Conversation stream interrupted.');
+		}
+		throw new CliError(503, 'Conversation stream disconnected.');
+	} catch (error) {
+		if (process.exitCode === 130) {
+			console.error(`Stopped following; the remote conversation was not canceled. Inspect with: ${inspect}`);
+			return;
+		}
+		const failure = controller.signal.reason instanceof CliError ? controller.signal.reason : error;
+		if (failure instanceof CliError)
+			throw new CliError(
+				failure.status,
+				`${failure.message} Inspect with: ${inspect}`,
+				failure.source,
+				failure.debug,
+				failure.title,
+			);
+		throw new CliError(503, `Conversation stream disconnected. Inspect with: ${inspect}`);
+	} finally {
+		controller.abort();
+		clearTimeout(total);
+		clearTimeout(idle);
+		process.removeListener('SIGINT', interrupt);
+		process.stdout.removeListener('error', outputError);
+	}
+};
 export const sendMessage = async (options: any) => {
 	confirm(options, 'Agent execution and expected usage');
+	const data = await input(options, [
+		'text',
+		'attachments',
+		'targets',
+		'modelId',
+		'mode',
+		'deliveryMode',
+		'permissions',
+		'idempotencyKey',
+	]);
+	if (data.idempotencyKey !== undefined && (typeof data.idempotencyKey !== 'string' || !data.idempotencyKey.trim()))
+		throw new CliError(422, 'idempotencyKey must be a nonempty string.');
+	data.idempotencyKey ||= randomUUID();
+	try {
+		const agent = (await agentContext(options)).agent;
+		return sdkEnvelope(await agent.conversations.send(identifier(options.conversation, '--conversation'), data));
+	} catch (error) {
+		if (error instanceof CliError && error.status >= 500)
+			throw new CliError(
+				error.status,
+				`${error.message} Retry the identical data with idempotencyKey ${JSON.stringify(data.idempotencyKey)}.`,
+				error.source,
+				error.debug,
+				error.title,
+			);
+		throw error;
+	}
+};
+export const editQueuedMessage = async (options: any) => {
+	const agent = (await agentContext(options)).agent;
 	return sdkEnvelope(
-		await (
-			await agentContext(options)
-		).agent.conversations.send(
+		await agent.conversations.editQueued(
 			identifier(options.conversation, '--conversation'),
-			await input(options, ['text', 'attachments', 'idempotencyKey']),
+			identifier(options.message, '--message'),
+			await input(options, [
+				'text',
+				'attachments',
+				'targets',
+				'modelId',
+				'mode',
+				'deliveryMode',
+				'permissions',
+				'expectedEditRevision',
+			]),
+		),
+	);
+};
+export const deleteQueuedMessage = async (options: any) => {
+	confirm(options, 'canceling this queued Agent message');
+	const agent = (await agentContext(options)).agent;
+	return sdkEnvelope(
+		await agent.conversations.cancelQueued(
+			identifier(options.conversation, '--conversation'),
+			identifier(options.message, '--message'),
 		),
 	);
 };
@@ -101,12 +223,19 @@ export const invokeAgent = async (options: any) => {
 };
 export const listSchedules = async (options: any) =>
 	sdkList(await (await agentContext(options)).agent.schedules.list(listParams(options)));
+export const listScheduleOccurrences = async (options: any) =>
+	sdkList(
+		await (
+			await agentContext(options)
+		).agent.schedules.occurrences(identifier(options.schedule, '--schedule'), listParams(options)),
+	);
 export const createSchedule = async (options: any) =>
 	sdkEnvelope(
 		await (
 			await agentContext(options)
 		).agent.schedules.create(
 			await input(options, [
+				'idempotencyKey',
 				'name',
 				'instructions',
 				'frequency',

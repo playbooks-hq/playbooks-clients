@@ -1,10 +1,13 @@
-export { Agent, Agents } from 'src/agents.js';
+export { Agent, AgentReference, Agents } from 'src/agents.js';
 export type {
 	AgentData,
 	AgentExternalKind,
 	AgentExternalGrant,
 	AgentCreate,
 	AgentUpdate,
+	AgentArtifactPrepare,
+	AgentMentionTarget,
+	AgentComposerOptions,
 	AgentScheduleCreate,
 	AgentScheduleUpdate,
 } from 'src/agents.js';

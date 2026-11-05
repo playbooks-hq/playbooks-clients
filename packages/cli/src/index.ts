@@ -24,8 +24,8 @@ import { outputMessages } from 'src/utils/message-output';
 const cli = sade('playbooks').version(version);
 cli.describe('Manage Playbooks from your terminal.');
 cli.option('--config', 'Isolated context file.', path.join(os.homedir(), '.config', 'playbooks', 'config.json'));
-cli.option('--json', 'Print JSON; run streams use newline-delimited JSON.', false);
-cli.option('--select', 'Select comma-separated output fields; unavailable for run streams.');
+cli.option('--json', 'Print JSON; streams use newline-delimited JSON.', false);
+cli.option('--select', 'Select comma-separated output fields; unavailable for streams.');
 
 // Managed Agents
 cli
@@ -122,6 +122,18 @@ cli
 	.action(run(agent.conversationMessages));
 
 cli
+	.command('agent conversation stream')
+	.describe('Follow Agent conversation snapshots and cursor events as NDJSON without starting execution.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--conversation', 'Conversation UUID.')
+	.option('--timeout', 'Total stream duration in seconds; defaults to 1800.')
+	.example(
+		'agent conversation stream --agent 01234567-89ab-cdef-0123-456789abcdef --conversation 01234567-89ab-cdef-0123-456789abcdef',
+	)
+	.action(run(agent.streamConversation));
+
+cli
 	.command('agent conversation send')
 	.describe('Send a message to an Agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -130,6 +142,31 @@ cli
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm execution.', false)
 	.action(run(agent.sendMessage));
+
+cli
+	.command('agent conversation message')
+	.describe('Manage one queued Agent conversation message.')
+	.action(() => cli.help('agent conversation message'));
+
+cli
+	.command('agent conversation message update')
+	.describe('Edit a pending queued Agent message using its current edit revision.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--conversation', 'Conversation UUID.')
+	.option('--message', 'Numeric message identifier.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.editQueuedMessage));
+
+cli
+	.command('agent conversation message delete')
+	.describe('Cancel a queued Agent message; retains message history.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--conversation', 'Conversation UUID.')
+	.option('--message', 'Numeric message identifier.')
+	.option('--yes', 'Confirm cancellation.', false)
+	.action(run(agent.deleteQueuedMessage));
 
 cli
 	.command('agent executions')
@@ -165,6 +202,16 @@ cli
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Page size.')
 	.action(run(agent.listSchedules));
+
+cli
+	.command('agent schedule occurrences')
+	.describe('List an Agent schedule’s retained occurrences.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--schedule', 'Schedule UUID.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Page size.')
+	.action(run(agent.listScheduleOccurrences));
 
 cli
 	.command('agent schedule create')
