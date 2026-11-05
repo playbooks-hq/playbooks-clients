@@ -66,6 +66,7 @@ export class Transport {
 		binary = false,
 		raw = false,
 		signal?: AbortSignal,
+		extraHeaders: Record<string, string> = {},
 	) {
 		const url = this.url(path, params);
 		for (let attempt = 0; ; attempt++) {
@@ -79,6 +80,7 @@ export class Transport {
 					...(data && !(data instanceof FormData) ? { 'content-type': 'application/json' } : {}),
 					...(this.token ? { authorization: this.token } : {}),
 					...(this.workspace ? { workspace: this.workspace } : {}),
+					...extraHeaders,
 				},
 				body: data === undefined ? undefined : data instanceof FormData ? data : JSON.stringify(data),
 			}).catch(() => {

@@ -31,6 +31,8 @@ export interface SiteData {
 	status: string;
 	url: string | null;
 	primaryHostname: string | null;
+	defaultHostname: string;
+	defaultUrl: string;
 	createdAt: string | null;
 	updatedAt: string | null;
 	source: SiteSourceRead | null;
@@ -104,15 +106,33 @@ export interface SiteReleaseData extends ReleaseData {
 }
 
 export interface SiteAnalyticsData {
-	days: number;
-	path: string | null;
-	collectionEnabled: boolean;
-	pageViews: number;
-	estimatedVisitors: number;
-	daily: { date: string; pageViews: number; estimatedVisitors: number }[];
-	topPages: { path: string; pageViews: number; estimatedVisitors: number }[];
-	referrers: { referrer: string; pageViews: number; estimatedVisitors: number }[];
+	hours: 1 | 24 | 168 | 720;
+	service: string | null;
+	route: string | null;
+	services: string[];
+	requests: number;
+	failures: number;
+	errorRate: number | null;
+	meanMs: number | null;
+	p95: number | null;
+	p95Method: 'histogram-upper-bound';
+	statusGroups: { group: string; requests: number }[] | null;
+	history: ({ time: string } & SiteRoutingMeasures)[];
+	routes: ({ service: string | null; route: string } & SiteRoutingMeasures)[];
+	nextOffset: number | null;
 }
+
+export interface SiteAnalyticsConfigData {
+	enabled: boolean;
+	available: boolean;
+	active: boolean;
+	writeKey: string | null;
+}
+
+type SiteRoutingMeasures = Pick<
+	SiteAnalyticsData,
+	'requests' | 'failures' | 'errorRate' | 'meanMs' | 'p95' | 'p95Method' | 'statusGroups'
+>;
 
 export interface SiteLogOptions {
 	releaseId?: string;
@@ -463,7 +483,7 @@ export class Site extends Resource<SiteData> {
 	get monitoringData() {
 		const path = `${this.#path}/monitoring`;
 		return {
-			config: () => get(this.#transport, `${path}/config`),
+			config: () => get<SiteAnalyticsConfigData>(this.#transport, `${path}/config`),
 			configure: (input: Record<string, unknown>) => action(this.#transport, `${path}/config`, 'PUT', input),
 			synchronize: () => action(this.#transport, `${path}/synchronize`, 'POST', {}),
 			overview: (params: Record<string, unknown> = {}) => get(this.#transport, `${path}/overview`, params),
@@ -474,7 +494,9 @@ export class Site extends Resource<SiteData> {
 			resolve: (id: Identifier) => action(this.#transport, `${path}/issues/${identifier(id)}/resolve`, 'POST', {}),
 		};
 	}
-	analytics(options: { days?: number; path?: string } = {}) {
+	analytics(
+		options: { hours?: 1 | 24 | 168 | 720; service?: string; route?: string; search?: string; offset?: number } = {},
+	) {
 		return get<SiteAnalyticsData>(this.#transport, `${this.#path}/analytics`, options);
 	}
 	get analyticsData() {

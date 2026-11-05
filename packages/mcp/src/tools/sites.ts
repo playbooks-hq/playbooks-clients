@@ -418,15 +418,18 @@ siteTools.push(
 	},
 	{
 		command: 'site analytics',
-		description: 'Inspect Site traffic by day, page and referrer.',
+		description: 'Inspect Site production request traffic, response statuses and latency.',
 		toolset: 'core',
 		readOnly: true,
 		destructive: false,
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			site: { flag: 'site', description: 'Site UUID.', required: true },
-			days: { flag: 'days', description: 'UTC days to include (1-90; default 14).', kind: 'number' },
-			path: { flag: 'path', description: 'Exact Site path, beginning with /.' },
+			hours: { flag: 'hours', description: 'Time window: 1, 24, 168 or 720 hours (default 24).', kind: 'number' },
+			service: { flag: 'service', description: 'Exact Site component key.' },
+			route: { flag: 'route', description: 'Exact path, beginning with /.' },
+			search: { flag: 'search', description: 'Substring filter for listed paths.' },
+			offset: { flag: 'offset', description: 'Route-list offset (0-10000; default 0).', kind: 'number' },
 		},
 	},
 );
@@ -649,8 +652,12 @@ const operationalTools: Array<{
 	{ command: 'site storage delete', description: 'Delete a Site file.', fields: ['path'], confirm: true },
 	{ command: 'site storage folder create', description: 'Create a Site folder.', fields: ['path'] },
 	{ command: 'site storage usage', description: 'Inspect Site storage usage.' },
-	{ command: 'site analytics config', description: 'Inspect Site analytics source configuration.' },
-	{ command: 'site analytics config set', description: 'Enable or disable Site analytics.', fields: ['enabled'] },
+	{ command: 'site analytics config', description: 'Inspect Site analytics provider forwarding and availability.' },
+	{
+		command: 'site analytics config set',
+		description: 'Enable or disable forwarding to eligible Site analytics providers.',
+		fields: ['enabled'],
+	},
 	{ command: 'site analytics source rotate', description: 'Rotate Site analytics source key.', confirm: true },
 	{ command: 'site analytics providers', description: 'List Site analytics providers.' },
 	{

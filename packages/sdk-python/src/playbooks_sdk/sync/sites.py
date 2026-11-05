@@ -221,10 +221,21 @@ class Site(Resource):
     def resolve_monitoring_issue(self, id: Identifier) -> Any:
         return self._site_action(f"monitoring/issues/{identifier(id)}/resolve", "POST", {})
 
-    def analytics(self, *, days: int | None = None, path: str | None = None) -> Any:
+    def analytics(
+        self,
+        *,
+        hours: int | None = None,
+        service: str | None = None,
+        route: str | None = None,
+        search: str | None = None,
+        offset: int | None = None,
+    ) -> Any:
         options = {
-            **({"days": days} if days is not None else {}),
-            **({"path": path} if path is not None else {}),
+            **({"hours": hours} if hours is not None else {}),
+            **({"service": service} if service is not None else {}),
+            **({"route": route} if route is not None else {}),
+            **({"search": search} if search is not None else {}),
+            **({"offset": offset} if offset is not None else {}),
         }
         return Endpoint(self._transport, self._path)._get(f"{self._path}/analytics", options)
 

@@ -1,3 +1,13 @@
+export { Agent, Agents } from 'src/agents.js';
+export type {
+	AgentData,
+	AgentExternalKind,
+	AgentExternalGrant,
+	AgentCreate,
+	AgentUpdate,
+	AgentScheduleCreate,
+	AgentScheduleUpdate,
+} from 'src/agents.js';
 export { PlaybooksSDK } from 'src/client.js';
 export { PlaybooksError } from 'src/error.js';
 export { Resource, EditableResource } from 'src/resource.js';
@@ -16,6 +26,7 @@ export type {
 	SiteReleaseCreateInput,
 	SiteReleaseData,
 	SiteAnalyticsData,
+	SiteAnalyticsConfigData,
 	SiteLogOptions,
 	SiteRedeployInput,
 	SiteConfigInput,

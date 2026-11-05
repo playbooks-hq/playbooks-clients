@@ -4,6 +4,7 @@ import path from 'node:path';
 import { version } from 'package.json';
 import sade from 'sade';
 import {
+	agent,
 	auth,
 	categories,
 	collections,
@@ -25,6 +26,322 @@ cli.describe('Manage Playbooks from your terminal.');
 cli.option('--config', 'Isolated context file.', path.join(os.homedir(), '.config', 'playbooks', 'config.json'));
 cli.option('--json', 'Print JSON; run streams use newline-delimited JSON.', false);
 cli.option('--select', 'Select comma-separated output fields; unavailable for run streams.');
+
+// Managed Agents
+cli
+	.command('agents')
+	.describe('List managed Agents.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--query', 'Search by name.')
+	.option('--status', 'Status filter.')
+	.option('--environment', 'Development or production.')
+	.option('--integration-id', 'Integration ID.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Page size.')
+	.action(run(agent.listAgents));
+
+cli
+	.command('agent')
+	.describe('Inspect an Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.getAgent));
+
+cli
+	.command('agent create')
+	.describe('Create a direct or integrated Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.createAgent));
+
+cli
+	.command('agent update')
+	.describe('Update Agent configuration.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.updateAgent));
+
+cli
+	.command('agent archive')
+	.describe('Archive an Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.archiveAgent));
+
+cli
+	.command('agent restore')
+	.describe('Restore an Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.restoreAgent));
+
+cli
+	.command('agent delete')
+	.describe('Delete an Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.action(run(agent.deleteAgent));
+
+cli
+	.command('agent executions')
+	.describe('List Agent execution metadata.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Page size.')
+	.action(run(agent.listExecutions));
+
+cli
+	.command('agent execution')
+	.describe('Inspect an authorized Agent execution.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--execution', 'Execution ID.')
+	.action(run(agent.getExecution));
+
+cli
+	.command('agent invoke')
+	.describe('Invoke an Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.action(run(agent.invokeAgent));
+
+cli
+	.command('agent schedules')
+	.describe('List Agent schedules.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Page size.')
+	.action(run(agent.listSchedules));
+
+cli
+	.command('agent schedule create')
+	.describe('Create an Agent schedule.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.createSchedule));
+
+cli
+	.command('agent schedule update')
+	.describe('Update an Agent schedule.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--schedule', 'Schedule UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.updateSchedule));
+
+cli
+	.command('agent usage')
+	.describe('Inspect Agent usage.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.getUsage));
+
+cli
+	.command('agent integrations')
+	.describe('List Agent integrations.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(agent.listIntegrations));
+
+cli
+	.command('agent integration facets')
+	.describe('List integrations visible in managed Agents.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Page size.')
+	.action(run(agent.listIntegrationFacets));
+
+cli
+	.command('agent integration create')
+	.describe('Create an Agent integration.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.createIntegration));
+
+cli
+	.command('agent execution cancel')
+	.describe('Cancel an Agent execution.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--execution', 'Execution identifier.')
+	.action(run(agent.cancelExecution));
+
+cli
+	.command('agent budget')
+	.describe('Inspect Agent budget.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.getBudget));
+
+cli
+	.command('agent budget update')
+	.describe('Update Agent budget.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.updateBudget));
+
+cli
+	.command('agent credentials')
+	.describe('List Agent credential metadata.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.listCredentials));
+
+cli
+	.command('agent credential create')
+	.describe('Create an Agent credential.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.action(run(agent.createCredential));
+
+cli
+	.command('agent credential revoke')
+	.describe('Revoke an Agent credential.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--credential', 'Credential identifier.')
+	.option('--yes', 'Confirm this operation.', false)
+	.action(run(agent.revokeCredential));
+
+cli
+	.command('agent grants')
+	.describe('List Agent grants.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.listGrants));
+
+cli
+	.command('agent grant put')
+	.describe('Set an Agent grant.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.action(run(agent.putGrant));
+
+cli
+	.command('agent externals')
+	.describe('List authorized Agent external assignments.')
+	.option('--workspace', 'Explicit Workspace identifier.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.listExternals));
+
+cli
+	.command('agent external options')
+	.describe('List eligible external sources and operations.')
+	.option('--workspace', 'Explicit Workspace identifier.')
+	.option('--agent', 'Agent UUID.')
+	.option('--kind', 'connector, mcp, or browser.')
+	.option('--query', 'Search by name.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Page size.')
+	.action(run(agent.listExternalOptions));
+
+cli
+	.command('agent external create')
+	.describe('Authorize explicit external operations.')
+	.option('--workspace', 'Explicit Workspace identifier.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm reviewed external permissions.', false)
+	.action(run(agent.createExternal));
+
+cli
+	.command('agent external update')
+	.describe('Update external operation grants.')
+	.option('--workspace', 'Explicit Workspace identifier.')
+	.option('--agent', 'Agent UUID.')
+	.option('--assignment', 'Assignment UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm reviewed external permissions.', false)
+	.action(run(agent.updateExternal));
+
+cli
+	.command('agent external revoke')
+	.describe('Revoke external operation grants.')
+	.option('--workspace', 'Explicit Workspace identifier.')
+	.option('--agent', 'Agent UUID.')
+	.option('--assignment', 'Assignment UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm reviewed external permissions.', false)
+	.action(run(agent.revokeExternal));
+
+cli
+	.command('agent resources')
+	.describe('List assigned Agent resources.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.listResources));
+
+cli
+	.command('agent resource options')
+	.describe('List resources eligible for Agent assignment.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--kind', 'Skill, design, or reference.')
+	.option('--query', 'Search by name.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Page size.')
+	.action(run(agent.listResourceOptions));
+
+cli
+	.command('agent resource put')
+	.describe('Assign an Agent resource.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.putResource));
+
+cli
+	.command('agent resource delete')
+	.describe('Remove an Agent resource.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--kind', 'Kind identifier.')
+	.option('--resource', 'Resource identifier.')
+	.action(run(agent.deleteResource));
+
+cli
+	.command('agent working-files')
+	.describe('Read authorized Agent working files.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.getWorkingFiles));
+
+cli
+	.command('agent working-files update')
+	.describe('Update authorized Agent working files.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.updateWorkingFiles));
+
+cli
+	.command('agent outputs')
+	.describe('List authorized Agent outputs.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.listOutputs));
+
+cli
+	.command('agent output')
+	.describe('Read an authorized Agent output.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--output', 'Output identifier.')
+	.action(run(agent.getOutput));
 
 // Independent production Sites
 cli
@@ -178,11 +495,14 @@ cli
 
 cli
 	.command('site analytics')
-	.describe('Inspect Site traffic by day, page and referrer.')
+	.describe('Inspect Site production request traffic, response statuses and latency.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--site', 'Site UUID.')
-	.option('--days', 'UTC days to include (1-90; default 14).')
-	.option('--path', 'Exact Site path, beginning with /.')
+	.option('--hours', 'Time window: 1, 24, 168 or 720 hours (default 24).')
+	.option('--service', 'Exact Site component key.')
+	.option('--route', 'Exact path, beginning with /.')
+	.option('--search', 'Substring filter for listed paths.')
+	.option('--offset', 'Route-list offset (0-10000; default 0).')
 	.action(run(site.getAnalytics));
 
 const siteOperations = [
@@ -275,8 +595,14 @@ const siteOperations = [
 	['site storage delete', 'Delete a Site file.', site.deleteFile, null, true, true],
 	['site storage folder create', 'Create a Site storage folder.', site.createFolder, null, true],
 	['site storage usage', 'Inspect Site storage usage.', site.getStorageUsage],
-	['site analytics config', 'Inspect Site analytics source configuration.', site.getAnalyticsConfig],
-	['site analytics config set', 'Enable or disable Site analytics.', site.setAnalyticsConfig, null, true],
+	['site analytics config', 'Inspect Site analytics provider forwarding and availability.', site.getAnalyticsConfig],
+	[
+		'site analytics config set',
+		'Enable or disable forwarding to eligible Site analytics providers.',
+		site.setAnalyticsConfig,
+		null,
+		true,
+	],
 	[
 		'site analytics source rotate',
 		'Rotate the Site analytics source key.',

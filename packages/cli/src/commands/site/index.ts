@@ -202,9 +202,16 @@ export const getLog = async (options: any) => {
 };
 export const getMonitoring = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.monitoring());
 export const getAnalytics = async (options: any) => {
-	const params: { days?: number; path?: string } = {};
-	if (options.days !== undefined) params.days = integerOption(options.days, 'days', 1, 90);
-	if (options.path !== undefined) params.path = textOption(options.path, 'path');
+	const params: { hours?: 1 | 24 | 168 | 720; service?: string; route?: string; search?: string; offset?: number } = {};
+	if (options.hours !== undefined) {
+		const hours = integerOption(options.hours, 'hours', 1, 720);
+		if (![1, 24, 168, 720].includes(hours)) throw new CliError(422, '--hours must be 1, 24, 168 or 720.');
+		params.hours = hours as 1 | 24 | 168 | 720;
+	}
+	if (options.service !== undefined) params.service = textOption(options.service, 'service');
+	if (options.route !== undefined) params.route = textOption(options.route, 'route');
+	if (options.search !== undefined) params.search = textOption(options.search, 'search');
+	if (options.offset !== undefined) params.offset = integerOption(options.offset, 'offset', 0, 10000);
 	return sdkEnvelope(await (await siteContext(options)).site.analytics(params));
 };
 export const listJobs = async (options: any) =>

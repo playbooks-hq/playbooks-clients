@@ -1,5 +1,6 @@
 from typing import Any, Self, cast
 
+from playbooks_sdk.asynchronous.agents import Agents
 from playbooks_sdk.asynchronous.core import (
     EditableCollection,
     Endpoint,
@@ -181,6 +182,10 @@ class Workspace(Resource):
         updated = await Endpoint(self._transport, "/workspace")._action("/workspace", "PUT", data)
         self._replace(updated)
         return self
+
+    @property
+    def agents(self) -> Agents:
+        return Agents(self._transport, "/agents")
 
     @property
     def sites(self) -> Sites:

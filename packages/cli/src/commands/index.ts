@@ -6,5 +6,6 @@ export * as creators from 'src/commands/creators';
 export * as workspace from 'src/commands/workspace';
 export * as project from 'src/commands/project';
 export * as site from 'src/commands/site';
+export * as agent from 'src/commands/agent';
 export * as mcp from 'src/commands/mcp';
 export * as completion from 'src/commands/completion';

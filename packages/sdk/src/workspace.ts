@@ -1,3 +1,4 @@
+import { Agents } from 'src/agents.js';
 import { Channels } from 'src/channels.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
@@ -48,6 +49,9 @@ export class Workspace extends Resource<WorkspaceData> {
 		if (data.id !== this.id) throw new PlaybooksError(502, 'The updated Workspace identity did not match.');
 		this.replace(data);
 		return this;
+	}
+	get agents() {
+		return new Agents(this.#transport);
 	}
 	get projects() {
 		return new Projects(this.#transport);

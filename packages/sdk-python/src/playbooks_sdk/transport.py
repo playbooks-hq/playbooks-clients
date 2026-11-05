@@ -86,10 +86,18 @@ def retry_delay(response: httpx.Response, attempt: int, read_only: bool) -> floa
 
 
 def request_kwargs(
-    config: Config, data: Any, params: Data | None, binary: bool, files: Any
+    config: Config,
+    data: Any,
+    params: Data | None,
+    binary: bool,
+    files: Any,
+    extra_headers: dict[str, str] | None = None,
 ) -> Data:
     return {
-        "headers": config.headers("application/octet-stream" if binary else "application/json"),
+        "headers": {
+            **config.headers("application/octet-stream" if binary else "application/json"),
+            **(extra_headers or {}),
+        },
         "params": {
             k: str(v).lower() if isinstance(v, bool) else str(v)
             for k, v in (params or {}).items()
@@ -129,13 +137,16 @@ class Transport:
         binary: bool = False,
         raw: bool = False,
         files: Any = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> Any:
         url = self.config.url(path)
         read_only = method == "GET" if read_only is None else read_only
         for attempt in range(3):
             try:
                 response = self.client.request(
-                    method, url, **request_kwargs(self.config, data, params, binary, files)
+                    method,
+                    url,
+                    **request_kwargs(self.config, data, params, binary, files, extra_headers),
                 )
             except httpx.HTTPError:
                 raise network_error(read_only) from None
@@ -165,13 +176,16 @@ class AsyncTransport:
         binary: bool = False,
         raw: bool = False,
         files: Any = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> Any:
         url = self.config.url(path)
         read_only = method == "GET" if read_only is None else read_only
         for attempt in range(3):
             try:
                 response = await self.client.request(
-                    method, url, **request_kwargs(self.config, data, params, binary, files)
+                    method,
+                    url,
+                    **request_kwargs(self.config, data, params, binary, files, extra_headers),
                 )
             except httpx.HTTPError:
                 raise network_error(read_only) from None

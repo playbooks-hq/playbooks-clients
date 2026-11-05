@@ -2,6 +2,7 @@ from typing import Any, Self
 
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
+from playbooks_sdk.sync.agents import Agents
 from playbooks_sdk.sync.core import (
     EditableCollection,
     Endpoint,
@@ -179,6 +180,10 @@ class Workspace(Resource):
         updated = Endpoint(self._transport, "/workspace")._action("/workspace", "PUT", data)
         self._replace(updated)
         return self
+
+    @property
+    def agents(self) -> Agents:
+        return Agents(self._transport, "/agents")
 
     @property
     def sites(self) -> Sites:

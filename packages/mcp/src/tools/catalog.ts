@@ -1,4 +1,5 @@
 import type { ServerOptions } from 'src/options.js';
+import { agentTools } from 'src/tools/agents.js';
 import { coreTools } from 'src/tools/core.js';
 import type { ToolDefinition } from 'src/tools/definition.js';
 import { discoveryTools } from 'src/tools/discovery.js';
@@ -24,6 +25,7 @@ import { workspaceSchedulesTools } from 'src/tools/workspace-schedules.js';
 export const catalog: ToolDefinition[] = (
 	[
 		...coreTools,
+		...agentTools,
 		...siteTools,
 		...discoveryTools,
 		...workspaceConfigurationTools,
