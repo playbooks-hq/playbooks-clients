@@ -2,6 +2,127 @@ import type { ToolDefinition } from 'src/tools/definition.js';
 
 export const agentTools: ToolDefinition[] = [
 	{
+		command: 'agent conversations',
+		description: 'List conversations accessible through Agent-level permissions.',
+		toolset: 'workspace',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: {
+				flag: 'workspace',
+				description: 'Explicit authorized Workspace UUID.',
+				required: true,
+			},
+			agent: {
+				flag: 'agent',
+				description: 'Agent UUID.',
+				required: true,
+			},
+		},
+	},
+	{
+		command: 'agent conversation create',
+		description: 'Create an empty conversation under an Agent without executing work.',
+		toolset: 'workspace',
+		readOnly: false,
+		destructive: false,
+		options: {
+			workspace: {
+				flag: 'workspace',
+				description: 'Explicit authorized Workspace UUID.',
+				required: true,
+			},
+			agent: {
+				flag: 'agent',
+				description: 'Agent UUID.',
+				required: true,
+			},
+		},
+		dataFields: ['title', 'idempotencyKey'],
+	},
+	{
+		command: 'agent conversation',
+		description: 'Inspect an Agent conversation.',
+		toolset: 'workspace',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: {
+				flag: 'workspace',
+				description: 'Explicit authorized Workspace UUID.',
+				required: true,
+			},
+			agent: {
+				flag: 'agent',
+				description: 'Agent UUID.',
+				required: true,
+			},
+			conversation: {
+				flag: 'conversation',
+				description: 'Conversation UUID.',
+				required: true,
+			},
+		},
+	},
+	{
+		command: 'agent conversation messages',
+		description: 'Read one Agent conversation history.',
+		toolset: 'workspace',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: {
+				flag: 'workspace',
+				description: 'Explicit authorized Workspace UUID.',
+				required: true,
+			},
+			agent: {
+				flag: 'agent',
+				description: 'Agent UUID.',
+				required: true,
+			},
+			conversation: {
+				flag: 'conversation',
+				description: 'Conversation UUID.',
+				required: true,
+			},
+			cursor: {
+				flag: 'cursor',
+				description: 'History cursor.',
+			},
+		},
+	},
+	{
+		command: 'agent conversation send',
+		description: 'Send a message and admit paid Agent execution. Admission is not completion.',
+		toolset: 'workspace',
+		readOnly: false,
+		destructive: false,
+		options: {
+			workspace: {
+				flag: 'workspace',
+				description: 'Explicit authorized Workspace UUID.',
+				required: true,
+			},
+			agent: {
+				flag: 'agent',
+				description: 'Agent UUID.',
+				required: true,
+			},
+			conversation: {
+				flag: 'conversation',
+				description: 'Conversation UUID.',
+				required: true,
+			},
+			confirm: {
+				flag: 'yes',
+				kind: 'boolean',
+				description: 'Confirm Agent execution and expected usage.',
+			},
+		},
+		dataFields: ['text', 'attachments', 'idempotencyKey'],
+	},
+	{
 		command: 'agent externals',
 		description: 'List Agent external assignments.',
 		toolset: 'workspace',
@@ -224,7 +345,7 @@ export const agentTools: ToolDefinition[] = [
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
 		},
-		dataFields: ['name', 'instructions', 'frequency', 'weekday', 'monthDay', 'time', 'timezone'],
+		dataFields: ['conversationId', 'name', 'instructions', 'frequency', 'weekday', 'monthDay', 'time', 'timezone'],
 	},
 	{
 		command: 'agent schedule update',
@@ -237,7 +358,18 @@ export const agentTools: ToolDefinition[] = [
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
 			schedule: { flag: 'schedule', description: 'Schedule identifier.', required: true },
 		},
-		dataFields: ['revision', 'name', 'instructions', 'frequency', 'weekday', 'monthDay', 'time', 'timezone', 'status'],
+		dataFields: [
+			'revision',
+			'conversationId',
+			'name',
+			'instructions',
+			'frequency',
+			'weekday',
+			'monthDay',
+			'time',
+			'timezone',
+			'status',
+		],
 	},
 	{
 		command: 'agent usage',

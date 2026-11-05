@@ -37,6 +37,93 @@ class Agent(Resource):
             self._path, "DELETE", {"revision": revision}
         )
 
+    def conversations(self, **options: Any) -> ApiResponse:
+        return Endpoint(self._transport, self._path)._list(f"{self._path}/conversations", options)
+
+    def create_conversation(self, *, idempotency_key: str, title: str = "New conversation") -> Any:
+        response = self._transport.request(
+            f"{self._path}/conversations",
+            "POST",
+            {"title": title},
+            extra_headers={"Idempotency-Key": idempotency_key},
+        )
+        return response["data"]
+
+    def conversation(self, id: Identifier) -> Any:
+        return Endpoint(self._transport, self._path)._get(
+            f"{self._path}/conversations/{identifier(id)}"
+        )
+
+    def update_conversation(self, id: Identifier, *, title: str) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(id)}", "PATCH", {"title": title}
+        )
+
+    def archive_conversation(self, conversation_id: Identifier) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/archive", "POST"
+        )
+
+    def restore_conversation(self, conversation_id: Identifier) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/restore", "POST"
+        )
+
+    def delete_conversation(self, conversation_id: Identifier) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}", "DELETE"
+        )
+
+    def mark_conversation_read(self, conversation_id: Identifier) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/read", "PUT"
+        )
+
+    def answer_conversation(
+        self,
+        conversation_id: Identifier,
+        execution_id: Identifier,
+        responses: list[Data],
+        *,
+        idempotency_key: str,
+    ) -> Any:
+        response = self._transport.request(
+            f"{self._path}/conversations/{identifier(conversation_id)}/executions/{identifier(execution_id)}/answers",
+            "POST",
+            {"responses": responses},
+            extra_headers={"Idempotency-Key": idempotency_key},
+        )
+        return response["data"]
+
+    def cancel_conversation_execution(
+        self, conversation_id: Identifier, execution_id: Identifier
+    ) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/executions/{identifier(execution_id)}/cancel",
+            "POST",
+        )
+
+    def messages(self, conversation_id: Identifier, **options: Any) -> ApiResponse:
+        return Endpoint(self._transport, self._path)._list(
+            f"{self._path}/conversations/{identifier(conversation_id)}/messages", options
+        )
+
+    def send_message(
+        self,
+        conversation_id: Identifier,
+        text: str,
+        *,
+        idempotency_key: str,
+        attachments: list[Data] | None = None,
+    ) -> Any:
+        response = self._transport.request(
+            f"{self._path}/conversations/{identifier(conversation_id)}/messages",
+            "POST",
+            {"text": text, **({"attachments": attachments} if attachments is not None else {})},
+            extra_headers={"Idempotency-Key": idempotency_key},
+        )
+        return response["data"]
+
     def executions(
         self, *, page: int | None = None, page_size: int | None = None, **options: Any
     ) -> ApiResponse:

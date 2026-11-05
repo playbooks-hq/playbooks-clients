@@ -1,8 +1,9 @@
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
 import { action, get, identifier, listing, Resource } from 'src/resource.js';
+import { readEvents } from 'src/sse.js';
 import type { Transport } from 'src/transport.js';
-import type { Identifier, ListOptions } from 'src/types.js';
+import type { Identifier, ListOptions, MessageInput, MessageOptions, StreamOptions } from 'src/types.js';
 
 export interface AgentData {
 	[key: string]: unknown;
@@ -46,6 +47,7 @@ export interface AgentUpdate {
 	configuration?: Record<string, unknown>;
 }
 export interface AgentScheduleCreate {
+	conversationId?: number | null;
 	name: string;
 	instructions: string;
 	frequency: string;
@@ -122,6 +124,65 @@ export class Agent extends Resource<AgentData> {
 					.then(response => response.data),
 			cancel: (id: Identifier) =>
 				action(this.#transport, `${this.#path}/executions/${identifier(id)}/cancel`, 'POST', {}),
+		};
+	}
+	get conversations() {
+		const path = `${this.#path}/conversations`;
+		const transport = this.#transport;
+		return {
+			list: (options?: ListOptions) => listing(transport, path, options),
+			create: (input: { title?: string; idempotencyKey: string }) =>
+				transport
+					.request(path, 'POST', { title: input.title }, {}, false, false, false, undefined, {
+						'Idempotency-Key': input.idempotencyKey,
+					})
+					.then(response => response.data),
+			get: (id: Identifier) => get(transport, `${path}/${identifier(id)}`),
+			update: (id: Identifier, input: { title: string }) =>
+				action(transport, `${path}/${identifier(id)}`, 'PATCH', input),
+			archive: (id: Identifier) => action(transport, `${path}/${identifier(id)}/archive`, 'POST'),
+			restore: (id: Identifier) => action(transport, `${path}/${identifier(id)}/restore`, 'POST'),
+			delete: (id: Identifier) => action(transport, `${path}/${identifier(id)}`, 'DELETE'),
+			markRead: (id: Identifier) => action(transport, `${path}/${identifier(id)}/read`, 'PUT'),
+			cancel: (id: Identifier, executionId: Identifier) =>
+				action(transport, `${path}/${identifier(id)}/executions/${identifier(executionId)}/cancel`, 'POST'),
+			answer: (
+				id: Identifier,
+				executionId: Identifier,
+				input: { responses: Record<string, unknown>[]; idempotencyKey: string },
+			) =>
+				transport
+					.request(
+						`${path}/${identifier(id)}/executions/${identifier(executionId)}/answers`,
+						'POST',
+						{ responses: input.responses },
+						{},
+						false,
+						false,
+						false,
+						undefined,
+						{ 'Idempotency-Key': input.idempotencyKey },
+					)
+					.then(response => response.data),
+			editQueued: (id: Identifier, messageId: Identifier, input: Pick<MessageInput, 'text' | 'attachments'>) =>
+				action(transport, `${path}/${identifier(id)}/messages/${identifier(messageId)}`, 'PUT', input),
+			cancelQueued: (id: Identifier, messageId: Identifier) =>
+				action(transport, `${path}/${identifier(id)}/messages/${identifier(messageId)}`, 'DELETE'),
+			messages: (id: Identifier, options?: MessageOptions) =>
+				listing(transport, `${path}/${identifier(id)}/messages`, options),
+			send: (id: Identifier, input: Pick<MessageInput, 'text' | 'attachments'> & { idempotencyKey: string }) => {
+				const { idempotencyKey, ...message } = input;
+				return transport
+					.request(`${path}/${identifier(id)}/messages`, 'POST', message, {}, false, false, false, undefined, {
+						'Idempotency-Key': idempotencyKey,
+					})
+					.then(response => response.data);
+			},
+			async *stream(id: Identifier, options: StreamOptions) {
+				const body = await transport.openStream(`${path}/${identifier(id)}/stream`, options.signal);
+				options.onActivity?.();
+				yield* readEvents(body, options.onActivity ?? (() => {}));
+			},
 		};
 	}
 	get schedules() {

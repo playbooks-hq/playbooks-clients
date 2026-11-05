@@ -60,6 +60,35 @@ export const deleteAgent = async (options: any) => {
 };
 export const listExecutions = async (options: any) =>
 	sdkList(await (await agentContext(options)).agent.executions.list(listParams(options)));
+export const listConversations = async (options: any) =>
+	sdkList(await (await agentContext(options)).agent.conversations.list(listParams(options)));
+export const createConversation = async (options: any) =>
+	sdkEnvelope(
+		await (await agentContext(options)).agent.conversations.create(await input(options, ['title', 'idempotencyKey'])),
+	);
+export const getConversation = async (options: any) =>
+	sdkEnvelope(
+		await (await agentContext(options)).agent.conversations.get(identifier(options.conversation, '--conversation')),
+	);
+export const conversationMessages = async (options: any) =>
+	sdkList(
+		await (
+			await agentContext(options)
+		).agent.conversations.messages(identifier(options.conversation, '--conversation'), {
+			...(options.cursor && { cursor: textOption(options.cursor, 'cursor') }),
+		}),
+	);
+export const sendMessage = async (options: any) => {
+	confirm(options, 'Agent execution and expected usage');
+	return sdkEnvelope(
+		await (
+			await agentContext(options)
+		).agent.conversations.send(
+			identifier(options.conversation, '--conversation'),
+			await input(options, ['text', 'attachments', 'idempotencyKey']),
+		),
+	);
+};
 export const getExecution = async (options: any) =>
 	sdkEnvelope(await (await agentContext(options)).agent.executions.get(identifier(options.execution, '--execution')));
 export const invokeAgent = async (options: any) => {
@@ -77,7 +106,16 @@ export const createSchedule = async (options: any) =>
 		await (
 			await agentContext(options)
 		).agent.schedules.create(
-			await input(options, ['name', 'instructions', 'frequency', 'weekday', 'monthDay', 'time', 'timezone']),
+			await input(options, [
+				'name',
+				'instructions',
+				'frequency',
+				'weekday',
+				'monthDay',
+				'time',
+				'timezone',
+				'conversationId',
+			]),
 		),
 	);
 export const updateSchedule = async (options: any) =>
@@ -96,6 +134,7 @@ export const updateSchedule = async (options: any) =>
 				'time',
 				'timezone',
 				'status',
+				'conversationId',
 			]),
 		),
 	);

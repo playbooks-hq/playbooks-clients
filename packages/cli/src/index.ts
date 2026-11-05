@@ -88,6 +88,50 @@ cli
 	.action(run(agent.deleteAgent));
 
 cli
+	.command('agent conversations')
+	.describe('List Agent conversations.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--page', 'Zero-based page.')
+	.option('--page-size', 'Page size.')
+	.action(run(agent.listConversations));
+
+cli
+	.command('agent conversation create')
+	.describe('Create an empty Agent conversation.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.action(run(agent.createConversation));
+
+cli
+	.command('agent conversation')
+	.describe('Inspect an Agent conversation.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--conversation', 'Conversation UUID.')
+	.action(run(agent.getConversation));
+
+cli
+	.command('agent conversation messages')
+	.describe('Read Agent conversation history.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--conversation', 'Conversation UUID.')
+	.option('--cursor', 'History cursor.')
+	.action(run(agent.conversationMessages));
+
+cli
+	.command('agent conversation send')
+	.describe('Send a message to an Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--conversation', 'Conversation UUID.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm execution.', false)
+	.action(run(agent.sendMessage));
+
+cli
 	.command('agent executions')
 	.describe('List Agent execution metadata.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
