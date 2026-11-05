@@ -49,7 +49,7 @@ cli
 
 cli
 	.command('agent create')
-	.describe('Create a direct or integrated Agent.')
+	.describe('Create an Agent; integrations require contentOwnerUserId.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--data', 'JSON object or - for stdin.')
 	.action(run(agent.createAgent));
@@ -103,6 +103,15 @@ cli
 	.option('--agent', 'Agent UUID.')
 	.option('--data', 'JSON object or - for stdin.')
 	.action(run(agent.createConversation));
+
+cli
+	.command('agent conversation main')
+	.describe('Designate an Agent conversation as Main.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--conversation', 'Conversation UUID.')
+	.option('--data', 'JSON object containing the current Agent revision.')
+	.action(run(agent.setMainConversation));
 
 cli
 	.command('agent conversation')
@@ -184,6 +193,15 @@ cli
 	.option('--agent', 'Agent UUID.')
 	.option('--execution', 'Execution ID.')
 	.action(run(agent.getExecution));
+
+cli
+	.command('agent execution tool')
+	.describe('Inspect authorized evidence for an Agent execution tool part.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--execution', 'Execution ID.')
+	.option('--part', 'Exact tool part ID.')
+	.action(run(agent.getExecutionToolEvidence));
 
 cli
 	.command('agent invoke')
@@ -305,22 +323,6 @@ cli
 	.option('--credential', 'Credential identifier.')
 	.option('--yes', 'Confirm this operation.', false)
 	.action(run(agent.revokeCredential));
-
-cli
-	.command('agent grants')
-	.describe('List Agent grants.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--agent', 'Agent UUID.')
-	.action(run(agent.listGrants));
-
-cli
-	.command('agent grant put')
-	.describe('Set an Agent grant.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--agent', 'Agent UUID.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--yes', 'Confirm this operation.', false)
-	.action(run(agent.putGrant));
 
 cli
 	.command('agent externals')

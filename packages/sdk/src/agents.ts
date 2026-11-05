@@ -50,8 +50,17 @@ export interface AgentData {
 	integration?: { id: string; uuid: string; name: string; kind: string } | null;
 	environment?: 'development' | 'production' | null;
 	status: string;
+	role?: 'owner' | 'admin' | 'editor' | 'viewer' | null;
 	revision: number;
-	capabilities: Record<string, boolean>;
+	mainConversationId?: number | null;
+	mainConversationUuid?: string | null;
+	capabilities: Record<string, boolean> & {
+		canRead?: boolean;
+		canParticipate?: boolean;
+		canManage?: boolean;
+		canShare?: boolean;
+		canDelete?: boolean;
+	};
 	createdAt: string;
 	updatedAt: string;
 }
@@ -61,17 +70,9 @@ export interface AgentCreate {
 	description?: string;
 	integrationId?: string;
 	ownerKey?: string;
+	/** Explicit private-content Owner for an integrated Agent. */
+	contentOwnerUserId?: string;
 	configuration?: Record<string, unknown>;
-	initialCapabilities?: (
-		| 'metadata'
-		| 'configure'
-		| 'invoke'
-		| 'content'
-		| 'credentials'
-		| 'budgets'
-		| 'lifecycle'
-		| 'resources'
-	)[];
 }
 export interface AgentUpdate {
 	revision: number;
@@ -114,6 +115,11 @@ export interface AgentIntegrationFacet {
 export interface Agent extends Readonly<AgentData> {
 	readonly uuid: string;
 }
+const toolPartIdentifier = (partId: string) => {
+	if (typeof partId !== 'string' || !/^[A-Za-z0-9_.:-]{1,512}$/.test(partId))
+		throw new PlaybooksError(422, 'Provide a valid Agent tool part identifier.');
+	return encodeURIComponent(partId);
+};
 /** An operation handle for a known Agent identifier; it carries no metadata snapshot. */
 export class AgentReference {
 	#transport: Transport;
@@ -142,6 +148,8 @@ export class AgentReference {
 			list: (options?: Pick<ListOptions, 'page' | 'pageSize'>) =>
 				listing(this.transport, `${this.path}/executions`, options),
 			get: (id: Identifier) => get(this.transport, `${this.path}/executions/${identifier(id)}`),
+			toolEvidence: (id: Identifier, partId: string) =>
+				get(this.transport, `${this.path}/executions/${identifier(id)}/tools/${toolPartIdentifier(partId)}`),
 			progress: (id: Identifier, after = '0') =>
 				get(this.transport, `${this.path}/executions/${identifier(id)}/progress`, { after }),
 			create: (input: { instruction: string; idempotencyKey: string }) =>
@@ -219,6 +227,8 @@ export class AgentReference {
 					})
 					.then(response => response.data),
 			get: (id: Identifier) => get(transport, `${path}/${identifier(id)}`),
+			setMain: (id: Identifier, revision: number) =>
+				action(transport, `${path}/${identifier(id)}/main`, 'POST', { revision }),
 			downloadAttachment: (id: Identifier, attachmentId: Identifier): Promise<Buffer> =>
 				transport.request(
 					`${path}/${identifier(id)}/attachments/${identifier(attachmentId)}/download`,
@@ -342,13 +352,6 @@ export class AgentReference {
 			create: (input: { name: string; capabilities?: ('invoke' | 'content')[] }) =>
 				action(this.transport, `${this.path}/credentials`, 'POST', input),
 			revoke: (id: Identifier) => action(this.transport, `${this.path}/credentials/${identifier(id)}`, 'DELETE'),
-		};
-	}
-	get grants() {
-		return {
-			list: () => listing(this.transport, `${this.path}/grants`),
-			put: (input: { userId: string; capabilities: string[] }) =>
-				action(this.transport, `${this.path}/grants`, 'PUT', input),
 		};
 	}
 	get resources() {

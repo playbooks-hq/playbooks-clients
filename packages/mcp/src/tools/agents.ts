@@ -41,6 +41,20 @@ export const agentTools: ToolDefinition[] = [
 		dataFields: ['title', 'idempotencyKey'],
 	},
 	{
+		command: 'agent conversation main',
+		description: 'Designate an Agent conversation as Main using the current Agent revision.',
+		toolset: 'workspace',
+		readOnly: false,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			agent: { flag: 'agent', description: 'Agent UUID.', required: true },
+			conversation: { flag: 'conversation', description: 'Conversation UUID.', required: true },
+		},
+		dataFields: ['revision'],
+		dataOptional: false,
+	},
+	{
 		command: 'agent conversation',
 		description: 'Inspect an Agent conversation.',
 		toolset: 'workspace',
@@ -257,7 +271,7 @@ export const agentTools: ToolDefinition[] = [
 	},
 	{
 		command: 'agent create',
-		description: 'Create a direct or integrated Agent.',
+		description: 'Create an Agent; integrations require contentOwnerUserId.',
 		toolset: 'core',
 		readOnly: false,
 		destructive: false,
@@ -270,8 +284,8 @@ export const agentTools: ToolDefinition[] = [
 			'description',
 			'integrationId',
 			'ownerKey',
+			'contentOwnerUserId',
 			'configuration',
-			'initialCapabilities',
 		],
 	},
 	{
@@ -346,6 +360,19 @@ export const agentTools: ToolDefinition[] = [
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
 			execution: { flag: 'execution', description: 'Execution identifier.', required: true },
+		},
+	},
+	{
+		command: 'agent execution tool',
+		description: 'Inspect authorized evidence for an Agent execution tool part.',
+		toolset: 'core',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
+			execution: { flag: 'execution', description: 'Execution identifier.', required: true },
+			part: { flag: 'part', description: 'Exact tool part ID.', required: true },
 		},
 	},
 	{
@@ -557,30 +584,6 @@ export const agentTools: ToolDefinition[] = [
 			credential: { flag: 'credential', description: 'Credential identifier.', required: true },
 			confirm: { flag: 'yes', description: 'Confirm the capability change.' },
 		},
-	},
-	{
-		command: 'agent grants',
-		description: 'List Agent grants.',
-		toolset: 'workspace',
-		readOnly: true,
-		destructive: false,
-		options: {
-			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
-			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
-		},
-	},
-	{
-		command: 'agent grant put',
-		description: 'Set an Agent grant.',
-		toolset: 'workspace',
-		readOnly: false,
-		destructive: false,
-		options: {
-			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
-			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
-			confirm: { flag: 'yes', description: 'Confirm the capability change.' },
-		},
-		dataFields: ['userId', 'capabilities'],
 	},
 	{
 		command: 'agent resources',

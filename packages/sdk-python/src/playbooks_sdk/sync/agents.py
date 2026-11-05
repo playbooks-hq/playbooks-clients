@@ -1,5 +1,8 @@
+import re
 from typing import Any, Self
+from urllib.parse import quote
 
+from playbooks_sdk.agent_types import AgentCreateInput
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
 from playbooks_sdk.sync.core import Endpoint, Listing
@@ -137,6 +140,13 @@ class AgentReference:
     def conversation(self, id: Identifier) -> Any:
         return Endpoint(self._transport, self._path)._get(
             f"{self._path}/conversations/{identifier(id)}"
+        )
+
+    def set_main_conversation(self, conversation_id: Identifier, *, revision: int) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/conversations/{identifier(conversation_id)}/main",
+            "POST",
+            {"revision": revision},
         )
 
     def download_conversation_attachment(
@@ -367,6 +377,13 @@ class AgentReference:
             f"{self._path}/executions/{identifier(id)}"
         )
 
+    def execution_tool_evidence(self, id: Identifier, part_id: str) -> Any:
+        if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,512}", part_id):
+            raise PlaybooksError(422, "Provide a valid Agent tool part identifier.")
+        return Endpoint(self._transport, self._path)._get(
+            f"{self._path}/executions/{identifier(id)}/tools/{quote(part_id, safe='')}"
+        )
+
     def execution_progress(self, id: Identifier, *, after: str = "0") -> Any:
         return Endpoint(self._transport, self._path)._get(
             f"{self._path}/executions/{identifier(id)}/progress", {"after": after}
@@ -403,12 +420,6 @@ class AgentReference:
         return Endpoint(self._transport, self._path)._action(
             f"{self._path}/credentials/{identifier(id)}", "DELETE"
         )
-
-    def grants(self) -> ApiResponse:
-        return Endpoint(self._transport, self._path)._list(f"{self._path}/grants", {})
-
-    def put_grant(self, data: Data) -> Any:
-        return Endpoint(self._transport, self._path)._action(f"{self._path}/grants", "PUT", data)
 
     def externals(self) -> ApiResponse:
         return Endpoint(self._transport, self._path)._list(f"{self._path}/external-assignments", {})
@@ -539,8 +550,8 @@ class Agents(Endpoint):
         result = self._get(f"/agents/{identifier(id)}")
         return Agent(self._transport, result.to_dict())
 
-    def create(self, data: Data) -> Agent:
-        result = self._action("/agents", "POST", data)
+    def create(self, data: AgentCreateInput | Data) -> Agent:
+        result = self._action("/agents", "POST", dict(data))
         return Agent(self._transport, result)
 
     def update(self, id: Identifier, data: Data) -> Agent:

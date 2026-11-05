@@ -39,8 +39,8 @@ export const createAgent = async (options: any) => {
 				'description',
 				'integrationId',
 				'ownerKey',
+				'contentOwnerUserId',
 				'configuration',
-				'initialCapabilities',
 			]),
 		),
 	);
@@ -74,6 +74,15 @@ export const listConversations = async (options: any) =>
 export const createConversation = async (options: any) =>
 	sdkEnvelope(
 		await (await agentContext(options)).agent.conversations.create(await input(options, ['title', 'idempotencyKey'])),
+	);
+export const setMainConversation = async (options: any) =>
+	sdkEnvelope(
+		await (
+			await agentContext(options)
+		).agent.conversations.setMain(
+			identifier(options.conversation, '--conversation'),
+			(await input(options, ['revision'])).revision,
+		),
 	);
 export const getConversation = async (options: any) =>
 	sdkEnvelope(
@@ -213,6 +222,12 @@ export const deleteQueuedMessage = async (options: any) => {
 };
 export const getExecution = async (options: any) =>
 	sdkEnvelope(await (await agentContext(options)).agent.executions.get(identifier(options.execution, '--execution')));
+export const getExecutionToolEvidence = async (options: any) =>
+	sdkEnvelope(
+		await (
+			await agentContext(options)
+		).agent.executions.toolEvidence(identifier(options.execution, '--execution'), textOption(options.part, 'part')),
+	);
 export const invokeAgent = async (options: any) => {
 	confirm(options, 'Agent execution and expected usage');
 	return sdkEnvelope(
@@ -318,13 +333,6 @@ export const revokeCredential = async (options: any) => {
 	confirm(options, 'credential revocation');
 	return sdkEnvelope(
 		await (await agentContext(options)).agent.credentials.revoke(identifier(options.credential, '--credential')),
-	);
-};
-export const listGrants = async (options: any) => sdkList(await (await agentContext(options)).agent.grants.list());
-export const putGrant = async (options: any) => {
-	confirm(options, 'the Agent grant and its private capabilities');
-	return sdkEnvelope(
-		await (await agentContext(options)).agent.grants.put(await input(options, ['userId', 'capabilities'])),
 	);
 };
 export const listResources = async (options: any) =>
