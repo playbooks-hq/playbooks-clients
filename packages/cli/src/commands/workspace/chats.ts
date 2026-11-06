@@ -7,10 +7,6 @@ import { identifier, input, listParams } from 'src/utils/cli-input';
 import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
 
 export const listChannels = async (options: any) => {
-	if (options.chat) {
-		const { workspaceResource } = await workspaceContext(options);
-		return sdkList(await workspaceResource.chats.channels(identifier(options.chat)).list());
-	}
 	const { projectResource } = await projectContext(options);
 	return sdkList(await projectResource.channels.list());
 };
@@ -21,43 +17,23 @@ export const listWorkspaceChats = async (options: any) => {
 };
 export const getWorkspaceChat = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
-	return sdkEnvelope(
-		await workspaceResource.chats.get(identifier(options.chat), {
-			...(options.conversation ? { conversationId: identifier(options.conversation) } : {}),
-			configuration: Boolean(options.configuration),
-		}),
-	);
+	return sdkEnvelope(await workspaceResource.chats.get(identifier(options.chat)));
 };
 export const createWorkspaceChat = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
-	const data = await input(options, ['name', 'idempotencyKey', 'composerOverrides', 'designSelection', 'blankStart']);
+	const data = await input(options, ['name', 'idempotencyKey']);
 	return sdkEnvelope(await workspaceResource.chats.create(data));
 };
 export const updateWorkspaceChat = async (options: any) => {
 	const { workspaceResource, workspaceUuid } = await workspaceContext(options);
 	const chat = identifier(options.chat);
-	const data = await input(options, [
-		'revision',
-		'action',
-		'name',
-		'composerOverrides',
-		'resourceSelection',
-		'designSelection',
-		'conversationId',
-		'confirmation',
-	]);
+	const data = await input(options, ['revision', 'action', 'name', 'confirmation']);
 	if (['archive', 'delete'].includes(data.action))
-		await confirm(options, `${data.action} Chat ${chat} in Workspace ${workspaceUuid}? Its schedules will be blocked.`);
+		await confirm(
+			options,
+			`${data.action} Chat ${chat} in Workspace ${workspaceUuid}? Its schedules will be ${data.action === 'delete' ? 'deleted' : 'paused'}.`,
+		);
 	return sdkEnvelope(await workspaceResource.chats.update(chat, data));
-};
-export const listWorkspaceChatConversations = async (options: any) => {
-	const { workspaceResource } = await workspaceContext(options);
-	return sdkList(await workspaceResource.chats.conversations(identifier(options.chat)).list());
-};
-export const createWorkspaceChatConversation = async (options: any) => {
-	const { workspaceResource } = await workspaceContext(options);
-	const data = await input(options, ['title', 'idempotencyKey']);
-	return sdkEnvelope(await workspaceResource.chats.conversations(identifier(options.chat)).create(data));
 };
 export const workingFiles = async (options: any, operation = 'get') => {
 	const { workspaceResource } = await workspaceContext(options);

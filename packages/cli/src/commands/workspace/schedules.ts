@@ -31,8 +31,6 @@ export const createChatSchedule = async (options: any) => {
 		'instructions',
 		'references',
 		'modelId',
-		'destination',
-		'destinationConversationId',
 		'enabled',
 		'frequency',
 		'weekday',

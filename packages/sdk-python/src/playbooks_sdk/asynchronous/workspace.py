@@ -40,29 +40,18 @@ class Chats(Listing):
     def sites(self, id: Identifier) -> Listing:
         return Listing(self._transport, f"{self._path}/{identifier(id)}/sites")
 
-    async def get(
-        self, id: Identifier, *, conversation_id: str | None = None, configuration: bool = False
-    ) -> Any:
-        return await self._get(
-            f"{self._path}/{identifier(id)}",
-            {"conversationId": conversation_id, "configuration": configuration},
-        )
+    async def get(self, id: Identifier) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}")
 
     async def create(self, data: Data) -> Any:
         return await self._action(self._path, "POST", data)
 
     async def update(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}", "PUT", data)
-
-    async def conversations(self, id: Identifier) -> ApiResponse:
-        return await self._list(f"{self._path}/{identifier(id)}/conversations", {})
-
-    async def create_conversation(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/conversations", "POST", data)
-
-    def channels(self, id: Identifier) -> Listing:
-        """Inspect inbound channel assignments; credentials remain in secure setup."""
-        return Listing(self._transport, f"{self._path}/{identifier(id)}/channels")
+        return await self._action(
+            f"{self._path}/{identifier(id)}",
+            "DELETE" if data.get("action") == "delete" else "PUT",
+            data,
+        )
 
     async def working_files(self, id: Identifier) -> Any:
         """Read working content, separate from background References."""
@@ -86,9 +75,6 @@ class Chats(Listing):
 
     async def save_working_files(self, id: Identifier, data: Data) -> Any:
         return await self._action(f"{self._path}/{identifier(id)}/working-files/save", "POST", data)
-
-    def references(self, id: Identifier) -> References:
-        return References(self._transport, f"{self._path}/{identifier(id)}/references")
 
 
 class ChatSchedules(ReadCollection):

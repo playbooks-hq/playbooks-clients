@@ -201,8 +201,6 @@ export interface ChatScheduleInput extends ChatScheduleTiming {
 	instructions: string;
 	references?: ScheduleReference[];
 	modelId?: number;
-	destination?: 'existing-conversation' | 'new-conversation';
-	destinationConversationId?: number | null;
 	enabled: boolean;
 }
 export type ChatScheduleCreate = ChatScheduleInput & {
@@ -285,27 +283,15 @@ export interface ChatData extends RecordData {
 	id: number;
 	uuid: string;
 	revision: number;
-	mainConversationId: number;
-	composerOverrides: ChatComposerOverrides;
-	resourceSelection: { skillIds?: number[] | null; mcpIds?: number[] | null; connectorIds?: number[] };
+	conversationId: number;
 	conversation?: ConversationData;
 }
 export interface ChatCreate {
 	idempotencyKey: string;
 	name?: string;
-	composerOverrides?: ChatComposerOverrides;
-	designSelection?: { designId: number | null };
-	blankStart?: boolean;
 }
 export type ChatUpdate = { revision: number } & (
-	| {
-			action?: 'configure';
-			name?: string;
-			composerOverrides?: ChatComposerOverrides;
-			resourceSelection?: { skillIds?: number[] | null; mcpIds?: number[] | null; connectorIds?: number[] };
-			designSelection?: { designId: number | null };
-	  }
-	| { action: 'main'; conversationId: number }
+	| { action: 'rename'; name: string }
 	| { action: 'archive' | 'restore' }
 	| { action: 'delete'; confirmation: string }
 );
@@ -355,7 +341,7 @@ export interface ReleaseData extends RecordData {
 }
 export interface TemplateListOptions extends ListOptions {
 	category?: string;
-	kind?: 'chat' | 'project';
+	kind?: 'project' | 'agent';
 }
 export interface TemplatePublish {
 	acknowledgment: true;

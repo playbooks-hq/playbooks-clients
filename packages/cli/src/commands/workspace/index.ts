@@ -6,8 +6,6 @@ export {
 	getWorkspaceChat,
 	createWorkspaceChat,
 	updateWorkspaceChat,
-	listWorkspaceChatConversations,
-	createWorkspaceChatConversation,
 } from 'src/commands/workspace/chats';
 export { updateWorkspace } from 'src/commands/workspace/update';
 export {

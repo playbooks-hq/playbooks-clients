@@ -39,7 +39,7 @@ export const templatesTools: ToolDefinition[] = [
 	{
 		command: 'workspace template publish',
 		description:
-			'Publish a reviewed Chat template package. Supply expectedRevision from the listing and sourceRevision from the Chat working tree. acknowledgment confirms sharing rights and review for private information. Publication uses the listing visibility; bump defaults to patch. Existing adopters keep their selected version.',
+			'Publish a reviewed Project or eligible Agent template package. Supply expectedRevision from the listing and the exact authorized sourceRevision. acknowledgment confirms sharing rights and review for private information. Publication uses the listing visibility; bump defaults to patch. Existing adopters keep their selected version.',
 		toolset: 'templates',
 		readOnly: false,
 		destructive: true,
@@ -110,7 +110,7 @@ export const templatesTools: ToolDefinition[] = [
 				flag: 'category',
 				description: 'Category identifier from categories.',
 			},
-			kind: { flag: 'kind', description: 'Template kind: chat or project.' },
+			kind: { flag: 'kind', description: 'Template kind: project or agent.' },
 		},
 	},
 	{

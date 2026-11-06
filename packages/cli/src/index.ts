@@ -788,7 +788,7 @@ cli
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
-	.option('--kind', 'Template kind: chat or project.')
+	.option('--kind', 'Template kind: project or agent.')
 	.example('templates --category business --kind project')
 	.action(run(templates.listTemplates));
 
@@ -859,23 +859,21 @@ cli
 
 cli
 	.command('workspace chat')
-	.describe('Read a Chat and its Main or selected conversation.')
+	.describe('Read a Chat and its sole conversation.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--chat', 'Chat UUID.')
-	.option('--conversation', 'Optional conversation UUID.')
-	.option('--configuration', 'Include eligible configuration resources.', false)
 	.action(run(workspace.getWorkspaceChat));
 
 cli
 	.command('workspace chat create')
-	.describe('Create a Chat with a fresh Main conversation; does not dispatch inference.')
+	.describe('Create a Chat with one conversation; does not dispatch inference.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--data', 'JSON name, stable idempotencyKey and configuration or - for stdin.')
+	.option('--data', 'JSON name and stable idempotencyKey or - for stdin.')
 	.action(run(workspace.createWorkspaceChat));
 
 cli
 	.command('workspace chat update')
-	.describe('Configure, designate Main, archive, restore or delete a Chat using its revision.')
+	.describe('Rename, archive, restore or delete a Chat using its revision.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--chat', 'Chat UUID.')
 	.option('--data', 'JSON action and revision or - for stdin; deletion also requires the exact name in confirmation.')
@@ -883,27 +881,11 @@ cli
 	.action(run(workspace.updateWorkspaceChat));
 
 cli
-	.command('workspace chat conversations')
-	.describe('List conversations belonging to a Chat.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--chat', 'Chat UUID.')
-	.action(run(workspace.listWorkspaceChatConversations));
-
-for (const owner of ['chat', 'project'])
-	cli
-		.command(`${owner === 'chat' ? 'workspace chat' : 'project'} channels`)
-		.describe('Inspect channel assignments, destinations and setup readiness. Credentials remain in secure setup.')
-		.option('--workspace', 'Workspace UUID.')
-		.option(`--${owner}`, `${owner} UUID.`)
-		.action(run(workspace.listChannels));
-
-cli
-	.command('workspace chat conversation create')
-	.describe('Create another conversation in a Chat; does not dispatch inference.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--chat', 'Chat UUID.')
-	.option('--data', 'JSON title and stable idempotencyKey or - for stdin.')
-	.action(run(workspace.createWorkspaceChatConversation));
+	.command('project channels')
+	.describe('Inspect Project channel assignments and readiness.')
+	.option('--workspace', 'Workspace UUID.')
+	.option('--project', 'Project UUID.')
+	.action(run(workspace.listChannels));
 
 cli
 	.command('workspace chat working-files')
@@ -1014,7 +996,7 @@ cli
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
-	.option('--kind', 'Template kind: chat or project.')
+	.option('--kind', 'Template kind: project or agent.')
 	.example('workspace templates --category business --kind project')
 	.action(run(workspace.listTemplates));
 

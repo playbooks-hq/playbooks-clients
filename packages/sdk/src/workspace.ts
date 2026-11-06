@@ -1,5 +1,4 @@
 import { Agents } from 'src/agents.js';
-import { Channels } from 'src/channels.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
 import { Inbox } from 'src/inbox.js';
@@ -19,7 +18,6 @@ import type {
 	ChatScheduleMutation,
 	ChatScheduleTiming,
 	ChatUpdate,
-	ConversationData,
 	DnsRecordInput,
 	Identifier,
 	ListOptions,
@@ -68,25 +66,18 @@ export class Workspace extends Resource<WorkspaceData> {
 	get chats() {
 		const path = '/chats';
 		return {
-			template: (id: Identifier) => get<TemplateData>(this.#transport, `${path}/${identifier(id)}/template`),
-			createTemplate: (id: Identifier) =>
-				action<TemplateData>(this.#transport, `${path}/${identifier(id)}/template`, 'POST'),
 			sites: (id: Identifier) => listing<SiteData>(this.#transport, `${path}/${identifier(id)}/sites`),
 			list: (options?: ListOptions & { archived?: boolean }) => listing<ChatData>(this.#transport, path, options),
-			get: (id: Identifier, options: { conversationId?: string; configuration?: boolean } = {}) =>
-				get<ChatData>(this.#transport, `${path}/${identifier(id)}`, options),
+			get: (id: Identifier) => get<ChatData>(this.#transport, `${path}/${identifier(id)}`),
 			create: (input: ChatCreate) => action<ChatData>(this.#transport, path, 'POST', input),
 			update: (id: Identifier, input: ChatUpdate) =>
-				action<ChatData>(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
-			conversations: (id: Identifier) => ({
-				list: () => listing<ConversationData>(this.#transport, `${path}/${identifier(id)}/conversations`),
-				create: (input: { title?: string; idempotencyKey: string }) =>
-					action<ConversationData>(this.#transport, `${path}/${identifier(id)}/conversations`, 'POST', input),
-			}),
+				action<ChatData>(
+					this.#transport,
+					`${path}/${identifier(id)}`,
+					input.action === 'delete' ? 'DELETE' : 'PUT',
+					input,
+				),
 			workingFiles: (id: Identifier) => new WorkingFiles(this.#transport, `${path}/${identifier(id)}/working-files`),
-			channels: (id: Identifier) => new Channels(this.#transport, `${path}/${identifier(id)}/channels`),
-			/** Persistent background References. */
-			references: (id: Identifier) => new References(this.#transport, `${path}/${identifier(id)}/references`),
 		};
 	}
 	conversationPlans(conversationId: Identifier, projectId?: Identifier) {
@@ -121,7 +112,7 @@ export class Workspace extends Resource<WorkspaceData> {
 			publish: (id: Identifier, input: TemplatePublish) =>
 				action(this.#transport, `/templates/${identifier(id)}/publish`, 'POST', input),
 			remix: (id: Identifier, input: { versionId: string; idempotencyKey: string; name?: string }) =>
-				action<ChatData>(this.#transport, `/explore/templates/${identifier(id)}/remix`, 'POST', input),
+				action(this.#transport, `/explore/templates/${identifier(id)}/remix`, 'POST', input),
 			versions: (id: Identifier, options?: ListOptions) =>
 				listing(this.#transport, `/templates/${identifier(id)}/versions`, options),
 		};

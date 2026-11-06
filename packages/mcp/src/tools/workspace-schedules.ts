@@ -38,7 +38,7 @@ export const workspaceSchedulesTools: ToolDefinition[] = [
 	{
 		command: 'workspace chat-schedule create',
 		description:
-			'Save one self-contained scheduled instruction with authorized durable references. Resolve ambiguous history-dependent instructions before saving. Persist the operator’s model and originating conversation; standalone authoring defaults to Chat Main. Use new-conversation to create one conversation per occurrence. Creation does not run work.',
+			'Save one self-contained scheduled instruction with authorized durable references. Resolve ambiguous history-dependent instructions before saving. Every occurrence continues the owning Chat’s sole conversation with its current authorized Workspace defaults. Creation does not run work.',
 		toolset: 'workspace',
 		readOnly: false,
 		destructive: false,
@@ -59,8 +59,6 @@ export const workspaceSchedulesTools: ToolDefinition[] = [
 			'instructions',
 			'references',
 			'modelId',
-			'destination',
-			'destinationConversationId',
 			'enabled',
 			'frequency',
 			'weekday',
