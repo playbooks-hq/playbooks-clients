@@ -1,6 +1,8 @@
 export { Agent, AgentReference, Agents } from 'src/agents.js';
 export type {
 	AgentData,
+	AgentApplicationGrant,
+	AgentApplicationAccess,
 	AgentExternalKind,
 	AgentExternalGrant,
 	AgentCreate,

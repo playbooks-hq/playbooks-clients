@@ -152,7 +152,15 @@ Catch `PlaybooksError` and inspect `status`, `message`, `source`, `debug`, and `
 
 Run `pnpm lint` and `pnpm typecheck` from the root after `pnpm python:setup`. They include Ruff and strict mypy checks. Python shares the repository version. Explicit `pnpm release:prepare` creates a wheel and source distribution alongside npm artifacts and records their integrity; it publishes nothing. The existing isolated package compatibility verifier covers npm packages, not Python runtime acceptance. Live platform behavior requires separately authorized verification. Check PyPI name/version availability and publishing access before any publication.
 
-## Agent and Test Projects
+## Managed Workspace Agents
+
+Configure the client's `base_url` from `PLAYBOOKS_AGENTS_URL` and `api_key` from `PLAYBOOKS_AGENTS_KEY` in application backend code. Use the Workspace Agent collection for Agent operations. The managed service derives Project-development or Site-production identity from the credential; it does not trust request-supplied identity.
+
+Creating an Agent grants the calling application Admin and the current Workspace owner human Owner. Existing Agents require an explicit application grant. Agent methods `application_grants`, `application_grant_candidates`, `update_application_grants`, and `remove_application_grant` manage access with revision checks. Optional Project/Site associations only organize Agents. Conversations share Agent resources and permissions.
+
+With authorized user API credentials, Project and Site methods `agent_access`, `update_agent_access(enabled=...)`, and `rotate_agent_access` manage runtime access. Revocation is immediate; replacement environment variables require a Sandbox restart or normal Site release update. Keep credentials on the backend. Test environments do not inherit development or production grants.
+
+## Project subagents and Tests
 
 Select an Agent with `workspace.projects.get("PARENT_UUID", agent_id="AGENT_UUID")`, or a Test with `test_id="TEST_ENVIRONMENT_UUID"`. The options are mutually exclusive. Both sync and async clients retain child scope for subsequent settings, resources, conversations, run controls, usage, and budget operations. Unsupported capabilities never fall back to parent execution.
 

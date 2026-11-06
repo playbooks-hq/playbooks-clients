@@ -18,9 +18,8 @@ export const listAgents = async (options: any) => {
 	const params = {
 		...listParams(options),
 		...(options.status && { status: textOption(options.status, 'status') }),
-		...(options.environment && { environment: textOption(options.environment, 'environment') }),
-		...(options['integration-id'] !== undefined && {
-			integrationId: identifier(options['integration-id'], '--integration-id'),
+		...(options.association && {
+			association: textOption(options.association, 'association') as 'unassociated' | 'project' | 'site',
 		}),
 	};
 	return sdkList(await workspaceResource.agents.list(params));
@@ -33,15 +32,7 @@ export const createAgent = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
 	return sdkEnvelope(
 		await workspaceResource.agents.create(
-			await input(options, [
-				'idempotencyKey',
-				'name',
-				'description',
-				'integrationId',
-				'ownerKey',
-				'contentOwnerUserId',
-				'configuration',
-			]),
+			await input(options, ['idempotencyKey', 'name', 'description', 'projectId', 'siteId', 'configuration']),
 		),
 	);
 };
@@ -50,7 +41,7 @@ export const updateAgent = async (options: any) => {
 	return sdkEnvelope(
 		await context.workspaceReference.agents.update(
 			identifier(options.agent, '--agent'),
-			await input(options, ['revision', 'name', 'description', 'configuration']),
+			await input(options, ['revision', 'name', 'description', 'configuration', 'projectId', 'siteId']),
 		),
 	);
 };
@@ -284,22 +275,33 @@ export const updateSchedule = async (options: any) =>
 	);
 export const getUsage = async (options: any) => sdkEnvelope(await (await agentContext(options)).agent.usage);
 
-export const listIntegrations = async (options: any) =>
-	sdkList(await (await workspaceContext(options)).workspaceResource.agents.integrations.list());
-export const listIntegrationFacets = async (options: any) =>
+export const listApplicationGrants = async (options: any) =>
+	sdkEnvelope(await (await agentContext(options)).agent.applicationGrants.get());
+export const listApplicationGrantCandidates = async (options: any) =>
 	sdkList(
 		await (
-			await workspaceContext(options)
-		).workspaceResource.agents.integrationFacets(listParams(options, { search: false })),
+			await agentContext(options)
+		).agent.applicationGrants.candidates({ kind: options.kind, query: options.query }),
 	);
-export const createIntegration = async (options: any) =>
-	sdkEnvelope(
+export const updateApplicationGrants = async (options: any) => {
+	confirm(options, 'the replacement Agent application grants');
+	return sdkEnvelope(
+		await (await agentContext(options)).agent.applicationGrants.update(await input(options, ['revision', 'grants'])),
+	);
+};
+export const removeApplicationGrant = async (options: any) => {
+	confirm(options, 'application access removal');
+	if (!['project', 'site'].includes(options.kind)) throw new CliError(422, 'Choose project or site.');
+	return sdkEnvelope(
 		await (
-			await workspaceContext(options)
-		).workspaceResource.agents.integrations.create(
-			await input(options, ['name', 'kind', 'projectId', 'siteId', 'externalKey']),
+			await agentContext(options)
+		).agent.applicationGrants.remove(
+			options.kind,
+			identifier(options.resource, '--resource'),
+			(await input(options, ['revision'])).revision,
 		),
 	);
+};
 export const cancelExecution = async (options: any) =>
 	sdkEnvelope(
 		await (await agentContext(options)).agent.executions.cancel(identifier(options.execution, '--execution')),

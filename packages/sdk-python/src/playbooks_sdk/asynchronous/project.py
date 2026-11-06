@@ -199,6 +199,19 @@ class Project(Resource):
     def name(self) -> str:
         return cast(str, self.to_dict()["name"])
 
+    async def agent_access(self) -> Any:
+        return await Endpoint(self._transport, self._path)._get(f"{self._path}/agent-access")
+
+    async def update_agent_access(self, *, enabled: bool) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/agent-access", "PUT", {"enabled": enabled}
+        )
+
+    async def rotate_agent_access(self) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/agent-access/rotate", "POST", {}
+        )
+
     async def update(self, data: Data) -> Self:
         updated = await Endpoint(self._transport, self._path)._action(self._path, "PUT", data)
         if updated.get("id") != self.id or updated.get("uuid") != self.uuid:

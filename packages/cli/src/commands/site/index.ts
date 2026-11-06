@@ -460,3 +460,14 @@ export const resolveMonitoringIssue = async (options: any) => {
 export const getPreview = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.preview.get());
 export const refreshPreview = async (options: any) =>
 	sdkEnvelope(await (await siteContext(options)).site.preview.refresh());
+
+export const getAgentAccess = async (options: any) =>
+	sdkEnvelope(await (await siteContext(options)).site.agentAccess.get());
+export const updateAgentAccess = async (options: any) => {
+	if (!options.yes) throw new CliError(422, 'Confirm changing Site Agent runtime access with --yes.');
+	return sdkEnvelope(await (await siteContext(options)).site.agentAccess.update(await input(options, ['enabled'])));
+};
+export const rotateAgentAccess = async (options: any) => {
+	if (!options.yes) throw new CliError(422, 'Confirm revoking the current Site Agent runtime key with --yes.');
+	return sdkEnvelope(await (await siteContext(options)).site.agentAccess.rotate());
+};

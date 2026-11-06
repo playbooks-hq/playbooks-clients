@@ -190,6 +190,15 @@ export class Site extends Resource<SiteData> {
 		this.#transport = transport;
 		this.#path = `/sites/${identifier(data.uuid)}`;
 	}
+	get agentAccess() {
+		const path = `${this.#path}/agent-access`;
+		return {
+			get: () => get<Record<string, unknown>>(this.#transport, path),
+			update: (data: { enabled: boolean }) => action<Record<string, unknown>>(this.#transport, path, 'PUT', data),
+			rotate: () => action<Record<string, unknown>>(this.#transport, `${path}/rotate`, 'POST', {}),
+		};
+	}
+
 	async update(input: { name: string }) {
 		const data = await action<SiteData>(this.#transport, this.#path, 'PATCH', input);
 		if (data.uuid !== this.uuid) throw new PlaybooksError(502, 'The updated Site identity did not match.');

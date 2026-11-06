@@ -45,9 +45,9 @@ export interface AgentData {
 	name: string;
 	description: string | null;
 	workspaceId: number;
-	ownerKind: 'direct' | 'project' | 'site' | 'external';
-	integrationId: string | null;
-	integration?: { id: string; uuid: string; name: string; kind: string } | null;
+	projectId: string | null;
+	siteId: string | null;
+	association: { kind: 'project' | 'site'; id: string; name: string } | null;
 	environment?: 'development' | 'production' | null;
 	status: string;
 	role?: 'owner' | 'admin' | 'editor' | 'viewer' | null;
@@ -68,14 +68,14 @@ export interface AgentCreate {
 	idempotencyKey: string;
 	name: string;
 	description?: string;
-	integrationId?: string;
-	ownerKey?: string;
-	/** Explicit private-content Owner for an integrated Agent. */
-	contentOwnerUserId?: string;
+	projectId?: string | null;
+	siteId?: string | null;
 	configuration?: Record<string, unknown>;
 }
 export interface AgentUpdate {
 	revision: number;
+	projectId?: string | null;
+	siteId?: string | null;
 	name?: string;
 	description?: string;
 	configuration?: Record<string, unknown>;
@@ -108,9 +108,15 @@ export interface AgentResourceOption {
 	resourceId: string;
 	name: string;
 }
-export interface AgentIntegrationFacet {
-	id: string;
-	name: string;
+export interface AgentApplicationGrant {
+	kind: 'project' | 'site';
+	resourceId: string;
+	role: 'viewer' | 'editor' | 'admin';
+	resourceName?: string;
+}
+export interface AgentApplicationAccess {
+	revision: number;
+	grants: AgentApplicationGrant[];
 }
 export interface Agent extends Readonly<AgentData> {
 	readonly uuid: string;
@@ -142,6 +148,26 @@ export class AgentReference {
 	}
 	delete(revision: number) {
 		return action(this.transport, this.path, 'DELETE', { revision });
+	}
+	get applicationGrants() {
+		return {
+			get: () => get<AgentApplicationAccess>(this.transport, `${this.path}/application-grants`),
+			candidates: (options?: { kind?: 'project' | 'site'; query?: string }) =>
+				listing<{ kind: 'project' | 'site'; resourceId: string; name: string }>(
+					this.transport,
+					`${this.path}/application-grant-candidates`,
+					options,
+				),
+			update: (input: AgentApplicationAccess) =>
+				action<AgentApplicationAccess>(this.transport, `${this.path}/application-grants`, 'PUT', input),
+			remove: (kind: 'project' | 'site', resourceId: Identifier, revision: number) =>
+				action<AgentApplicationAccess>(
+					this.transport,
+					`${this.path}/application-grants/${kind}/${identifier(resourceId)}`,
+					'DELETE',
+					{ revision },
+				),
+		};
 	}
 	get executions() {
 		return {
@@ -431,22 +457,7 @@ export class Agents {
 		this.#transport = transport;
 		this.#collection = new Collection<AgentData, AgentUpdate, AgentCreate>(transport, '/agents', 'PATCH');
 	}
-	get integrations() {
-		return {
-			list: () => listing(this.#transport, '/agent-integrations'),
-			create: (input: {
-				name: string;
-				kind: 'project' | 'site' | 'external';
-				projectId?: string;
-				siteId?: string;
-				externalKey?: string;
-			}) => action(this.#transport, '/agent-integrations', 'POST', input),
-		};
-	}
-	integrationFacets(options?: Pick<ListOptions, 'page' | 'pageSize'>) {
-		return listing<AgentIntegrationFacet>(this.#transport, '/agents/integration-facets', options);
-	}
-	async list(options?: ListOptions & { integrationId?: string; environment?: string; status?: string }) {
+	async list(options?: ListOptions & { association?: 'unassociated' | 'project' | 'site'; status?: string }) {
 		return listing<AgentData>(this.#transport, '/agents', options);
 	}
 	reference(id: Identifier) {

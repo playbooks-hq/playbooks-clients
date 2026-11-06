@@ -5,8 +5,6 @@ class AgentCreateInput(TypedDict):
     idempotencyKey: str
     name: str
     description: NotRequired[str]
-    integrationId: NotRequired[str]
-    ownerKey: NotRequired[str]
-    # Integrated Agents require an explicit private-content Owner.
-    contentOwnerUserId: NotRequired[str]
+    projectId: NotRequired[str | None]
+    siteId: NotRequired[str | None]
     configuration: NotRequired[dict[str, Any]]

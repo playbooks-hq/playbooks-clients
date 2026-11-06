@@ -65,6 +65,15 @@ export class Project extends Resource<ProjectData> {
 		this.#transport = transport;
 		this.#path = path ?? `/projects/${identifier(data.uuid)}`;
 	}
+	get agentAccess() {
+		const path = `${this.#path}/agent-access`;
+		return {
+			get: () => get<Record<string, unknown>>(this.#transport, path),
+			update: (data: { enabled: boolean }) => action<Record<string, unknown>>(this.#transport, path, 'PUT', data),
+			rotate: () => action<Record<string, unknown>>(this.#transport, `${path}/rotate`, 'POST', {}),
+		};
+	}
+
 	async update(changes: ProjectUpdate) {
 		const data = await action<ProjectData>(this.#transport, this.#path, 'PUT', changes);
 		if (data.id !== this.id || data.uuid !== this.uuid)

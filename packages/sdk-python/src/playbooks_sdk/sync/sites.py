@@ -79,6 +79,19 @@ class Site(Resource):
     def releases(self) -> SiteReleases:
         return SiteReleases(self._transport, f"{self._path}/releases")
 
+    def agent_access(self) -> Any:
+        return Endpoint(self._transport, self._path)._get(f"{self._path}/agent-access")
+
+    def update_agent_access(self, *, enabled: bool) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/agent-access", "PUT", {"enabled": enabled}
+        )
+
+    def rotate_agent_access(self) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/agent-access/rotate", "POST", {}
+        )
+
     def update(self, data: Data) -> Self:
         result = Endpoint(self._transport, self._path)._action(self._path, "PATCH", data)
         if result.get("uuid") != self.to_dict()["uuid"]:

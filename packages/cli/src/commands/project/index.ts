@@ -76,3 +76,5 @@ export {
 	respondToMessage,
 } from 'src/commands/project/controls';
 export { getProjectUsage, getProjectBudget, updateProjectBudget } from 'src/commands/project/budget';
+
+export { getAgentAccess, updateAgentAccess, rotateAgentAccess } from 'src/commands/project/agent-access';

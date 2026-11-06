@@ -21,6 +21,30 @@ class AgentReference:
         object.__setattr__(self, "_transport", transport)
         object.__setattr__(self, "_path", f"/agents/{identifier(id)}")
 
+    async def application_grants(self) -> Any:
+        return await Endpoint(self._transport, self._path)._get(f"{self._path}/application-grants")
+
+    async def application_grant_candidates(self, **options: Any) -> ApiResponse:
+        return await Endpoint(self._transport, self._path)._list(
+            f"{self._path}/application-grant-candidates", options
+        )
+
+    async def update_application_grants(self, data: Data) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/application-grants", "PUT", data
+        )
+
+    async def remove_application_grant(
+        self, kind: str, resource_id: Identifier, revision: int
+    ) -> Any:
+        if kind not in ("project", "site"):
+            raise PlaybooksError(422, "Choose project or site.")
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/application-grants/{kind}/{identifier(resource_id)}",
+            "DELETE",
+            {"revision": revision},
+        )
+
     async def archive(self, revision: int) -> Any:
         return await Endpoint(self._transport, self._path)._action(
             f"{self._path}/archive", "POST", {"revision": revision}
@@ -552,15 +576,6 @@ class Agent(AgentReference, Resource):
 class Agents(Endpoint):
     def reference(self, id: Identifier) -> AgentReference:
         return AgentReference(self._transport, id)
-
-    async def integration_facets(self, **options: Any) -> ApiResponse:
-        return await self._list("/agents/integration-facets", options)
-
-    async def integrations(self) -> ApiResponse:
-        return await self._list("/agent-integrations", {})
-
-    async def create_integration(self, data: Data) -> Any:
-        return await self._action("/agent-integrations", "POST", data)
 
     async def list(self, **options: Any) -> ApiResponse:
         return await self._list("/agents", options)

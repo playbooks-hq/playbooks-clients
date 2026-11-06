@@ -52,7 +52,29 @@ const snapshot = project.toJSON();
 
 `toJSON()` and `JSON.stringify(resource)` serialize API data only, including extra Server fields, and exclude client credentials and transport internals. Mutating a returned snapshot does not change the resource. Returned operation receipts remain receipts: accepting work does not mean execution has finished.
 
-## Agent and Test execution
+## Managed Workspace Agents
+
+Applications use their backend runtime credentials with the dedicated managed Agent service:
+
+```ts
+const agentsClient = new PlaybooksSDK({
+  baseUrl: process.env.PLAYBOOKS_AGENTS_URL,
+  apiKey: process.env.PLAYBOOKS_AGENTS_KEY,
+});
+const agents = agentsClient.workspaces.reference('WORKSPACE_UUID').agents;
+const agent = await agents.create({
+  name: 'Support assistant',
+  idempotencyKey: 'support-assistant-create-v1',
+});
+```
+
+The service derives application identity from the credential; the Workspace identifier is request context, not authorization. Creation grants the application Admin and the current Workspace owner human Owner. Existing Agents require an explicit Viewer, Editor, or Admin application grant. Project development and Site production grants are separate. Test runtimes do not inherit either grant.
+
+Use `agent.applicationGrants.get/update/remove` to manage application access with the Agent revision. Optional `projectId` or `siteId` associations organize Agents and never grant access. Conversations keep separate histories but share the Agent's resources and permissions. Agent access does not grant access to Project/Site secrets.
+
+Using ordinary authorized user API credentials, `project.agentAccess` and `site.agentAccess` expose `get`, `update({ enabled })`, and `rotate`. Revocation takes effect immediately; replacement runtime variables require a Sandbox restart or normal Site release update. These operations do not redeploy production. Keep credentials on the backend and out of logs and prompts.
+
+## Project subagent and Test execution
 
 Select a child using its parent Project UUID and exactly one relationship UUID:
 

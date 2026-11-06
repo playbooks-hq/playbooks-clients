@@ -34,8 +34,7 @@ cli
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--query', 'Search by name.')
 	.option('--status', 'Status filter.')
-	.option('--environment', 'Development or production.')
-	.option('--integration-id', 'Integration ID.')
+	.option('--association', 'unassociated, project, or site.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Page size.')
 	.action(run(agent.listAgents));
@@ -256,25 +255,37 @@ cli
 	.action(run(agent.getUsage));
 
 cli
-	.command('agent integrations')
-	.describe('List Agent integrations.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(agent.listIntegrations));
-
+	.command('agent applications')
+	.describe('List Agent application roles.')
+	.option('--workspace', 'Workspace UUID.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.listApplicationGrants));
 cli
-	.command('agent integration facets')
-	.describe('List integrations visible in managed Agents.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--page', 'Zero-based page.')
-	.option('--page-size', 'Page size.')
-	.action(run(agent.listIntegrationFacets));
-
+	.command('agent application candidates')
+	.describe('List assignable applications.')
+	.option('--workspace', 'Workspace UUID.')
+	.option('--agent', 'Agent UUID.')
+	.option('--kind', 'project or site.')
+	.option('--query', 'Search applications.')
+	.action(run(agent.listApplicationGrantCandidates));
 cli
-	.command('agent integration create')
-	.describe('Create an Agent integration.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.command('agent applications update')
+	.describe('Replace application roles with a revision check.')
+	.option('--workspace', 'Workspace UUID.')
+	.option('--agent', 'Agent UUID.')
 	.option('--data', 'JSON object or - for stdin.')
-	.action(run(agent.createIntegration));
+	.option('--yes', 'Confirm access changes.', false)
+	.action(run(agent.updateApplicationGrants));
+cli
+	.command('agent application remove')
+	.describe('Revoke application access.')
+	.option('--workspace', 'Workspace UUID.')
+	.option('--agent', 'Agent UUID.')
+	.option('--kind', 'project or site.')
+	.option('--resource', 'Project or Site UUID.')
+	.option('--data', 'JSON with current revision.')
+	.option('--yes', 'Confirm access removal.', false)
+	.action(run(agent.removeApplicationGrant));
 
 cli
 	.command('agent execution cancel')
@@ -599,6 +610,23 @@ cli
 	.action(run(site.getAnalytics));
 
 const siteOperations = [
+	['site agent-access', 'Inspect Site production access to Workspace Agents.', site.getAgentAccess],
+	[
+		'site agent-access update',
+		'Enable or disable Site access to Workspace Agents.',
+		site.updateAgentAccess,
+		null,
+		true,
+		true,
+	],
+	[
+		'site agent-access rotate',
+		'Rotate Site Agent runtime credentials; requires a release update.',
+		site.rotateAgentAccess,
+		null,
+		false,
+		true,
+	],
 	['site config', 'Inspect Site production configuration.', site.getConfig],
 	['site config update', 'Update Site production configuration.', site.updateConfig, null, true],
 	['site visitor-policy', 'Inspect Site visitor access policy.', site.getVisitorPolicy],
@@ -1742,6 +1770,25 @@ cli
 		'project skill update --project abc --skill abc --data \'{"name":"Review changes","revision":"CURRENT_CHECKSUM"}\'',
 	)
 	.action(run(project.updateProjectSkill));
+
+for (const [name, description, handler] of [
+	['project agent-access', 'Inspect Project development access to Workspace Agents.', project.getAgentAccess],
+	['project agent-access update', 'Enable or disable Project access to Workspace Agents.', project.updateAgentAccess],
+	[
+		'project agent-access rotate',
+		'Rotate Project Agent runtime credentials; requires Sandbox restart.',
+		project.rotateAgentAccess,
+	],
+] as const) {
+	cli
+		.command(name)
+		.describe(description)
+		.option('--project', 'Project UUID.')
+		.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+		.option('--data', 'JSON object containing enabled, or - for stdin.')
+		.option('--yes', 'Confirm changing runtime credentials.')
+		.action(run(handler));
+}
 
 cli
 	.command('project settings')
