@@ -412,6 +412,6 @@ export const updateWorkingFiles = async (options: any) =>
 	sdkEnvelope(
 		await (await agentContext(options)).agent.workingFiles.update(await input(options, ['revision', 'files'])),
 	);
-export const listOutputs = async (options: any) => sdkList(await (await agentContext(options)).agent.outputs.list());
-export const getOutput = async (options: any) =>
-	sdkEnvelope(await (await agentContext(options)).agent.outputs.get(identifier(options.output, '--output')));
+export const listResults = async (options: any) => sdkList(await (await agentContext(options)).agent.results.list());
+export const getResult = async (options: any) =>
+	sdkEnvelope(await (await agentContext(options)).agent.results.get(identifier(options.result, '--result')));

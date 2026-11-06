@@ -2,6 +2,7 @@ export { Agent, AgentReference, Agents } from 'src/agents.js';
 export type {
 	AgentData,
 	AgentApplicationGrant,
+	AgentFileResult,
 	AgentApplicationAccess,
 	AgentExternalKind,
 	AgentExternalGrant,
@@ -47,3 +48,6 @@ export { ProjectTests } from 'src/project-tests.js';
 
 export { WorkingFiles, ConversationPlans } from 'src/working-documents.js';
 export type { WorkingFile, WorkingTree, PlanDocument } from 'src/working-documents.js';
+
+export { Subagents } from 'src/subagents.js';
+export type { SubagentConfiguration, SubagentCreate, SubagentUpdate } from 'src/subagents.js';

@@ -20,6 +20,7 @@ from playbooks_sdk.sync.core import (
 )
 from playbooks_sdk.sync.operators import ProjectConversations, Runs
 from playbooks_sdk.sync.references import References
+from playbooks_sdk.sync.subagents import Subagents
 from playbooks_sdk.transport import Transport
 
 
@@ -169,6 +170,10 @@ class Schedules(Collection):
 
 
 class Project(Resource):
+    @property
+    def subagents(self) -> Subagents:
+        return Subagents(self._transport, f"{self._path}/subagents")
+
     _transport: Transport
     _path: str
 

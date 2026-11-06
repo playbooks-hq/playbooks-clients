@@ -14,6 +14,7 @@ from playbooks_sdk.asynchronous.operators import Conversations, Runs
 from playbooks_sdk.asynchronous.project import Projects
 from playbooks_sdk.asynchronous.references import References
 from playbooks_sdk.asynchronous.sites import Sites
+from playbooks_sdk.asynchronous.subagents import Subagents
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
 from playbooks_sdk.transport import AsyncTransport as Transport
@@ -37,6 +38,9 @@ class ConversationPlans(Endpoint):
 
 
 class Chats(Listing):
+    def subagents(self, id: Identifier) -> Subagents:
+        return Subagents(self._transport, f"{self._path}/{identifier(id)}/subagents")
+
     def sites(self, id: Identifier) -> Listing:
         return Listing(self._transport, f"{self._path}/{identifier(id)}/sites")
 

@@ -3,6 +3,7 @@ import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
 import { action, get, identifier, listing, Resource } from 'src/resource.js';
 import { readEvents } from 'src/sse.js';
+import { Subagents } from 'src/subagents.js';
 import type { Transport } from 'src/transport.js';
 import type { Identifier, ListOptions, MessageInput, MessageOptions, StreamOptions } from 'src/types.js';
 
@@ -127,6 +128,23 @@ const toolPartIdentifier = (partId: string) => {
 	return encodeURIComponent(partId);
 };
 /** An operation handle for a known Agent identifier; it carries no metadata snapshot. */
+export interface AgentFileResult {
+	id: number;
+	uuid: string;
+	owner: { kind: 'agent'; id: string };
+	path: string | null;
+	revision: string | null;
+	checksum: string;
+	runId: number | null;
+	messageId: number | null;
+	name: string;
+	contentType: string;
+	size: number;
+	createdAt: string;
+	filesState: 'pending' | 'committed';
+	links: { preview: string; download: string };
+}
+
 export class AgentReference {
 	#transport: Transport;
 	#path: string;
@@ -406,19 +424,26 @@ export class AgentReference {
 				action(this.transport, `${this.path}/external-assignments/${identifier(id)}`, 'DELETE', { revision }),
 		};
 	}
+	get subagents() {
+		return new Subagents(this.transport, `${this.path}/subagents`);
+	}
 	get workingFiles() {
 		return {
 			get: () => get(this.transport, `${this.path}/working-files`),
+			revision: (revision: string) =>
+				get(this.transport, `${this.path}/working-files/revisions/${identifier(revision)}`),
 			update: (input: { revision: string; files: { path: string; content?: string; kind?: 'file' | 'directory' }[] }) =>
 				action(this.transport, `${this.path}/working-files`, 'PUT', input),
 			preview: (input: { revision: string; path?: string; entryPoint?: string }) =>
 				action(this.transport, `${this.path}/working-files/preview`, 'POST', input),
 		};
 	}
-	get outputs() {
+	get results() {
 		return {
-			list: () => listing(this.transport, `${this.path}/outputs`),
-			get: (id: Identifier) => get(this.transport, `${this.path}/outputs/${identifier(id)}`),
+			list: (options?: ListOptions) => listing<AgentFileResult>(this.transport, `${this.path}/results`, options),
+			get: (id: Identifier) => get<AgentFileResult>(this.transport, `${this.path}/results/${identifier(id)}`),
+			download: (id: Identifier): Promise<Uint8Array> =>
+				this.transport.request(`${this.path}/results/${identifier(id)}/download`, 'GET', undefined, {}, true, true),
 		};
 	}
 }

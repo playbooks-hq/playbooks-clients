@@ -10,6 +10,7 @@ from playbooks_sdk.asynchronous.core import (
 )
 from playbooks_sdk.asynchronous.operators import ProjectConversations, Runs
 from playbooks_sdk.asynchronous.references import References
+from playbooks_sdk.asynchronous.subagents import Subagents
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import (
     ApiResponse,
@@ -179,6 +180,10 @@ class Schedules(Collection):
 
 
 class Project(Resource):
+    @property
+    def subagents(self) -> Subagents:
+        return Subagents(self._transport, f"{self._path}/subagents")
+
     _transport: Transport
     _path: str
 

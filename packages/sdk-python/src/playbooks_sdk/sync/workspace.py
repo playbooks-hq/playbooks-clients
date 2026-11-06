@@ -16,6 +16,7 @@ from playbooks_sdk.sync.operators import Conversations, Runs
 from playbooks_sdk.sync.project import Projects
 from playbooks_sdk.sync.references import References
 from playbooks_sdk.sync.sites import Sites
+from playbooks_sdk.sync.subagents import Subagents
 from playbooks_sdk.transport import Transport
 
 
@@ -37,6 +38,9 @@ class ConversationPlans(Endpoint):
 
 
 class Chats(Listing):
+    def subagents(self, id: Identifier) -> Subagents:
+        return Subagents(self._transport, f"{self._path}/{identifier(id)}/subagents")
+
     def sites(self, id: Identifier) -> Listing:
         return Listing(self._transport, f"{self._path}/{identifier(id)}/sites")
 

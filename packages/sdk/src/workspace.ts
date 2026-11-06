@@ -8,6 +8,7 @@ import { References } from 'src/references.js';
 import { action, get, identifier, listing, record, Resource } from 'src/resource.js';
 import type { SiteData } from 'src/sites.js';
 import { Sites } from 'src/sites.js';
+import { Subagents } from 'src/subagents.js';
 import type { Transport } from 'src/transport.js';
 import type { BudgetUpdate, TemplateListOptions, TemplatePublish } from 'src/types.js';
 import type { MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
@@ -66,6 +67,7 @@ export class Workspace extends Resource<WorkspaceData> {
 	get chats() {
 		const path = '/chats';
 		return {
+			subagents: (id: Identifier) => new Subagents(this.#transport, `${path}/${identifier(id)}/subagents`),
 			sites: (id: Identifier) => listing<SiteData>(this.#transport, `${path}/${identifier(id)}/sites`),
 			list: (options?: ListOptions & { archived?: boolean }) => listing<ChatData>(this.#transport, path, options),
 			get: (id: Identifier) => get<ChatData>(this.#transport, `${path}/${identifier(id)}`),

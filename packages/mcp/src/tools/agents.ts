@@ -1,6 +1,36 @@
 import type { ToolDefinition } from 'src/tools/definition.js';
 
 export const agentTools: ToolDefinition[] = [
+	...['list', 'get', 'create', 'update', 'delete', 'tasks', 'cancel-task'].map(
+		(operation): ToolDefinition => ({
+			command: `subagent ${operation}`,
+			description: `${operation} retained Sub-agents for a Chat, Agent, or Project.`,
+			toolset: 'workspace',
+			readOnly: ['list', 'get', 'tasks'].includes(operation),
+			destructive: operation === 'delete',
+			options: {
+				workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
+				kind: { flag: 'kind', description: 'Owner kind: chat, agent, or project.', required: true },
+				owner: { flag: 'owner', description: 'Owner UUID.', required: true },
+				...(!['list', 'create'].includes(operation)
+					? { subagent: { flag: 'subagent', description: 'Sub-agent UUID.', required: true } }
+					: {}),
+				...(['create', 'update', 'delete'].includes(operation)
+					? {
+							data: {
+								flag: 'data',
+								description: 'Reviewed JSON input including revision for updates or deletion.',
+								required: true,
+							},
+						}
+					: {}),
+				...(operation === 'cancel-task'
+					? { task: { flag: 'task', description: 'Task identifier from the task list.', required: true } }
+					: {}),
+				...(operation === 'delete' ? { yes: { flag: 'yes', description: 'Confirm reviewed deletion.' } } : {}),
+			},
+		}),
+	),
 	{
 		command: 'project agent-access',
 		description: 'Inspect project runtime access to Workspace Agents. Existing Agent grants remain separate.',
@@ -736,8 +766,8 @@ export const agentTools: ToolDefinition[] = [
 		dataFields: ['revision', 'files'],
 	},
 	{
-		command: 'agent outputs',
-		description: 'List authorized Agent outputs.',
+		command: 'agent results',
+		description: 'List historical Agent File results.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
@@ -747,15 +777,15 @@ export const agentTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'agent output',
-		description: 'Read an authorized Agent output.',
+		command: 'agent result',
+		description: 'Read an exact historical Agent File result.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
-			output: { flag: 'output', description: 'Output identifier.', required: true },
+			result: { flag: 'result', description: 'File result identifier.', required: true },
 		},
 	},
 ];

@@ -16,6 +16,7 @@ import {
 	templates,
 	workspace,
 } from 'src/commands';
+import { subagentOperation } from 'src/commands/subagent';
 import { CliError } from 'src/services/cli-client';
 import { run } from 'src/utils/cli-command';
 import { reportError } from 'src/utils/cli-output';
@@ -433,19 +434,34 @@ cli
 	.action(run(agent.updateWorkingFiles));
 
 cli
-	.command('agent outputs')
-	.describe('List authorized Agent outputs.')
+	.command('agent results')
+	.describe('List historical Agent File results.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--agent', 'Agent UUID.')
-	.action(run(agent.listOutputs));
+	.action(run(agent.listResults));
 
 cli
-	.command('agent output')
-	.describe('Read an authorized Agent output.')
+	.command('agent result')
+	.describe('Read an exact historical Agent File result.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--agent', 'Agent UUID.')
-	.option('--output', 'Output identifier.')
-	.action(run(agent.getOutput));
+	.option('--result', 'File result identifier.')
+	.action(run(agent.getResult));
+
+for (const operation of ['list', 'get', 'create', 'update', 'delete', 'tasks', 'cancel-task']) {
+	cli
+		.command(`subagent ${operation}`)
+		.describe(`${operation} retained Sub-agents for a Chat, Agent, or Project.`)
+		.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+		.option('--kind', 'Owner kind: chat, agent, or project.')
+		.option('--owner', 'Owner UUID.')
+		.option('--subagent', 'Sub-agent UUID.')
+		.option('--task', 'Task identifier returned by the task list.')
+		.option('--data', 'JSON object or - for stdin.')
+		.option('--page', 'Page number.')
+		.option('--yes', 'Confirm reviewed deletion.')
+		.action(run(subagentOperation(operation)));
+}
 
 // Independent production Sites
 cli

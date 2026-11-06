@@ -6,6 +6,7 @@ import { ProjectTests } from 'src/project-tests.js';
 import { References } from 'src/references.js';
 import { action, get, identifier, listing, record, Resource, succeeded } from 'src/resource.js';
 import type { SiteData } from 'src/sites.js';
+import { Subagents } from 'src/subagents.js';
 import type { Transport } from 'src/transport.js';
 import type { ProjectAgentCreate } from 'src/types.js';
 import type { ApiResponse, LogData, LogOptions, RecordData } from 'src/types.js';
@@ -133,6 +134,9 @@ export class Project extends Resource<ProjectData> {
 			update: (id: Identifier, input: { role: string }) =>
 				action(this.#transport, `${this.#path}/collaborators/${identifier(id)}`, 'PUT', input),
 		};
+	}
+	get subagents() {
+		return new Subagents(this.#transport, `${this.#path}/subagents`);
 	}
 	get agents() {
 		const collection = new Collection<ProjectAgentData, ProjectAgentUpdate, ProjectAgentCreate>(

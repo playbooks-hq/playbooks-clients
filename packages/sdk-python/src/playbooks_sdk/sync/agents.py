@@ -6,10 +6,15 @@ from playbooks_sdk.agent_types import AgentCreateInput
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
 from playbooks_sdk.sync.core import Endpoint, Listing
+from playbooks_sdk.sync.subagents import Subagents
 from playbooks_sdk.transport import Transport
 
 
 class AgentReference:
+    @property
+    def subagents(self) -> Subagents:
+        return Subagents(self._transport, f"{self._path}/subagents")
+
     """Operations for a known Agent identifier without a metadata snapshot."""
 
     __slots__ = ("_transport", "_path")
@@ -487,6 +492,11 @@ class AgentReference:
     def working_files(self) -> Any:
         return Endpoint(self._transport, self._path)._get(f"{self._path}/working-files")
 
+    def working_files_revision(self, revision: str) -> Any:
+        return Endpoint(self._transport, self._path)._get(
+            f"{self._path}/working-files/revisions/{identifier(revision)}"
+        )
+
     def update_working_files(self, data: Data) -> Any:
         return Endpoint(self._transport, self._path)._action(
             f"{self._path}/working-files", "PUT", data
@@ -497,11 +507,17 @@ class AgentReference:
             f"{self._path}/working-files/preview", "POST", data
         )
 
-    def outputs(self) -> ApiResponse:
-        return Endpoint(self._transport, self._path)._list(f"{self._path}/outputs", {})
+    def results(self, **options: Any) -> ApiResponse:
+        return Endpoint(self._transport, self._path)._list(f"{self._path}/results", options)
 
-    def output(self, id: Identifier) -> Any:
-        return Endpoint(self._transport, self._path)._get(f"{self._path}/outputs/{identifier(id)}")
+    def result(self, id: Identifier) -> Any:
+        return Endpoint(self._transport, self._path)._get(f"{self._path}/results/{identifier(id)}")
+
+    def download_result(self, id: Identifier) -> bytes:
+        result: bytes = self._transport.request(
+            f"{self._path}/results/{identifier(id)}/download", binary=True
+        )
+        return result
 
     def schedules(
         self, *, page: int | None = None, page_size: int | None = None, **options: Any
