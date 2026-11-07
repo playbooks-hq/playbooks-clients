@@ -236,8 +236,8 @@ export const workspaceConfigurationTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'workspace references',
-		description: 'List Workspace References.',
+		command: 'workspace files',
+		description: 'List Workspace Files.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,

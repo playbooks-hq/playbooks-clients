@@ -3,8 +3,7 @@ import type { ToolDefinition } from 'src/tools/definition.js';
 export const operatorTools: ToolDefinition[] = [
 	{
 		command: 'project conversation',
-		description:
-			'Get a conversation; the default may initialize the primary conversation. Access may initialize the primary conversation.',
+		description: 'Get an explicitly selected conversation.',
 		toolset: 'operator',
 		readOnly: false,
 		destructive: false,
@@ -25,14 +24,14 @@ export const operatorTools: ToolDefinition[] = [
 			},
 			conversation: {
 				flag: 'conversation',
-				description: 'Conversation UUID; defaults to the primary conversation.',
+				description: 'Conversation UUID; required.',
+				required: true,
 			},
 		},
 	},
 	{
 		command: 'project conversations',
-		description:
-			'List project conversations; may initialize the primary conversation. Access may initialize the primary conversation.',
+		description: 'List project conversations.',
 		toolset: 'operator',
 		readOnly: false,
 		destructive: false,
@@ -55,7 +54,7 @@ export const operatorTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project messages',
-		description: 'List recent operator messages. Access may initialize the primary conversation.',
+		description: 'List recent operator messages.',
 		toolset: 'operator',
 		readOnly: false,
 		destructive: false,
@@ -76,7 +75,8 @@ export const operatorTools: ToolDefinition[] = [
 			},
 			conversation: {
 				flag: 'conversation',
-				description: 'Conversation UUID; defaults to the primary conversation.',
+				description: 'Conversation UUID; required.',
+				required: true,
 			},
 			branch: {
 				flag: 'branch',
@@ -96,7 +96,7 @@ export const operatorTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project message',
-		description: 'Get a sandbox conversation message. Access may initialize the primary conversation.',
+		description: 'Get a sandbox conversation message.',
 		toolset: 'operator',
 		readOnly: false,
 		destructive: false,
@@ -117,7 +117,8 @@ export const operatorTools: ToolDefinition[] = [
 			},
 			conversation: {
 				flag: 'conversation',
-				description: 'Conversation UUID; defaults to the primary conversation.',
+				description: 'Conversation UUID; required.',
+				required: true,
 			},
 			branch: {
 				flag: 'branch',
@@ -135,7 +136,7 @@ export const operatorTools: ToolDefinition[] = [
 	{
 		command: 'project message create',
 		description:
-			'Submit a message; may start or steer execution and incur usage. Access may initialize the primary conversation. Acceptance is not completion; inspect returned messages and explicitly selected runs.',
+			'Submit a message; may start or steer execution and incur usage. Acceptance is not completion; inspect returned messages and explicitly selected runs.',
 		toolset: 'operator',
 		readOnly: false,
 		destructive: true,
@@ -156,7 +157,8 @@ export const operatorTools: ToolDefinition[] = [
 			},
 			conversation: {
 				flag: 'conversation',
-				description: 'Conversation UUID; defaults to the primary conversation.',
+				description: 'Conversation UUID; required.',
+				required: true,
 			},
 			branch: {
 				flag: 'branch',
@@ -184,7 +186,7 @@ export const operatorTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project message update',
-		description: 'Edit a queued sandbox message. Access may initialize the primary conversation.',
+		description: 'Edit a queued sandbox message.',
 		toolset: 'operator',
 		readOnly: false,
 		destructive: true,
@@ -205,7 +207,8 @@ export const operatorTools: ToolDefinition[] = [
 			},
 			conversation: {
 				flag: 'conversation',
-				description: 'Conversation UUID; defaults to the primary conversation.',
+				description: 'Conversation UUID; required.',
+				required: true,
 			},
 			branch: {
 				flag: 'branch',
@@ -224,7 +227,7 @@ export const operatorTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project message delete',
-		description: 'Cancel a queued message; retains message history. Access may initialize the primary conversation.',
+		description: 'Cancel a queued message; retains message history.',
 		toolset: 'operator',
 		readOnly: false,
 		destructive: true,
@@ -245,7 +248,8 @@ export const operatorTools: ToolDefinition[] = [
 			},
 			conversation: {
 				flag: 'conversation',
-				description: 'Conversation UUID; defaults to the primary conversation.',
+				description: 'Conversation UUID; required.',
+				required: true,
 			},
 			branch: {
 				flag: 'branch',

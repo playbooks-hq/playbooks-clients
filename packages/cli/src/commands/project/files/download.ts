@@ -8,7 +8,7 @@ export const downloadProjectFile = async (options: any) => {
 	const context = await projectContext(options);
 	if (typeof options.output !== 'string')
 		throw new CliError(422, 'Provide a destination with --output. Existing files are never overwritten.');
-	const response = await context.projectResource.references.download(identifier(options['file-id']));
+	const response = await context.projectResource.files.download(identifier(options['file-id']));
 	await writeFile(options.output, response, { flag: 'wx', mode: 0o600 });
 	return { data: { path: options.output, bytes: response.length } };
 };

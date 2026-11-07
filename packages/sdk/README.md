@@ -118,7 +118,7 @@ for (const project of projects) console.log(project.uuid, project.name);
 
 SDK pages start at **0**, matching the Server, CLI, and MCP. Resource lists default to 20 records and accept page sizes from 1–100. No pages are fetched automatically. Follow `meta.hasMore`; numbered pages return `meta.pagination: "page"`. Messages, logs, and dedicated search use `cursor`/`pageSize` and return `meta.pagination: "cursor"`; pass `meta.nextCursor` unchanged. Additional Server metadata is preserved.
 
-Chat scheduled messages use `workspace.chatSchedules.list/get/preview/create/update`. Creation requires a stable `idempotencyKey`, a self-contained instruction, timing, and a Chat or originating conversation. Mutations require `expectedRevision`; `action: "run"` also requires a stable `idempotencyKey`. Reuse that key after an uncertain response. Destination controls delivery, not executable context. Inspect occurrence history for completion and the actual model.
+Chat scheduled messages use `workspace.chatSchedules.list/get/preview/create/update`. Creation requires the exact `conversationId`, a stable `idempotencyKey`, a self-contained instruction, and timing. Each occurrence continues that conversation; schedules have no separate destination or new-conversation mode. Mutations require `expectedRevision`; `action: "run"` also requires a stable `idempotencyKey`. Reuse that key after an uncertain response. Inspect occurrence history for completion and the actual model.
 
 ## Resource families
 
@@ -169,7 +169,7 @@ Reading is an explicit mutation: supply the actual loaded `throughMessageId` and
 ## Operator messages and streams
 
 ```ts
-const conversation = await project.conversations.resolve();
+const conversation = await project.conversations.get('CONVERSATION_UUID');
 const branch = await conversation.branches.get(123); // Verified conversation branch ID.
 const message = await branch.messages.create({
   text: 'Review the application and suggest improvements.',
@@ -184,7 +184,7 @@ for await (const event of project.runs.stream(789, { signal: controller.signal }
 }
 ```
 
-Use the actual returned message and run identifiers. Submitting a message can produce clarification, queued work, or a run; inspect the response before following a run. `conversations.resolve()` can initialize default conversation state and is not automatically retried. `conversations.get(id)` selects a specific conversation and verifies its ownership. Project messages use the Sandbox environment. Workspace conversations expose `conversation.messages` directly.
+Use the actual returned message and run identifiers. Submitting a message can produce clarification, queued work, or a run; inspect the response before following a run. `conversations.get(id)` selects a specific conversation and verifies its ownership. Create a new Project conversation explicitly with `conversations.create({ branchId })`. Project messages use the Sandbox environment. Workspace conversations expose `conversation.messages` directly.
 
 Streams yield parsed Server events; consumers must distinguish `waiting`, failure, cancellation, and authoritative completion. Ending observation or aborting a stream does not cancel accepted remote work. The SDK performs no terminal rendering.
 
@@ -192,7 +192,7 @@ Streams yield parsed Server events; consumers must distinguish `waiting`, failur
 
 ```ts
 await project.files.upload({
-  name: 'reference/overview.txt',
+  name: 'background/overview.txt',
   content: new Blob(['Project background'], { type: 'text/plain' }),
   expectedRevision: null,
 });
@@ -201,7 +201,7 @@ const bytes = await project.files.download('FILE_ID');
 const archive = await project.source.export();
 ```
 
-Uploads accept `Blob` or `Uint8Array`, a relative name, and an expected revision when replacing an Reference. Workspace files expose the same methods. Downloads return bytes; reading and writing local paths is the caller's responsibility. References are private reference context, separate from project source. `project.source.import({ content, name })` replaces source using a supplied archive and is a consequential action.
+Uploads accept `Blob` or `Uint8Array`, a relative name, and an expected revision when replacing a File. Workspace files expose the same methods. Downloads return bytes; reading and writing local paths is the caller's responsibility. Managed Files provide private context, separate from project source. `project.source.import({ content, name })` replaces source using a supplied archive and is a consequential action.
 
 ## Sites and releases
 
@@ -258,3 +258,7 @@ Errors preserve `status`, `title`, `message`, `source`, and `debug`. HTTP reques
 ## Development
 
 From the repository root, use `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm typecheck`, and `pnpm build`. For local consumption, use the tarballs produced by `pnpm release:prepare 1.0.0`; they are validated outside workspace links. See the [workspace README](../../README.md) for coordinated releases and publication boundaries.
+
+### Agent static Sites
+
+Use `workspace.agents.reference(agentId).sites.list()` to list authorized static Sites sourced from an Agent. Site creation and source connection accept `{ type: "agent", id: agentUuid, componentKey: null }` through the existing Sites API. Review release options and preflight before explicitly releasing the selected source revision. The caller needs human Agent Owner/Admin content and configuration authority plus the destination Site permissions and API scopes. Agent organizational associations and application grants do not authorize publishing; runtime Agents keys cannot manage Sites.

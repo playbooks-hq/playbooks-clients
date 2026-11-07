@@ -105,15 +105,6 @@ cli
 	.action(run(agent.createConversation));
 
 cli
-	.command('agent conversation main')
-	.describe('Designate an Agent conversation as Main.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--agent', 'Agent UUID.')
-	.option('--conversation', 'Conversation UUID.')
-	.option('--data', 'JSON object containing the current Agent revision.')
-	.action(run(agent.setMainConversation));
-
-cli
 	.command('agent conversation')
 	.describe('Inspect an Agent conversation.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -395,7 +386,7 @@ cli
 	.describe('List resources eligible for Agent assignment.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--agent', 'Agent UUID.')
-	.option('--kind', 'Skill, design, or reference.')
+	.option('--kind', 'Skill, design, or file.')
 	.option('--query', 'Search by name.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Page size.')
@@ -419,19 +410,19 @@ cli
 	.action(run(agent.deleteResource));
 
 cli
-	.command('agent working-files')
-	.describe('Read authorized Agent working files.')
+	.command('agent file-system')
+	.describe('Read authorized Agent File system.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--agent', 'Agent UUID.')
-	.action(run(agent.getWorkingFiles));
+	.action(run(agent.getFileSystem));
 
 cli
-	.command('agent working-files update')
-	.describe('Update authorized Agent working files.')
+	.command('agent file-system update')
+	.describe('Update authorized Agent File system.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--agent', 'Agent UUID.')
 	.option('--data', 'JSON object or - for stdin.')
-	.action(run(agent.updateWorkingFiles));
+	.action(run(agent.updateFileSystem));
 
 cli
 	.command('agent results')
@@ -451,10 +442,11 @@ cli
 for (const operation of ['list', 'get', 'create', 'update', 'delete', 'tasks', 'cancel-task']) {
 	cli
 		.command(`subagent ${operation}`)
-		.describe(`${operation} retained Sub-agents for a Chat, Agent, or Project.`)
+		.describe(`${operation} conversation-owned Sub-agents for a Chat, Agent, or Project.`)
 		.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 		.option('--kind', 'Owner kind: chat, agent, or project.')
 		.option('--owner', 'Owner UUID.')
+		.option('--conversation', 'Parent conversation numeric ID.')
 		.option('--subagent', 'Sub-agent UUID.')
 		.option('--task', 'Task identifier returned by the task list.')
 		.option('--data', 'JSON object or - for stdin.')
@@ -582,6 +574,13 @@ cli
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project UUID.')
 	.action(run(site.projectSites));
+
+cli
+	.command('agent sites')
+	.describe('List authorized static Sites sourced from this Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(site.agentSites));
 
 cli
 	.command('workspace chat sites')
@@ -904,19 +903,19 @@ cli
 	.action(run(workspace.listChannels));
 
 cli
-	.command('workspace chat working-files')
-	.describe('Chat working files: get, download, replace, preview, or save.')
-	.action(() => cli.help('workspace chat working-files'));
+	.command('workspace chat file-system')
+	.describe('Chat File system: get, download, replace, preview, or save.')
+	.action(() => cli.help('workspace chat file-system'));
 
 for (const operation of ['get', 'download', 'replace', 'preview', 'save'])
 	cli
-		.command(`workspace chat working-files ${operation}`)
-		.describe('Inspect, edit, preview or snapshot Chat working files. Background References are unchanged.')
+		.command(`workspace chat file-system ${operation}`)
+		.describe('Inspect, edit, preview or snapshot Chat File system. Managed Files are unchanged.')
 		.option('--workspace', 'Explicit Workspace UUID.')
 		.option('--chat', 'Chat UUID.')
 		.option('--output', 'Destination ZIP path for download; existing files are never overwritten.')
 		.option('--data', 'JSON revision and operation input or - for stdin; saves require a stable requestId.')
-		.action(run(options => workspace.workingFiles(options, operation)));
+		.action(run(options => workspace.fileSystem(options, operation)));
 for (const operation of ['get', 'create', 'revise', 'save'])
 	cli
 		.command(`workspace plan ${operation}`)
@@ -954,7 +953,7 @@ cli
 	.command('workspace chat-schedule create')
 	.describe('Save a self-contained Chat scheduled message; does not run it now.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--data', 'JSON instruction, origin, model, destination and timing or - for stdin.')
+	.option('--data', 'JSON instruction, conversation and timing or - for stdin.')
 	.option('--yes', 'Confirm enabling future scheduled execution.', false)
 	.action(run(workspace.createChatSchedule));
 
@@ -998,7 +997,7 @@ cli
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example(
-		'workspace template publish --template abc --data \'{"acknowledgment":true,"expectedRevision":"2026-11-03T12:00:00.000Z","sourceRevision":"revision-from-working-tree","notes":"Updated scheduled message"}\' --yes',
+		'workspace template publish --template abc --data \'{"acknowledgment":true,"expectedRevision":"2026-11-03T12:00:00.000Z","sourceRevision":"revision-from-file-system","notes":"Updated scheduled message"}\' --yes',
 	)
 	.action(run(workspace.publishTemplate));
 
@@ -1174,31 +1173,31 @@ cli
 	.action(run(workspace.listWorkspaceSecrets));
 
 cli
-	.command('workspace references')
-	.describe('List Workspace References.')
+	.command('workspace files')
+	.describe('List Workspace Files.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100; default 20).')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--available', 'Include available and inherited resources.', false)
-	.action(run(workspace.listWorkspaceReferences));
+	.action(run(workspace.listWorkspaceFiles));
 
 cli
-	.command('workspace reference download')
-	.describe('Download a Workspace-owned Reference.')
+	.command('workspace file download')
+	.describe('Download a Workspace-owned File.')
 	.option('--output', 'New destination file.')
-	.option('--reference', 'Reference identifier.')
+	.option('--file-id', 'File identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(workspace.downloadWorkspaceReference));
+	.action(run(workspace.downloadWorkspaceFile));
 
 cli
-	.command('workspace reference upload')
-	.describe('Upload a Reference; replacement requires its current revision.')
+	.command('workspace file upload')
+	.describe('Upload a File; replacement requires its current revision.')
 	.option('--upload', 'Local file path.')
-	.option('--name', 'Relative Reference filename.')
+	.option('--name', 'Relative File filename.')
 	.option('--revision', 'Existing file revision when replacing.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(workspace.uploadWorkspaceReference));
+	.action(run(workspace.uploadWorkspaceFile));
 
 cli
 	.command('workspace budget update')
@@ -1846,8 +1845,8 @@ cli
 	.action(run(project.listProjectConnectors));
 
 cli
-	.command('project references')
-	.describe('List Project References.')
+	.command('project files')
+	.describe('List Project Files.')
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page (default 0).')
 	.option('--page-size', 'Records per page (1-100; default 20).')
@@ -1856,19 +1855,19 @@ cli
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--available', 'Include available and inherited resources.', false)
-	.action(run(project.listProjectReferences));
+	.action(run(project.listProjectFiles));
 
 cli
 	.command('project file')
-	.describe('Agent file commands: project file download, upload.')
+	.describe('Project File commands: project file download, upload.')
 	.action(options => {
-		if (options._?.length) throw new CliError(422, 'Unknown Reference action. See project file --help.');
+		if (options._?.length) throw new CliError(422, 'Unknown File action. See project file --help.');
 		cli.help('project file');
 	});
 
 cli
 	.command('project file download')
-	.describe('Download a Project-owned Reference.')
+	.describe('Download a Project-owned File.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
@@ -1879,9 +1878,9 @@ cli
 
 cli
 	.command('project file upload')
-	.describe('Upload a Reference; replacement requires its current revision.')
+	.describe('Upload a File; replacement requires its current revision.')
 	.option('--upload', 'Local file path.')
-	.option('--name', 'Relative Reference filename.')
+	.option('--name', 'Relative File filename.')
 	.option('--revision', 'Existing file revision when replacing.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
@@ -2163,16 +2162,16 @@ cli
 // Operator conversations, messages, and runs
 cli
 	.command('workspace conversation')
-	.describe('Get a conversation; the default may initialize the primary conversation.')
+	.describe('Get an explicitly selected conversation.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.action(run(workspace.getConversation));
 
 cli
 	.command('workspace messages')
 	.describe('List recent operator messages.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--cursor', 'Continuation cursor from meta.nextCursor.')
 	.option('--page-size', 'Input messages per window, 1-100; output messages are included.')
 	.action(run(workspace.listMessages, outputMessages));
@@ -2181,7 +2180,7 @@ cli
 	.command('workspace message')
 	.describe('Get an operator message and available run references.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--message', 'Numeric message identifier.')
 	.action(run(workspace.getMessage));
 
@@ -2189,7 +2188,7 @@ cli
 	.command('workspace message update')
 	.describe('Edit a pending queued message before execution begins.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--message', 'Numeric message identifier.')
 	.option('--data', 'JSON object or - for stdin: text, queuedMode, queuedModelId.')
 	.action(run(workspace.updateMessage));
@@ -2198,7 +2197,7 @@ cli
 	.command('workspace message create')
 	.describe('Submit a message; may start or steer execution and incur usage.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--data', 'JSON object or - for stdin; reuse idempotencyKey when retrying identical input.')
 	.option('--yes', 'Confirm this operation.', false)
 	.example('workspace message create --data \'{"text":"Review the current setup","mode":"plan"}\' --yes')
@@ -2208,7 +2207,7 @@ cli
 	.command('workspace message delete')
 	.describe('Cancel a queued message; retains message history.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--message', 'Numeric message identifier.')
 	.option('--yes', 'Confirm this operation.', false)
 	.action(run(workspace.deleteMessage));
@@ -2217,7 +2216,7 @@ cli
 	.command('workspace runs')
 	.describe('List operator runs and attempts.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--message', 'Filter by numeric input message identifier.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page, 1-100.')
@@ -2242,17 +2241,17 @@ cli
 
 cli
 	.command('project conversation')
-	.describe('Get a conversation; the default may initialize the primary conversation.')
+	.describe('Get an explicitly selected conversation.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.action(run(project.getConversation));
 
 cli
 	.command('project conversations')
-	.describe('List project conversations; may initialize the primary conversation.')
+	.describe('List project conversations.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
@@ -2266,7 +2265,7 @@ cli
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--cursor', 'Continuation cursor from meta.nextCursor.')
 	.option('--page-size', 'Input messages per window, 1-100; output messages are included.')
@@ -2279,7 +2278,7 @@ cli
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--message', 'Numeric message identifier.')
 	.action(run(project.getMessage));
@@ -2291,7 +2290,7 @@ cli
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
@@ -2305,7 +2304,7 @@ cli
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--message', 'Numeric message identifier.')
 	.option('--data', 'JSON object or - for stdin.')
@@ -2319,7 +2318,7 @@ cli
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--conversation', 'Conversation UUID; defaults to the primary conversation.')
+	.option('--conversation', 'Conversation UUID; required.')
 	.option('--branch', 'Numeric branch identifier; defaults to the conversation current branch.')
 	.option('--message', 'Numeric message identifier.')
 	.option('--yes', 'Confirm this operation.', false)

@@ -163,6 +163,19 @@ class AgentReference:
             f"{self._path}/conversations", options
         )
 
+    async def conversation_utility(self, conversation_id: Identifier) -> Any:
+        return await Endpoint(self._transport, self._path)._get(
+            f"{self._path}/conversations/{identifier(conversation_id)}/utility"
+        )
+
+    async def conversation_utility_items(
+        self, conversation_id: Identifier, *, kind: str, **options: Any
+    ) -> ApiResponse:
+        return await Endpoint(self._transport, self._path)._list(
+            f"{self._path}/conversations/{identifier(conversation_id)}/utility",
+            {**options, "kind": kind},
+        )
+
     async def create_conversation(
         self, *, idempotency_key: str, title: str = "New conversation"
     ) -> Any:
@@ -177,13 +190,6 @@ class AgentReference:
     async def conversation(self, id: Identifier) -> Any:
         return await Endpoint(self._transport, self._path)._get(
             f"{self._path}/conversations/{identifier(id)}"
-        )
-
-    async def set_main_conversation(self, conversation_id: Identifier, *, revision: int) -> Any:
-        return await Endpoint(self._transport, self._path)._action(
-            f"{self._path}/conversations/{identifier(conversation_id)}/main",
-            "POST",
-            {"revision": revision},
         )
 
     async def download_conversation_attachment(
@@ -502,28 +508,28 @@ class AgentReference:
         )
 
     async def delete_resource(self, kind: str, resource_id: Identifier) -> Any:
-        if kind not in ("skill", "design", "reference"):
+        if kind not in ("skill", "design", "file"):
             raise ValueError("Invalid Agent resource kind.")
         return await Endpoint(self._transport, self._path)._action(
             f"{self._path}/resources/{kind}/{identifier(resource_id)}", "DELETE"
         )
 
-    async def working_files(self) -> Any:
-        return await Endpoint(self._transport, self._path)._get(f"{self._path}/working-files")
+    async def file_system(self) -> Any:
+        return await Endpoint(self._transport, self._path)._get(f"{self._path}/file-system")
 
-    async def working_files_revision(self, revision: str) -> Any:
+    async def file_system_revision(self, revision: str) -> Any:
         return await Endpoint(self._transport, self._path)._get(
-            f"{self._path}/working-files/revisions/{identifier(revision)}"
+            f"{self._path}/file-system/revisions/{identifier(revision)}"
         )
 
-    async def update_working_files(self, data: Data) -> Any:
+    async def update_file_system(self, data: Data) -> Any:
         return await Endpoint(self._transport, self._path)._action(
-            f"{self._path}/working-files", "PUT", data
+            f"{self._path}/file-system", "PUT", data
         )
 
-    async def preview_working_files(self, data: Data) -> Any:
+    async def preview_file_system(self, data: Data) -> Any:
         return await Endpoint(self._transport, self._path)._action(
-            f"{self._path}/working-files/preview", "POST", data
+            f"{self._path}/file-system/preview", "POST", data
         )
 
     async def results(self, **options: Any) -> ApiResponse:
@@ -571,6 +577,9 @@ class AgentReference:
         return await Endpoint(self._transport, self._path)._action(
             f"{self._path}/schedules/{identifier(id)}", "PATCH", data
         )
+
+    async def sites(self, **options: Any) -> ApiResponse:
+        return await Endpoint(self._transport, self._path)._list(f"{self._path}/sites", options)
 
     async def usage(self) -> Any:
         return await Endpoint(self._transport, self._path)._get(f"{self._path}/usage")

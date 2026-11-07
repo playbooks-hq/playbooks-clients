@@ -35,9 +35,9 @@ export const updateWorkspaceChat = async (options: any) => {
 		);
 	return sdkEnvelope(await workspaceResource.chats.update(chat, data));
 };
-export const workingFiles = async (options: any, operation = 'get') => {
+export const fileSystem = async (options: any, operation = 'get') => {
 	const { workspaceResource } = await workspaceContext(options);
-	const files = workspaceResource.chats.workingFiles(identifier(options.chat));
+	const files = workspaceResource.chats.fileSystem(identifier(options.chat));
 	if (operation === 'download') {
 		if (typeof options.output !== 'string')
 			throw new CliError(422, 'Provide a destination with --output. Existing files are never overwritten.');

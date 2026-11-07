@@ -36,7 +36,7 @@ The application reads the environment in these examples. The SDK never reads API
 
 Use context managers to close connections. Explicit `client.close()` and `await client.aclose()` are also available. Resources depend on their originating client's lifetime.
 
-Chat scheduled messages use `workspace.chat_schedules.list/get/preview/create/update`. Both sync and async clients use the Server fields: creation requires `idempotencyKey`, and mutation requires `action` and `expectedRevision`. Run-now also requires a stable `idempotencyKey`; reuse it after an uncertain response. Save the complete instruction and explicit model selection rather than relying on conversation history.
+Chat scheduled messages use `workspace.chat_schedules.list/get/preview/create/update`. Both sync and async clients use the Server fields: creation requires `conversationId` for the exact Chat conversation and an `idempotencyKey`; mutation requires `action` and `expectedRevision`. Each occurrence continues that conversation; there is no separate destination or new-conversation mode. Run-now also requires a stable `idempotencyKey`; reuse it after an uncertain response. Save the complete instruction and model selection rather than relying on conversation history.
 
 ## Resources and inputs
 
@@ -75,7 +75,7 @@ Supply the actual loaded `throughMessageId` and matching `branchId` for Project 
 ## Operator messages and streams
 
 ```python
-conversation = project.conversations.resolve()
+conversation = project.conversations.get("CONVERSATION_UUID")
 branch = conversation.branches.get(123)  # Actual verified conversation branch ID.
 message = branch.messages.create({
     "text": "Review the application and suggest improvements.",
@@ -94,7 +94,7 @@ async with project.runs.stream(789, timeout=90) as events:
         print(event["event"], event["data"])
 ```
 
-These are sync and async alternatives; use resources from the matching client. Supply actual returned IDs. `resolve()` may initialize a conversation and is not automatically retried. Project messages are Sandbox-scoped and require a selected branch. Workspace conversations expose `conversation.messages` directly.
+These are sync and async alternatives; use resources from the matching client and supply actual returned IDs. Select an explicit conversation for schedules and Sub-agent operations; each remains owned by that conversation. Project messages are Sandbox-scoped and require a selected branch. Workspace conversations expose `conversation.messages` directly.
 
 Streams yield parsed Server events, including waiting, failure, cancellation, and completion. A closed stream does not establish successful execution. Leaving the stream context or canceling an async task closes observation without canceling accepted remote work. `timeout` is the HTTP stream inactivity timeout in seconds; `None` disables it. The optional synchronous `on_activity` callback runs when a connection opens or bytes arrive.
 
@@ -102,7 +102,7 @@ Streams yield parsed Server events, including waiting, failure, cancellation, an
 
 ```python
 project.files.upload(
-    name="reference/overview.txt",
+    name="background/overview.txt",
     content=b"Project background",
     expected_revision=None,
 )
@@ -110,7 +110,7 @@ content = project.files.download("FILE_ID")
 archive = project.source.export()
 ```
 
-Files use bytes; local filesystem access belongs to the caller. References have a 20 MB limit and safe relative names; replacement requires the expected revision. `source.import_(name="source.zip", content=archive)` replaces project source and is consequential.
+Files use bytes; local filesystem access belongs to the caller. Managed Files have a 20 MB limit and safe relative names; replacement requires the expected revision. `source.import_(name="source.zip", content=archive)` replaces project source and is consequential.
 
 ```python
 site = workspace.sites.get("SITE_UUID")
@@ -167,3 +167,7 @@ Select an Agent with `workspace.projects.get("PARENT_UUID", agent_id="AGENT_UUID
 Use `child.update({"name": "Checkout", "revision": child.resourceRevision})` for revision-checked profile edits and `child.settings.update(...)` with the current preference revision. `child.runs.control(id)`, `cancel(id)`, and `replace(id, data)` expose the shared run APIs. Replacement needs an `idempotencyKey`, retains history, and does not undo side effects. `child.conversations.create(data)` and `fork(uuid, data)` remain in the child. Structured decisions use `messages.respond(id, data)` with current response parts and an idempotency key.
 
 The parent exposes `tests.list(**options)`, `get(uuid)`, `create(data)`, `operation(uuid, operation_uuid)`, and `action(uuid, name, data)`. The list response is an inventory object, not a paginated array. Creation may incur usage. Preserve request keys when retrying; stop requires an explicit operation UUID. Destructive resets/deletion require current revision and confirmation. Use child settings for configuration. The [TypeScript SDK guide](../sdk/README.md#agent-and-test-execution) describes the common lifecycle, admission, and policy boundaries. Add `await` for all corresponding async calls.
+
+### Agent static Sites
+
+Use `workspace.agents.reference(agent_id).sites()` to list authorized static Sites sourced from an Agent. Site creation and source connection accept `{ type: "agent", id: agentUuid, componentKey: null }` through the existing Sites API. Review release options and preflight before explicitly releasing the selected source revision. The caller needs human Agent Owner/Admin content and configuration authority plus the destination Site permissions and API scopes. Agent organizational associations and application grants do not authorize publishing; runtime Agents keys cannot manage Sites.

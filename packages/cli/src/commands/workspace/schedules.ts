@@ -38,6 +38,7 @@ export const createChatSchedule = async (options: any) => {
 		'time',
 		'timezone',
 	]);
+	data.conversationId = identifier(data.conversationId, 'conversationId');
 	if (data.enabled) await confirm(options, `Enable Chat schedule execution and usage in Workspace ${workspaceUuid}?`);
 	return sdkEnvelope(await workspaceResource.chatSchedules.create(data));
 };

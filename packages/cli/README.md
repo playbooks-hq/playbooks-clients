@@ -56,14 +56,14 @@ Sites own production independently of Projects. Use `project sites --project abc
 Submit a message, inspect its runs, then follow a specific attempt:
 
 ```sh
-playbooks project message create --project portal --data '{"text":"Review authentication","mode":"plan"}' --yes
+playbooks project message create --project portal --conversation CONVERSATION_UUID --data '{"text":"Review authentication","mode":"plan"}' --yes
 playbooks project runs --project portal --message 123
 playbooks project run stream --project portal --run 456
 ```
 
 Workspace operators use `workspace messages`, `workspace message`, `workspace message create`, `workspace message update`, `workspace runs`, and `workspace run stream`. Creation may execute or steer work and incur usage; server preferences apply when mode and delivery mode are omitted. It may instead queue a message, request clarification, or return a comment without a run. Acceptance is not completion.
 
-Message commands default to the primary conversation, which the server may initialize on first access. Use `workspace conversation`, `project conversation`, or `project conversations` to inspect conversation identifiers. Override with `--conversation <uuid>`; project messages use the conversation's latest branch unless `--branch <numeric-id>` is supplied. If no branch is recorded, choose one from `project branches`. Overrides are never saved.
+Message commands require `--conversation <uuid>`. Use `workspace conversation`, `project conversation`, or `project conversations` to inspect conversation identifiers. Create a new Project conversation explicitly with `project conversation create` when needed. Project messages use the conversation's latest branch unless `--branch <numeric-id>` is supplied. If no branch is recorded, choose one from `project branches`.
 
 Messages support `text`, `mode` (plan/execute), `modelId`, `deliveryMode` (queue/steer), and `replyToMessageId` in `--data`. Both message submission commands support `idempotencyKey`; Project submission additionally supports `maxCredits`. Workspace submission generates a key when omitted and reports it if the response is uncertain. Retry identical data with that same key to avoid duplicate work. Prefer `--data -` for sensitive text. Project messages are sandbox-only. Only pending queued messages can be updated, using `text`, `queuedMode`, or `queuedModelId`. Message deletion cancels queued work, retaining history.
 
@@ -85,7 +85,7 @@ Public discovery uses `templates`, `categories`, `collections`, and `creators`. 
 
 Use category identifiers returned by `categories`; example identifiers are placeholders. Filter projects with `--owner <numeric-user-id>`. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
 
-Plural resource names list records; singular names address one record, such as `site release --site abc --release def`. Mutations follow the resource name. `--file-id` identifies an Reference; binary transfers continue to use `--upload` and `--output`.
+Plural resource names list records; singular names address one record, such as `site release --site abc --release def`. Mutations follow the resource name. `--file-id` identifies a File; binary transfers continue to use `--upload` and `--output`.
 
 Structured input uses `--data` with a JSON object or `--data -` for stdin, up to 1 MB. Paths are not interpreted as input files:
 

@@ -1,9 +1,9 @@
 import { Channels } from 'src/channels.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
+import { Files } from 'src/files.js';
 import { ProjectConversations, Runs } from 'src/operators.js';
 import { ProjectTests } from 'src/project-tests.js';
-import { References } from 'src/references.js';
 import { action, get, identifier, listing, record, Resource, succeeded } from 'src/resource.js';
 import type { SiteData } from 'src/sites.js';
 import { Subagents } from 'src/subagents.js';
@@ -179,8 +179,8 @@ export class Project extends Resource<ProjectData> {
 			list: (options?: ListOptions) => listing(this.#transport, `${this.#path}/connectors`, options),
 		};
 	}
-	get references() {
-		return new References(this.#transport, `${this.#path}/references`);
+	get files() {
+		return new Files(this.#transport, `${this.#path}/files`);
 	}
 	get channels() {
 		return new Channels(this.#transport, `${this.#path}/channels`);

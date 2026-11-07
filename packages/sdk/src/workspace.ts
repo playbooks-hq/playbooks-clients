@@ -1,10 +1,11 @@
 import { Agents } from 'src/agents.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
+import { ConversationPlans, FileSystem } from 'src/file-system.js';
+import { Files } from 'src/files.js';
 import { Inbox } from 'src/inbox.js';
 import { Conversations, Runs } from 'src/operators.js';
 import { Projects } from 'src/project.js';
-import { References } from 'src/references.js';
 import { action, get, identifier, listing, record, Resource } from 'src/resource.js';
 import type { SiteData } from 'src/sites.js';
 import { Sites } from 'src/sites.js';
@@ -26,7 +27,6 @@ import type {
 	WorkspaceData,
 	WorkspaceUpdate,
 } from 'src/types.js';
-import { ConversationPlans, WorkingFiles } from 'src/working-documents.js';
 
 export interface Workspace extends Readonly<WorkspaceData> {
 	readonly uuid: string;
@@ -59,7 +59,7 @@ export class Workspace extends Resource<WorkspaceData> {
 		return new Sites(this.#transport);
 	}
 	get conversations() {
-		return new Conversations(this.#transport, '', this.id, false);
+		return new Conversations(this.#transport, this.id, false);
 	}
 	get runs() {
 		return new Runs(this.#transport, '/chats/runs');
@@ -79,7 +79,7 @@ export class Workspace extends Resource<WorkspaceData> {
 					input.action === 'delete' ? 'DELETE' : 'PUT',
 					input,
 				),
-			workingFiles: (id: Identifier) => new WorkingFiles(this.#transport, `${path}/${identifier(id)}/working-files`),
+			fileSystem: (id: Identifier) => new FileSystem(this.#transport, `${path}/${identifier(id)}/file-system`),
 		};
 	}
 	conversationPlans(conversationId: Identifier, projectId?: Identifier) {
@@ -102,8 +102,8 @@ export class Workspace extends Resource<WorkspaceData> {
 				action(this.#transport, `${path}/${identifier(id)}`, 'PUT', input),
 		};
 	}
-	get references() {
-		return new References(this.#transport, '/references');
+	get files() {
+		return new Files(this.#transport, '/files');
 	}
 	get templates() {
 		const collection = new Collection<TemplateData, TemplateUpdate>(this.#transport, '/templates', 'PATCH');

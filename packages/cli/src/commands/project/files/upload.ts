@@ -16,11 +16,11 @@ export const uploadProjectFile = async (options: any) => {
 		name.startsWith('/') ||
 		name.split('/').some(part => !part || part === '..' || part === '.')
 	)
-		throw new CliError(422, 'Provide a safe relative Reference name.');
+		throw new CliError(422, 'Provide a safe relative File name.');
 	const blob = await openAsBlob(options.upload);
-	if (blob.size > 20 * 1024 * 1024) throw new CliError(422, 'References must not exceed 20 MB.');
+	if (blob.size > 20 * 1024 * 1024) throw new CliError(422, 'Files must not exceed 20 MB.');
 	return sdkEnvelope(
-		await context.projectResource.references.upload({
+		await context.projectResource.files.upload({
 			name,
 			content: blob,
 			expectedRevision: options.revision || null,

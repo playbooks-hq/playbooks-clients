@@ -155,6 +155,19 @@ class AgentReference:
     def conversations(self, **options: Any) -> ApiResponse:
         return Endpoint(self._transport, self._path)._list(f"{self._path}/conversations", options)
 
+    def conversation_utility(self, conversation_id: Identifier) -> Any:
+        return Endpoint(self._transport, self._path)._get(
+            f"{self._path}/conversations/{identifier(conversation_id)}/utility"
+        )
+
+    def conversation_utility_items(
+        self, conversation_id: Identifier, *, kind: str, **options: Any
+    ) -> ApiResponse:
+        return Endpoint(self._transport, self._path)._list(
+            f"{self._path}/conversations/{identifier(conversation_id)}/utility",
+            {**options, "kind": kind},
+        )
+
     def create_conversation(self, *, idempotency_key: str, title: str = "New conversation") -> Any:
         response = self._transport.request(
             f"{self._path}/conversations",
@@ -167,13 +180,6 @@ class AgentReference:
     def conversation(self, id: Identifier) -> Any:
         return Endpoint(self._transport, self._path)._get(
             f"{self._path}/conversations/{identifier(id)}"
-        )
-
-    def set_main_conversation(self, conversation_id: Identifier, *, revision: int) -> Any:
-        return Endpoint(self._transport, self._path)._action(
-            f"{self._path}/conversations/{identifier(conversation_id)}/main",
-            "POST",
-            {"revision": revision},
         )
 
     def download_conversation_attachment(
@@ -483,28 +489,28 @@ class AgentReference:
         return Endpoint(self._transport, self._path)._action(f"{self._path}/resources", "PUT", data)
 
     def delete_resource(self, kind: str, resource_id: Identifier) -> Any:
-        if kind not in ("skill", "design", "reference"):
+        if kind not in ("skill", "design", "file"):
             raise ValueError("Invalid Agent resource kind.")
         return Endpoint(self._transport, self._path)._action(
             f"{self._path}/resources/{kind}/{identifier(resource_id)}", "DELETE"
         )
 
-    def working_files(self) -> Any:
-        return Endpoint(self._transport, self._path)._get(f"{self._path}/working-files")
+    def file_system(self) -> Any:
+        return Endpoint(self._transport, self._path)._get(f"{self._path}/file-system")
 
-    def working_files_revision(self, revision: str) -> Any:
+    def file_system_revision(self, revision: str) -> Any:
         return Endpoint(self._transport, self._path)._get(
-            f"{self._path}/working-files/revisions/{identifier(revision)}"
+            f"{self._path}/file-system/revisions/{identifier(revision)}"
         )
 
-    def update_working_files(self, data: Data) -> Any:
+    def update_file_system(self, data: Data) -> Any:
         return Endpoint(self._transport, self._path)._action(
-            f"{self._path}/working-files", "PUT", data
+            f"{self._path}/file-system", "PUT", data
         )
 
-    def preview_working_files(self, data: Data) -> Any:
+    def preview_file_system(self, data: Data) -> Any:
         return Endpoint(self._transport, self._path)._action(
-            f"{self._path}/working-files/preview", "POST", data
+            f"{self._path}/file-system/preview", "POST", data
         )
 
     def results(self, **options: Any) -> ApiResponse:
@@ -550,6 +556,9 @@ class AgentReference:
         return Endpoint(self._transport, self._path)._action(
             f"{self._path}/schedules/{identifier(id)}", "PATCH", data
         )
+
+    def sites(self, **options: Any) -> ApiResponse:
+        return Endpoint(self._transport, self._path)._list(f"{self._path}/sites", options)
 
     def usage(self) -> Any:
         return Endpoint(self._transport, self._path)._get(f"{self._path}/usage")

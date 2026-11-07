@@ -39,15 +39,15 @@ export type {
 	SitePreflight,
 } from 'src/sites.js';
 export { Conversation, Conversations, ProjectConversations, Messages, Runs } from 'src/operators.js';
-export { References } from 'src/references.js';
+export { Files } from 'src/files.js';
 export { Channels } from 'src/channels.js';
 export type { ChannelProvider } from 'src/channels.js';
 export type * from 'src/types.js';
 export { Inbox } from 'src/inbox.js';
 export { ProjectTests } from 'src/project-tests.js';
 
-export { WorkingFiles, ConversationPlans } from 'src/working-documents.js';
-export type { WorkingFile, WorkingTree, PlanDocument } from 'src/working-documents.js';
+export { FileSystem, ConversationPlans } from 'src/file-system.js';
+export type { FileSystemFile, FileSystemTree, PlanDocument } from 'src/file-system.js';
 
 export { Subagents } from 'src/subagents.js';
 export type { SubagentConfiguration, SubagentCreate, SubagentUpdate } from 'src/subagents.js';

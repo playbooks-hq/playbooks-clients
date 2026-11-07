@@ -9,15 +9,20 @@ export interface SubagentConfiguration {
 	modelId?: number | null;
 	deliveryMode?: 'busy' | 'queue' | 'steer';
 	skillIds?: number[];
-	resourceSelection?: { referenceIds?: number[]; mcpIds?: number[]; connectorIds?: number[] };
+	resourceSelection?: { fileIds?: number[]; mcpIds?: number[]; connectorIds?: number[] };
 	agentScope?: {
 		enabledTools: string[];
-		resources: { kind: 'skill' | 'design' | 'reference'; resourceId: string }[];
+		resources: { kind: 'skill' | 'design' | 'file'; resourceId: string }[];
 		externals: { assignmentId: number; operations: string[] }[];
 	};
 }
-export type SubagentCreate = SubagentConfiguration & { name: string; idempotencyKey: string; temporary?: boolean };
+export type SubagentCreate = SubagentConfiguration & {
+	name: string;
+	idempotencyKey: string;
+	conversationId: number;
+};
 export type SubagentUpdate = SubagentConfiguration & {
+	conversationId: number;
 	revision: number;
 	action: 'configure' | 'enable' | 'disable' | 'archive' | 'restore';
 };
@@ -28,11 +33,11 @@ export class Subagents {
 		private transport: Transport,
 		private path: string,
 	) {}
-	list(options?: ListOptions & { configuration?: boolean; archived?: boolean }) {
+	list(options: ListOptions & { conversationId: number; configuration?: boolean; archived?: boolean }) {
 		return listing(this.transport, this.path, options);
 	}
-	get(id: Identifier) {
-		return get(this.transport, `${this.path}/${identifier(id)}`);
+	get(id: Identifier, conversationId: number) {
+		return get(this.transport, `${this.path}/${identifier(id)}`, { conversationId });
 	}
 	create(input: SubagentCreate) {
 		return action(this.transport, this.path, 'POST', input);
@@ -40,14 +45,17 @@ export class Subagents {
 	update(id: Identifier, input: SubagentUpdate) {
 		return action(this.transport, `${this.path}/${identifier(id)}`, 'PUT', input);
 	}
-	delete(id: Identifier, revision: number) {
-		return action(this.transport, `${this.path}/${identifier(id)}`, 'DELETE', { revision });
+	delete(id: Identifier, revision: number, conversationId: number) {
+		return action(this.transport, `${this.path}/${identifier(id)}`, 'DELETE', { revision, conversationId });
 	}
-	cancelTask(id: Identifier, taskId: Identifier) {
-		return action(this.transport, `${this.path}/${identifier(id)}/tasks/${identifier(taskId)}/cancel`, 'POST', {});
+	cancelTask(id: Identifier, taskId: Identifier, conversationId: number) {
+		return action(this.transport, `${this.path}/${identifier(id)}/tasks/${identifier(taskId)}/cancel`, 'POST', {
+			conversationId,
+		});
 	}
 
-	tasks(id: Identifier, options?: ListOptions) {
-		return listing(this.transport, `${this.path}/${identifier(id)}/tasks`, options);
+	tasks(id: Identifier, conversationId: number, options?: ListOptions) {
+		const query = { ...options, conversationId };
+		return listing(this.transport, `${this.path}/${identifier(id)}/tasks`, query);
 	}
 }

@@ -17,9 +17,9 @@ export const workspaceChatsTools: ToolDefinition[] = [
 	),
 	...['get', 'download', 'replace', 'preview', 'save'].map(
 		(operation): ToolDefinition => ({
-			command: `workspace chat working-files ${operation}`,
+			command: `workspace chat file-system ${operation}`,
 			description:
-				'Chat working tree, separate from background References. Replace requires the exact revision. Save requires a stable requestId and creates an independent Workspace snapshot. Preview HTML requires a credential-free isolated renderer.',
+				'Chat File system, separate from managed Files. Replace requires the exact revision. Save requires a stable requestId and creates an independent Workspace snapshot. Preview HTML requires a credential-free isolated renderer.',
 			toolset: 'workspace',
 			readOnly: ['get', 'download'].includes(operation),
 			destructive: operation === 'replace',

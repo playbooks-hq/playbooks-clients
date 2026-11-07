@@ -15,7 +15,7 @@ export const workspaceSchedulesTools: ToolDefinition[] = [
 	{
 		command: 'workspace chat-schedule',
 		description:
-			'Read saved instruction, revision, model selection, destination, timing and occurrence history. Queued is not completed.',
+			'Read saved instruction, revision, owning conversation, model selection, timing and occurrence history. Queued is not completed.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
@@ -38,7 +38,7 @@ export const workspaceSchedulesTools: ToolDefinition[] = [
 	{
 		command: 'workspace chat-schedule create',
 		description:
-			'Save one self-contained scheduled instruction with authorized durable references. Resolve ambiguous history-dependent instructions before saving. Every occurrence continues the owning Chat’s sole conversation with its current authorized Workspace defaults. Creation does not run work.',
+			'Save one self-contained scheduled instruction for an explicit Chat conversationId with authorized durable references. Resolve ambiguous history-dependent instructions before saving. Every occurrence continues that conversation with its current authorized Workspace defaults. Creation does not run work.',
 		toolset: 'workspace',
 		readOnly: false,
 		destructive: false,

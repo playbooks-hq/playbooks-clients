@@ -165,6 +165,14 @@ class Conversation(Resource):
         object.__setattr__(self, "_sandbox", sandbox)
         object.__setattr__(self, "_path", f"/conversations/{identifier(data['uuid'])}")
 
+    def utility(self) -> Any:
+        return Endpoint(self._transport, self._path)._get(f"{self._path}/utility")
+
+    def utility_items(self, *, kind: str, **options: Any) -> ApiResponse:
+        return Endpoint(self._transport, self._path)._list(
+            f"{self._path}/utility", {**options, "kind": kind}
+        )
+
     @property
     def messages(self) -> Messages:
         if self._sandbox:
@@ -200,9 +208,6 @@ class Conversations(Endpoint):
         if selected is not None and data.get("uuid") != str(selected):
             raise PlaybooksError(403, "The conversation does not match the requested identifier.")
         return Conversation(self._transport, data, self._project)
-
-    def resolve(self) -> Conversation:
-        return self._fetch(f"{self._path}/conversation")
 
     def get(self, id: Identifier) -> Conversation:
         return self._fetch(f"/conversations/{identifier(id)}", id)

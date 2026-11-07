@@ -84,16 +84,16 @@ test(
         workspace: state.workspaceUuid,
         project: state.projectUuid,
       };
-      const marker = `clients-reference-${randomUUID()}`;
+      const marker = `clients-file-${randomUUID()}`;
       await scenario("Files across all clients", async () => {
-        state.fileIntent = "reference/clients-smoke.txt";
+        state.fileIntent = "background/clients-smoke.txt";
         save(runPath(state.id), state);
-        await project.references.upload({
+        await project.files.upload({
           name: state.fileIntent,
           content: new Blob([marker]),
           expectedRevision: null,
         });
-        const files = await project.references.list();
+        const files = await project.files.list();
         const file = files.data.find((item) => item.name === state.fileIntent);
         assert(file?.uuid);
         state.fileId = file.uuid;
@@ -122,7 +122,7 @@ test(
           ),
         );
         await assert.rejects(
-          project.references.upload({
+          project.files.upload({
             name: state.fileIntent,
             content: new Blob(["wrong"]),
             expectedRevision: randomUUID(),
@@ -131,7 +131,7 @@ test(
             error instanceof PlaybooksError && error.status === 409,
         );
         assert.equal(
-          Buffer.from(await project.references.download(file.uuid)).toString(),
+          Buffer.from(await project.files.download(file.uuid)).toString(),
           marker,
         );
       });
@@ -157,10 +157,15 @@ test(
             save(runPath(state.id), state);
           }
         }
-        const conversation = await project.conversations.resolve();
+        const branches = await project.branches.list();
+        const selectedBranch = branches.data[0];
+        assert(selectedBranch);
+        assert(typeof selectedBranch.id === "number");
+        const conversation = await project.conversations.create({
+          branchId: selectedBranch.id,
+        });
         state.conversationUuid = conversation.uuid;
         save(runPath(state.id), state);
-        const branches = await project.branches.list();
         const selected =
           branches.data.find(
             (item) => item.id === conversation.latestBranchId,
@@ -193,7 +198,7 @@ test(
             branch: state.branchId,
             confirm: true,
             data: {
-              text: "Read the Agent File reference/clients-smoke.txt and respond with its exact marker. Do not modify source, publish, provision services, or access external integrations.",
+              text: "Read the Agent File background/clients-smoke.txt and respond with its exact marker. Do not modify source, publish, provision services, or access external integrations.",
               mode: "execute",
               maxCredits: 5,
               idempotencyKey: state.messageKey,

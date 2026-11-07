@@ -43,8 +43,8 @@ export const localTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'workspace reference download',
-		description: 'Download a Workspace-owned Reference.',
+		command: 'workspace file download',
+		description: 'Download a Workspace-owned File.',
 		toolset: 'local',
 		readOnly: false,
 		destructive: true,
@@ -58,9 +58,9 @@ export const localTools: ToolDefinition[] = [
 				description: 'New destination file.',
 				required: true,
 			},
-			reference: {
-				flag: 'reference',
-				description: 'Reference identifier.',
+			fileId: {
+				flag: 'file-id',
+				description: 'File identifier.',
 				required: true,
 			},
 			workspace: {
@@ -71,8 +71,8 @@ export const localTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'workspace reference upload',
-		description: 'Upload a Reference; replacement requires its current revision.',
+		command: 'workspace file upload',
+		description: 'Upload a File; replacement requires its current revision.',
 		toolset: 'local',
 		readOnly: false,
 		destructive: true,
@@ -88,7 +88,7 @@ export const localTools: ToolDefinition[] = [
 			},
 			name: {
 				flag: 'name',
-				description: 'Relative Reference filename.',
+				description: 'Relative File filename.',
 			},
 			revision: {
 				flag: 'revision',
@@ -154,7 +154,7 @@ export const localTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project file download',
-		description: 'Download a Project-owned Reference.',
+		description: 'Download a Project-owned File.',
 		toolset: 'local',
 		readOnly: false,
 		destructive: true,
@@ -187,7 +187,7 @@ export const localTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project file upload',
-		description: 'Upload a Reference; replacement requires its current revision.',
+		description: 'Upload a File; replacement requires its current revision.',
 		toolset: 'local',
 		readOnly: false,
 		destructive: true,
@@ -203,7 +203,7 @@ export const localTools: ToolDefinition[] = [
 			},
 			name: {
 				flag: 'name',
-				description: 'Relative Reference filename.',
+				description: 'Relative File filename.',
 			},
 			revision: {
 				flag: 'revision',

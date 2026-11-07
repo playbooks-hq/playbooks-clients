@@ -2,17 +2,17 @@ import { action, get, identifier } from 'src/resource.js';
 import type { Transport } from 'src/transport.js';
 import type { Identifier } from 'src/types.js';
 
-export interface WorkingFile {
+export interface FileSystemFile {
 	path: string;
 	kind?: 'file' | 'directory';
 	/** Base64-encoded bytes; omitted for directories. */
 	content?: string;
 }
-export interface WorkingTree {
+export interface FileSystemTree {
 	revision: string;
 	checksum: string;
 	readOnly: boolean;
-	files: WorkingFile[];
+	files: FileSystemFile[];
 }
 export interface PlanDocument {
 	uuid: string;
@@ -22,20 +22,20 @@ export interface PlanDocument {
 	revision: { uuid: string; content: string; checksum: string };
 }
 
-/** Working content, never background Reference files. */
-export class WorkingFiles {
+/** Working content, never background Files. */
+export class FileSystem {
 	constructor(
 		private transport: Transport,
 		private path: string,
 	) {}
 	get() {
-		return get<WorkingTree>(this.transport, this.path);
+		return get<FileSystemTree>(this.transport, this.path);
 	}
 	download(): Promise<Uint8Array> {
 		return this.transport.request(this.path, 'GET', undefined, { download: true }, true, true);
 	}
-	replace(input: { revision: string; files: WorkingFile[] }) {
-		return action<WorkingTree>(this.transport, this.path, 'PUT', input);
+	replace(input: { revision: string; files: FileSystemFile[] }) {
+		return action<FileSystemTree>(this.transport, this.path, 'PUT', input);
 	}
 	preview(input: { revision: string; entryPoint?: string }) {
 		return action<{ html: string; revision: string }>(this.transport, `${this.path}/preview`, 'POST', input);

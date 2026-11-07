@@ -66,15 +66,6 @@ export const createConversation = async (options: any) =>
 	sdkEnvelope(
 		await (await agentContext(options)).agent.conversations.create(await input(options, ['title', 'idempotencyKey'])),
 	);
-export const setMainConversation = async (options: any) =>
-	sdkEnvelope(
-		await (
-			await agentContext(options)
-		).agent.conversations.setMain(
-			identifier(options.conversation, '--conversation'),
-			(await input(options, ['revision'])).revision,
-		),
-	);
 export const getConversation = async (options: any) =>
 	sdkEnvelope(
 		await (await agentContext(options)).agent.conversations.get(identifier(options.conversation, '--conversation')),
@@ -235,24 +226,21 @@ export const listScheduleOccurrences = async (options: any) =>
 			await agentContext(options)
 		).agent.schedules.occurrences(identifier(options.schedule, '--schedule'), listParams(options)),
 	);
-export const createSchedule = async (options: any) =>
-	sdkEnvelope(
-		await (
-			await agentContext(options)
-		).agent.schedules.create(
-			await input(options, [
-				'idempotencyKey',
-				'name',
-				'instructions',
-				'frequency',
-				'weekday',
-				'monthDay',
-				'time',
-				'timezone',
-				'conversationId',
-			]),
-		),
-	);
+export const createSchedule = async (options: any) => {
+	const data = await input(options, [
+		'idempotencyKey',
+		'name',
+		'instructions',
+		'frequency',
+		'weekday',
+		'monthDay',
+		'time',
+		'timezone',
+		'conversationId',
+	]);
+	data.conversationId = integerOption(data.conversationId, 'conversationId', 1);
+	return sdkEnvelope(await (await agentContext(options)).agent.schedules.create(data));
+};
 export const updateSchedule = async (options: any) =>
 	sdkEnvelope(
 		await (
@@ -269,7 +257,6 @@ export const updateSchedule = async (options: any) =>
 				'time',
 				'timezone',
 				'status',
-				'conversationId',
 			]),
 		),
 	);
@@ -384,14 +371,14 @@ export const revokeExternal = async (options: any) => {
 };
 export const listResourceOptions = async (options: any) => {
 	const kind = options.kind === undefined ? undefined : textOption(options.kind, 'kind');
-	if (kind !== undefined && !['skill', 'design', 'reference'].includes(kind))
-		throw new CliError(422, 'Allowed --kind values: skill, design, reference.');
+	if (kind !== undefined && !['skill', 'design', 'file'].includes(kind))
+		throw new CliError(422, 'Allowed --kind values: skill, design, file.');
 	return sdkList(
 		await (
 			await agentContext(options)
 		).agent.resources.options({
 			...listParams(options),
-			...(kind && { kind: kind as 'skill' | 'design' | 'reference' }),
+			...(kind && { kind: kind as 'skill' | 'design' | 'file' }),
 		}),
 	);
 };
@@ -402,16 +389,14 @@ export const deleteResource = async (options: any) =>
 		await (
 			await agentContext(options)
 		).agent.resources.delete(
-			textOption(options.kind, 'kind') as 'skill' | 'design' | 'reference',
+			textOption(options.kind, 'kind') as 'skill' | 'design' | 'file',
 			identifier(options.resource, '--resource'),
 		),
 	);
-export const getWorkingFiles = async (options: any) =>
-	sdkEnvelope(await (await agentContext(options)).agent.workingFiles.get());
-export const updateWorkingFiles = async (options: any) =>
-	sdkEnvelope(
-		await (await agentContext(options)).agent.workingFiles.update(await input(options, ['revision', 'files'])),
-	);
+export const getFileSystem = async (options: any) =>
+	sdkEnvelope(await (await agentContext(options)).agent.fileSystem.get());
+export const updateFileSystem = async (options: any) =>
+	sdkEnvelope(await (await agentContext(options)).agent.fileSystem.update(await input(options, ['revision', 'files'])));
 export const listResults = async (options: any) => sdkList(await (await agentContext(options)).agent.results.list());
 export const getResult = async (options: any) =>
 	sdkEnvelope(await (await agentContext(options)).agent.results.get(identifier(options.result, '--result')));

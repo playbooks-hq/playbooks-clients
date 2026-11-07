@@ -44,7 +44,7 @@ Private tools require an explicit `workspace`. Tools targeting an existing Proje
 | `project` | Project configuration, source, checkpoints, administration, scheduled messages | No |
 | `local` | Browser opening, file transfers, source import, export | No |
 
-`--toolsets` replaces the default selection; `all` enables every group. `--read-only` removes mutating tools regardless of group selection, including local file writes and conversation reads that may initialize state. It narrows the MCP tool surface; Server permissions remain authoritative. Restart the MCP connection after changing options.
+`--toolsets` replaces the default selection; `all` enables every group. `--read-only` removes tools marked as mutating regardless of group selection, including local file writes. It narrows the MCP tool surface; Server permissions remain authoritative. Restart the MCP connection after changing options.
 
 `playbooks_help` lists the enabled tools and can show an individual tool's input schema. Command names map directly to tools: `project message create` becomes `playbooks_project_message_create`.
 
@@ -129,7 +129,7 @@ Authenticate through the CLI or `PLAYBOOKS_TOKEN`, never through tool arguments.
 
 ## Chat scheduled messages
 
-The `workspace` toolset provides `playbooks_workspace_chat-schedules`, `playbooks_workspace_chat-schedule`, and its `preview`, `create`, and `update` operations. Save one self-contained instruction with durable references, model selection, timing, and destination. Creation does not run work. Inspect the revision before changing it; reuse the same run idempotency key after an uncertain response. Read occurrence history to verify completion and the resolved model.
+The `workspace` toolset provides `playbooks_workspace_chat-schedules`, `playbooks_workspace_chat-schedule`, and its `preview`, `create`, and `update` operations. Create each schedule for an explicit `conversationId` with one self-contained instruction, durable references, model selection, and timing. Every occurrence continues that conversation; there is no separate destination or new-conversation mode. Creation does not run work. Inspect the revision before changing it; reuse the same run idempotency key after an uncertain response. Read occurrence history to verify completion and the resolved model.
 
 ## Workspace Inbox
 

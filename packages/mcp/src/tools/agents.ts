@@ -4,7 +4,7 @@ export const agentTools: ToolDefinition[] = [
 	...['list', 'get', 'create', 'update', 'delete', 'tasks', 'cancel-task'].map(
 		(operation): ToolDefinition => ({
 			command: `subagent ${operation}`,
-			description: `${operation} retained Sub-agents for a Chat, Agent, or Project.`,
+			description: `${operation} conversation-owned Sub-agents for a Chat, Agent, or Project. Create requires parent conversationId.`,
 			toolset: 'workspace',
 			readOnly: ['list', 'get', 'tasks'].includes(operation),
 			destructive: operation === 'delete',
@@ -12,6 +12,7 @@ export const agentTools: ToolDefinition[] = [
 				workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
 				kind: { flag: 'kind', description: 'Owner kind: chat, agent, or project.', required: true },
 				owner: { flag: 'owner', description: 'Owner UUID.', required: true },
+				conversation: { flag: 'conversation', description: 'Parent conversation numeric ID.', required: true },
 				...(!['list', 'create'].includes(operation)
 					? { subagent: { flag: 'subagent', description: 'Sub-agent UUID.', required: true } }
 					: {}),
@@ -137,20 +138,6 @@ export const agentTools: ToolDefinition[] = [
 			},
 		},
 		dataFields: ['title', 'idempotencyKey'],
-	},
-	{
-		command: 'agent conversation main',
-		description: 'Designate an Agent conversation as Main using the current Agent revision.',
-		toolset: 'workspace',
-		readOnly: false,
-		destructive: false,
-		options: {
-			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
-			agent: { flag: 'agent', description: 'Agent UUID.', required: true },
-			conversation: { flag: 'conversation', description: 'Conversation UUID.', required: true },
-		},
-		dataFields: ['revision'],
-		dataOptional: false,
 	},
 	{
 		command: 'agent conversation',
@@ -506,7 +493,7 @@ export const agentTools: ToolDefinition[] = [
 	},
 	{
 		command: 'agent schedule create',
-		description: 'Create an Agent schedule.',
+		description: 'Create an Agent schedule for an explicitly selected conversation.',
 		toolset: 'core',
 		readOnly: false,
 		destructive: false,
@@ -537,18 +524,7 @@ export const agentTools: ToolDefinition[] = [
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
 			schedule: { flag: 'schedule', description: 'Schedule identifier.', required: true },
 		},
-		dataFields: [
-			'revision',
-			'conversationId',
-			'name',
-			'instructions',
-			'frequency',
-			'weekday',
-			'monthDay',
-			'time',
-			'timezone',
-			'status',
-		],
+		dataFields: ['revision', 'name', 'instructions', 'frequency', 'weekday', 'monthDay', 'time', 'timezone', 'status'],
 	},
 	{
 		command: 'agent usage',
@@ -711,7 +687,7 @@ export const agentTools: ToolDefinition[] = [
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
-			kind: { flag: 'kind', description: 'Skill, design, or reference.' },
+			kind: { flag: 'kind', description: 'Skill, design, or file.' },
 			query: { flag: 'query', description: 'Search by name.' },
 			page: { flag: 'page', description: 'Zero-based page.', kind: 'number' },
 			pageSize: { flag: 'page-size', description: 'Page size.', kind: 'number' },
@@ -743,8 +719,8 @@ export const agentTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'agent working-files',
-		description: 'Read authorized Agent working files.',
+		command: 'agent file-system',
+		description: 'Read authorized Agent File system.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
@@ -754,8 +730,8 @@ export const agentTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'agent working-files update',
-		description: 'Update authorized Agent working files.',
+		command: 'agent file-system update',
+		description: 'Update authorized Agent File system.',
 		toolset: 'workspace',
 		readOnly: false,
 		destructive: false,

@@ -3,7 +3,7 @@ import type { RecordResource } from 'src/resource.js';
 import { action, get, identifier, listing, record, Resource } from 'src/resource.js';
 import { readEvents } from 'src/sse.js';
 import type { Transport } from 'src/transport.js';
-import type { ConversationForkInput, MessageResponseInput } from 'src/types.js';
+import type { ConversationForkInput, ConversationUtilityListOptions, MessageResponseInput } from 'src/types.js';
 import type { ApiResponse } from 'src/types.js';
 import type { ConversationData, MessageData, RunData, RunListOptions } from 'src/types.js';
 import type { Identifier, MessageInput, MessageOptions, MessageUpdate, RecordData, StreamOptions } from 'src/types.js';
@@ -107,6 +107,12 @@ export class Conversation extends Resource<ConversationData> {
 		this.#path = `/conversations/${identifier(data.uuid)}`;
 		this.#sandbox = sandbox;
 	}
+	utility() {
+		return get(this.#transport, `${this.#path}/utility`);
+	}
+	utilityItems(options: ConversationUtilityListOptions) {
+		return listing(this.#transport, `${this.#path}/utility`, options);
+	}
 	get messages() {
 		if (this.#sandbox) throw new PlaybooksError(422, 'Select a conversation branch before accessing Project messages.');
 		return new Messages(this.#transport, `${this.#path}/messages`, this.id, false);
@@ -128,12 +134,10 @@ export class Conversation extends Resource<ConversationData> {
 
 export class Conversations {
 	#transport: Transport;
-	#path: string;
 	#ownerId: Identifier;
 	#project: boolean;
-	constructor(transport: Transport, path: string, ownerId: Identifier, project: boolean) {
+	constructor(transport: Transport, ownerId: Identifier, project: boolean) {
 		this.#transport = transport;
-		this.#path = path;
 		this.#ownerId = ownerId;
 		this.#project = project;
 	}
@@ -149,9 +153,6 @@ export class Conversations {
 			throw new PlaybooksError(403, 'The conversation does not match the requested identifier.');
 		return new Conversation(this.#transport, data, this.#project);
 	}
-	resolve() {
-		return this.#fetch(`${this.#path}/conversation`);
-	}
 	get(id: Identifier) {
 		return this.#fetch(`/conversations/${identifier(id)}`, id);
 	}
@@ -160,7 +161,7 @@ export class ProjectConversations extends Conversations {
 	#transport: Transport;
 	#path: string;
 	constructor(transport: Transport, path: string, ownerId: Identifier) {
-		super(transport, path, ownerId, true);
+		super(transport, ownerId, true);
 		this.#transport = transport;
 		this.#path = path;
 	}

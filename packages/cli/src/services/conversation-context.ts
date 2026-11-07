@@ -6,10 +6,7 @@ import { sdkEnvelope } from 'src/utils/sdk-output';
 export const workspaceConversationContext = async (options: any) => {
 	const context = await workspaceContext(options);
 	const conversations = context.workspaceResource.conversations;
-	const conversationResource =
-		options.conversation === undefined
-			? await conversations.resolve()
-			: await conversations.get(identifier(options.conversation, '--conversation'));
+	const conversationResource = await conversations.get(identifier(options.conversation, '--conversation'));
 	const response = sdkEnvelope(conversationResource);
 	return {
 		...context,
@@ -22,10 +19,7 @@ export const workspaceConversationContext = async (options: any) => {
 export const projectConversationContext = async (options: any) => {
 	const context = await projectContext(options);
 	const conversations = context.projectResource.conversations;
-	const conversationResource =
-		options.conversation === undefined
-			? await conversations.resolve()
-			: await conversations.get(identifier(options.conversation, '--conversation'));
+	const conversationResource = await conversations.get(identifier(options.conversation, '--conversation'));
 	const response = sdkEnvelope(conversationResource);
 	return { ...context, conversationResource, conversation: response.data, response };
 };

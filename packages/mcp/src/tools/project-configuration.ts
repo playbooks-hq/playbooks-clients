@@ -518,8 +518,8 @@ export const projectConfigurationTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'project references',
-		description: 'List Project References.',
+		command: 'project files',
+		description: 'List Project Files.',
 		toolset: 'project',
 		readOnly: true,
 		destructive: false,

@@ -471,3 +471,10 @@ export const rotateAgentAccess = async (options: any) => {
 	if (!options.yes) throw new CliError(422, 'Confirm revoking the current Site Agent runtime key with --yes.');
 	return sdkEnvelope(await (await siteContext(options)).site.agentAccess.rotate());
 };
+
+export const agentSites = async (options: any) =>
+	sdkList(
+		await (await workspaceContext(options)).workspaceResource.agents
+			.reference(identifier(options.agent, '--agent'))
+			.sites.list(),
+	);

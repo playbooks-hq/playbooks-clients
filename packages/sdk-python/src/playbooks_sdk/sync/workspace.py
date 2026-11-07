@@ -11,10 +11,10 @@ from playbooks_sdk.sync.core import (
     ReadEndpoint,
     Settings,
 )
+from playbooks_sdk.sync.files import Files
 from playbooks_sdk.sync.inbox import Inbox
 from playbooks_sdk.sync.operators import Conversations, Runs
 from playbooks_sdk.sync.project import Projects
-from playbooks_sdk.sync.references import References
 from playbooks_sdk.sync.sites import Sites
 from playbooks_sdk.sync.subagents import Subagents
 from playbooks_sdk.transport import Transport
@@ -57,26 +57,26 @@ class Chats(Listing):
             data,
         )
 
-    def working_files(self, id: Identifier) -> Any:
-        """Read working content, separate from background References."""
-        return self._get(f"{self._path}/{identifier(id)}/working-files")
+    def file_system(self, id: Identifier) -> Any:
+        """Read working content, separate from background Files."""
+        return self._get(f"{self._path}/{identifier(id)}/file-system")
 
-    def download_working_files(self, id: Identifier) -> bytes:
+    def download_file_system(self, id: Identifier) -> bytes:
         result: bytes = self._transport.request(
-            f"{self._path}/{identifier(id)}/working-files",
+            f"{self._path}/{identifier(id)}/file-system",
             params={"download": True},
             binary=True,
         )
         return result
 
-    def replace_working_files(self, id: Identifier, data: Data) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/working-files", "PUT", data)
+    def replace_file_system(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/file-system", "PUT", data)
 
-    def preview_working_files(self, id: Identifier, data: Data) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/working-files/preview", "POST", data)
+    def preview_file_system(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/file-system/preview", "POST", data)
 
-    def save_working_files(self, id: Identifier, data: Data) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/working-files/save", "POST", data)
+    def save_file_system(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/file-system/save", "POST", data)
 
 
 class ChatSchedules(ReadCollection):
@@ -208,8 +208,8 @@ class Workspace(Resource):
         return ChatSchedules(self._transport, "/chats/schedules")
 
     @property
-    def references(self) -> References:
-        return References(self._transport, "/references")
+    def files(self) -> Files:
+        return Files(self._transport, "/files")
 
     @property
     def templates(self) -> Templates:

@@ -17,8 +17,6 @@ export const updateSchedule = async (options: any) => {
 		'references',
 		'modelId',
 		'branchId',
-		'destination',
-		'destinationConversationId',
 		'enabled',
 		'recurrence',
 		'time',

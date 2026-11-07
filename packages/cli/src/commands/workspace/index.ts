@@ -1,6 +1,6 @@
 export {
 	listChannels,
-	workingFiles,
+	fileSystem,
 	conversationPlans,
 	listWorkspaceChats,
 	getWorkspaceChat,
@@ -48,9 +48,9 @@ export { listWorkspaceSkills } from 'src/commands/workspace/skills/list';
 export { listWorkspaceMcps } from 'src/commands/workspace/mcps/list';
 export { listWorkspaceConnectors } from 'src/commands/workspace/connectors/list';
 export { listWorkspaceSecrets } from 'src/commands/workspace/secrets/list';
-export { listWorkspaceReferences } from 'src/commands/workspace/references/list';
-export { downloadWorkspaceReference } from 'src/commands/workspace/references/download';
-export { uploadWorkspaceReference } from 'src/commands/workspace/references/upload';
+export { listWorkspaceFiles } from 'src/commands/workspace/files/list';
+export { downloadWorkspaceFile } from 'src/commands/workspace/files/download';
+export { uploadWorkspaceFile } from 'src/commands/workspace/files/upload';
 export { updateBudgetOperations } from 'src/commands/workspace/budget/update';
 export { activityOperations } from 'src/commands/workspace/activity';
 export { usageOperations } from 'src/commands/workspace/usage';

@@ -205,27 +205,28 @@ export interface ChatScheduleInput extends ChatScheduleTiming {
 }
 export type ChatScheduleCreate = ChatScheduleInput & {
 	idempotencyKey: string;
+	conversationId: string;
+	chatId?: string;
 	originMessageId?: number;
-} & ({ chatId: string; conversationId?: string } | { chatId?: string; conversationId: string });
+};
 export type ChatScheduleMutation = { expectedRevision: number } & (
 	| { action: 'update'; changes: ChatScheduleInput }
 	| { action: 'pause' | 'resume' | 'delete' }
 	| { action: 'run'; idempotencyKey: string }
 );
 export interface ScheduleInput {
+	conversationId: number;
 	name: string;
 	instructions: string;
 	references?: ScheduleReference[];
 	modelId?: number;
 	branchId?: number;
-	destination?: 'existing-conversation' | 'new-conversation';
-	destinationConversationId?: number | null;
 	enabled?: boolean;
 	recurrence?: string | null;
 	time?: string | null;
 	timezone?: string | null;
 }
-export type ScheduleUpdate = Partial<ScheduleInput> & { revision: number };
+export type ScheduleUpdate = Partial<Omit<ScheduleInput, 'conversationId'>> & { revision: number };
 export interface ScheduleRunInput {
 	revision: number;
 	requestKey: string;
@@ -359,7 +360,7 @@ export interface TemplateUpdate {
 	licenseId?: number;
 	categoryIds?: number[];
 	visibility?: 'private' | 'unlisted' | 'public';
-	packageSelection?: { referenceIds?: number[]; scheduleIds?: number[]; workingFiles?: string[] };
+	packageSelection?: { fileIds?: number[]; scheduleIds?: number[]; fileSystem?: string[] };
 }
 export interface BudgetUpdate {
 	creditBudget?: number | null;
@@ -473,4 +474,12 @@ export interface MessageResponseInput {
 	parts: Record<string, unknown>[];
 	text?: string;
 	maxCredits?: number | null;
+}
+
+/** Conversation-attributed work; reads and activity in other conversations are excluded. */
+export type ConversationUtilityKind = 'files' | 'artifacts' | 'sources' | 'subagents' | 'plans';
+export interface ConversationUtilityListOptions extends ListOptions {
+	kind: ConversationUtilityKind;
+	search?: string;
+	type?: string;
 }

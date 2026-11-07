@@ -9,10 +9,10 @@ from playbooks_sdk.asynchronous.core import (
     ReadEndpoint,
     Settings,
 )
+from playbooks_sdk.asynchronous.files import Files
 from playbooks_sdk.asynchronous.inbox import Inbox
 from playbooks_sdk.asynchronous.operators import Conversations, Runs
 from playbooks_sdk.asynchronous.project import Projects
-from playbooks_sdk.asynchronous.references import References
 from playbooks_sdk.asynchronous.sites import Sites
 from playbooks_sdk.asynchronous.subagents import Subagents
 from playbooks_sdk.error import PlaybooksError
@@ -57,28 +57,28 @@ class Chats(Listing):
             data,
         )
 
-    async def working_files(self, id: Identifier) -> Any:
-        """Read working content, separate from background References."""
-        return await self._get(f"{self._path}/{identifier(id)}/working-files")
+    async def file_system(self, id: Identifier) -> Any:
+        """Read working content, separate from background Files."""
+        return await self._get(f"{self._path}/{identifier(id)}/file-system")
 
-    async def download_working_files(self, id: Identifier) -> bytes:
+    async def download_file_system(self, id: Identifier) -> bytes:
         result: bytes = await self._transport.request(
-            f"{self._path}/{identifier(id)}/working-files",
+            f"{self._path}/{identifier(id)}/file-system",
             params={"download": True},
             binary=True,
         )
         return result
 
-    async def replace_working_files(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/working-files", "PUT", data)
+    async def replace_file_system(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/file-system", "PUT", data)
 
-    async def preview_working_files(self, id: Identifier, data: Data) -> Any:
+    async def preview_file_system(self, id: Identifier, data: Data) -> Any:
         return await self._action(
-            f"{self._path}/{identifier(id)}/working-files/preview", "POST", data
+            f"{self._path}/{identifier(id)}/file-system/preview", "POST", data
         )
 
-    async def save_working_files(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/working-files/save", "POST", data)
+    async def save_file_system(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/file-system/save", "POST", data)
 
 
 class ChatSchedules(ReadCollection):
@@ -210,8 +210,8 @@ class Workspace(Resource):
         return ChatSchedules(self._transport, "/chats/schedules")
 
     @property
-    def references(self) -> References:
-        return References(self._transport, "/references")
+    def files(self) -> Files:
+        return Files(self._transport, "/files")
 
     @property
     def templates(self) -> Templates:

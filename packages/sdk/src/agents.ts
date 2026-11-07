@@ -2,12 +2,21 @@ import { Channels } from 'src/channels.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
 import { action, get, identifier, listing, Resource } from 'src/resource.js';
+import type { SiteData } from 'src/sites.js';
 import { readEvents } from 'src/sse.js';
 import { Subagents } from 'src/subagents.js';
 import type { Transport } from 'src/transport.js';
-import type { Identifier, ListOptions, MessageInput, MessageOptions, StreamOptions } from 'src/types.js';
+import type {
+	ConversationUtilityListOptions,
+	Identifier,
+	ListOptions,
+	MessageInput,
+	MessageOptions,
+	StreamOptions,
+} from 'src/types.js';
 
 export interface AgentSourceSelection {
+	activityConversationId?: string;
 	version: string;
 	conversationId: string;
 }
@@ -26,7 +35,7 @@ export type AgentMentionTarget = {
 } & (
 	| { targetType: 'skill'; skillId: number }
 	| { targetType: 'design'; designId: number }
-	| { targetType: 'reference'; operatorReferenceId: number }
+	| { targetType: 'file'; operatorFileId: number }
 );
 export interface AgentArtifactPrepare {
 	conversationId: string;
@@ -53,8 +62,6 @@ export interface AgentData {
 	status: string;
 	role?: 'owner' | 'admin' | 'editor' | 'viewer' | null;
 	revision: number;
-	mainConversationId?: number | null;
-	mainConversationUuid?: string | null;
 	capabilities: Record<string, boolean> & {
 		canRead?: boolean;
 		canParticipate?: boolean;
@@ -83,7 +90,7 @@ export interface AgentUpdate {
 }
 export interface AgentScheduleCreate {
 	idempotencyKey: string;
-	conversationId?: number | null;
+	conversationId: number;
 	name: string;
 	instructions: string;
 	frequency: string;
@@ -92,11 +99,11 @@ export interface AgentScheduleCreate {
 	time: string;
 	timezone: string;
 }
-export interface AgentScheduleUpdate extends Partial<Omit<AgentScheduleCreate, 'idempotencyKey'>> {
+export interface AgentScheduleUpdate extends Partial<Omit<AgentScheduleCreate, 'idempotencyKey' | 'conversationId'>> {
 	revision: number;
 	status?: 'enabled' | 'paused';
 }
-export type AgentResourceKind = 'skill' | 'design' | 'reference';
+export type AgentResourceKind = 'skill' | 'design' | 'file';
 export type AgentExternalKind = 'connector' | 'mcp' | 'browser';
 export interface AgentExternalGrant {
 	kind: AgentExternalKind;
@@ -230,8 +237,10 @@ export class AgentReference {
 			versions: (id: Identifier, options?: { page?: number }) =>
 				listing(transport, `${path}/${identifier(id)}/versions`, options),
 			prepare: (input: AgentArtifactPrepare) => action(transport, `${path}/prepare`, 'POST', input),
-			update: (id: Identifier, input: { name?: string; description?: string; archived?: boolean }) =>
-				action(transport, `${path}/${identifier(id)}`, 'PUT', input),
+			update: (
+				id: Identifier,
+				input: { name?: string; description?: string; archived?: boolean; activityConversationId?: string },
+			) => action(transport, `${path}/${identifier(id)}`, 'PUT', input),
 			export: (id: Identifier, version?: string): Promise<Buffer> =>
 				transport.request(`${path}/${identifier(id)}/export`, 'GET', undefined, { version }, true, true),
 			delete: (id: Identifier, confirmation: string) =>
@@ -271,8 +280,9 @@ export class AgentReference {
 					})
 					.then(response => response.data),
 			get: (id: Identifier) => get(transport, `${path}/${identifier(id)}`),
-			setMain: (id: Identifier, revision: number) =>
-				action(transport, `${path}/${identifier(id)}/main`, 'POST', { revision }),
+			utility: (id: Identifier) => get(transport, `${path}/${identifier(id)}/utility`),
+			utilityItems: (id: Identifier, options: ConversationUtilityListOptions) =>
+				listing(transport, `${path}/${identifier(id)}/utility`, options),
 			downloadAttachment: (id: Identifier, attachmentId: Identifier): Promise<Buffer> =>
 				transport.request(
 					`${path}/${identifier(id)}/attachments/${identifier(attachmentId)}/download`,
@@ -406,8 +416,7 @@ export class AgentReference {
 			put: (input: { kind: AgentResourceKind; resourceId: string }) =>
 				action(this.transport, `${this.path}/resources`, 'PUT', input),
 			delete: (kind: AgentResourceKind, resourceId: Identifier) => {
-				if (!['skill', 'design', 'reference'].includes(kind))
-					throw new PlaybooksError(422, 'Invalid Agent resource kind.');
+				if (!['skill', 'design', 'file'].includes(kind)) throw new PlaybooksError(422, 'Invalid Agent resource kind.');
 				return action(this.transport, `${this.path}/resources/${kind}/${identifier(resourceId)}`, 'DELETE');
 			},
 		};
@@ -427,16 +436,21 @@ export class AgentReference {
 	get subagents() {
 		return new Subagents(this.transport, `${this.path}/subagents`);
 	}
-	get workingFiles() {
+	get fileSystem() {
 		return {
-			get: () => get(this.transport, `${this.path}/working-files`),
-			revision: (revision: string) =>
-				get(this.transport, `${this.path}/working-files/revisions/${identifier(revision)}`),
-			update: (input: { revision: string; files: { path: string; content?: string; kind?: 'file' | 'directory' }[] }) =>
-				action(this.transport, `${this.path}/working-files`, 'PUT', input),
+			get: () => get(this.transport, `${this.path}/file-system`),
+			revision: (revision: string) => get(this.transport, `${this.path}/file-system/revisions/${identifier(revision)}`),
+			update: (input: {
+				revision: string;
+				conversationId?: string;
+				files: { path: string; content?: string; kind?: 'file' | 'directory' }[];
+			}) => action(this.transport, `${this.path}/file-system`, 'PUT', input),
 			preview: (input: { revision: string; path?: string; entryPoint?: string }) =>
-				action(this.transport, `${this.path}/working-files/preview`, 'POST', input),
+				action(this.transport, `${this.path}/file-system/preview`, 'POST', input),
 		};
+	}
+	get sites() {
+		return { list: () => listing<SiteData>(this.transport, `${this.path}/sites`) };
 	}
 	get results() {
 		return {

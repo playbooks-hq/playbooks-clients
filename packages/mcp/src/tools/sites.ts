@@ -58,7 +58,7 @@ export const siteTools: ToolDefinition[] = [
 	},
 	{
 		command: 'site create',
-		description: 'Create a Site with an optional same-Workspace Project component or Chat static source.',
+		description: 'Create a Site with an optional same-Workspace Project component or Chat/Agent static source.',
 		toolset: 'core',
 		readOnly: false,
 		destructive: false,
@@ -361,6 +361,18 @@ export const siteTools: ToolDefinition[] = [
 				description: 'Project UUID.',
 				required: true,
 			},
+		},
+	},
+	{
+		command: 'agent sites',
+		description:
+			'List authorized static Sites sourced from an Agent. Association and application grants do not grant Site access.',
+		toolset: 'core',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			agent: { flag: 'agent', description: 'Agent UUID.', required: true },
 		},
 	},
 	{
