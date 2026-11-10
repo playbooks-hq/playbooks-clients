@@ -73,6 +73,12 @@ Project and Workspace streams only observe; opening or reconnecting a stream nev
 
 Streams stop after 1,800 seconds by default; use `--timeout <seconds>` to change this. Connection and inactivity timeouts also apply. Waiting for input or approval is reported separately from completion. Failures and incomplete streams return a nonzero exit code. Streams never reconnect automatically, and Ctrl-C stops observation without canceling remote work. Interactive chat, approval submission, and run retry/cancel commands remain deferred.
 
+## Resource sharing
+
+`playbooks shared resources --type all` lists accepted external Chat, Agent, and Project grants. Use `--type chats|agents|projects`, `--limit`, and the returned `nextCursor` with `--cursor` to page. External access does not make the owning Workspace a switcher destination.
+
+`playbooks resource members|invitations|visibility|grant|update-grant|revoke|invite|resend|revoke-invitation` addresses a selected `--kind chats|agents|projects`, `--resource` UUID, and owning `--workspace` UUID. Mutations require `--yes`; visibility takes `--data '{"visibility":"private","revision":1}'`. Grant/update takes `--member` and `--data '{"role":"editor"}'`. Project grant creation uses a numeric User ID, while update/revoke use the returned numeric collaborator ID. Chat/Agent members use User UUIDs; `--member self` removes your own direct grant. Invitations use an email and role, and resend/revoke use `--invitation`. Server authorization remains authoritative.
+
 ## Scripts and Discovery
 
 ```sh
@@ -83,7 +89,7 @@ playbooks project update --project abc --data '{"description":"Customer support 
 
 Public discovery uses `templates`, `categories`, `collections`, and `creators`. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
 
-Use category identifiers returned by `categories`; example identifiers are placeholders. Filter projects with `--owner <numeric-user-id>`. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
+Use category identifiers returned by `categories`; example identifiers are placeholders. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
 
 Plural resource names list records; singular names address one record, such as `site release --site abc --release def`. Mutations follow the resource name. `--file-id` identifies a File; binary transfers continue to use `--upload` and `--output`.
 

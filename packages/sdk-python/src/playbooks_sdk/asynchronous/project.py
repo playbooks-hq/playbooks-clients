@@ -145,20 +145,6 @@ class Checkpoints(Listing):
         return await self._action(f"{self._path}/{identifier(id)}/restore", "POST")
 
 
-class Ownership(ReadEndpoint):
-    async def transfer(self, data: Data) -> Any:
-        return await self._action(self._path, "POST", data)
-
-    async def accept(self, id: Identifier) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/accept", "POST")
-
-    async def decline(self, id: Identifier) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/decline", "POST")
-
-    async def cancel(self, id: Identifier) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/cancel", "POST")
-
-
 class Schedules(Collection):
     async def run(self, id: Identifier, data: Data) -> Any:
         return await self._action(f"{self._path}/{identifier(id)}/runs", "POST", data)
@@ -328,10 +314,6 @@ class Project(Resource):
     @property
     def checkpoints(self) -> Checkpoints:
         return Checkpoints(self._transport, f"{self._path}/checkpoints")
-
-    @property
-    def ownership(self) -> Ownership:
-        return Ownership(self._transport, f"{self._path}/ownership-request")
 
     @property
     def schedules(self) -> Schedules:

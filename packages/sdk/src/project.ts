@@ -245,19 +245,6 @@ export class Project extends Resource<ProjectData> {
 				action(this.#transport, `${this.#path}/checkpoints/${identifier(id)}/restore`, 'POST'),
 		};
 	}
-	get ownership() {
-		return {
-			get: () => get(this.#transport, `${this.#path}/ownership-request`),
-			transfer: (input: { toUserId: number }) =>
-				action(this.#transport, `${this.#path}/ownership-request`, 'POST', input),
-			accept: (id: Identifier) =>
-				action(this.#transport, `${this.#path}/ownership-request/${identifier(id)}/accept`, 'POST'),
-			decline: (id: Identifier) =>
-				action(this.#transport, `${this.#path}/ownership-request/${identifier(id)}/decline`, 'POST'),
-			cancel: (id: Identifier) =>
-				action(this.#transport, `${this.#path}/ownership-request/${identifier(id)}/cancel`, 'POST'),
-		};
-	}
 	get schedules() {
 		const path = `${this.#path}/schedules`;
 		const collection = new Collection<ScheduleData, ScheduleUpdate, ScheduleInput>(this.#transport, path);

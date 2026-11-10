@@ -16,6 +16,7 @@ import {
 	templates,
 	workspace,
 } from 'src/commands';
+import { resourceAccess, sharedResources } from 'src/commands/resource-access';
 import { subagentOperation } from 'src/commands/subagent';
 import { CliError } from 'src/services/cli-client';
 import { run } from 'src/utils/cli-command';
@@ -27,6 +28,41 @@ cli.describe('Manage Playbooks from your terminal.');
 cli.option('--config', 'Isolated context file.', path.join(os.homedir(), '.config', 'playbooks', 'config.json'));
 cli.option('--json', 'Print JSON; streams use newline-delimited JSON.', false);
 cli.option('--select', 'Select comma-separated output fields; unavailable for streams.');
+
+// Workspace-owned resource access and external shares.
+cli
+	.command('shared resources')
+	.describe('List accepted external resource grants across Workspaces.')
+	.option('--type', 'all, chats, agents, or projects.')
+	.option('--limit', 'Page size (1-100).')
+	.option('--cursor', 'Continuation cursor.')
+	.action(run(sharedResources));
+
+for (const [name, description, operation] of [
+	['members', 'List direct resource grants.', 'members'],
+	['invitations', 'List pending resource invitations.', 'invitations'],
+	['visibility', 'Change Workspace or private visibility with a revision check.', 'visibility'],
+	['grant', 'Grant direct access to a person.', 'grant'],
+	['update-grant', 'Change a direct grant.', 'update-grant'],
+	['revoke', 'Remove a direct grant; use --member self to leave a Chat or Agent.', 'revoke'],
+	['invite', 'Invite an external person to this resource.', 'invite'],
+	['resend', 'Resend a resource invitation.', 'resend'],
+	['revoke-invitation', 'Revoke a pending resource invitation.', 'revoke-invitation'],
+] as const) {
+	const command = cli
+		.command(`resource ${name}`)
+		.describe(description)
+		.option('--workspace', 'Owning Workspace UUID; defaults to saved workspace.')
+		.option('--kind', 'chats, agents, or projects.')
+		.option('--resource', 'Resource UUID.');
+	if (['grant', 'update-grant', 'revoke'].includes(operation))
+		command.option('--member', 'User UUID, or numeric Project collaborator ID for update/revoke.');
+	if (['resend', 'revoke-invitation'].includes(operation)) command.option('--invitation', 'Invitation UUID.');
+	if (['visibility', 'grant', 'update-grant', 'invite'].includes(operation))
+		command.option('--data', 'JSON object or - for stdin.');
+	if (!['members', 'invitations'].includes(operation)) command.option('--yes', 'Confirm this change.', false);
+	command.action(run(resourceAccess(operation)));
+}
 
 // Managed Agents
 cli
@@ -49,7 +85,7 @@ cli
 
 cli
 	.command('agent create')
-	.describe('Create an Agent; integrations require contentOwnerUserId.')
+	.describe('Create a Workspace-owned Agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--data', 'JSON object or - for stdin.')
 	.action(run(agent.createAgent));
@@ -1049,12 +1085,12 @@ cli
 
 cli
 	.command('workspace member depart')
-	.describe('Remove a member using the reviewed revision and ownership recipient.')
+	.describe('Remove a member using the reviewed revision.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--member', 'Member user identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('workspace member depart --member abc --data \'{"revision":"CURRENT_REVISION","toUserId":123}\' --yes')
+	.example('workspace member depart --member abc --data \'{"revision":"CURRENT_REVISION"}\' --yes')
 	.action(run(workspace.removeMember));
 
 cli
@@ -1080,7 +1116,7 @@ cli
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--member', 'Member identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('workspace member update --member abc --data \'{"memberRole":"collaborator"}\' --yes')
+	.example('workspace member update --member abc --data \'{"role":"editor"}\' --yes')
 	.action(run(workspace.updateMember));
 
 cli
@@ -1098,7 +1134,7 @@ cli
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('workspace invitation create --data \'{"email":"teammate@example.com","role":"collaborator"}\' --yes')
+	.example('workspace invitation create --data \'{"email":"teammate@example.com","role":"editor"}\' --yes')
 	.action(run(workspace.createInvitation));
 
 cli
@@ -1394,8 +1430,7 @@ cli
 	.option('--page-size', 'Records per page.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
-	.option('--include', 'Comma-separated relations: type, projectOwner, branches, deploy.')
-	.option('--owner', 'Numeric user ID of the project owner.')
+	.option('--include', 'Comma-separated relations: type, branches, deploy.')
 	.example('projects --sort name:asc')
 	.action(run(project.listProjects));
 
@@ -1406,7 +1441,7 @@ cli
 	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
 	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.option('--include', 'Comma-separated relations: type, projectOwner, branches, deploy.')
+	.option('--include', 'Comma-separated relations: type, branches, deploy.')
 	.example('project --project abc --include type')
 	.action(run(project.getProject));
 
@@ -1503,60 +1538,6 @@ cli
 	.action(run(project.openProject));
 
 cli
-	.command('project ownership')
-	.describe('Inspect the pending project ownership request.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(project.getOwnershipRequest));
-
-cli
-	.command('project ownership transfer')
-	.describe('Request project ownership transfer to an active member.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--yes', 'Confirm this operation.', false)
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project ownership transfer --project abc --data \'{"toUserId":123}\' --yes')
-	.action(run(project.transferOwnership));
-
-cli
-	.command('project ownership accept')
-	.describe('Accept a project ownership request addressed to you.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--yes', 'Confirm this operation.', false)
-	.option('--request', 'Request identifier.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(project.acceptOwnership));
-
-cli
-	.command('project ownership decline')
-	.describe('Decline a project ownership request.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--yes', 'Confirm this operation.', false)
-	.option('--request', 'Request identifier.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(project.declineOwnership));
-
-cli
-	.command('project ownership cancel')
-	.describe('Cancel a pending project ownership request.')
-	.option('--project', 'Project identifier.')
-	.option('--target-agent', 'Agent UUID under this Project; mutually exclusive with --target-test.')
-	.option('--target-test', 'Test UUID under this Project; mutually exclusive with --target-agent.')
-	.option('--yes', 'Confirm this operation.', false)
-	.option('--request', 'Request identifier.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(project.cancelOwnership));
-
-cli
 	.command('project collaborator')
 	.describe('Collaborator commands: project collaborator add, update.')
 	.action(options => {
@@ -1573,7 +1554,7 @@ cli
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project collaborator add --project abc --data \'{"userId":123,"role":"collaborator"}\' --yes')
+	.example('project collaborator add --project abc --data \'{"userId":123,"role":"editor"}\' --yes')
 	.action(run(project.addCollaborator));
 
 cli
@@ -1586,7 +1567,7 @@ cli
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--collaborator', 'Collaborator identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('project collaborator update --project abc --collaborator abc --data \'{"role":"collaborator"}\' --yes')
+	.example('project collaborator update --project abc --collaborator abc --data \'{"role":"editor"}\' --yes')
 	.action(run(project.updateCollaborator));
 
 cli

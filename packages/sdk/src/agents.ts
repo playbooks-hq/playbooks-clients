@@ -60,7 +60,8 @@ export interface AgentData {
 	association: { kind: 'project' | 'site'; id: string; name: string } | null;
 	environment?: 'development' | 'production' | null;
 	status: string;
-	role?: 'owner' | 'admin' | 'editor' | 'viewer' | null;
+	role?: 'admin' | 'editor' | 'viewer' | null;
+	visibility: 'workspace' | 'private';
 	revision: number;
 	capabilities: Record<string, boolean> & {
 		canRead?: boolean;

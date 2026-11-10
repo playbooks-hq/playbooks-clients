@@ -36,8 +36,8 @@ export const workspaceContext = async (options: any) => {
 
 export const projectContext = async (options: any, params: { include?: string } = {}) => {
 	const id = identifier(options.project, '--project');
-	const context = await workspaceContext(options);
-	const projectResource = await context.workspaceResource.projects.get(id, {
+	const context = await workspaceReferenceContext(options);
+	const projectResource = await context.workspaceReference.projects.get(id, {
 		...params,
 		...(options['target-agent'] === undefined
 			? {}

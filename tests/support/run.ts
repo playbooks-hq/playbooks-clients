@@ -129,7 +129,8 @@ export async function cleanup(
       .then((workspace) => workspace.projects.get(state.projectUuid));
     assert.equal(project.id, state.projectId);
     assert.equal(project.workspaceId, user.workspaceId);
-    assert.equal(project.projectOwnerId, user.userId);
+    assert.equal(project.visibility, "workspace");
+    assert.equal(project.access.role, "admin");
     state.deletionDispatched = true;
     save(runPath(state.id), state);
     receipt = await project.delete({ confirmation: project.name });

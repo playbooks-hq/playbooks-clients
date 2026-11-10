@@ -51,3 +51,5 @@ export type { FileSystemFile, FileSystemTree, PlanDocument } from 'src/file-syst
 
 export { Subagents } from 'src/subagents.js';
 export type { SubagentConfiguration, SubagentCreate, SubagentUpdate } from 'src/subagents.js';
+
+export { ResourceSharing } from 'src/resource-sharing.js';

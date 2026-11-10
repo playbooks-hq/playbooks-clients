@@ -65,11 +65,7 @@ export const coreTools: ToolDefinition[] = [
 			},
 			include: {
 				flag: 'include',
-				description: 'Comma-separated relations: type, projectOwner, branches, deploy.',
-			},
-			owner: {
-				flag: 'owner',
-				description: 'Numeric user ID of the project owner.',
+				description: 'Comma-separated relations: type, branches, deploy.',
 			},
 		},
 	},
@@ -96,7 +92,7 @@ export const coreTools: ToolDefinition[] = [
 			},
 			include: {
 				flag: 'include',
-				description: 'Comma-separated relations: type, projectOwner, branches, deploy.',
+				description: 'Comma-separated relations: type, branches, deploy.',
 			},
 		},
 	},

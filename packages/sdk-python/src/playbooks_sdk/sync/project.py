@@ -137,20 +137,6 @@ class Checkpoints(Listing):
         return self._action(f"{self._path}/{identifier(id)}/restore", "POST")
 
 
-class Ownership(ReadEndpoint):
-    def transfer(self, data: Data) -> Any:
-        return self._action(self._path, "POST", data)
-
-    def accept(self, id: Identifier) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/accept", "POST")
-
-    def decline(self, id: Identifier) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/decline", "POST")
-
-    def cancel(self, id: Identifier) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/cancel", "POST")
-
-
 class Schedules(Collection):
     def run(self, id: Identifier, data: Data) -> Any:
         return self._action(f"{self._path}/{identifier(id)}/runs", "POST", data)
@@ -318,10 +304,6 @@ class Project(Resource):
     @property
     def checkpoints(self) -> Checkpoints:
         return Checkpoints(self._transport, f"{self._path}/checkpoints")
-
-    @property
-    def ownership(self) -> Ownership:
-        return Ownership(self._transport, f"{self._path}/ownership-request")
 
     @property
     def schedules(self) -> Schedules:

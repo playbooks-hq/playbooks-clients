@@ -68,7 +68,7 @@ const agent = await agents.create({
 });
 ```
 
-The service derives application identity from the credential; the Workspace identifier is request context, not authorization. Creation grants the application Admin and the current Workspace owner human Owner. Existing Agents require an explicit Viewer, Editor, or Admin application grant. Project development and Site production grants are separate. Test runtimes do not inherit either grant.
+The service derives application identity from the credential; the Workspace identifier is request context, not authorization. Creation grants the application Admin; the Workspace Owner retains resource Admin authority. Existing Agents require an explicit Viewer, Editor, or Admin application grant. Project development and Site production grants are separate. Test runtimes do not inherit either grant.
 
 Use `agent.applicationGrants.get/update/remove` to manage application access with the Agent revision. Optional `projectId` or `siteId` associations organize Agents and never grant access. Conversations keep separate histories but share the Agent's resources and permissions. Agent access does not grant access to Project/Site secrets.
 
@@ -126,10 +126,10 @@ Only operations already supported by CLI are exposed; not every resource has eve
 
 | Owner | Resources and operations |
 | --- | --- |
-| `client` | `session.get()`, `workspaces.list/get/update()`, public `templates.list/get()`, `categories`, `collections`, `creators` |
+| `client` | `session.get/sharedResources()`, `workspaces.list/get/update/reference()`, `resourceSharing(workspace, kind, id)`, public `templates.list/get()`, `categories`, `collections`, `creators` |
 | `workspace` | `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
 | Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
-| `project` | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `ownership`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
+| `project` | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
 | Project development | `files`, `source`, `branches`, `checkpoints`, `schedules`, `sandbox`, `logs` |
 | Project publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
 | Workspace/Project Operators | `conversations`, `runs`; verified conversations provide messages, with Project messages scoped to a selected branch |
@@ -139,11 +139,8 @@ Examples of named actions:
 ```ts
 
 const preview = await workspace.members.previewDeparture('MEMBER_ID');
-// After reviewing preview, supply its revision and the selected recipient.
-await workspace.members.depart('MEMBER_ID', {
-  revision: 'REVIEWED_REVISION',
-  toUserId: 123,
-});
+// After reviewing preview, supply its revision.
+await workspace.members.depart('MEMBER_ID', { revision: 'REVIEWED_REVISION' });
 
 const records = await workspace.domains.records('DOMAIN_UUID').list();
 const source = await project.source.status();
@@ -151,6 +148,12 @@ const schedules = await project.schedules.list();
 ```
 
 Consequential methods are explicit programmatic actions: the SDK does not prompt. Preserve the required revisions, recipients, confirmation values, and idempotency keys when calling them. Server validates authority and current state. SDK resource access never grants additional permissions.
+
+## Resource sharing
+
+Chats, Agents, and Projects belong to their Workspace. Human roles are Viewer, Editor, and Admin; new resources use Workspace visibility, and private resources require explicit grants. Use `client.session.sharedResources({ type, limit, cursor })` for accepted external grants. The response has `data.items` and `data.nextCursor`; it does not grant Workspace membership or navigation.
+
+`client.resourceSharing(workspaceId, 'chats' | 'agents' | 'projects', resourceId)` provides `members()`, `grant(id, role)`, `updateGrant(id, role)`, `revoke(id)`, `setVisibility({ visibility, revision })`, and `invitations.list/create/resend/revoke`. Chat and Agent member IDs are User UUIDs; `revoke('self')` leaves a direct grant. Project creation uses a numeric User ID; update and revoke use the returned numeric collaborator ID. Resource invitation acceptance and ownership of independent Sites and Artifacts remain separate.
 
 ## Workspace Inbox
 

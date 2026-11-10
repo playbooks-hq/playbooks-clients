@@ -36,17 +36,21 @@ Private tools require an explicit `workspace`. Tools targeting an existing Proje
 
 | Toolset | Contents | Default |
 | --- | --- | --- |
-| `core` | Identity, Workspace discovery, Projects, preflight, publication, releases, logs | Yes |
+| `core` | Identity, accepted external resource grants, Workspace discovery, Projects, preflight, publication, releases, logs | Yes |
 | `operator` | Project conversations, messages, and run inspection | Yes |
 | `discovery` | Public Templates, categories, collections, creators | Yes |
 | `templates` | Workspace-owned Templates and publication | No |
-| `workspace` | Workspace administration, configuration, financial observations, Workspace Operator | No |
+| `workspace` | Workspace administration, resource visibility and sharing, configuration, financial observations, Workspace Operator | No |
 | `project` | Project configuration, source, checkpoints, administration, scheduled messages | No |
 | `local` | Browser opening, file transfers, source import, export | No |
 
 `--toolsets` replaces the default selection; `all` enables every group. `--read-only` removes tools marked as mutating regardless of group selection, including local file writes. It narrows the MCP tool surface; Server permissions remain authoritative. Restart the MCP connection after changing options.
 
 `playbooks_help` lists the enabled tools and can show an individual tool's input schema. Command names map directly to tools: `project message create` becomes `playbooks_project_message_create`.
+
+## Resource sharing
+
+`playbooks_shared_resources` lists accepted external Chat, Agent, and Project grants with `type`, `limit`, and `cursor`. Resource access tools in the `workspace` toolset use an explicit owning `workspace`, `kind`, and `resource`. They list direct members and invitations, change Workspace/private visibility with an exact revision, manage direct Viewer/Editor/Admin grants, and invite, resend, or revoke external invitations. Chat and Agent members use User UUIDs; Project grant creation uses a numeric User ID, while updates and revocation use returned collaborator IDs. Mutating tools require `confirm: true`; Server permissions remain authoritative.
 
 ## Project Workflow
 

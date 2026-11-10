@@ -1,12 +1,18 @@
 from types import TracebackType
-from typing import Any, Self
+from typing import Any, Literal, Self
 
 import httpx
 
-from playbooks_sdk.resource import Data, identifier
+from playbooks_sdk.resource import Data, Identifier, identifier
 from playbooks_sdk.sync.core import Listing, ReadCollection, ReadEndpoint
+from playbooks_sdk.sync.resource_sharing import ResourceSharing
 from playbooks_sdk.sync.workspace import Workspaces
 from playbooks_sdk.transport import Config, Transport
+
+
+class Session(ReadEndpoint):
+    def shared_resources(self, **options: Any) -> Any:
+        return self._get("/session/shared-resources", options)
 
 
 class PlaybooksSDK:
@@ -38,12 +44,17 @@ class PlaybooksSDK:
             self._public_http.close()
 
     @property
-    def session(self) -> ReadEndpoint:
-        return ReadEndpoint(self._transport, "/session")
+    def session(self) -> Session:
+        return Session(self._transport, "/session")
 
     @property
     def workspaces(self) -> Workspaces:
         return Workspaces(self._transport)
+
+    def resource_sharing(
+        self, workspace: Identifier, kind: Literal["chats", "agents", "projects"], id: Identifier
+    ) -> ResourceSharing:
+        return ResourceSharing(self._transport.scoped(identifier(workspace)), kind, id)
 
     @property
     def templates(self) -> ReadCollection:

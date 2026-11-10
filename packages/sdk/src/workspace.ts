@@ -65,23 +65,9 @@ export class Workspace extends Resource<WorkspaceData> {
 		return new Runs(this.#transport, '/chats/runs');
 	}
 	get chats() {
-		const path = '/chats';
-		return {
-			subagents: (id: Identifier) => new Subagents(this.#transport, `${path}/${identifier(id)}/subagents`),
-			sites: (id: Identifier) => listing<SiteData>(this.#transport, `${path}/${identifier(id)}/sites`),
-			list: (options?: ListOptions & { archived?: boolean }) => listing<ChatData>(this.#transport, path, options),
-			get: (id: Identifier) => get<ChatData>(this.#transport, `${path}/${identifier(id)}`),
-			create: (input: ChatCreate) => action<ChatData>(this.#transport, path, 'POST', input),
-			update: (id: Identifier, input: ChatUpdate) =>
-				action<ChatData>(
-					this.#transport,
-					`${path}/${identifier(id)}`,
-					input.action === 'delete' ? 'DELETE' : 'PUT',
-					input,
-				),
-			fileSystem: (id: Identifier) => new FileSystem(this.#transport, `${path}/${identifier(id)}/file-system`),
-		};
+		return chats(this.#transport);
 	}
+
 	conversationPlans(conversationId: Identifier, projectId?: Identifier) {
 		return new ConversationPlans(
 			this.#transport,
@@ -127,7 +113,7 @@ export class Workspace extends Resource<WorkspaceData> {
 			update: (id: Identifier, input: MemberUpdate) => collection.update(id, input),
 			previewDeparture: (id: Identifier) =>
 				get(this.#transport, `/session/workspaces/${identifier(this.#identity)}/members/${identifier(id)}/departure`),
-			depart: (id: Identifier, input: { revision: string; toUserId?: number }) =>
+			depart: (id: Identifier, input: { revision: string }) =>
 				action(
 					this.#transport,
 					`/session/workspaces/${identifier(this.#identity)}/members/${identifier(id)}/departure`,
@@ -218,4 +204,18 @@ export const updateWorkspace = async (transport: Transport, id: Identifier, inpu
 	const data = await action<WorkspaceData>(transport, '/workspace', 'PUT', input);
 	if (data.uuid !== String(id)) throw new PlaybooksError(502, 'The updated Workspace identity did not match.');
 	return data;
+};
+
+export const chats = (transport: Transport) => {
+	const path = '/chats';
+	return {
+		subagents: (id: Identifier) => new Subagents(transport, `${path}/${identifier(id)}/subagents`),
+		sites: (id: Identifier) => listing<SiteData>(transport, `${path}/${identifier(id)}/sites`),
+		list: (options?: ListOptions & { archived?: boolean }) => listing<ChatData>(transport, path, options),
+		get: (id: Identifier) => get<ChatData>(transport, `${path}/${identifier(id)}`),
+		create: (input: ChatCreate) => action<ChatData>(transport, path, 'POST', input),
+		update: (id: Identifier, input: ChatUpdate) =>
+			action<ChatData>(transport, `${path}/${identifier(id)}`, input.action === 'delete' ? 'DELETE' : 'PUT', input),
+		fileSystem: (id: Identifier) => new FileSystem(transport, `${path}/${identifier(id)}/file-system`),
+	};
 };

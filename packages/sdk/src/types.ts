@@ -43,7 +43,17 @@ export interface WorkspaceData extends WorkspaceSummary {
 	updatedAt?: string;
 }
 
+export type ResourceVisibility = 'workspace' | 'private';
+export type ResourceRole = 'admin' | 'editor' | 'viewer';
+export interface ResourceAccess {
+	role: ResourceRole | null;
+	external: boolean;
+	capabilities: Record<string, boolean>;
+}
+
 export interface ProjectData {
+	visibility: ResourceVisibility;
+	access: ResourceAccess;
 	id: number;
 	uuid: string;
 	name: string;
@@ -62,7 +72,6 @@ export interface ProjectData {
 		testId?: string;
 	};
 	workspaceId?: number | null;
-	projectOwnerId?: number | null;
 	promptId?: number | null;
 	archived?: boolean;
 	archivedAt?: string | null;
@@ -86,7 +95,6 @@ export interface ProjectListOptions {
 	query?: string;
 	sortProp?: 'id' | 'name' | 'createdAt' | 'updatedAt';
 	sortValue?: 'asc' | 'desc';
-	projectOwnerId?: number;
 }
 
 export type Identifier = string | number;

@@ -15,7 +15,7 @@ if (action !== "admin") {
 const child = spawn(
   process.execPath,
   action === "run"
-    ? ["--test", "--test-concurrency=1", ".test-dist/agent-access.test.js", ".test-dist/journey.test.js"]
+    ? ["--test", "--test-concurrency=1", ".test-dist/agent-access.test.js", ".test-dist/resource-access.test.js", ".test-dist/journey.test.js"]
     : action === "admin"
       ? [".test-dist/support/admin.js", ...args]
       : [".test-dist/manage.js", action, ...args],

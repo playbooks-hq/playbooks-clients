@@ -26,7 +26,7 @@ export const workspaceMembersTools: ToolDefinition[] = [
 	},
 	{
 		command: 'workspace member depart',
-		description: 'Remove a member using the reviewed revision and ownership recipient.',
+		description: 'Remove a member using the reviewed revision.',
 		toolset: 'workspace',
 		readOnly: false,
 		destructive: true,
@@ -52,7 +52,7 @@ export const workspaceMembersTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['revision', 'toUserId'],
+		dataFields: ['revision'],
 		dataOptional: false,
 	},
 	{

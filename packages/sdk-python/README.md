@@ -44,10 +44,10 @@ Both clients have matching resource methods. Async I/O methods must be awaited; 
 
 | Owner | Resources and operations |
 | --- | --- |
-| Client | `session.get()`, `workspaces.list/get/update()`, public `templates.list/get()`, `categories`, `collections`, `creators` |
+| Client | `session.get/shared_resources()`, `workspaces.list/get/update/reference()`, `resource_sharing(workspace, kind, id)`, public `templates.list/get()`, `categories`, `collections`, `creators` |
 | Workspace | `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
 | Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
-| Project | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `ownership`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
+| Project | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
 | Project development | `files`, `source`, `branches`, `checkpoints`, `schedules`, `sandbox`, `logs` |
 | Publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
 | Operators | `conversations`, `runs`; verified conversations expose messages, with a selected branch for Project messages |
@@ -152,11 +152,17 @@ Catch `PlaybooksError` and inspect `status`, `message`, `source`, `debug`, and `
 
 Run `pnpm lint` and `pnpm typecheck` from the root after `pnpm python:setup`. They include Ruff and strict mypy checks. Python shares the repository version. Explicit `pnpm release:prepare` creates a wheel and source distribution alongside npm artifacts and records their integrity; it publishes nothing. The existing isolated package compatibility verifier covers npm packages, not Python runtime acceptance. Live platform behavior requires separately authorized verification. Check PyPI name/version availability and publishing access before any publication.
 
+## Resource sharing
+
+Both clients expose `resource_sharing(workspace, kind, id)` and `workspaces.reference(workspace).resource_sharing(kind, id)` without loading Workspace metadata. The handle offers `members()`, `grant(id, role)`, `update_grant(id, role)`, `revoke(id)`, `set_visibility(visibility, revision)`, and `invitations.list/create/resend/revoke`. Async I/O methods are awaited. Chat and Agent member IDs are User UUIDs; `revoke("self")` leaves a direct grant. Project creation uses a numeric User ID; update and revoke use the numeric collaborator ID returned by Server.
+
+`session.shared_resources(type="all", limit=20, cursor=...)` lists accepted external grants with `data.items` and `data.nextCursor`, independently of Workspace membership. The Server applies Workspace or private visibility and current roles.
+
 ## Managed Workspace Agents
 
 Configure the client's `base_url` from `PLAYBOOKS_AGENTS_URL` and `api_key` from `PLAYBOOKS_AGENTS_KEY` in application backend code. Use the Workspace Agent collection for Agent operations. The managed service derives Project-development or Site-production identity from the credential; it does not trust request-supplied identity.
 
-Creating an Agent grants the calling application Admin and the current Workspace owner human Owner. Existing Agents require an explicit application grant. Agent methods `application_grants`, `application_grant_candidates`, `update_application_grants`, and `remove_application_grant` manage access with revision checks. Optional Project/Site associations only organize Agents. Conversations share Agent resources and permissions.
+Creating an Agent grants the calling application Admin; the Workspace Owner retains resource Admin authority. Existing Agents require an explicit application grant. Agent methods `application_grants`, `application_grant_candidates`, `update_application_grants`, and `remove_application_grant` manage access with revision checks. Optional Project/Site associations only organize Agents. Conversations share Agent resources and permissions.
 
 With authorized user API credentials, Project and Site methods `agent_access`, `update_agent_access(enabled=...)`, and `rotate_agent_access` manage runtime access. Revocation is immediate; replacement environment variables require a Sandbox restart or normal Site release update. Keep credentials on the backend. Test environments do not inherit development or production grants.
 

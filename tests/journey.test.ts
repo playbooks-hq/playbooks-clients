@@ -72,7 +72,8 @@ test(
       state.projectId = project.id;
       save(runPath(state.id), state);
       assert.equal(project.workspaceId, user.workspaceId);
-      assert.equal(project.projectOwnerId, user.userId);
+      assert.equal(project.visibility, "workspace");
+      assert.equal(project.access.role, "admin");
       await scenario("SDK resource contracts", () =>
         sdkChecks(workspace, project),
       );

@@ -11,6 +11,7 @@ import { projectControlTools } from 'src/tools/project-controls.js';
 import { projectSchedulesTools } from 'src/tools/project-schedules.js';
 import { projectSourceTools } from 'src/tools/project-source.js';
 import { projectTestTools } from 'src/tools/project-tests.js';
+import { resourceAccessTools } from 'src/tools/resource-access.js';
 import { siteTools } from 'src/tools/sites.js';
 import { templatesTools } from 'src/tools/templates.js';
 import { workspaceChatsTools } from 'src/tools/workspace-chats.js';
@@ -25,6 +26,7 @@ import { workspaceSchedulesTools } from 'src/tools/workspace-schedules.js';
 export const catalog: ToolDefinition[] = (
 	[
 		...coreTools,
+		...resourceAccessTools,
 		...agentTools,
 		...siteTools,
 		...discoveryTools,

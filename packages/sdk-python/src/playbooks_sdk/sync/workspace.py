@@ -15,6 +15,7 @@ from playbooks_sdk.sync.files import Files
 from playbooks_sdk.sync.inbox import Inbox
 from playbooks_sdk.sync.operators import Conversations, Runs
 from playbooks_sdk.sync.project import Projects
+from playbooks_sdk.sync.resource_sharing import ResourceSharing
 from playbooks_sdk.sync.sites import Sites
 from playbooks_sdk.sync.subagents import Subagents
 from playbooks_sdk.transport import Transport
@@ -285,7 +286,7 @@ class Workspace(Resource):
 
 
 class WorkspaceReference:
-    """A scoped Agent operation handle without Workspace metadata."""
+    """Scoped resource operation handles without Workspace membership or metadata."""
 
     __slots__ = ("_transport",)
 
@@ -295,6 +296,17 @@ class WorkspaceReference:
     @property
     def agents(self) -> Agents:
         return Agents(self._transport, "/agents")
+
+    @property
+    def projects(self) -> Projects:
+        return Projects(self._transport)
+
+    @property
+    def chats(self) -> Chats:
+        return Chats(self._transport, "/chats")
+
+    def resource_sharing(self, kind: str, id: Identifier) -> ResourceSharing:
+        return ResourceSharing(self._transport, kind, id)  # type: ignore[arg-type]
 
 
 class Workspaces(Endpoint):
