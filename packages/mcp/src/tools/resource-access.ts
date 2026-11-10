@@ -20,6 +20,8 @@ export const resourceAccessTools: ToolDefinition[] = [
 		destructive: false,
 		options: {
 			type: { flag: 'type', description: 'all, chats, agents, or projects.' },
+			q: { flag: 'q', description: 'Search resource and Workspace names.' },
+			workspaceUuid: { flag: 'workspace-uuid', description: 'Narrow results to an owning Workspace UUID.' },
 			limit: { flag: 'limit', description: 'Page size (1-100).', kind: 'number' },
 			cursor: { flag: 'cursor', description: 'Continuation cursor.' },
 		},

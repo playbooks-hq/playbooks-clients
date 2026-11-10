@@ -25,6 +25,8 @@ test("resource sharing scopes requests without Workspace metadata lookup", async
   });
   await sdk.session.sharedResources({
     type: "projects",
+    q: "client work",
+    workspaceUuid: "external-workspace",
     limit: 10,
     cursor: "next",
   });
@@ -59,6 +61,8 @@ test("resource sharing scopes requests without Workspace metadata lookup", async
   );
   assert.deepEqual(Object.fromEntries(new URL(requests[0].url).searchParams), {
     type: "projects",
+    q: "client work",
+    workspaceUuid: "external-workspace",
     limit: "10",
     cursor: "next",
   });

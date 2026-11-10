@@ -491,3 +491,27 @@ export interface ConversationUtilityListOptions extends ListOptions {
 	search?: string;
 	type?: string;
 }
+
+export interface SharedResourceListOptions {
+	type?: 'all' | 'chats' | 'agents' | 'projects';
+	q?: string;
+	workspaceUuid?: string;
+	limit?: number;
+	cursor?: string;
+}
+
+export interface SharedResourceData {
+	type: 'chat' | 'agent' | 'project';
+	uuid: string;
+	name: string;
+	workspace: { uuid: string; name: string };
+	role: 'admin' | 'editor' | 'viewer';
+	visibility: 'workspace' | 'private';
+	archived: boolean;
+	access: { external: true };
+}
+
+export interface SharedResourcePage {
+	items: SharedResourceData[];
+	nextCursor: string | null;
+}

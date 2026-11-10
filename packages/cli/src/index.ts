@@ -34,6 +34,8 @@ cli
 	.command('shared resources')
 	.describe('List accepted external resource grants across Workspaces.')
 	.option('--type', 'all, chats, agents, or projects.')
+	.option('--q', 'Search resource and Workspace names.')
+	.option('--workspace-uuid', 'Narrow results to an owning Workspace UUID.')
 	.option('--limit', 'Page size (1-100).')
 	.option('--cursor', 'Continuation cursor.')
 	.action(run(sharedResources));
@@ -44,7 +46,7 @@ for (const [name, description, operation] of [
 	['visibility', 'Change Workspace or private visibility with a revision check.', 'visibility'],
 	['grant', 'Grant direct access to a person.', 'grant'],
 	['update-grant', 'Change a direct grant.', 'update-grant'],
-	['revoke', 'Remove a direct grant; use --member self to leave a Chat or Agent.', 'revoke'],
+	['revoke', 'Remove a direct grant; use --member self to leave a resource.', 'revoke'],
 	['invite', 'Invite an external person to this resource.', 'invite'],
 	['resend', 'Resend a resource invitation.', 'resend'],
 	['revoke-invitation', 'Revoke a pending resource invitation.', 'revoke-invitation'],

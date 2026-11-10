@@ -5,7 +5,7 @@ import { Projects } from 'src/project.js';
 import { get, identifier, listing } from 'src/resource.js';
 import { ResourceSharing } from 'src/resource-sharing.js';
 import { Transport } from 'src/transport.js';
-import type { ApiResponse } from 'src/types.js';
+import type { ApiResponse, SharedResourceListOptions, SharedResourcePage } from 'src/types.js';
 import type { TemplateData, TemplateListOptions } from 'src/types.js';
 import type { ClientOptions, Identifier, ListOptions, WorkspaceData, WorkspaceUpdate } from 'src/types.js';
 import { chats } from 'src/workspace.js';
@@ -28,9 +28,8 @@ export class PlaybooksSDK {
 	get session() {
 		return {
 			get: () => get(this.#transport(), '/session'),
-			sharedResources: (
-				options: { type?: 'all' | 'chats' | 'agents' | 'projects'; limit?: number; cursor?: string } = {},
-			) => get(this.#transport(), '/session/shared-resources', options),
+			sharedResources: (options: SharedResourceListOptions = {}) =>
+				get<SharedResourcePage>(this.#transport(), '/session/shared-resources', options),
 		};
 	}
 	resourceSharing(workspace: Identifier, kind: 'chats' | 'agents' | 'projects', id: Identifier) {

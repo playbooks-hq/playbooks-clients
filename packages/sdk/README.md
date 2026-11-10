@@ -151,7 +151,7 @@ Consequential methods are explicit programmatic actions: the SDK does not prompt
 
 ## Resource sharing
 
-Chats, Agents, and Projects belong to their Workspace. Human roles are Viewer, Editor, and Admin; new resources use Workspace visibility, and private resources require explicit grants. Use `client.session.sharedResources({ type, limit, cursor })` for accepted external grants. The response has `data.items` and `data.nextCursor`; it does not grant Workspace membership or navigation.
+Chats, Agents, and Projects belong to their Workspace. Human roles are Viewer, Editor, and Admin; new resources use Workspace visibility, and private resources require explicit grants. Use `client.session.sharedResources({ type, q, workspaceUuid, limit, cursor })` for accepted external grants. Search matches resource or Workspace names before pagination; `workspaceUuid` narrows existing access. The SDK result has `items` and `nextCursor`; it does not grant Workspace membership or navigation.
 
 `client.resourceSharing(workspaceId, 'chats' | 'agents' | 'projects', resourceId)` provides `members()`, `grant(id, role)`, `updateGrant(id, role)`, `revoke(id)`, `setVisibility({ visibility, revision })`, and `invitations.list/create/resend/revoke`. Chat and Agent member IDs are User UUIDs; `revoke('self')` leaves a direct grant. Project creation uses a numeric User ID; update and revoke use the returned numeric collaborator ID. Resource invitation acceptance and ownership of independent Sites and Artifacts remain separate.
 

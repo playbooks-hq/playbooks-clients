@@ -22,6 +22,8 @@ export const sharedResources = async (options: any) => {
 	return sdkEnvelope(
 		await client.session.sharedResources({
 			type: options.type,
+			q: options.q,
+			workspaceUuid: options['workspace-uuid'],
 			cursor: options.cursor,
 			...(options.limit === undefined ? {} : { limit: integerOption(options.limit, 'limit', 1, 100) }),
 		}),
