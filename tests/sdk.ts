@@ -47,4 +47,9 @@ export async function sdkChecks(workspace: Workspace, project: Project) {
   );
   assert(page.data.some((item) => item.uuid === project.uuid));
   assert.equal((await workspace.projects.get(project.uuid)).name, project.name);
+  for (const kind of ["agent", "project"] as const) {
+    const templates = await workspace.templates.list({ kind, pageSize: 1 });
+    assert(Array.isArray(templates.data));
+    assert(templates.data.every((template) => template.kind === kind));
+  }
 }

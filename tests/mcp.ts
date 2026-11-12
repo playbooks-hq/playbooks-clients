@@ -7,11 +7,25 @@ export async function mcpChecks(state: Json, config: string, mcp: MCP) {
   const tools = (await mcp.request("tools/list")).tools;
   assert(tools.some((tool: Json) => tool.name === "playbooks_project"));
   assert(
+    tools.some((tool: Json) => tool.name === "playbooks_workspace_templates"),
+  );
+  assert(
     tools.some(
       (tool: Json) => tool.name === "playbooks_project_message_create",
     ),
   );
   const scope = { workspace: state.workspaceUuid, project: state.projectUuid };
+  const templates = await mcp.call("playbooks_workspace_templates", {
+    workspace: state.workspaceUuid,
+    kind: "agent",
+    pageSize: 1,
+  });
+  assert(!templates.isError);
+  assert(
+    templates.structuredContent.data.every(
+      (template: Json) => template.kind === "agent",
+    ),
+  );
   const missingScope = await mcp.call("playbooks_project", {
     project: state.projectUuid,
   });

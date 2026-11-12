@@ -15,6 +15,7 @@ export const updateSchedule = async (options: any) => {
 		'name',
 		'instructions',
 		'references',
+		'attachments',
 		'modelId',
 		'branchId',
 		'enabled',

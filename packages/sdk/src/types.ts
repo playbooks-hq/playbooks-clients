@@ -196,6 +196,9 @@ export interface ScheduleReference {
 	length: number;
 	label: string;
 }
+export interface ScheduleAttachment {
+	mediaId: number;
+}
 
 export interface ChatScheduleTiming {
 	frequency: 'daily' | 'weekly' | 'monthly';
@@ -208,13 +211,12 @@ export interface ChatScheduleInput extends ChatScheduleTiming {
 	name: string;
 	instructions: string;
 	references?: ScheduleReference[];
-	modelId?: number;
+	attachments?: ScheduleAttachment[];
 	enabled: boolean;
 }
 export type ChatScheduleCreate = ChatScheduleInput & {
 	idempotencyKey: string;
-	conversationId: string;
-	chatId?: string;
+	originConversationId?: string;
 	originMessageId?: number;
 };
 export type ChatScheduleMutation = { expectedRevision: number } & (
@@ -223,10 +225,11 @@ export type ChatScheduleMutation = { expectedRevision: number } & (
 	| { action: 'run'; idempotencyKey: string }
 );
 export interface ScheduleInput {
-	conversationId: number;
+	originConversationId?: number;
 	name: string;
 	instructions: string;
 	references?: ScheduleReference[];
+	attachments?: ScheduleAttachment[];
 	modelId?: number;
 	branchId?: number;
 	enabled?: boolean;
@@ -234,7 +237,7 @@ export interface ScheduleInput {
 	time?: string | null;
 	timezone?: string | null;
 }
-export type ScheduleUpdate = Partial<Omit<ScheduleInput, 'conversationId'>> & { revision: number };
+export type ScheduleUpdate = Partial<Omit<ScheduleInput, 'originConversationId'>> & { revision: number };
 export interface ScheduleRunInput {
 	revision: number;
 	requestKey: string;
@@ -265,12 +268,86 @@ export interface ActionReceipt extends RecordData {
 	status?: string;
 }
 
+export type TemplateKind = 'agent' | 'chat' | 'project';
+
+export interface TemplateSetupRequirement {
+	kind?: 'connector' | 'mcp' | 'browser' | 'channel' | (string & {});
+	key?: string;
+	name?: string;
+	requiresSetup?: boolean;
+}
+
+export interface TemplatePackageItem {
+	name?: string;
+	key?: string;
+	path?: string;
+	size?: number;
+	artifactId?: string;
+	versionId?: string;
+	entryPoint?: string;
+	category?: string;
+	environment?: string;
+	provider?: string;
+	checksum?: string;
+	requiresSetup?: boolean;
+	setupVariables?: string[];
+	missingDependencies?: Array<string | { name?: string; key?: string }>;
+	connectorSetup?: Array<string | { name?: string; key?: string }>;
+}
+
+/** Safe inventory only; package bytes and account credentials are never returned here. */
+export interface TemplatePackageSummary {
+	format?: number;
+	kind?: TemplateKind;
+	files?: number;
+	fileInventory?: TemplatePackageItem[];
+	artifactInventory?: TemplatePackageItem[];
+	services?: TemplatePackageItem[];
+	runtimes?: TemplatePackageItem[];
+	skills?: TemplatePackageItem[];
+	designs?: TemplatePackageItem[];
+	connectors?: TemplatePackageItem[];
+	mcps?: TemplatePackageItem[];
+	scheduleInventory?: TemplatePackageItem[];
+	subagentInventory?: TemplatePackageItem[];
+	setupRequirements?: TemplateSetupRequirement[];
+	agents?: number;
+	subagents?: number;
+	schedules?: number;
+	conversations?: number;
+	excluded?: string[];
+	configuration?: {
+		instructions?: boolean;
+		model?: { provider: string; providerModelId: string } | null;
+		enabledTools?: string[];
+		operatorRelease?: string;
+		budget?: { creditBudget?: number | null; budgetStopNewWork?: boolean };
+	};
+}
+
+export interface TemplateVersionData extends RecordData {
+	uuid?: string;
+	version?: string;
+	major?: number;
+	minor?: number;
+	patch?: number;
+	status?: string;
+	notes?: string | null;
+	publishedAt?: string | null;
+	bundleSummary?: TemplatePackageSummary;
+}
+
 export interface TemplateData extends RecordData {
+	kind?: TemplateKind;
+	packageSelection?: TemplatePackageSelection;
+	preview?: { kind: 'site'; siteId: string; url: string } | null;
 	description?: string | null;
 	tagline?: string | null;
 	visibility?: string;
 	licenseId?: number;
 	categoryIds?: number[];
+	bundleSummary?: TemplatePackageSummary;
+	currentVersion?: TemplateVersionData | null;
 }
 export interface MemberData extends RecordData {
 	userId?: number;
@@ -350,7 +427,7 @@ export interface ReleaseData extends RecordData {
 }
 export interface TemplateListOptions extends ListOptions {
 	category?: string;
-	kind?: 'project' | 'agent';
+	kind?: TemplateKind;
 }
 export interface TemplatePublish {
 	acknowledgment: true;
@@ -358,6 +435,116 @@ export interface TemplatePublish {
 	sourceRevision: string;
 	notes?: string;
 	bump?: 'patch' | 'minor' | 'major';
+}
+export interface TemplateSourceReview {
+	sourceRevision: string;
+	expectedRevision: string;
+	bundleSummary: TemplatePackageSummary;
+}
+export interface TemplateRemixResult extends RecordData {
+	id: number;
+	uuid: string;
+	name: string;
+	kind: TemplateKind;
+	webPath: string;
+	templateVersionId: number;
+	setup: TemplatePackageSummary;
+	attribution: {
+		sourceVersionId: number;
+		packageChecksum: string;
+	};
+}
+export interface TemplateMaterialFile {
+	path: string;
+	checksum: string;
+	size: number;
+}
+export interface TemplateMaterialResource {
+	id: number;
+	name: string;
+	checksum?: string;
+	revision?: string;
+	sourceScope: string;
+	operations?: string[];
+	settings?: Record<string, string | number | boolean>;
+}
+export interface TemplateMaterials {
+	fileSystemRevision?: string;
+	fileSystem?: TemplateMaterialFile[];
+	artifacts?: Array<{
+		artifactId: string;
+		versionId: string;
+		name: string;
+		entryPoint: string;
+		files: TemplateMaterialFile[];
+	}>;
+	resources: {
+		files: TemplateMaterialResource[];
+		designs: TemplateMaterialResource[];
+		skills: TemplateMaterialResource[];
+		connectors: TemplateMaterialResource[];
+		mcps: TemplateMaterialResource[];
+	};
+}
+export interface TemplatePackageSelection {
+	source?: 'saved-upload' | 'saved-branch';
+	fileSystem?: Array<{ path: string; checksum: string }>;
+	artifacts?: Array<{ artifactId: string; versionId: string }>;
+	resources: {
+		files: Array<{ id: number; checksum: string }>;
+		designs: Array<{ id: number; checksum: string }>;
+		skills: Array<{ id: number; checksum: string }>;
+		connectors: Array<{ id: number; revision: string; operations: string[] }>;
+		mcps: Array<{
+			id: number;
+			revision: string;
+			operations: string[];
+			settings?: Record<string, string | number | boolean>;
+		}>;
+	};
+	preview?: { kind: 'site'; siteId: string } | null;
+}
+export interface ChatTemplateSetup {
+	templateVersionId: number;
+	resources: {
+		files: Array<{ key: string; name: string; checksum: string; size?: number; imported: boolean }>;
+		designs: Array<{ key: string; name: string; checksum: string; size?: number; imported: boolean }>;
+		skills: Array<{ key: string; name: string; checksum: string; size?: number; imported: boolean }>;
+		connectors: Array<{
+			key: string;
+			name: string;
+			operations: string[];
+			requiresSetup: true;
+			definition?: Record<string, unknown>;
+		}>;
+		mcps: Array<{
+			key: string;
+			name: string;
+			operations: string[];
+			requiresSetup: true;
+			definition?: Record<string, unknown>;
+		}>;
+	};
+}
+export interface ChatTemplateSetupItem {
+	key: string;
+	category: 'files' | 'designs' | 'skills';
+	name: string;
+	checksum: string;
+	content?: string;
+	mimeType?: string;
+	files?: Array<{ path: string; content: string; encoding: 'base64' }>;
+}
+export interface ChatTemplateImport {
+	category: 'files' | 'designs' | 'skills';
+	keys: string[];
+	acknowledgment: true;
+	idempotencyKey: string;
+}
+export interface ChatTemplateImportResult {
+	category: ChatTemplateImport['category'];
+	items: Array<{ key: string; id: number; uuid: string; name: string }>;
+	idempotencyKey: string;
 }
 export interface TemplateUpdate {
 	name?: string;
@@ -368,7 +555,7 @@ export interface TemplateUpdate {
 	licenseId?: number;
 	categoryIds?: number[];
 	visibility?: 'private' | 'unlisted' | 'public';
-	packageSelection?: { fileIds?: number[]; scheduleIds?: number[]; fileSystem?: string[] };
+	packageSelection?: TemplatePackageSelection;
 }
 export interface BudgetUpdate {
 	creditBudget?: number | null;

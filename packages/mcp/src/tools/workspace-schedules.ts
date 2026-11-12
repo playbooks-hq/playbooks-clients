@@ -3,19 +3,18 @@ import type { ToolDefinition } from 'src/tools/definition.js';
 export const workspaceSchedulesTools: ToolDefinition[] = [
 	{
 		command: 'workspace chat-schedules',
-		description: 'List authorized Chat scheduled messages. Optionally filter by the Chat owning a conversation.',
+		description: 'List the creator’s authorized Workspace Chat schedules.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit Workspace UUID.', required: true },
-			conversation: { flag: 'conversation', description: 'Originating conversation UUID.' },
 		},
 	},
 	{
 		command: 'workspace chat-schedule',
 		description:
-			'Read saved instruction, revision, owning conversation, model selection, timing and occurrence history. Queued is not completed.',
+			'Read saved instruction, revision, optional origin, timing and occurrence history. Each occurrence has its own conversation. Queued is not completed.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
@@ -38,7 +37,7 @@ export const workspaceSchedulesTools: ToolDefinition[] = [
 	{
 		command: 'workspace chat-schedule create',
 		description:
-			'Save one self-contained scheduled instruction for an explicit Chat conversationId with authorized durable references. Resolve ambiguous history-dependent instructions before saving. Every occurrence continues that conversation with its current authorized Workspace defaults. Creation does not run work.',
+			'Save one self-contained Workspace Chat scheduled instruction with authorized references and attachments. Each occurrence starts a fresh Chat conversation. Optional originConversationId records provenance only. Creation does not run work.',
 		toolset: 'workspace',
 		readOnly: false,
 		destructive: false,
@@ -51,14 +50,13 @@ export const workspaceSchedulesTools: ToolDefinition[] = [
 			},
 		},
 		dataFields: [
-			'chatId',
-			'conversationId',
+			'originConversationId',
 			'originMessageId',
 			'idempotencyKey',
 			'name',
 			'instructions',
 			'references',
-			'modelId',
+			'attachments',
 			'enabled',
 			'frequency',
 			'weekday',

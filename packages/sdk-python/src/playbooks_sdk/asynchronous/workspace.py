@@ -1,4 +1,5 @@
 from typing import Any, Self, cast
+from urllib.parse import quote
 
 from playbooks_sdk.asynchronous.agents import Agents
 from playbooks_sdk.asynchronous.core import (
@@ -39,6 +40,18 @@ class ConversationPlans(Endpoint):
 
 
 class Chats(Listing):
+    async def template_setup(self, id: Identifier) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}/template-setup")
+
+    async def template_setup_item(self, id: Identifier, category: str, key: str) -> Any:
+        path = f"{self._path}/{identifier(id)}/template-setup/items"
+        return await self._get(f"{path}/{identifier(category)}/{quote(key, safe='')}")
+
+    async def import_template_resources(self, id: Identifier, data: Data) -> Any:
+        return await self._action(
+            f"{self._path}/{identifier(id)}/template-setup/import", "POST", data
+        )
+
     def subagents(self, id: Identifier) -> Subagents:
         return Subagents(self._transport, f"{self._path}/{identifier(id)}/subagents")
 
@@ -96,8 +109,35 @@ class ChatSchedules(ReadCollection):
 class Templates(EditableCollection):
     update_method = "PATCH"
 
+    async def create_from_chat(self, chat_id: Identifier) -> Any:
+        return await self._action(f"/chats/{identifier(chat_id)}/template", "POST", {})
+
+    async def draft_from_chat(self, chat_id: Identifier) -> Any:
+        return await self._get(f"/chats/{identifier(chat_id)}/template")
+
+    async def create_from_project(self, project_id: Identifier) -> Any:
+        return await self._action(f"/projects/{identifier(project_id)}/template", "POST", {})
+
+    async def draft_from_project(self, project_id: Identifier) -> Any:
+        return await self._get(f"/projects/{identifier(project_id)}/template")
+
+    async def create_from_agent(self, agent_id: Identifier) -> Any:
+        return await self._action(f"/agents/{identifier(agent_id)}/template", "POST", {})
+
+    async def draft_from_agent(self, agent_id: Identifier) -> Any:
+        return await self._get(f"/agents/{identifier(agent_id)}/template")
+
+    async def source(self, id: Identifier) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}/source")
+
+    async def materials(self, id: Identifier) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}/materials")
+
     async def publish(self, id: Identifier, data: Data) -> Any:
         return await self._action(f"{self._path}/{identifier(id)}/publish", "POST", data)
+
+    async def remix(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"/explore/templates/{identifier(id)}/remix", "POST", data)
 
     async def versions(self, id: Identifier, **options: Any) -> ApiResponse:
         return await self._list(f"{self._path}/{identifier(id)}/versions", options)

@@ -9,9 +9,10 @@ export const createSchedule = async (options: any) => {
 	const target = JSON.stringify({ workspace: context.workspaceUuid, project: context.projectResource.uuid });
 	const data = await input(options, [
 		'name',
-		'conversationId',
+		'originConversationId',
 		'instructions',
 		'references',
+		'attachments',
 		'modelId',
 		'branchId',
 		'enabled',
@@ -19,7 +20,8 @@ export const createSchedule = async (options: any) => {
 		'time',
 		'timezone',
 	]);
-	data.conversationId = integerOption(data.conversationId, 'conversationId', 1);
+	if (data.originConversationId)
+		data.originConversationId = integerOption(data.originConversationId, 'originConversationId', 1);
 	if (data.enabled)
 		await confirm(options, 'Enable this scheduled message and authorize its future usage: ' + target + '?');
 	const response = sdkEnvelope(await context.projectResource.schedules.create(data));

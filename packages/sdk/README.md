@@ -54,7 +54,7 @@ const snapshot = project.toJSON();
 
 ## Managed Workspace Agents
 
-Applications use their backend runtime credentials with the dedicated managed Agent service:
+Create a Workspace Agent through the Playbooks UI or with an authorized User API key. Grant the Project or Site application access to that Agent before using its backend runtime credential:
 
 ```ts
 const agentsClient = new PlaybooksSDK({
@@ -62,13 +62,14 @@ const agentsClient = new PlaybooksSDK({
   apiKey: process.env.PLAYBOOKS_AGENTS_KEY,
 });
 const agents = agentsClient.workspaces.reference('WORKSPACE_UUID').agents;
-const agent = await agents.create({
-  name: 'Support assistant',
-  idempotencyKey: 'support-assistant-create-v1',
+const agent = await agents.get('EXISTING_AGENT_UUID');
+const execution = await agent.executions.create({
+  instruction: 'Summarize the latest support request.',
+  idempotencyKey: 'support-request-123',
 });
 ```
 
-The service derives application identity from the credential; the Workspace identifier is request context, not authorization. Creation grants the application Admin; the Workspace Owner retains resource Admin authority. Existing Agents require an explicit Viewer, Editor, or Admin application grant. Project development and Site production grants are separate. Test runtimes do not inherit either grant.
+The service derives application identity from the credential; the Workspace identifier is request context, not authorization. Application credentials cannot create Agents. An existing Agent requires an explicit application grant with the role needed for the operation; Editor permits invocation. Project development and Site production grants are separate. Test runtimes do not inherit either grant.
 
 Use `agent.applicationGrants.get/update/remove` to manage application access with the Agent revision. Optional `projectId` or `siteId` associations organize Agents and never grant access. Conversations keep separate histories but share the Agent's resources and permissions. Agent access does not grant access to Project/Site secrets.
 
@@ -118,7 +119,13 @@ for (const project of projects) console.log(project.uuid, project.name);
 
 SDK pages start at **0**, matching the Server, CLI, and MCP. Resource lists default to 20 records and accept page sizes from 1–100. No pages are fetched automatically. Follow `meta.hasMore`; numbered pages return `meta.pagination: "page"`. Messages, logs, and dedicated search use `cursor`/`pageSize` and return `meta.pagination: "cursor"`; pass `meta.nextCursor` unchanged. Additional Server metadata is preserved.
 
-Chat scheduled messages use `workspace.chatSchedules.list/get/preview/create/update`. Creation requires the exact `conversationId`, a stable `idempotencyKey`, a self-contained instruction, and timing. Each occurrence continues that conversation; schedules have no separate destination or new-conversation mode. Mutations require `expectedRevision`; `action: "run"` also requires a stable `idempotencyKey`. Reuse that key after an uncertain response. Inspect occurrence history for completion and the actual model.
+Chat schedules use `workspace.chatSchedules.list/get/preview/create/update`. Creation requires a stable `idempotencyKey`, a self-contained instruction, and timing; `originConversationId` is optional provenance. Explicit references and attachments travel with the saved instruction. Each occurrence starts a fresh Chat conversation under current authority. Mutations require `expectedRevision`; `action: "run"` also requires a stable `idempotencyKey`. Reuse that key after an uncertain response. Inspect occurrence history for its exact conversation, completion, and actual model.
+
+## Template drafts and adoption
+
+Use `workspace.templates.createFromChat/Project/Agent(id)` to create an owned draft, or `draftFromChat/Project/Agent(id)` to read one without creating it. `workspace.templates.materials(templateId)` lists selectable materials. Update the draft with one complete `packageSelection`: `resources.files`, `designs`, `skills`, `connectors`, and `mcps` are all required arrays, even when empty. Select Files, Designs, and Skills by exact `id` and `checksum`; select Connectors and MCPs by `id`, `revision`, and permitted `operations`. MCP selections may include safe `settings`. Chat and Agent selections can include working file paths and checksums; Chat can include exact saved Artifact versions; Project can choose a saved source. No selection transfers credentials.
+
+Review `workspace.templates.source(templateId)` before calling `publish` with its `sourceRevision` and `expectedRevision`, plus `acknowledgment: true`. For an adopted Chat, `workspace.chats.templateSetup(chatId)` lists safe package resources; `templateSetupItem(chatId, category, key)` reads the exact immutable File, Design, or Skill before import. `workspace.chats.importTemplateResources(chatId, { category, keys, acknowledgment: true, idempotencyKey })` explicitly imports selected items; retry uncertain imports with the same key. Configure Connector and MCP access separately.
 
 ## Resource families
 

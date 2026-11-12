@@ -11,7 +11,13 @@ import type { SiteData } from 'src/sites.js';
 import { Sites } from 'src/sites.js';
 import { Subagents } from 'src/subagents.js';
 import type { Transport } from 'src/transport.js';
-import type { BudgetUpdate, TemplateListOptions, TemplatePublish } from 'src/types.js';
+import type {
+	BudgetUpdate,
+	TemplateListOptions,
+	TemplatePublish,
+	TemplateRemixResult,
+	TemplateSourceReview,
+} from 'src/types.js';
 import type { MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
 import type {
 	ChatCreate,
@@ -19,11 +25,16 @@ import type {
 	ChatScheduleCreate,
 	ChatScheduleMutation,
 	ChatScheduleTiming,
+	ChatTemplateImport,
+	ChatTemplateImportResult,
+	ChatTemplateSetup,
+	ChatTemplateSetupItem,
 	ChatUpdate,
 	DnsRecordInput,
 	Identifier,
 	ListOptions,
 	SettingsInput,
+	TemplateMaterials,
 	WorkspaceData,
 	WorkspaceUpdate,
 } from 'src/types.js';
@@ -77,8 +88,8 @@ export class Workspace extends Resource<WorkspaceData> {
 	get chatSchedules() {
 		const path = '/chats/schedules';
 		return {
-			list: async (options: { conversationId?: string } = {}) => {
-				const response = await this.#transport.request(path, 'GET', undefined, options);
+			list: async () => {
+				const response = await this.#transport.request(path, 'GET');
 				return { ...response, data: response.data.map(record) };
 			},
 			get: (id: Identifier) => get(this.#transport, `${path}/${identifier(id)}`),
@@ -94,13 +105,27 @@ export class Workspace extends Resource<WorkspaceData> {
 	get templates() {
 		const collection = new Collection<TemplateData, TemplateUpdate>(this.#transport, '/templates', 'PATCH');
 		return {
+			createFromChat: (chatId: Identifier) =>
+				action<TemplateData>(this.#transport, `/chats/${identifier(chatId)}/template`, 'POST', {}),
+			draftFromChat: async (chatId: Identifier): Promise<TemplateData | null> =>
+				(await get<TemplateData>(this.#transport, `/chats/${identifier(chatId)}/template`)) || null,
+			createFromProject: (projectId: Identifier) =>
+				action<TemplateData>(this.#transport, `/projects/${identifier(projectId)}/template`, 'POST', {}),
+			draftFromProject: async (projectId: Identifier): Promise<TemplateData | null> =>
+				(await get<TemplateData>(this.#transport, `/projects/${identifier(projectId)}/template`)) || null,
+			createFromAgent: (agentId: Identifier) =>
+				action<TemplateData>(this.#transport, `/agents/${identifier(agentId)}/template`, 'POST', {}),
+			draftFromAgent: async (agentId: Identifier): Promise<TemplateData | null> =>
+				(await get<TemplateData>(this.#transport, `/agents/${identifier(agentId)}/template`)) || null,
 			list: (options?: TemplateListOptions) => collection.list(options),
 			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
 			update: (id: Identifier, input: TemplateUpdate) => collection.update(id, input),
 			publish: (id: Identifier, input: TemplatePublish) =>
 				action(this.#transport, `/templates/${identifier(id)}/publish`, 'POST', input),
+			source: (id: Identifier) => get<TemplateSourceReview>(this.#transport, `/templates/${identifier(id)}/source`),
+			materials: (id: Identifier) => get<TemplateMaterials>(this.#transport, `/templates/${identifier(id)}/materials`),
 			remix: (id: Identifier, input: { versionId: string; idempotencyKey: string; name?: string }) =>
-				action(this.#transport, `/explore/templates/${identifier(id)}/remix`, 'POST', input),
+				action<TemplateRemixResult>(this.#transport, `/explore/templates/${identifier(id)}/remix`, 'POST', input),
 			versions: (id: Identifier, options?: ListOptions) =>
 				listing(this.#transport, `/templates/${identifier(id)}/versions`, options),
 		};
@@ -213,6 +238,16 @@ export const chats = (transport: Transport) => {
 		sites: (id: Identifier) => listing<SiteData>(transport, `${path}/${identifier(id)}/sites`),
 		list: (options?: ListOptions & { archived?: boolean }) => listing<ChatData>(transport, path, options),
 		get: (id: Identifier) => get<ChatData>(transport, `${path}/${identifier(id)}`),
+		templateSetup: (id: Identifier) => get<ChatTemplateSetup>(transport, `${path}/${identifier(id)}/template-setup`),
+		templateSetupItem: (id: Identifier, category: ChatTemplateSetupItem['category'], key: string) => {
+			if (!key) throw new PlaybooksError(422, 'Provide a Template package key.');
+			return get<ChatTemplateSetupItem>(
+				transport,
+				`${path}/${identifier(id)}/template-setup/items/${category}/${encodeURIComponent(key)}`,
+			);
+		},
+		importTemplateResources: (id: Identifier, input: ChatTemplateImport) =>
+			action<ChatTemplateImportResult>(transport, `${path}/${identifier(id)}/template-setup/import`, 'POST', input),
 		create: (input: ChatCreate) => action<ChatData>(transport, path, 'POST', input),
 		update: (id: Identifier, input: ChatUpdate) =>
 			action<ChatData>(transport, `${path}/${identifier(id)}`, input.action === 'delete' ? 'DELETE' : 'PUT', input),

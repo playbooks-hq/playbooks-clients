@@ -278,6 +278,16 @@ cli
 	.action(run(agent.updateSchedule));
 
 cli
+	.command('agent schedule delete')
+	.describe('Delete an Agent schedule and stop future occurrences.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--schedule', 'Schedule UUID.')
+	.option('--data', 'JSON object with the current revision, or - for stdin.')
+	.option('--yes', 'Confirm schedule deletion.', false)
+	.action(run(agent.deleteSchedule));
+
+cli
 	.command('agent usage')
 	.describe('Inspect Agent usage.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -841,8 +851,10 @@ cli
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
-	.option('--kind', 'Template kind: project or agent.')
+	.option('--kind', 'Template kind: project, agent, or chat.')
 	.example('templates --category business --kind project')
+	.example('templates --kind agent')
+	.example('templates --kind chat')
 	.action(run(templates.listTemplates));
 
 cli
@@ -934,6 +946,73 @@ cli
 	.action(run(workspace.updateWorkspaceChat));
 
 cli
+	.command('workspace chat template create')
+	.describe('Create or return a private draft Template for an authorized Chat.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--chat', 'Source Chat UUID.')
+	.action(run(workspace.createChatTemplate));
+
+cli
+	.command('workspace chat template draft')
+	.describe('Read the owned draft Template for a Chat, if one exists.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--chat', 'Source Chat UUID.')
+	.action(run(workspace.getChatTemplateDraft));
+
+cli
+	.command('workspace chat template setup')
+	.describe('Inspect importable resources and connection setup from an adopted Chat Template.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--chat', 'Adopted Chat UUID.')
+	.action(run(workspace.getChatTemplateSetup));
+
+cli
+	.command('workspace chat template item')
+	.describe('Inspect the exact content of one importable File, Design, or Skill before import.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--chat', 'Adopted Chat UUID.')
+	.option('--category', 'files, designs, or skills.')
+	.option('--key', 'Package key from template setup inventory.')
+	.action(run(workspace.getChatTemplateSetupItem));
+
+cli
+	.command('workspace chat template import')
+	.describe('Explicitly import selected Files, Designs, or Skills from an adopted Chat Template.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--chat', 'Adopted Chat UUID.')
+	.option('--data', 'JSON category, keys, acknowledgment, and stable idempotencyKey or - for stdin.')
+	.option('--yes', 'Confirm the import.', false)
+	.action(run(workspace.importChatTemplateResources));
+
+cli
+	.command('workspace project template create')
+	.describe('Create or return a private draft Template for an authorized Project.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Source Project UUID.')
+	.action(run(workspace.createProjectTemplate));
+
+cli
+	.command('workspace project template draft')
+	.describe('Read the owned draft Template for a Project, if one exists.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--project', 'Source Project UUID.')
+	.action(run(workspace.getProjectTemplateDraft));
+
+cli
+	.command('workspace agent template create')
+	.describe('Create or return a private draft Template for an authorized Agent.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Source Agent UUID.')
+	.action(run(workspace.createAgentTemplate));
+
+cli
+	.command('workspace agent template draft')
+	.describe('Read the owned draft Template for an Agent, if one exists.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Source Agent UUID.')
+	.action(run(workspace.getAgentTemplateDraft));
+
+cli
 	.command('project channels')
 	.describe('Inspect Project channel assignments and readiness.')
 	.option('--workspace', 'Workspace UUID.')
@@ -1020,7 +1099,7 @@ cli
 
 cli
 	.command('workspace template update')
-	.describe('Update an owned template listing.')
+	.describe('Update an owned template listing and its reviewed source selection.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1040,6 +1119,29 @@ cli
 	.action(run(workspace.publishTemplate));
 
 cli
+	.command('workspace template source')
+	.describe('Review the exact source and package inventory before publishing a template.')
+	.option('--template', 'Template identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.reviewTemplateSource));
+
+cli
+	.command('workspace template materials')
+	.describe('Inspect selectable materials and resources for an owned Chat, Project, or Agent Template.')
+	.option('--template', 'Template identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.reviewTemplateMaterials));
+
+cli
+	.command('workspace template remix')
+	.describe('Create an independent resource from one exact published template version.')
+	.option('--data', 'JSON object or - for stdin; include versionId and idempotencyKey.')
+	.option('--yes', 'Confirm this operation.', false)
+	.option('--template', 'Template identifier.')
+	.option('--workspace', 'Destination Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.remixTemplate));
+
+cli
 	.command('workspace templates')
 	.describe('List owned templates.')
 	.option('--query', 'Search text.')
@@ -1049,8 +1151,10 @@ cli
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
-	.option('--kind', 'Template kind: project or agent.')
+	.option('--kind', 'Template kind: project, agent, or chat.')
 	.example('workspace templates --category business --kind project')
+	.example('workspace templates --kind agent')
+	.example('workspace templates --kind chat')
 	.action(run(workspace.listTemplates));
 
 cli

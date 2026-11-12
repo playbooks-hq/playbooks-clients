@@ -68,7 +68,7 @@ export const projectSchedulesTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project schedule create',
-		description: 'Create a self-contained scheduled message in an explicit Project conversation.',
+		description: 'Create a self-contained Project schedule. Each occurrence starts a fresh Project conversation.',
 		toolset: 'project',
 		readOnly: false,
 		destructive: false,
@@ -95,9 +95,10 @@ export const projectSchedulesTools: ToolDefinition[] = [
 		},
 		dataFields: [
 			'name',
-			'conversationId',
+			'originConversationId',
 			'instructions',
 			'references',
+			'attachments',
 			'modelId',
 			'branchId',
 			'enabled',
@@ -144,6 +145,7 @@ export const projectSchedulesTools: ToolDefinition[] = [
 			'name',
 			'instructions',
 			'references',
+			'attachments',
 			'modelId',
 			'branchId',
 			'enabled',

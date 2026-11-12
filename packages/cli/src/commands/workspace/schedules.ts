@@ -5,11 +5,7 @@ import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
 
 export const listChatSchedules = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
-	return sdkList(
-		await workspaceResource.chatSchedules.list(
-			options.conversation ? { conversationId: identifier(options.conversation) } : {},
-		),
-	);
+	return sdkList(await workspaceResource.chatSchedules.list());
 };
 export const getChatSchedule = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
@@ -23,14 +19,13 @@ export const previewChatSchedule = async (options: any) => {
 export const createChatSchedule = async (options: any) => {
 	const { workspaceResource, workspaceUuid } = await workspaceContext(options);
 	const data = await input(options, [
-		'chatId',
-		'conversationId',
+		'originConversationId',
 		'originMessageId',
 		'idempotencyKey',
 		'name',
 		'instructions',
 		'references',
-		'modelId',
+		'attachments',
 		'enabled',
 		'frequency',
 		'weekday',
@@ -38,7 +33,8 @@ export const createChatSchedule = async (options: any) => {
 		'time',
 		'timezone',
 	]);
-	data.conversationId = identifier(data.conversationId, 'conversationId');
+	if (data.originConversationId)
+		data.originConversationId = identifier(data.originConversationId, 'originConversationId');
 	if (data.enabled) await confirm(options, `Enable Chat schedule execution and usage in Workspace ${workspaceUuid}?`);
 	return sdkEnvelope(await workspaceResource.chatSchedules.create(data));
 };

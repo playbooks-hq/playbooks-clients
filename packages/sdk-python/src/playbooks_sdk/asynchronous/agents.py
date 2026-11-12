@@ -578,6 +578,11 @@ class AgentReference:
             f"{self._path}/schedules/{identifier(id)}", "PATCH", data
         )
 
+    async def delete_schedule(self, id: Identifier, revision: int) -> Any:
+        return await Endpoint(self._transport, self._path)._action(
+            f"{self._path}/schedules/{identifier(id)}", "DELETE", {"revision": revision}
+        )
+
     async def sites(self, **options: Any) -> ApiResponse:
         return await Endpoint(self._transport, self._path)._list(f"{self._path}/sites", options)
 

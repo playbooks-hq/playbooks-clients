@@ -557,6 +557,11 @@ class AgentReference:
             f"{self._path}/schedules/{identifier(id)}", "PATCH", data
         )
 
+    def delete_schedule(self, id: Identifier, revision: int) -> Any:
+        return Endpoint(self._transport, self._path)._action(
+            f"{self._path}/schedules/{identifier(id)}", "DELETE", {"revision": revision}
+        )
+
     def sites(self, **options: Any) -> ApiResponse:
         return Endpoint(self._transport, self._path)._list(f"{self._path}/sites", options)
 

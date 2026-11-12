@@ -49,6 +49,12 @@ export const textOption = (value: any, flag: string) => {
 	return value;
 };
 
+export const templateKindOption = (value: any) => {
+	if (value !== 'project' && value !== 'agent' && value !== 'chat')
+		throw new CliError(422, 'Allowed --kind values: project, agent, chat.');
+	return value;
+};
+
 export const includeParams = (options: any, relations: string[]): Record<string, any> => {
 	if (options.include === undefined) return {};
 	const values = textOption(options.include, 'include')

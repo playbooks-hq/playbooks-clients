@@ -1,5 +1,5 @@
 import { CliClient } from 'src/services/cli-client';
-import { identifier, includeParams, listParams } from 'src/utils/cli-input';
+import { identifier, includeParams, listParams, templateKindOption } from 'src/utils/cli-input';
 import { sdkList } from 'src/utils/sdk-output';
 
 export const listTemplates = async (options: any) => {
@@ -7,7 +7,7 @@ export const listTemplates = async (options: any) => {
 		...listParams(options, { sort: ['id', 'name', 'createdAt', 'updatedAt'] }),
 		...includeParams(options, ['categories', 'license', 'stats']),
 	};
-	if (options.kind !== undefined) params.kind = identifier(options.kind, '--kind');
+	if (options.kind !== undefined) params.kind = templateKindOption(options.kind);
 	if (options.category !== undefined) params.category = identifier(options.category, '--category');
 	const client = new CliClient();
 	return sdkList(await client.templates.list(params));

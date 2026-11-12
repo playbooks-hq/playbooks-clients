@@ -36,7 +36,13 @@ The application reads the environment in these examples. The SDK never reads API
 
 Use context managers to close connections. Explicit `client.close()` and `await client.aclose()` are also available. Resources depend on their originating client's lifetime.
 
-Chat scheduled messages use `workspace.chat_schedules.list/get/preview/create/update`. Both sync and async clients use the Server fields: creation requires `conversationId` for the exact Chat conversation and an `idempotencyKey`; mutation requires `action` and `expectedRevision`. Each occurrence continues that conversation; there is no separate destination or new-conversation mode. Run-now also requires a stable `idempotencyKey`; reuse it after an uncertain response. Save the complete instruction and model selection rather than relying on conversation history.
+Chat scheduled messages use `workspace.chat_schedules.list/get/preview/create/update`. Both sync and async clients use the Server fields: creation requires an `idempotencyKey` and may include `originConversationId` for provenance; mutation requires `action` and `expectedRevision`. Each occurrence starts a fresh Chat conversation. Run-now also requires a stable `idempotencyKey`; reuse it after an uncertain response. Save the complete instruction, references, and media attachments rather than relying on conversation history.
+
+## Template drafts and adoption
+
+Both clients expose `workspace.templates.create_from_chat/project/agent(id)` and matching `draft_from_chat/project/agent(id)` readers. Use `workspace.templates.materials(template_id)` for exact selectable identifiers and revisions. A complete `packageSelection` includes the five `resources` arrays: `files`, `designs`, `skills`, `connectors`, and `mcps`, including empty arrays. Select content by checksum and connections by revision and allowed operations; MCP settings contain only safe values. Chat and Agent may select working files, Chat may select saved Artifact versions, and Project may select saved source. Credentials are never selected.
+
+Call `workspace.templates.source(template_id)` before `publish(template_id, data)` and pass its source and listing revisions with `acknowledgment: true`. Adopted Chats expose `workspace.chats.template_setup(chat_id)` and `template_setup_item(chat_id, category, key)` to review the exact immutable File, Design, or Skill before `import_template_resources(chat_id, data)`. Import data requires `category`, package `keys`, `acknowledgment: true`, and a stable `idempotencyKey`; reuse the key after an uncertain response. Connector and MCP setup remains separate.
 
 ## Resources and inputs
 
@@ -94,7 +100,7 @@ async with project.runs.stream(789, timeout=90) as events:
         print(event["event"], event["data"])
 ```
 
-These are sync and async alternatives; use resources from the matching client and supply actual returned IDs. Select an explicit conversation for schedules and Sub-agent operations; each remains owned by that conversation. Project messages are Sandbox-scoped and require a selected branch. Workspace conversations expose `conversation.messages` directly.
+These are sync and async alternatives; use resources from the matching client and supply actual returned IDs. Schedules may record an origin conversation for provenance and start a fresh conversation per occurrence. Sub-agent operations remain conversation-owned. Project messages are Sandbox-scoped and require a selected branch. Workspace conversations expose `conversation.messages` directly.
 
 Streams yield parsed Server events, including waiting, failure, cancellation, and completion. A closed stream does not establish successful execution. Leaving the stream context or canceling an async task closes observation without canceling accepted remote work. `timeout` is the HTTP stream inactivity timeout in seconds; `None` disables it. The optional synchronous `on_activity` callback runs when a connection opens or bytes arrive.
 
@@ -160,9 +166,9 @@ Both clients expose `resource_sharing(workspace, kind, id)` and `workspaces.refe
 
 ## Managed Workspace Agents
 
-Configure the client's `base_url` from `PLAYBOOKS_AGENTS_URL` and `api_key` from `PLAYBOOKS_AGENTS_KEY` in application backend code. Use the Workspace Agent collection for Agent operations. The managed service derives Project-development or Site-production identity from the credential; it does not trust request-supplied identity.
+Create a Workspace Agent through the Playbooks UI or with an authorized User API key, then grant the Project or Site application access to it. Configure the client's `base_url` from `PLAYBOOKS_AGENTS_URL` and `api_key` from `PLAYBOOKS_AGENTS_KEY` in application backend code. Use the Workspace Agent collection to access and invoke the existing Agent. The managed service derives Project-development or Site-production identity from the credential; it does not trust request-supplied identity.
 
-Creating an Agent grants the calling application Admin; the Workspace Owner retains resource Admin authority. Existing Agents require an explicit application grant. Agent methods `application_grants`, `application_grant_candidates`, `update_application_grants`, and `remove_application_grant` manage access with revision checks. Optional Project/Site associations only organize Agents. Conversations share Agent resources and permissions.
+Application credentials cannot create Agents. An existing Agent requires an explicit application grant with the role needed for the operation; Editor permits invocation. Agent methods `application_grants`, `application_grant_candidates`, `update_application_grants`, and `remove_application_grant` manage access with revision checks. Optional Project/Site associations only organize Agents. Conversations share Agent resources and permissions.
 
 With authorized user API credentials, Project and Site methods `agent_access`, `update_agent_access(enabled=...)`, and `rotate_agent_access` manage runtime access. Revocation is immediate; replacement environment variables require a Sandbox restart or normal Site release update. Keep credentials on the backend. Test environments do not inherit development or production grants.
 

@@ -231,14 +231,17 @@ export const createSchedule = async (options: any) => {
 		'idempotencyKey',
 		'name',
 		'instructions',
+		'references',
+		'attachments',
 		'frequency',
 		'weekday',
 		'monthDay',
 		'time',
 		'timezone',
-		'conversationId',
+		'originConversationId',
 	]);
-	data.conversationId = integerOption(data.conversationId, 'conversationId', 1);
+	if (data.originConversationId)
+		data.originConversationId = integerOption(data.originConversationId, 'originConversationId', 1);
 	return sdkEnvelope(await (await agentContext(options)).agent.schedules.create(data));
 };
 export const updateSchedule = async (options: any) =>
@@ -251,6 +254,8 @@ export const updateSchedule = async (options: any) =>
 				'revision',
 				'name',
 				'instructions',
+				'references',
+				'attachments',
 				'frequency',
 				'weekday',
 				'monthDay',
@@ -260,6 +265,15 @@ export const updateSchedule = async (options: any) =>
 			]),
 		),
 	);
+export const deleteSchedule = async (options: any) => {
+	confirm(options, 'deleting this Agent schedule and stopping future occurrences');
+	const data = await input(options, ['revision']);
+	return sdkEnvelope(
+		await (
+			await agentContext(options)
+		).agent.schedules.delete(identifier(options.schedule, '--schedule'), integerOption(data.revision, 'revision', 1)),
+	);
+};
 export const getUsage = async (options: any) => sdkEnvelope(await (await agentContext(options)).agent.usage);
 
 export const listApplicationGrants = async (options: any) =>

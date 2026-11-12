@@ -39,6 +39,32 @@ export async function cliChecks(state: Json, config: string) {
   ]);
   assert.equal(page.code, 0);
   assert.equal(JSON.parse(page.stdout).meta.page, 0);
+  for (const kind of ["agent", "project"] as const) {
+    const templates = await cli(config, [
+      "templates",
+      "--kind",
+      kind,
+      "--page-size",
+      "1",
+    ]);
+    assert.equal(templates.code, 0);
+    assert(
+      JSON.parse(templates.stdout).data.every(
+        (template: Json) => template.kind === kind,
+      ),
+    );
+  }
+  const unsupportedTemplateKind = await cli(config, [
+    "templates",
+    "--kind",
+    "chat",
+  ]);
+  assert.notEqual(unsupportedTemplateKind.code, 0);
+  assert.match(
+    JSON.parse(unsupportedTemplateKind.stderr || unsupportedTemplateKind.stdout)
+      .error.message,
+    /project, agent/,
+  );
   const invalid = await cli(
     config,
     ["project", "update", ...scope, "--data", "-"],

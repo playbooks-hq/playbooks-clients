@@ -1,4 +1,5 @@
 from typing import Any, Self
+from urllib.parse import quote
 
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
@@ -39,6 +40,16 @@ class ConversationPlans(Endpoint):
 
 
 class Chats(Listing):
+    def template_setup(self, id: Identifier) -> Any:
+        return self._get(f"{self._path}/{identifier(id)}/template-setup")
+
+    def template_setup_item(self, id: Identifier, category: str, key: str) -> Any:
+        path = f"{self._path}/{identifier(id)}/template-setup/items"
+        return self._get(f"{path}/{identifier(category)}/{quote(key, safe='')}")
+
+    def import_template_resources(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"{self._path}/{identifier(id)}/template-setup/import", "POST", data)
+
     def subagents(self, id: Identifier) -> Subagents:
         return Subagents(self._transport, f"{self._path}/{identifier(id)}/subagents")
 
@@ -94,8 +105,35 @@ class ChatSchedules(ReadCollection):
 class Templates(EditableCollection):
     update_method = "PATCH"
 
+    def create_from_chat(self, chat_id: Identifier) -> Any:
+        return self._action(f"/chats/{identifier(chat_id)}/template", "POST", {})
+
+    def draft_from_chat(self, chat_id: Identifier) -> Any:
+        return self._get(f"/chats/{identifier(chat_id)}/template")
+
+    def create_from_project(self, project_id: Identifier) -> Any:
+        return self._action(f"/projects/{identifier(project_id)}/template", "POST", {})
+
+    def draft_from_project(self, project_id: Identifier) -> Any:
+        return self._get(f"/projects/{identifier(project_id)}/template")
+
+    def create_from_agent(self, agent_id: Identifier) -> Any:
+        return self._action(f"/agents/{identifier(agent_id)}/template", "POST", {})
+
+    def draft_from_agent(self, agent_id: Identifier) -> Any:
+        return self._get(f"/agents/{identifier(agent_id)}/template")
+
+    def source(self, id: Identifier) -> Any:
+        return self._get(f"{self._path}/{identifier(id)}/source")
+
+    def materials(self, id: Identifier) -> Any:
+        return self._get(f"{self._path}/{identifier(id)}/materials")
+
     def publish(self, id: Identifier, data: Data) -> Any:
         return self._action(f"{self._path}/{identifier(id)}/publish", "POST", data)
+
+    def remix(self, id: Identifier, data: Data) -> Any:
+        return self._action(f"/explore/templates/{identifier(id)}/remix", "POST", data)
 
     def versions(self, id: Identifier, **options: Any) -> ApiResponse:
         return self._list(f"{self._path}/{identifier(id)}/versions", options)

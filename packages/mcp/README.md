@@ -48,6 +48,8 @@ Private tools require an explicit `workspace`. Tools targeting an existing Proje
 
 `playbooks_help` lists the enabled tools and can show an individual tool's input schema. Command names map directly to tools: `project message create` becomes `playbooks_project_message_create`.
 
+The `templates` toolset creates or reads Chat, Project, and Agent drafts, inspects shared materials, updates a complete package selection, reviews source, and requests human-confirmed publication. All five editable resource arrays (Files, Designs, Skills, Connectors, MCPs) are present even when empty; use exact identifiers and revisions from `playbooks_workspace_template_materials`. Chat and Agent may include working files, Chat may include saved Artifact versions, and Project may choose saved source. An adopted Chat's `playbooks_workspace_chat_template_setup` lists safe import options. Use `playbooks_workspace_chat_template_item` to inspect immutable content before `playbooks_workspace_chat_template_import`, which requires package keys, an idempotency key, acknowledgment, and `confirm: true`. Connector and MCP setup remains separate.
+
 ## Resource sharing
 
 `playbooks_shared_resources` lists accepted external Chat, Agent, and Project grants with `type`, `limit`, and `cursor`. Resource access tools in the `workspace` toolset use an explicit owning `workspace`, `kind`, and `resource`. They list direct members and invitations, change Workspace/private visibility with an exact revision, manage direct Viewer/Editor/Admin grants, and invite, resend, or revoke external invitations. Chat and Agent members use User UUIDs; Project grant creation uses a numeric User ID, while updates and revocation use returned collaborator IDs. Mutating tools require `confirm: true`; Server permissions remain authoritative.
@@ -133,7 +135,7 @@ Authenticate through the CLI or `PLAYBOOKS_TOKEN`, never through tool arguments.
 
 ## Chat scheduled messages
 
-The `workspace` toolset provides `playbooks_workspace_chat-schedules`, `playbooks_workspace_chat-schedule`, and its `preview`, `create`, and `update` operations. Create each schedule for an explicit `conversationId` with one self-contained instruction, durable references, model selection, and timing. Every occurrence continues that conversation; there is no separate destination or new-conversation mode. Creation does not run work. Inspect the revision before changing it; reuse the same run idempotency key after an uncertain response. Read occurrence history to verify completion and the resolved model.
+The `workspace` toolset provides `playbooks_workspace_chat-schedules`, `playbooks_workspace_chat-schedule`, and its `preview`, `create`, and `update` operations. Create each schedule with one self-contained instruction, explicit references and attachments, and timing. `originConversationId` is optional provenance; each occurrence starts a fresh Chat conversation under current authority. Creation does not run work. Inspect the revision before changing it; reuse the same run idempotency key after an uncertain response. Read occurrence history for its exact conversation, completion, and resolved model.
 
 ## Workspace Inbox
 

@@ -33,6 +33,21 @@ export { listTemplates } from 'src/commands/workspace/templates/list';
 export { getTemplate } from 'src/commands/workspace/templates/get';
 export { listTemplateVersions } from 'src/commands/workspace/templates/versions';
 export { openTemplate } from 'src/commands/workspace/templates/open';
+export { reviewTemplateSource, reviewTemplateMaterials } from 'src/commands/workspace/templates/source';
+export { remixTemplate } from 'src/commands/workspace/templates/remix';
+export {
+	createChatTemplate,
+	getChatTemplateDraft,
+	getChatTemplateSetup,
+	getChatTemplateSetupItem,
+	importChatTemplateResources,
+} from 'src/commands/workspace/templates/chat';
+export {
+	createAgentTemplate,
+	getAgentTemplateDraft,
+	createProjectTemplate,
+	getProjectTemplateDraft,
+} from 'src/commands/workspace/templates/drafts';
 export { previewMemberDeparture } from 'src/commands/workspace/members/departure-preview';
 export { removeMember } from 'src/commands/workspace/members/depart';
 export { listMembers } from 'src/commands/workspace/members/list';

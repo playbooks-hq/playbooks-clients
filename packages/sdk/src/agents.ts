@@ -91,16 +91,20 @@ export interface AgentUpdate {
 }
 export interface AgentScheduleCreate {
 	idempotencyKey: string;
-	conversationId: number;
+	originConversationId?: number;
 	name: string;
 	instructions: string;
+	references?: AgentMentionTarget[];
+	attachments?: { mediaId: number }[];
 	frequency: string;
 	weekday?: number;
 	monthDay?: number;
 	time: string;
 	timezone: string;
 }
-export interface AgentScheduleUpdate extends Partial<Omit<AgentScheduleCreate, 'idempotencyKey' | 'conversationId'>> {
+export interface AgentScheduleUpdate extends Partial<
+	Omit<AgentScheduleCreate, 'idempotencyKey' | 'originConversationId'>
+> {
 	revision: number;
 	status?: 'enabled' | 'paused';
 }
@@ -389,6 +393,8 @@ export class AgentReference {
 			create: (input: AgentScheduleCreate) => action(this.transport, `${this.path}/schedules`, 'POST', input),
 			update: (id: Identifier, input: AgentScheduleUpdate) =>
 				action(this.transport, `${this.path}/schedules/${identifier(id)}`, 'PATCH', input),
+			delete: (id: Identifier, revision: number) =>
+				action(this.transport, `${this.path}/schedules/${identifier(id)}`, 'DELETE', { revision }),
 		};
 	}
 	get usage() {

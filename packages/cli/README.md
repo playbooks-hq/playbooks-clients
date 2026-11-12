@@ -89,6 +89,10 @@ playbooks project update --project abc --data '{"description":"Customer support 
 
 Public discovery uses `templates`, `categories`, `collections`, and `creators`. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
 
+Template drafts start with `workspace chat|project|agent template create --chat|--project|--agent ID`; the matching `draft` commands read without creating. Run `workspace template materials --template ID` to inspect exact selectable content and resource revisions. `workspace template update --template ID --data -` accepts a complete `packageSelection` with required `resources.files`, `designs`, `skills`, `connectors`, and `mcps` arrays. Content uses exact IDs and checksums; connections use revisions and operation scopes. Chat and Agent can select working files, Chat can select saved Artifact versions, and Project can choose saved source. Review `workspace template source` and supply its revisions to `workspace template publish --yes`.
+
+After a Chat remix, `workspace chat template setup --chat ID` lists importable Files, Designs, and Skills plus connection setup requirements. Read each selected item with `workspace chat template item --chat ID --category files --key PACKAGE_KEY` before `workspace chat template import --chat ID --data '{"category":"files","keys":["PACKAGE_KEY"],"acknowledgment":true,"idempotencyKey":"UUID"}' --yes`. Retry an uncertain import with the same key. Connector and MCP access requires separate setup.
+
 Use category identifiers returned by `categories`; example identifiers are placeholders. Supported lists accept `--sort name:asc` or another field and direction shown in their help.
 
 Plural resource names list records; singular names address one record, such as `site release --site abc --release def`. Mutations follow the resource name. `--file-id` identifies a File; binary transfers continue to use `--upload` and `--output`.
