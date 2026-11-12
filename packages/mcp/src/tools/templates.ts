@@ -68,18 +68,6 @@ export const templatesTools: ToolDefinition[] = [
 		},
 	},
 	{
-		command: 'workspace template materials',
-		description:
-			'Inspect selectable working files, Artifact versions, Files, Designs, Skills, Connectors, and MCPs for an owned Template. Use exact identifiers and revisions in packageSelection.',
-		toolset: 'templates',
-		readOnly: true,
-		destructive: false,
-		options: {
-			template: { flag: 'template', description: 'Owned Template UUID.', required: true },
-			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace identifier.', required: true },
-		},
-	},
-	{
 		command: 'workspace chat template setup',
 		description: 'Inspect safe importable resources and connection setup for an authorized adopted Chat.',
 		toolset: 'templates',
@@ -122,7 +110,7 @@ export const templatesTools: ToolDefinition[] = [
 	{
 		command: 'workspace template source',
 		description:
-			'Review the current authorized source and safe package inventory. Use returned sourceRevision and expectedRevision for a separate, human-confirmed publish action.',
+			'Review the current authorized source and safe package inventory before publishing. The client handles revision tokens during publication.',
 		toolset: 'templates',
 		readOnly: true,
 		destructive: false,
@@ -149,7 +137,7 @@ export const templatesTools: ToolDefinition[] = [
 	{
 		command: 'workspace template update',
 		description:
-			'Update an owned listing and complete packageSelection. All three kinds select editable Files, Designs, Skills, Connectors, and MCPs by exact identifiers and revisions. Chat may also select working files and saved Artifact versions; Project may select a saved source; optional preview selects an eligible public Site. Connections require recipient setup.',
+			'Update owned listing metadata. Playbooks derives package content from current authorized source material at review and publication.',
 		toolset: 'templates',
 		readOnly: false,
 		destructive: true,
@@ -169,23 +157,13 @@ export const templatesTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: [
-			'name',
-			'tagline',
-			'description',
-			'cover',
-			'thumbnail',
-			'licenseId',
-			'categoryIds',
-			'visibility',
-			'packageSelection',
-		],
+		dataFields: ['name', 'tagline', 'description', 'cover', 'thumbnail', 'liveUrl', 'categoryIds', 'visibility'],
 		dataOptional: false,
 	},
 	{
 		command: 'workspace template publish',
 		description:
-			'Publish a reviewed Chat, Project, or eligible Agent template package. Supply expectedRevision and exact sourceRevision from source review. acknowledgment confirms sharing rights and review for private information. Publication uses the listing visibility; bump defaults to patch. Existing adopters keep their selected version. A human must explicitly confirm this operation.',
+			'Publish a reviewed Chat, Project, or eligible Agent package derived from current authorized source content. The client reviews and binds source revisions automatically; a human must explicitly confirm publication. Optional bump chooses patch, minor, or major (default patch). Existing adopters keep their selected version.',
 		toolset: 'templates',
 		readOnly: false,
 		destructive: true,
@@ -211,8 +189,8 @@ export const templatesTools: ToolDefinition[] = [
 				required: true,
 			},
 		},
-		dataFields: ['acknowledgment', 'expectedRevision', 'sourceRevision', 'notes', 'bump'],
-		dataOptional: false,
+		dataFields: ['notes', 'bump'],
+		dataOptional: true,
 	},
 	{
 		command: 'workspace templates',

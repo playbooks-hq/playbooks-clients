@@ -1,5 +1,6 @@
-from typing import Any, Self
+from typing import Any, Literal, Self
 
+from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import (
     ApiResponse,
     Data,
@@ -55,6 +56,58 @@ class ReadCollection(Listing):
     async def get(self, id: Identifier, *, include: str | None = None) -> Resource:
         result: Resource = await self._get(f"{self._path}/{identifier(id)}", {"include": include})
         return result
+
+
+class ExploreTemplates(Endpoint):
+    def __init__(
+        self, public_transport: Transport, authenticated_transport: Transport, path: str
+    ) -> None:
+        super().__init__(public_transport, path)
+        self._authenticated_transport = authenticated_transport
+
+    async def get(self, id: Identifier, *, include: str | None = None) -> Resource:
+        result: Resource = await self._get(f"{self._path}/{identifier(id)}", {"include": include})
+        return result
+
+    async def list(
+        self,
+        *,
+        kind: Literal["project", "agent", "chat"] = "project",
+        view: Literal["discover", "popular", "recent", "following"] = "discover",
+        category: str | None = None,
+        search: str | None = None,
+        query: str | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
+        include: str | None = None,
+        workspace: str | None = None,
+    ) -> ApiResponse:
+        if view == "following":
+            if not workspace:
+                raise PlaybooksError(422, "Following requires a selected Workspace.")
+            if not self._authenticated_transport.config.api_key:
+                raise PlaybooksError(401, "Following requires an API key.")
+            transport = self._authenticated_transport.scoped(identifier(workspace))
+        else:
+            if workspace is not None:
+                raise PlaybooksError(422, "Workspace applies only to Following.")
+            transport = self._transport
+        response: ApiResponse = await transport.request(
+            self._path,
+            params=query_params(
+                {
+                    "kind": kind,
+                    "view": view,
+                    "category": category,
+                    "search": search,
+                    "query": query,
+                    "page": page,
+                    "pageSize": page_size,
+                    "include": include,
+                }
+            ),
+        )
+        return {**response, "data": [record(data) for data in response["data"]]}
 
 
 class EditableResource(Resource):

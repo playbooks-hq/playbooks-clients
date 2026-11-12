@@ -18,7 +18,14 @@ import type {
 	TemplateRemixResult,
 	TemplateSourceReview,
 } from 'src/types.js';
-import type { MemberData, MemberUpdate, TemplateData, TemplateUpdate } from 'src/types.js';
+import type {
+	MemberData,
+	MemberGovernance,
+	MemberListOptions,
+	MemberUpdate,
+	TemplateData,
+	TemplateUpdate,
+} from 'src/types.js';
 import type {
 	ChatCreate,
 	ChatData,
@@ -34,7 +41,6 @@ import type {
 	Identifier,
 	ListOptions,
 	SettingsInput,
-	TemplateMaterials,
 	WorkspaceData,
 	WorkspaceUpdate,
 } from 'src/types.js';
@@ -120,10 +126,18 @@ export class Workspace extends Resource<WorkspaceData> {
 			list: (options?: TemplateListOptions) => collection.list(options),
 			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
 			update: (id: Identifier, input: TemplateUpdate) => collection.update(id, input),
-			publish: (id: Identifier, input: TemplatePublish) =>
-				action(this.#transport, `/templates/${identifier(id)}/publish`, 'POST', input),
+			publish: async (id: Identifier, input: TemplatePublish = {}) => {
+				const path = `/templates/${identifier(id)}`;
+				const review = await get<TemplateSourceReview>(this.#transport, `${path}/source`);
+				return action(this.#transport, `${path}/publish`, 'POST', {
+					acknowledgment: true,
+					expectedRevision: review.expectedRevision,
+					sourceRevision: review.sourceRevision,
+					bump: 'patch',
+					...input,
+				});
+			},
 			source: (id: Identifier) => get<TemplateSourceReview>(this.#transport, `/templates/${identifier(id)}/source`),
-			materials: (id: Identifier) => get<TemplateMaterials>(this.#transport, `/templates/${identifier(id)}/materials`),
 			remix: (id: Identifier, input: { versionId: string; idempotencyKey: string; name?: string }) =>
 				action<TemplateRemixResult>(this.#transport, `/explore/templates/${identifier(id)}/remix`, 'POST', input),
 			versions: (id: Identifier, options?: ListOptions) =>
@@ -133,19 +147,36 @@ export class Workspace extends Resource<WorkspaceData> {
 	get members() {
 		const collection = new Collection<MemberData, MemberUpdate>(this.#transport, '/workspace/members');
 		return {
-			list: (options?: ListOptions) => collection.list(options),
+			list: (options?: MemberListOptions) => {
+				const { status, role, ...filters } = options || {};
+				return collection.list({
+					...filters,
+					...(status && status !== 'all' ? { status } : {}),
+					...(role && role !== 'all' ? { role } : {}),
+				});
+			},
 			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
 			update: (id: Identifier, input: MemberUpdate) => collection.update(id, input),
-			previewDeparture: (id: Identifier) =>
-				get(this.#transport, `/session/workspaces/${identifier(this.#identity)}/members/${identifier(id)}/departure`),
-			depart: (id: Identifier, input: { revision: string }) =>
-				action(
+			governance: (id: Identifier) =>
+				get<MemberGovernance>(
 					this.#transport,
-					`/session/workspaces/${identifier(this.#identity)}/members/${identifier(id)}/departure`,
-					'POST',
-					input,
+					`/session/workspaces/${identifier(this.#identity)}/members/${identifier(id)}/governance`,
 				),
+			deactivate: (id: Identifier, revision: string) => this.memberGovernanceAction(id, 'deactivate', { revision }),
+			reactivate: (id: Identifier, revision: string) => this.memberGovernanceAction(id, 'reactivate', { revision }),
+			reassign: (id: Identifier, input: { revision: string; recipientUserId: number }) =>
+				this.memberGovernanceAction(id, 'reassign', input),
+			remove: (id: Identifier, input: { revision: string; typedName: string }) =>
+				this.memberGovernanceAction(id, 'remove', input),
 		};
+	}
+	private memberGovernanceAction(id: Identifier, operation: string, input: Record<string, unknown>) {
+		return action(
+			this.#transport,
+			`/session/workspaces/${identifier(this.#identity)}/members/${identifier(id)}/${operation}`,
+			'POST',
+			input,
+		);
 	}
 	get invitations() {
 		return {
@@ -159,6 +190,20 @@ export class Workspace extends Resource<WorkspaceData> {
 		return {
 			get: () => get(this.#transport, '/workspace/preferences'),
 			update: (input: SettingsInput) => action(this.#transport, '/workspace/preferences', 'PUT', input),
+		};
+	}
+	get resourceRetention() {
+		const path = '/workspace/policies/resource-retention';
+		return {
+			get: () => get(this.#transport, path),
+			update: (retainDeletedResources30Days: boolean) =>
+				action(this.#transport, path, 'PUT', { retainDeletedResources30Days }),
+		};
+	}
+	get retainedResources() {
+		return {
+			restore: (type: 'chat' | 'agent' | 'project' | 'site' | 'artifact', resourceId: Identifier) =>
+				action(this.#transport, `/workspace/retained-resources/${type}/${identifier(resourceId)}/restore`, 'POST', {}),
 		};
 	}
 	get designs() {

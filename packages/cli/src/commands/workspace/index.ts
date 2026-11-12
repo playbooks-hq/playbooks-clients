@@ -33,7 +33,7 @@ export { listTemplates } from 'src/commands/workspace/templates/list';
 export { getTemplate } from 'src/commands/workspace/templates/get';
 export { listTemplateVersions } from 'src/commands/workspace/templates/versions';
 export { openTemplate } from 'src/commands/workspace/templates/open';
-export { reviewTemplateSource, reviewTemplateMaterials } from 'src/commands/workspace/templates/source';
+export { reviewTemplateSource } from 'src/commands/workspace/templates/source';
 export { remixTemplate } from 'src/commands/workspace/templates/remix';
 export {
 	createChatTemplate,
@@ -48,8 +48,13 @@ export {
 	createProjectTemplate,
 	getProjectTemplateDraft,
 } from 'src/commands/workspace/templates/drafts';
-export { previewMemberDeparture } from 'src/commands/workspace/members/departure-preview';
-export { removeMember } from 'src/commands/workspace/members/depart';
+export {
+	getMemberGovernance,
+	deactivateMember,
+	reactivateMember,
+	reassignMember,
+	removeMember,
+} from 'src/commands/workspace/members/governance';
 export { listMembers } from 'src/commands/workspace/members/list';
 export { getMember } from 'src/commands/workspace/members/get';
 export { updateMember } from 'src/commands/workspace/members/update';
@@ -58,6 +63,8 @@ export { createInvitation } from 'src/commands/workspace/invitations/create';
 export { revokeInvitation } from 'src/commands/workspace/invitations/revoke';
 export { getWorkspacePreferences } from 'src/commands/workspace/settings/get';
 export { updateWorkspacePreferences } from 'src/commands/workspace/settings/update';
+export { getResourceRetention, updateResourceRetention } from 'src/commands/workspace/settings/resource-retention';
+export { restoreRetainedResource } from 'src/commands/workspace/settings/restore-retained-resource';
 export { listWorkspaceDesigns } from 'src/commands/workspace/designs/list';
 export { listWorkspaceSkills } from 'src/commands/workspace/skills/list';
 export { listWorkspaceMcps } from 'src/commands/workspace/mcps/list';

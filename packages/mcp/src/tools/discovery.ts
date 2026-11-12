@@ -26,9 +26,10 @@ export const discoveryTools: ToolDefinition[] = [
 				description: 'Records per page.',
 				kind: 'number',
 			},
-			sort: {
-				flag: 'sort',
-				description: 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.',
+			view: { flag: 'view', description: 'discover, popular, recent, or following.' },
+			workspace: {
+				flag: 'workspace',
+				description: 'Workspace UUID for Following; defaults to the selected CLI Workspace.',
 			},
 			include: {
 				flag: 'include',
@@ -36,7 +37,7 @@ export const discoveryTools: ToolDefinition[] = [
 			},
 			category: {
 				flag: 'category',
-				description: 'Category identifier from categories.',
+				description: 'One active category UUID from the returned facets.',
 			},
 			kind: { flag: 'kind', description: 'Template kind: project, agent, or chat.' },
 		},

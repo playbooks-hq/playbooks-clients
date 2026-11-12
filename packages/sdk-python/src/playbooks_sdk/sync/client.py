@@ -4,7 +4,7 @@ from typing import Any, Literal, Self
 import httpx
 
 from playbooks_sdk.resource import Data, Identifier, identifier
-from playbooks_sdk.sync.core import Listing, ReadCollection, ReadEndpoint
+from playbooks_sdk.sync.core import ExploreTemplates, Listing, ReadEndpoint
 from playbooks_sdk.sync.resource_sharing import ResourceSharing
 from playbooks_sdk.sync.workspace import Workspaces
 from playbooks_sdk.transport import Config, Transport
@@ -57,8 +57,8 @@ class PlaybooksSDK:
         return ResourceSharing(self._transport.scoped(identifier(workspace)), kind, id)
 
     @property
-    def templates(self) -> ReadCollection:
-        return ReadCollection(self._public_transport, "/explore/templates")
+    def templates(self) -> ExploreTemplates:
+        return ExploreTemplates(self._public_transport, self._transport, "/explore/templates")
 
     @property
     def categories(self) -> Listing:

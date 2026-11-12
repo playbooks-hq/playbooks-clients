@@ -1,4 +1,4 @@
-from typing import Any, Self, cast
+from typing import Any, Literal, Self, cast
 from urllib.parse import quote
 
 from playbooks_sdk.asynchronous.agents import Agents
@@ -130,11 +130,24 @@ class Templates(EditableCollection):
     async def source(self, id: Identifier) -> Any:
         return await self._get(f"{self._path}/{identifier(id)}/source")
 
-    async def materials(self, id: Identifier) -> Any:
-        return await self._get(f"{self._path}/{identifier(id)}/materials")
-
-    async def publish(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/publish", "POST", data)
+    async def publish(
+        self,
+        id: Identifier,
+        *,
+        notes: str | None = None,
+        bump: Literal["patch", "minor", "major"] = "patch",
+    ) -> Any:
+        path = f"{self._path}/{identifier(id)}"
+        review = await self._get(f"{path}/source")
+        data: Data = {
+            "acknowledgment": True,
+            "expectedRevision": review.expectedRevision,
+            "sourceRevision": review.sourceRevision,
+            "bump": bump,
+        }
+        if notes is not None:
+            data["notes"] = notes
+        return await self._action(f"{path}/publish", "POST", data)
 
     async def remix(self, id: Identifier, data: Data) -> Any:
         return await self._action(f"/explore/templates/{identifier(id)}/remix", "POST", data)
@@ -148,17 +161,39 @@ class Members(EditableCollection):
         super().__init__(transport, "/workspace/members")
         self._workspace = workspace
 
-    async def preview_departure(self, id: Identifier) -> Resource:
+    async def list(self, **options: Any) -> ApiResponse:
+        filters = {
+            key: value
+            for key, value in options.items()
+            if key not in ("status", "role") or value != "all"
+        }
+        return await super().list(**filters)
+
+    async def governance(self, id: Identifier) -> Resource:
         result: Resource = await self._get(
-            f"/session/workspaces/{identifier(self._workspace)}/members/{identifier(id)}/departure"
+            f"/session/workspaces/{identifier(self._workspace)}/members/{identifier(id)}/governance"
         )
         return result
 
-    async def depart(self, id: Identifier, data: Data) -> Any:
+    async def deactivate(self, id: Identifier, revision: str) -> Any:
         return await self._action(
-            f"/session/workspaces/{identifier(self._workspace)}/members/{identifier(id)}/departure",
-            "POST",
-            data,
+            self._governance_path(id, "deactivate"), "POST", {"revision": revision}
+        )
+
+    async def reactivate(self, id: Identifier, revision: str) -> Any:
+        return await self._action(
+            self._governance_path(id, "reactivate"), "POST", {"revision": revision}
+        )
+
+    async def reassign(self, id: Identifier, data: Data) -> Any:
+        return await self._action(self._governance_path(id, "reassign"), "POST", data)
+
+    async def remove(self, id: Identifier, data: Data) -> Any:
+        return await self._action(self._governance_path(id, "remove"), "POST", data)
+
+    def _governance_path(self, id: Identifier, action: str) -> str:
+        return (
+            f"/session/workspaces/{identifier(self._workspace)}/members/{identifier(id)}/{action}"
         )
 
 
@@ -187,6 +222,25 @@ class Domains(ReadCollection):
 
     def records(self, domain_id: Identifier) -> DnsRecords:
         return DnsRecords(self._transport, f"{self._path}/{identifier(domain_id)}/dns-records")
+
+
+class RetainedResources(Endpoint):
+    async def restore(self, type: str, resource_id: Identifier) -> Any:
+        if type not in {"chat", "agent", "project", "site", "artifact"}:
+            raise ValueError("Choose chat, agent, project, site, or artifact.")
+        path = f"/workspace/retained-resources/{type}/{identifier(resource_id)}/restore"
+        return await self._action(path, "POST", {})
+
+
+class ResourceRetention(Endpoint):
+    async def get(self) -> Resource:
+        result: Resource = await self._get(self._path)
+        return result
+
+    async def update(self, retain_deleted_resources_30_days: bool) -> Any:
+        return await self._action(
+            self._path, "PUT", {"retainDeletedResources30Days": retain_deleted_resources_30_days}
+        )
 
 
 class Workspace(Resource):
@@ -257,6 +311,14 @@ class Workspace(Resource):
     @property
     def templates(self) -> Templates:
         return Templates(self._transport, "/templates")
+
+    @property
+    def retained_resources(self) -> RetainedResources:
+        return RetainedResources(self._transport, "/workspace/retained-resources")
+
+    @property
+    def resource_retention(self) -> ResourceRetention:
+        return ResourceRetention(self._transport, "/workspace/policies/resource-retention")
 
     @property
     def members(self) -> Members:

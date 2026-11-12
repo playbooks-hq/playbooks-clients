@@ -56,6 +56,8 @@ export interface ProjectData {
 	access: ResourceAccess;
 	id: number;
 	uuid: string;
+	ownerUserId: number;
+	createdByUserId?: number | null;
 	name: string;
 	description?: string | null;
 	thumbnail?: string | null;
@@ -339,10 +341,12 @@ export interface TemplateVersionData extends RecordData {
 
 export interface TemplateData extends RecordData {
 	kind?: TemplateKind;
-	packageSelection?: TemplatePackageSelection;
-	preview?: { kind: 'site'; siteId: string; url: string } | null;
 	description?: string | null;
 	tagline?: string | null;
+	liveUrl?: string | null;
+	chatUuid?: string | null;
+	projectUuid?: string | null;
+	agentUuid?: string | null;
 	visibility?: string;
 	licenseId?: number;
 	categoryIds?: number[];
@@ -352,6 +356,21 @@ export interface TemplateData extends RecordData {
 export interface MemberData extends RecordData {
 	userId?: number;
 	memberRole?: string;
+	status?: 'active' | 'deactivated' | 'removing';
+	deactivatedAt?: string | null;
+	revision?: string;
+}
+export interface MemberListOptions extends ListOptions {
+	role?: string;
+	status?: 'active' | 'deactivated' | 'all';
+}
+export interface MemberGovernance {
+	revision: string;
+	member: { id: number; name: string };
+	status: 'active' | 'deactivated' | 'removing';
+	blockers: string[];
+	capabilities: { canDeactivate: boolean; canReactivate: boolean; canReassign: boolean; canRemove: boolean };
+	retention: { reason: string | null; expiresAt: string | null; status: string | null };
 }
 export interface ProjectAgentData extends RecordData {
 	description?: string | null;
@@ -368,6 +387,8 @@ export interface ChatComposerOverrides {
 export interface ChatData extends RecordData {
 	id: number;
 	uuid: string;
+	ownerUserId: number;
+	creator?: { id: number; uuid: string; name: string } | null;
 	revision: number;
 	conversationId: number;
 	conversation?: ConversationData;
@@ -429,10 +450,19 @@ export interface TemplateListOptions extends ListOptions {
 	category?: string;
 	kind?: TemplateKind;
 }
+export interface ExploreTemplateListOptions {
+	page?: number;
+	pageSize?: number;
+	search?: string;
+	query?: string;
+	include?: string;
+	kind?: TemplateKind;
+	view?: 'discover' | 'popular' | 'recent' | 'following';
+	category?: string;
+	/** Required for Following; sent as the Workspace header, never a query parameter. */
+	workspace?: string;
+}
 export interface TemplatePublish {
-	acknowledgment: true;
-	expectedRevision: string;
-	sourceRevision: string;
 	notes?: string;
 	bump?: 'patch' | 'minor' | 'major';
 }
@@ -453,56 +483,6 @@ export interface TemplateRemixResult extends RecordData {
 		sourceVersionId: number;
 		packageChecksum: string;
 	};
-}
-export interface TemplateMaterialFile {
-	path: string;
-	checksum: string;
-	size: number;
-}
-export interface TemplateMaterialResource {
-	id: number;
-	name: string;
-	checksum?: string;
-	revision?: string;
-	sourceScope: string;
-	operations?: string[];
-	settings?: Record<string, string | number | boolean>;
-}
-export interface TemplateMaterials {
-	fileSystemRevision?: string;
-	fileSystem?: TemplateMaterialFile[];
-	artifacts?: Array<{
-		artifactId: string;
-		versionId: string;
-		name: string;
-		entryPoint: string;
-		files: TemplateMaterialFile[];
-	}>;
-	resources: {
-		files: TemplateMaterialResource[];
-		designs: TemplateMaterialResource[];
-		skills: TemplateMaterialResource[];
-		connectors: TemplateMaterialResource[];
-		mcps: TemplateMaterialResource[];
-	};
-}
-export interface TemplatePackageSelection {
-	source?: 'saved-upload' | 'saved-branch';
-	fileSystem?: Array<{ path: string; checksum: string }>;
-	artifacts?: Array<{ artifactId: string; versionId: string }>;
-	resources: {
-		files: Array<{ id: number; checksum: string }>;
-		designs: Array<{ id: number; checksum: string }>;
-		skills: Array<{ id: number; checksum: string }>;
-		connectors: Array<{ id: number; revision: string; operations: string[] }>;
-		mcps: Array<{
-			id: number;
-			revision: string;
-			operations: string[];
-			settings?: Record<string, string | number | boolean>;
-		}>;
-	};
-	preview?: { kind: 'site'; siteId: string } | null;
 }
 export interface ChatTemplateSetup {
 	templateVersionId: number;
@@ -552,10 +532,9 @@ export interface TemplateUpdate {
 	tagline?: string;
 	thumbnail?: string | null;
 	cover?: string | null;
-	licenseId?: number;
+	liveUrl?: string | null;
 	categoryIds?: number[];
 	visibility?: 'private' | 'unlisted' | 'public';
-	packageSelection?: TemplatePackageSelection;
 }
 export interface BudgetUpdate {
 	creditBudget?: number | null;

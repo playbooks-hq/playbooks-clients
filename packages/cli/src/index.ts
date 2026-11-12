@@ -848,11 +848,12 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
-	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
+	.option('--view', 'Discovery view: discover, popular, recent, or following.')
+	.option('--workspace', 'Workspace UUID for Following; defaults to the selected Workspace.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
-	.option('--category', 'Category identifier from categories.')
+	.option('--category', 'One active category UUID from the returned facets.')
 	.option('--kind', 'Template kind: project, agent, or chat.')
-	.example('templates --category business --kind project')
+	.example('templates --kind project --view discover')
 	.example('templates --kind agent')
 	.example('templates --kind chat')
 	.action(run(templates.listTemplates));
@@ -1099,7 +1100,7 @@ cli
 
 cli
 	.command('workspace template update')
-	.describe('Update an owned template listing and its reviewed source selection.')
+	.describe('Update owned template listing metadata.')
 	.option('--data', 'JSON object or - for stdin.')
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -1113,9 +1114,7 @@ cli
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example(
-		'workspace template publish --template abc --data \'{"acknowledgment":true,"expectedRevision":"2026-11-03T12:00:00.000Z","sourceRevision":"revision-from-file-system","notes":"Updated scheduled message"}\' --yes',
-	)
+	.example('workspace template publish --template abc --yes')
 	.action(run(workspace.publishTemplate));
 
 cli
@@ -1124,13 +1123,6 @@ cli
 	.option('--template', 'Template identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.reviewTemplateSource));
-
-cli
-	.command('workspace template materials')
-	.describe('Inspect selectable materials and resources for an owned Chat, Project, or Agent Template.')
-	.option('--template', 'Template identifier.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(workspace.reviewTemplateMaterials));
 
 cli
 	.command('workspace template remix')
@@ -1183,21 +1175,27 @@ cli
 	.action(run(workspace.openTemplate));
 
 cli
-	.command('workspace member departure-preview')
-	.describe('Review removal of a member by user ID.')
+	.command('workspace member governance')
+	.describe('Review member status, blockers, capabilities, and revision.')
 	.option('--member', 'Member user identifier.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.action(run(workspace.previewMemberDeparture));
+	.action(run(workspace.getMemberGovernance));
 
-cli
-	.command('workspace member depart')
-	.describe('Remove a member using the reviewed revision.')
-	.option('--data', 'JSON object or - for stdin.')
-	.option('--yes', 'Confirm this operation.', false)
-	.option('--member', 'Member user identifier.')
-	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
-	.example('workspace member depart --member abc --data \'{"revision":"CURRENT_REVISION"}\' --yes')
-	.action(run(workspace.removeMember));
+for (const [name, handler] of [
+	['deactivate', workspace.deactivateMember],
+	['reactivate', workspace.reactivateMember],
+	['reassign', workspace.reassignMember],
+	['remove', workspace.removeMember],
+] as const) {
+	cli
+		.command(`workspace member ${name}`)
+		.describe(`${name} a Workspace member using a reviewed governance revision.`)
+		.option('--data', 'JSON object or - for stdin.')
+		.option('--yes', 'Confirm this operation.', false)
+		.option('--member', 'Member user identifier.')
+		.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+		.action(run(handler));
+}
 
 cli
 	.command('workspace members')
@@ -1205,6 +1203,8 @@ cli
 	.option('--query', 'Search text.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page.')
+	.option('--role', 'Member role filter.')
+	.option('--status', 'Member status filter: all, active, or deactivated.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.action(run(workspace.listMembers));
 
@@ -1264,6 +1264,29 @@ cli
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.example('workspace settings update --data \'{"instructions":"Use concise responses."}\'')
 	.action(run(workspace.updateWorkspacePreferences));
+
+cli
+	.command('workspace resource-retention')
+	.describe('Get the deleted-resource retention policy and entitlement.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.getResourceRetention));
+
+cli
+	.command('workspace resource-retention update')
+	.describe('Enable or disable 30-day deleted-resource retention.')
+	.option('--data', 'JSON object or - for stdin.')
+	.option('--yes', 'Confirm this operation.', false)
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.updateResourceRetention));
+
+cli
+	.command('workspace retained-resource restore')
+	.describe('Restore a whole retained resource before its deletion deadline.')
+	.option('--type', 'Resource type: chat, agent, project, site, or artifact.')
+	.option('--resource', 'Resource UUID.')
+	.option('--yes', 'Confirm this operation.', false)
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.action(run(workspace.restoreRetainedResource));
 
 cli
 	.command('workspace designs')

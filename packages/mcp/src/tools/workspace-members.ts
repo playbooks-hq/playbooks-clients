@@ -2,59 +2,39 @@ import type { ToolDefinition } from 'src/tools/definition.js';
 
 export const workspaceMembersTools: ToolDefinition[] = [
 	{
-		command: 'workspace member departure-preview',
-		description: 'Review removal of a member by user ID.',
+		command: 'workspace member governance',
+		description: 'Review member lifecycle, blockers, capabilities, and revision.',
 		toolset: 'workspace',
 		readOnly: true,
 		destructive: false,
 		options: {
-			select: {
-				flag: 'select',
-				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
-			},
-			member: {
-				flag: 'member',
-				description: 'Member user identifier.',
-				required: true,
-			},
-			workspace: {
-				flag: 'workspace',
-				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
-				required: true,
-			},
+			select: { flag: 'select', description: 'Comma-separated output fields; pagination metadata is preserved.' },
+			member: { flag: 'member', description: 'Member user identifier.', required: true },
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace identifier.', required: true },
 		},
 	},
-	{
-		command: 'workspace member depart',
-		description: 'Remove a member using the reviewed revision.',
-		toolset: 'workspace',
-		readOnly: false,
-		destructive: true,
-		options: {
-			select: {
-				flag: 'select',
-				description: 'Comma-separated output fields, including nested fields. Pagination metadata is preserved.',
+	...(['deactivate', 'reactivate', 'reassign', 'remove'] as const).map(
+		(action): ToolDefinition => ({
+			command: `workspace member ${action}`,
+			description: `${action} a Workspace member using a reviewed governance revision.`,
+			toolset: 'workspace',
+			readOnly: false,
+			destructive: true,
+			options: {
+				select: { flag: 'select', description: 'Comma-separated output fields; pagination metadata is preserved.' },
+				confirm: { flag: 'yes', description: 'Confirm the reviewed operation.', kind: 'boolean' as const },
+				member: { flag: 'member', description: 'Member user identifier.', required: true },
+				workspace: { flag: 'workspace', description: 'Explicit authorized Workspace identifier.', required: true },
 			},
-			confirm: {
-				flag: 'yes',
-				description:
-					'Confirm the reviewed operation and its possible side effects or usage charges. Defaults to false.',
-				kind: 'boolean',
-			},
-			member: {
-				flag: 'member',
-				description: 'Member user identifier.',
-				required: true,
-			},
-			workspace: {
-				flag: 'workspace',
-				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
-				required: true,
-			},
-		},
-		dataFields: ['revision'],
-		dataOptional: false,
-	},
+			dataFields:
+				action === 'reassign'
+					? ['revision', 'recipientUserId']
+					: action === 'remove'
+						? ['revision', 'typedName']
+						: ['revision'],
+			dataOptional: false,
+		}),
+	),
 	{
 		command: 'workspace members',
 		description: 'List workspace members.',
@@ -80,6 +60,8 @@ export const workspaceMembersTools: ToolDefinition[] = [
 				description: 'Records per page.',
 				kind: 'number',
 			},
+			role: { flag: 'role', description: 'Member role filter.' },
+			status: { flag: 'status', description: 'Member status filter: all, active, or deactivated.' },
 			workspace: {
 				flag: 'workspace',
 				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',

@@ -6,7 +6,7 @@ import { get, identifier, listing } from 'src/resource.js';
 import { ResourceSharing } from 'src/resource-sharing.js';
 import { Transport } from 'src/transport.js';
 import type { ApiResponse, SharedResourceListOptions, SharedResourcePage } from 'src/types.js';
-import type { TemplateData, TemplateListOptions } from 'src/types.js';
+import type { ExploreTemplateListOptions, TemplateData } from 'src/types.js';
 import type { ClientOptions, Identifier, ListOptions, WorkspaceData, WorkspaceUpdate } from 'src/types.js';
 import { chats } from 'src/workspace.js';
 import { updateWorkspace, Workspace } from 'src/workspace.js';
@@ -76,8 +76,17 @@ export class PlaybooksSDK {
 				listing(this.#publicTransport(), `/explore/templates/${identifier(id)}/versions`, options),
 			version: (id: Identifier, versionId: Identifier) =>
 				get(this.#publicTransport(), `/explore/templates/${identifier(id)}/versions/${identifier(versionId)}`),
-			list: (options?: TemplateListOptions) =>
-				listing<TemplateData>(this.#publicTransport(), '/explore/templates', options),
+			list: (options: ExploreTemplateListOptions = {}) => {
+				const { workspace, ...params } = options;
+				if (params.view === 'following') {
+					if (!workspace) throw new PlaybooksError(422, 'Following requires a selected Workspace.');
+					if (!this.#options.apiKey) throw new PlaybooksError(401, 'Following requires an API key.');
+					identifier(workspace);
+					return listing<TemplateData>(this.#transport(workspace), '/explore/templates', params);
+				}
+				if (workspace !== undefined) throw new PlaybooksError(422, 'Workspace applies only to Following.');
+				return listing<TemplateData>(this.#publicTransport(), '/explore/templates', params);
+			},
 			get: (id: Identifier, options: { include?: string } = {}) =>
 				get<TemplateData>(this.#publicTransport(), `/explore/templates/${identifier(id)}`, options),
 		};

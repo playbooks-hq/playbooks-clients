@@ -40,9 +40,9 @@ Chat scheduled messages use `workspace.chat_schedules.list/get/preview/create/up
 
 ## Template drafts and adoption
 
-Both clients expose `workspace.templates.create_from_chat/project/agent(id)` and matching `draft_from_chat/project/agent(id)` readers. Use `workspace.templates.materials(template_id)` for exact selectable identifiers and revisions. A complete `packageSelection` includes the five `resources` arrays: `files`, `designs`, `skills`, `connectors`, and `mcps`, including empty arrays. Select content by checksum and connections by revision and allowed operations; MCP settings contain only safe values. Chat and Agent may select working files, Chat may select saved Artifact versions, and Project may select saved source. Credentials are never selected.
+Both clients expose `workspace.templates.create_from_chat/project/agent(id)` and matching `draft_from_chat/project/agent(id)` readers. Update listing metadata, including an optional `liveUrl`; Playbooks derives package content from current authorized source material. Chat includes working files and eligible linked Artifact editing assets, Agent includes portable configuration and assigned resources without working outputs, and Project uses the latest saved default branch with direct assigned or local resources. Credentials and private execution history never transfer.
 
-Call `workspace.templates.source(template_id)` before `publish(template_id, data)` and pass its source and listing revisions with `acknowledgment: true`. Adopted Chats expose `workspace.chats.template_setup(chat_id)` and `template_setup_item(chat_id, category, key)` to review the exact immutable File, Design, or Skill before `import_template_resources(chat_id, data)`. Import data requires `category`, package `keys`, `acknowledgment: true`, and a stable `idempotencyKey`; reuse the key after an uncertain response. Connector and MCP setup remains separate.
+Call `workspace.templates.source(template_id)` to inspect the package summary, then `publish(template_id, bump="minor")` to publish (optional `patch`, `minor`, or `major`; default `patch`). Sync and async SDKs obtain and bind current revisions automatically; a changed source returns a conflict. Adopted Chats expose `workspace.chats.template_setup(chat_id)` and `template_setup_item(chat_id, category, key)` to review the exact immutable File, Design, or Skill before `import_template_resources(chat_id, data)`. Import data requires `category`, package `keys`, `acknowledgment: true`, and a stable `idempotencyKey`; reuse the key after an uncertain response. Connector and MCP setup remains separate.
 
 ## Resources and inputs
 
@@ -58,7 +58,9 @@ Both clients have matching resource methods. Async I/O methods must be awaited; 
 | Publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
 | Operators | `conversations`, `runs`; verified conversations expose messages, with a selected branch for Project messages |
 
-Methods and keyword arguments use Python names: `preview_departure`, `page_size`, `expected_revision`, `timeout_ms`, and `on_activity`. `source.import_()` uses a trailing underscore because `import` is a Python keyword. Payload dictionaries, response attributes, snapshots, and page metadata retain Server field names such as `expectedRevision`, `projectId`, and `hasMore`. Arbitrary nested data is never renamed.
+`client.templates.list(kind="project", view="discover")` uses anonymous public discovery. `view="following"` requires an API key and `workspace="WORKSPACE_UUID"`; the SDK sends that value as the Workspace header and keeps it out of the query string. The async client uses the same inputs.
+
+Methods and keyword arguments use Python names: `governance`, `page_size`, `expected_revision`, `timeout_ms`, and `on_activity`. `source.import_()` uses a trailing underscore because `import` is a Python keyword. Payload dictionaries, response attributes, snapshots, and page metadata retain Server field names such as `expectedRevision`, `projectId`, and `hasMore`. Arbitrary nested data is never renamed.
 
 `get()` returns a resource directly. Successful resource `update(data)` refreshes that same object and returns it. Failed updates preserve the previous snapshot. Resource fields are read-only; use `to_dict()` for an independent snapshot, including extra Server fields and excluding transport internals and credentials. Use `json.dumps(resource.to_dict())` for JSON serialization. Collection updates do not require fetching the resource first.
 

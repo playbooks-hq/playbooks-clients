@@ -12,6 +12,7 @@ import type {
 	ListOptions,
 	MessageInput,
 	MessageOptions,
+	RecordData,
 	StreamOptions,
 } from 'src/types.js';
 
@@ -55,6 +56,7 @@ export interface AgentData {
 	name: string;
 	description: string | null;
 	workspaceId: number;
+	ownerUserId: number;
 	projectId: string | null;
 	siteId: string | null;
 	association: { kind: 'project' | 'site'; id: string; name: string } | null;
@@ -72,6 +74,14 @@ export interface AgentData {
 	};
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface ArtifactData extends RecordData {
+	id: string;
+	uuid: string;
+	ownerUserId: number;
+	creatorUserId: number | null;
+	authorUserId: number | null;
 }
 export interface AgentCreate {
 	idempotencyKey: string;
@@ -237,8 +247,8 @@ export class AgentReference {
 		const path = `${this.path}/artifacts`;
 		const transport = this.transport;
 		return {
-			list: (options?: { page?: number; search?: string }) => listing(transport, path, options),
-			get: (id: Identifier, version?: string) => get(transport, `${path}/${identifier(id)}`, { version }),
+			list: (options?: { page?: number; search?: string }) => listing<ArtifactData>(transport, path, options),
+			get: (id: Identifier, version?: string) => get<ArtifactData>(transport, `${path}/${identifier(id)}`, { version }),
 			versions: (id: Identifier, options?: { page?: number }) =>
 				listing(transport, `${path}/${identifier(id)}/versions`, options),
 			prepare: (input: AgentArtifactPrepare) => action(transport, `${path}/prepare`, 'POST', input),

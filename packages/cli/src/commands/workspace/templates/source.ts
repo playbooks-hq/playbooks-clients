@@ -6,8 +6,3 @@ export const reviewTemplateSource = async (options: any) => {
 	const context = await workspaceContext(options);
 	return sdkEnvelope(await context.workspaceResource.templates.source(identifier(options.template)));
 };
-
-export const reviewTemplateMaterials = async (options: any) => {
-	const context = await workspaceContext(options);
-	return sdkEnvelope(await context.workspaceResource.templates.materials(identifier(options.template)));
-};

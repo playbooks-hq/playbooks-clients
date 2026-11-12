@@ -1,6 +1,7 @@
 export { Agent, AgentReference, Agents } from 'src/agents.js';
 export type {
 	AgentData,
+	ArtifactData,
 	AgentApplicationGrant,
 	AgentFileResult,
 	AgentApplicationAccess,

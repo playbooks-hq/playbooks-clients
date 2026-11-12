@@ -123,9 +123,9 @@ Chat schedules use `workspace.chatSchedules.list/get/preview/create/update`. Cre
 
 ## Template drafts and adoption
 
-Use `workspace.templates.createFromChat/Project/Agent(id)` to create an owned draft, or `draftFromChat/Project/Agent(id)` to read one without creating it. `workspace.templates.materials(templateId)` lists selectable materials. Update the draft with one complete `packageSelection`: `resources.files`, `designs`, `skills`, `connectors`, and `mcps` are all required arrays, even when empty. Select Files, Designs, and Skills by exact `id` and `checksum`; select Connectors and MCPs by `id`, `revision`, and permitted `operations`. MCP selections may include safe `settings`. Chat and Agent selections can include working file paths and checksums; Chat can include exact saved Artifact versions; Project can choose a saved source. No selection transfers credentials.
+Use `workspace.templates.createFromChat/Project/Agent(id)` to create an owned draft, or `draftFromChat/Project/Agent(id)` to read one without creating it. Update listing metadata, including an optional `liveUrl`; Playbooks derives package content from the current authorized source at review and publication. Chat packages include current Chat working files and eligible linked Artifact editing assets. Agent packages include portable configuration and assigned resources without working outputs. Project packages use the latest saved default branch source and direct assigned or local resources. Credentials and private execution history never transfer.
 
-Review `workspace.templates.source(templateId)` before calling `publish` with its `sourceRevision` and `expectedRevision`, plus `acknowledgment: true`. For an adopted Chat, `workspace.chats.templateSetup(chatId)` lists safe package resources; `templateSetupItem(chatId, category, key)` reads the exact immutable File, Design, or Skill before import. `workspace.chats.importTemplateResources(chatId, { category, keys, acknowledgment: true, idempotencyKey })` explicitly imports selected items; retry uncertain imports with the same key. Configure Connector and MCP access separately.
+Call `workspace.templates.source(templateId)` to inspect the package summary, then `workspace.templates.publish(templateId, { bump: "minor" })` to publish (optional `patch`, `minor`, or `major`; default `patch`). The SDK reviews and binds current revisions automatically; a changed source returns a conflict rather than silently retrying. For an adopted Chat, `workspace.chats.templateSetup(chatId)` lists safe package resources; `templateSetupItem(chatId, category, key)` reads the exact immutable File, Design, or Skill before import. `workspace.chats.importTemplateResources(chatId, { category, keys, acknowledgment: true, idempotencyKey })` explicitly imports selected items; retry uncertain imports with the same key. Configure Connector and MCP access separately.
 
 ## Resource families
 
@@ -141,13 +141,21 @@ Only operations already supported by CLI are exposed; not every resource has eve
 | Project publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
 | Workspace/Project Operators | `conversations`, `runs`; verified conversations provide messages, with Project messages scoped to a selected branch |
 
+`client.templates.list({ kind: 'project', view: 'discover' })` uses anonymous public discovery. `view: 'following'` requires an API key and `workspace: 'WORKSPACE_UUID'`; the SDK sends that value as the Workspace header and keeps it out of the query string.
+
 Examples of named actions:
 
 ```ts
 
-const preview = await workspace.members.previewDeparture('MEMBER_ID');
-// After reviewing preview, supply its revision.
-await workspace.members.depart('MEMBER_ID', { revision: 'REVIEWED_REVISION' });
+const preview = await workspace.members.governance('MEMBER_ID');
+// After reviewing status, blockers, and capabilities, supply its revision.
+await workspace.members.deactivate('MEMBER_ID', preview.revision);
+await workspace.members.reactivate('MEMBER_ID', preview.revision);
+await workspace.members.reassign('MEMBER_ID', { revision: preview.revision, recipientUserId: 42 });
+await workspace.members.remove('MEMBER_ID', { revision: preview.revision, typedName: preview.member.name });
+const retention = await workspace.resourceRetention.get();
+await workspace.resourceRetention.update(true);
+await workspace.retainedResources.restore('artifact', 'ARTIFACT_UUID');
 
 const records = await workspace.domains.records('DOMAIN_UUID').list();
 const source = await project.source.status();

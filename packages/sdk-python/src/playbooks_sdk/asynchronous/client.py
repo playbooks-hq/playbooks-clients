@@ -3,7 +3,7 @@ from typing import Any, Literal, Self
 
 import httpx
 
-from playbooks_sdk.asynchronous.core import Listing, ReadCollection, ReadEndpoint
+from playbooks_sdk.asynchronous.core import ExploreTemplates, Listing, ReadEndpoint
 from playbooks_sdk.asynchronous.resource_sharing import ResourceSharing
 from playbooks_sdk.asynchronous.workspace import Workspaces
 from playbooks_sdk.resource import Data, Identifier, identifier
@@ -58,8 +58,8 @@ class AsyncPlaybooksSDK:
         return ResourceSharing(self._transport.scoped(identifier(workspace)), kind, id)
 
     @property
-    def templates(self) -> ReadCollection:
-        return ReadCollection(self._public_transport, "/explore/templates")
+    def templates(self) -> ExploreTemplates:
+        return ExploreTemplates(self._public_transport, self._transport, "/explore/templates")
 
     @property
     def categories(self) -> Listing:

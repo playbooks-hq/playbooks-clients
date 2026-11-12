@@ -83,13 +83,14 @@ Streams stop after 1,800 seconds by default; use `--timeout <seconds>` to change
 
 ```sh
 playbooks projects --json --select uuid,name,status
-playbooks templates --category business --kind project --query portal
+playbooks templates --kind project --view discover --query portal
+playbooks templates --kind project --view following --workspace YOUR_WORKSPACE_UUID
 playbooks project update --project abc --data '{"description":"Customer support app"}'
 ```
 
-Public discovery uses `templates`, `categories`, `collections`, and `creators`. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
+Public discovery uses `templates`, `categories`, `collections`, and `creators`. `templates` accepts one category UUID from the returned facets. The Following view uses your developer key and the selected Workspace, or an explicit `--workspace`; other views use anonymous public discovery. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
 
-Template drafts start with `workspace chat|project|agent template create --chat|--project|--agent ID`; the matching `draft` commands read without creating. Run `workspace template materials --template ID` to inspect exact selectable content and resource revisions. `workspace template update --template ID --data -` accepts a complete `packageSelection` with required `resources.files`, `designs`, `skills`, `connectors`, and `mcps` arrays. Content uses exact IDs and checksums; connections use revisions and operation scopes. Chat and Agent can select working files, Chat can select saved Artifact versions, and Project can choose saved source. Review `workspace template source` and supply its revisions to `workspace template publish --yes`.
+Template drafts start with `workspace chat|project|agent template create --chat|--project|--agent ID`; the matching `draft` commands read without creating. `workspace template update --template ID --data -` changes listing metadata, including optional `liveUrl`. Playbooks derives package content from the current authorized source. Review `workspace template source --template ID`, then run `workspace template publish --template ID --yes` (optional `--data '{"bump":"minor"}'`); the CLI obtains and binds current revisions automatically. A source change returns a conflict rather than silently retrying.
 
 After a Chat remix, `workspace chat template setup --chat ID` lists importable Files, Designs, and Skills plus connection setup requirements. Read each selected item with `workspace chat template item --chat ID --category files --key PACKAGE_KEY` before `workspace chat template import --chat ID --data '{"category":"files","keys":["PACKAGE_KEY"],"acknowledgment":true,"idempotencyKey":"UUID"}' --yes`. Retry an uncertain import with the same key. Connector and MCP access requires separate setup.
 

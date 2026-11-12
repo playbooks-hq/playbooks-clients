@@ -3,7 +3,11 @@ import { listParams } from 'src/utils/cli-input';
 import { sdkList } from 'src/utils/sdk-output';
 
 export const listMembers = async (options: any) => {
-	const params = listParams(options, {});
+	const params = {
+		...listParams(options, {}),
+		...(options.role && options.role !== 'all' ? { role: options.role } : {}),
+		...(options.status && options.status !== 'all' ? { status: options.status } : {}),
+	};
 	const context = await workspaceContext(options);
 	return sdkList(await context.workspaceResource.members.list(params));
 };

@@ -1,4 +1,4 @@
-from typing import Any, Self
+from typing import Any, Literal, Self
 from urllib.parse import quote
 
 from playbooks_sdk.error import PlaybooksError
@@ -126,11 +126,24 @@ class Templates(EditableCollection):
     def source(self, id: Identifier) -> Any:
         return self._get(f"{self._path}/{identifier(id)}/source")
 
-    def materials(self, id: Identifier) -> Any:
-        return self._get(f"{self._path}/{identifier(id)}/materials")
-
-    def publish(self, id: Identifier, data: Data) -> Any:
-        return self._action(f"{self._path}/{identifier(id)}/publish", "POST", data)
+    def publish(
+        self,
+        id: Identifier,
+        *,
+        notes: str | None = None,
+        bump: Literal["patch", "minor", "major"] = "patch",
+    ) -> Any:
+        path = f"{self._path}/{identifier(id)}"
+        review = self._get(f"{path}/source")
+        data: Data = {
+            "acknowledgment": True,
+            "expectedRevision": review.expectedRevision,
+            "sourceRevision": review.sourceRevision,
+            "bump": bump,
+        }
+        if notes is not None:
+            data["notes"] = notes
+        return self._action(f"{path}/publish", "POST", data)
 
     def remix(self, id: Identifier, data: Data) -> Any:
         return self._action(f"/explore/templates/{identifier(id)}/remix", "POST", data)
@@ -144,17 +157,35 @@ class Members(EditableCollection):
         super().__init__(transport, "/workspace/members")
         self._workspace = workspace
 
-    def preview_departure(self, id: Identifier) -> Resource:
+    def list(self, **options: Any) -> ApiResponse:
+        filters = {
+            key: value
+            for key, value in options.items()
+            if key not in ("status", "role") or value != "all"
+        }
+        return super().list(**filters)
+
+    def governance(self, id: Identifier) -> Resource:
         result: Resource = self._get(
-            f"/session/workspaces/{identifier(self._workspace)}/members/{identifier(id)}/departure"
+            f"/session/workspaces/{identifier(self._workspace)}/members/{identifier(id)}/governance"
         )
         return result
 
-    def depart(self, id: Identifier, data: Data) -> Any:
-        return self._action(
-            f"/session/workspaces/{identifier(self._workspace)}/members/{identifier(id)}/departure",
-            "POST",
-            data,
+    def deactivate(self, id: Identifier, revision: str) -> Any:
+        return self._action(self._governance_path(id, "deactivate"), "POST", {"revision": revision})
+
+    def reactivate(self, id: Identifier, revision: str) -> Any:
+        return self._action(self._governance_path(id, "reactivate"), "POST", {"revision": revision})
+
+    def reassign(self, id: Identifier, data: Data) -> Any:
+        return self._action(self._governance_path(id, "reassign"), "POST", data)
+
+    def remove(self, id: Identifier, data: Data) -> Any:
+        return self._action(self._governance_path(id, "remove"), "POST", data)
+
+    def _governance_path(self, id: Identifier, action: str) -> str:
+        return (
+            f"/session/workspaces/{identifier(self._workspace)}/members/{identifier(id)}/{action}"
         )
 
 
@@ -183,6 +214,25 @@ class Domains(ReadCollection):
 
     def records(self, domain_id: Identifier) -> DnsRecords:
         return DnsRecords(self._transport, f"{self._path}/{identifier(domain_id)}/dns-records")
+
+
+class RetainedResources(Endpoint):
+    def restore(self, type: str, resource_id: Identifier) -> Any:
+        if type not in {"chat", "agent", "project", "site", "artifact"}:
+            raise ValueError("Choose chat, agent, project, site, or artifact.")
+        path = f"/workspace/retained-resources/{type}/{identifier(resource_id)}/restore"
+        return self._action(path, "POST", {})
+
+
+class ResourceRetention(Endpoint):
+    def get(self) -> Resource:
+        result: Resource = self._get(self._path)
+        return result
+
+    def update(self, retain_deleted_resources_30_days: bool) -> Any:
+        return self._action(
+            self._path, "PUT", {"retainDeletedResources30Days": retain_deleted_resources_30_days}
+        )
 
 
 class Workspace(Resource):
@@ -253,6 +303,14 @@ class Workspace(Resource):
     @property
     def templates(self) -> Templates:
         return Templates(self._transport, "/templates")
+
+    @property
+    def retained_resources(self) -> RetainedResources:
+        return RetainedResources(self._transport, "/workspace/retained-resources")
+
+    @property
+    def resource_retention(self) -> ResourceRetention:
+        return ResourceRetention(self._transport, "/workspace/policies/resource-retention")
 
     @property
     def members(self) -> Members:
