@@ -93,6 +93,21 @@ cli
 	.action(run(agent.getSandbox));
 
 cli
+	.command('agent sandbox config')
+	.describe('Inspect Agent Sandbox resources and resize status with management access.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.getSandboxConfig));
+
+cli
+	.command('agent sandbox configure')
+	.describe('Request Agent Sandbox resources with the current version and a stable idempotency key.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON expectedVersionId, resources, and idempotencyKey, or - for stdin.')
+	.action(run(agent.configureSandbox));
+
+cli
 	.command('agent sandbox operation')
 	.describe('Inspect a retained Agent Sandbox command receipt and captured output.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')

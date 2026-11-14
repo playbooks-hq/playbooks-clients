@@ -15,6 +15,9 @@ export type {
 	AgentScheduleCreate,
 	AgentScheduleUpdate,
 	AgentSandboxData,
+	AgentSandboxConfigData,
+	AgentSandboxResources,
+	AgentSandboxResizeData,
 	AgentSandboxOperationData,
 } from 'src/agents.js';
 export { PlaybooksSDK } from 'src/client.js';

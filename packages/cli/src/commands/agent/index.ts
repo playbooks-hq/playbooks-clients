@@ -29,6 +29,33 @@ export const getAgent = async (options: any) => {
 	return sdkEnvelope(await context.workspaceReference.agents.get(identifier(options.agent, '--agent')));
 };
 export const getSandbox = async (options: any) => sdkEnvelope(await (await agentContext(options)).agent.sandbox.get());
+export const getSandboxConfig = async (options: any) =>
+	sdkEnvelope(await (await agentContext(options)).agent.sandbox.config.get());
+export const configureSandbox = async (options: any) => {
+	const data = await input(options, ['expectedVersionId', 'resources', 'idempotencyKey']);
+	if (
+		!('expectedVersionId' in data) ||
+		(data.expectedVersionId !== null && (!Number.isSafeInteger(data.expectedVersionId) || data.expectedVersionId <= 0))
+	)
+		throw new CliError(422, 'Provide current expectedVersionId from Agent Sandbox configuration.');
+	const resources = data.resources;
+	const fields = ['cpu', 'memoryGiB', 'storageGiB'];
+	if (
+		!resources ||
+		typeof resources !== 'object' ||
+		Array.isArray(resources) ||
+		Object.keys(resources).length !== fields.length ||
+		fields.some(field => !Number.isFinite(resources[field]) || resources[field] <= 0)
+	)
+		throw new CliError(422, 'Agent Sandbox resources require numeric cpu, memoryGiB, and storageGiB values.');
+	if (typeof data.idempotencyKey !== 'string' || !data.idempotencyKey || data.idempotencyKey.length > 128)
+		throw new CliError(422, 'Provide a stable idempotencyKey of 1-128 characters for safe retries.');
+	return sdkEnvelope(
+		await (
+			await agentContext(options)
+		).agent.sandbox.config.configure({ expectedVersionId: data.expectedVersionId, resources }, data.idempotencyKey),
+	);
+};
 export const getSandboxOperation = async (options: any) =>
 	sdkEnvelope(
 		await (await agentContext(options)).agent.sandbox.operation(identifier(options.operation, '--operation')),

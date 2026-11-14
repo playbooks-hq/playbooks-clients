@@ -29,6 +29,19 @@ class AgentReference:
     def sandbox(self) -> Any:
         return Endpoint(self._transport, self._path)._get(f"{self._path}/sandbox")
 
+    def sandbox_config(self) -> Any:
+        return Endpoint(self._transport, self._path)._get(f"{self._path}/sandbox/config")
+
+    def configure_sandbox(self, data: Data, *, idempotency_key: str) -> Any:
+        response = self._transport.request(
+            f"{self._path}/sandbox/config",
+            "PUT",
+            data,
+            read_only=False,
+            extra_headers={"Idempotency-Key": idempotency_key},
+        )
+        return response["data"]
+
     def sandbox_operation(self, operation_id: Identifier) -> Any:
         return Endpoint(self._transport, self._path)._get(
             f"{self._path}/sandbox/operations/{identifier(operation_id)}"

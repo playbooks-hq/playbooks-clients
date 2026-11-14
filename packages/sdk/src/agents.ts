@@ -172,7 +172,8 @@ export interface AgentSandboxData {
 	status: string;
 	allocationPresent: boolean;
 	observedState: string | null;
-	runtime: { cpu: number; ram: string; disk: string } | null;
+	runtime: AgentSandboxResources | null;
+	resize: AgentSandboxResizeData | null;
 	canRead: boolean;
 	canOperate: boolean;
 	capabilities: {
@@ -186,8 +187,33 @@ export interface AgentSandboxData {
 	operation: {
 		id: string;
 		status: 'pending' | 'running' | 'completed' | 'failed' | 'uncertain';
-		action: 'start' | 'stop' | 'reset' | 'remove';
+		action: 'start' | 'stop' | 'reset' | 'remove' | 'configure';
 	} | null;
+}
+
+export interface AgentSandboxResources {
+	cpu: number;
+	memoryGiB: number;
+	storageGiB: number;
+}
+
+export interface AgentSandboxResizeData {
+	desiredSize?: AgentSandboxResources | null;
+	appliedSize?: AgentSandboxResources | null;
+	operation?: {
+		id: string;
+		state: string;
+		phase: string;
+		applicationStatus?: string | null;
+		cleanupStatus?: string | null;
+		failureCode?: string | null;
+	} | null;
+}
+
+export interface AgentSandboxConfigData {
+	currentVersionId: number;
+	resources: AgentSandboxResources;
+	resize: AgentSandboxResizeData | null;
 }
 
 export interface AgentSandboxOperationData {
@@ -226,6 +252,15 @@ export class AgentReference {
 		const path = `${this.path}/sandbox`;
 		return {
 			get: () => get<AgentSandboxData>(this.transport, path),
+			config: {
+				get: () => get<AgentSandboxConfigData>(this.transport, `${path}/config`),
+				configure: (input: { expectedVersionId: number; resources: AgentSandboxResources }, idempotencyKey: string) =>
+					this.transport
+						.request(`${path}/config`, 'PUT', input, {}, false, false, false, undefined, {
+							'Idempotency-Key': idempotencyKey,
+						})
+						.then(response => response.data as AgentSandboxConfigData),
+			},
 			operation: (id: Identifier) =>
 				get<AgentSandboxOperationData>(this.transport, `${path}/operations/${identifier(id)}`),
 			action: (operation: 'start' | 'stop' | 'reset' | 'remove', idempotencyKey: string) =>

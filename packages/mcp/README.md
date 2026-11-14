@@ -75,6 +75,8 @@ For publication, inspect `playbooks_project_preflight`, then pass its reviewed `
 
 Tools use structured `data` objects, delivered to the CLI through stdin. Fields such as revisions, idempotency keys, permissions, and budgets retain their CLI/Server meaning. A `confirm` field defaults to false and maps to the CLI's `--yes`; the calling client remains responsible for obtaining user authorization.
 
+`playbooks_agent_sandbox` returns the viewer-safe allocation summary. Agent resources-management access is required for `playbooks_agent_sandbox_config` and `playbooks_agent_sandbox_configure`. Read `currentVersionId`, then submit numeric `cpu`, `memoryGiB`, and `storageGiB` under `data.resources` with that version and a stable `idempotencyKey`. Reuse the same request after an uncertain resize response and inspect requested, applied, and operation progress. The Server validates each resource field independently and manages lifecycle automatically.
+
 Results preserve `{ data, meta? }` and inline relations, with both JSON text and structured content. Errors use `{ error: { status, title, description, source?, debug? } }`. List tools expose only their supported pagination: zero-based `page`/`pageSize` (default 0/20, maximum size 100), message, log, and search `cursor`/`pageSize`. Preserve the returned cursor rather than deriving one from record counts.
 
 Calls are bounded to 120 seconds and 8 MiB of output. Narrow queries or use `select` for large results. Canceling an MCP request stops the local CLI process, not accepted remote work. Inspect state before retrying uncertain mutations; reuse the same idempotency key and identical input where supported. Streaming, automatic polling, login/logout, and arbitrary CLI execution are not exposed.

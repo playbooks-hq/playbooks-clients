@@ -366,6 +366,38 @@ export const agentTools: ToolDefinition[] = [
 		},
 	},
 	{
+		command: 'agent sandbox config',
+		description: 'Inspect Agent Sandbox resources and resize status with management access.',
+		toolset: 'core',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			agent: { flag: 'agent', description: 'Agent UUID.', required: true },
+		},
+	},
+	{
+		command: 'agent sandbox configure',
+		description:
+			'Request Agent Sandbox resources. Read currentVersionId first and reuse the idempotency key after an uncertain response.',
+		toolset: 'core',
+		readOnly: false,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			agent: { flag: 'agent', description: 'Agent UUID.', required: true },
+		},
+		dataSchema: z.strictObject({
+			expectedVersionId: z.number().int().positive().nullable(),
+			resources: z.strictObject({
+				cpu: z.number().positive(),
+				memoryGiB: z.number().positive(),
+				storageGiB: z.number().positive(),
+			}),
+			idempotencyKey: z.string().min(1).max(128),
+		}),
+	},
+	{
 		command: 'agent sandbox operation',
 		description: 'Read a retained Agent Sandbox command receipt, including captured file bytes when available.',
 		toolset: 'core',
