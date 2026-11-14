@@ -327,7 +327,7 @@ export class Site extends Resource<SiteData> {
 		const path = `${this.#path}/visitor-policy`;
 		return {
 			get: () => get(this.#transport, path),
-			update: (input: { mode: 'public' | 'private' | 'application-authenticated'; expectedConfigRevision: string }) =>
+			update: (input: { mode: 'public' | 'private'; expectedConfigRevision: string }) =>
 				action(this.#transport, path, 'PATCH', input),
 		};
 	}
@@ -396,22 +396,6 @@ export class Site extends Resource<SiteData> {
 			schedules: async () => (await this.#transport.request(`${path}/schedules`)).data,
 			activate: (id: Identifier, active: boolean) =>
 				action(this.#transport, `${path}/schedules/${identifier(id)}/activation`, 'PUT', { active }),
-		};
-	}
-	get auth() {
-		return {
-			get: () => get(this.#transport, `${this.#path}/auth`),
-			configure: (input: {
-				provider: 'playbooks' | 'clerk';
-				methods: Partial<
-					Record<'password' | 'code' | 'playbooks' | 'google' | 'clerk', 'enabled' | 'existing' | 'disabled'>
-				>;
-				expectedConfigRevision: string;
-			}) => action(this.#transport, `${this.#path}/auth`, 'PUT', input),
-			connectClerk: (input: { publishableKey: string; secretKey: string; expectedConfigRevision: string }) =>
-				action(this.#transport, `${this.#path}/auth/clerk`, 'POST', input),
-			verify: (input: { sessionToken?: string; clerkToken?: string; hostname?: string; method?: string }) =>
-				action(this.#transport, `${this.#path}/auth/verify`, 'POST', input),
 		};
 	}
 	database() {

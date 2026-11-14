@@ -52,7 +52,7 @@ export { getSourceStatus } from 'src/commands/project/source/status';
 export { listBranches } from 'src/commands/project/branches/list';
 export { listCheckpoints } from 'src/commands/project/checkpoints/list';
 export { importSource } from 'src/commands/project/source/import';
-export { sandboxOperations, configureSandbox } from 'src/commands/project/sandbox';
+export { sandboxOperations, configureSandbox, removeSandbox } from 'src/commands/project/sandbox';
 export { logsOperations } from 'src/commands/project/logs';
 export { listSchedules } from 'src/commands/project/schedules/list';
 export { getSchedule } from 'src/commands/project/schedules/get';

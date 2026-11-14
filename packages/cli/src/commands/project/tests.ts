@@ -29,7 +29,7 @@ export const getTestOperation = async (options: any) => {
 };
 export const createTest = async (options: any) => {
 	const { projectResource } = await projectContext(options);
-	const data = await input(options, ['requestKey', 'name', 'instructions', 'branchId', 'intent', 'authMethod']);
+	const data = await input(options, ['requestKey', 'name', 'instructions', 'branchId', 'intent']);
 	await confirm(options, `Create an isolated Test under ${projectResource.uuid}? Preparation may incur usage.`);
 	return sdkEnvelope(await projectResource.tests.create(data));
 };
@@ -62,7 +62,6 @@ export const testAction = async (options: any) => {
 		'attachments',
 		'replacesOperationId',
 		'intent',
-		'authMethod',
 	]);
 	await confirm(
 		options,

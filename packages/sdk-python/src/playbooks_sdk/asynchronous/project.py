@@ -53,10 +53,22 @@ class ProjectSandbox(ReadEndpoint):
         super().__init__(transport, path)
         self._test = test
 
-    async def configure(self, data: Data) -> Any:
+    async def configure(self, data: Data, *, idempotency_key: str | None = None) -> Any:
         if self._test:
             raise PlaybooksError(422, "Test Projects do not support Sandbox service configuration.")
-        return await self._action(self._path, "PUT", data)
+        response = await self._transport.request(
+            self._path,
+            "PUT",
+            data,
+            read_only=False,
+            extra_headers={"Idempotency-Key": idempotency_key} if idempotency_key else None,
+        )
+        return succeeded(response["data"], self._path)
+
+    async def remove(self) -> Any:
+        if self._test:
+            raise PlaybooksError(422, "Test Projects do not support direct Sandbox removal.")
+        return await self._action(self._path.removesuffix("/config") + "/remove", "POST", {})
 
 
 class ProjectSettings(Settings):

@@ -167,6 +167,48 @@ export interface AgentFileResult {
 	links: { preview: string; download: string };
 }
 
+export interface AgentSandboxData {
+	sandboxUuid: string;
+	status: string;
+	allocationPresent: boolean;
+	observedState: string | null;
+	runtime: { cpu: number; ram: string; disk: string } | null;
+	canRead: boolean;
+	canOperate: boolean;
+	capabilities: {
+		start: boolean;
+		stop: boolean;
+		reset: boolean;
+		remove: boolean;
+	};
+	blockingReasons: string[];
+	error: string | null;
+	operation: {
+		id: string;
+		status: 'pending' | 'running' | 'completed' | 'failed' | 'uncertain';
+		action: 'start' | 'stop' | 'reset' | 'remove';
+	} | null;
+}
+
+export interface AgentSandboxOperationData {
+	id: string;
+	executionId: number;
+	status: 'pending' | 'running' | 'uncertain' | 'captured' | 'conflict' | 'committed' | 'acknowledged' | 'failed';
+	baseRevision: string;
+	committedRevision: string | null;
+	result: {
+		operationUuid: string;
+		agentExecutionId: number;
+		baseRevision: string;
+		exitCode: number;
+		stdout: string;
+		stderr: string;
+		files: { path: string; kind: 'file'; content: string }[];
+		timedOut: boolean;
+	} | null;
+	error: string | null;
+}
+
 export class AgentReference {
 	#transport: Transport;
 	#path: string;
@@ -179,6 +221,20 @@ export class AgentReference {
 	}
 	protected get path() {
 		return this.#path;
+	}
+	get sandbox() {
+		const path = `${this.path}/sandbox`;
+		return {
+			get: () => get<AgentSandboxData>(this.transport, path),
+			operation: (id: Identifier) =>
+				get<AgentSandboxOperationData>(this.transport, `${path}/operations/${identifier(id)}`),
+			action: (operation: 'start' | 'stop' | 'reset' | 'remove', idempotencyKey: string) =>
+				this.transport
+					.request(`${path}/${operation}`, 'POST', {}, {}, false, false, false, undefined, {
+						'Idempotency-Key': idempotencyKey,
+					})
+					.then(response => response.data as AgentSandboxData),
+		};
 	}
 	archive(revision: number) {
 		return action<AgentData>(this.transport, `${this.path}/archive`, 'POST', { revision });

@@ -126,6 +126,8 @@ playbooks mcp install codex
 
 Root help lists all commands by their full names; command help shows supported options and input fields. Private resources require an authorized workspace, supplied explicitly or through saved selection. Settings and resource output preserve owned/inherited distinctions supplied by the server. Revision-checked edits require the current revision. File downloads refuse to overwrite existing files.
 
+`project sandbox` shows the current configuration. Submit an exact supported numeric `resources` combination with `project sandbox configure --data`; the fields are `cpu`, `memoryGiB`, and `storageGiB`. The Server reports supported combinations when a selection is unavailable. Include the current `expectedVersionId` and a stable `idempotencyKey` in the data for resource changes, then reuse the key after an uncertain resize response. Save resources separately from services and network. The platform manages Sandbox lifecycle automatically. Service changes require `expectedVersionId`; provide service environment values through stdin.
+
 `completion print bash` and `completion print zsh` print shell completion definitions, including operator message/run commands. Local MCP installation is separate from platform MCP configuration. Interactive Workspace Chat conversations are not supported.
 
 Saved workflow execution and recurrence are explicit actions that can affect external systems. DNS edits apply to Playbooks-managed zones; adding an external domain does not move its DNS. Domain purchases/renewals and direct Sandbox start/stop remain in the web application.

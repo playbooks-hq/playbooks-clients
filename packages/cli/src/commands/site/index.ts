@@ -236,29 +236,6 @@ export const activateSchedule = async (options: any) => {
 		await (await siteContext(options)).site.jobs.activate(identifier(options.schedule, '--schedule'), data.active),
 	);
 };
-export const getAuth = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.auth.get());
-export const configureAuth = async (options: any) =>
-	sdkEnvelope(
-		await (
-			await siteContext(options)
-		).site.auth.configure(await input(options, ['provider', 'methods', 'expectedConfigRevision'])),
-	);
-export const connectClerk = async (options: any) => {
-	if (options.data !== '-')
-		throw new CliError(422, 'Supply Clerk production keys on stdin with --data - to keep them out of shell arguments.');
-	return sdkEnvelope(
-		await (
-			await siteContext(options)
-		).site.auth.connectClerk(await input(options, ['publishableKey', 'secretKey', 'expectedConfigRevision'])),
-	);
-};
-export const verifyAuth = async (options: any) =>
-	sdkEnvelope(
-		await (
-			await siteContext(options)
-		).site.auth.verify(await input(options, ['sessionToken', 'clerkToken', 'hostname', 'method'])),
-	);
-
 export const getLifecycle = async (options: any) => sdkEnvelope(await (await siteContext(options)).site.lifecycle());
 const lifecycleAction = async (options: any, action: 'start' | 'stop' | 'archive' | 'restore' | 'delete') => {
 	if (['stop', 'archive', 'delete'].includes(action) && !options.yes)

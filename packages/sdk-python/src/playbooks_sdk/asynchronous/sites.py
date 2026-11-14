@@ -279,18 +279,6 @@ class Site(Resource):
             f"jobs/schedules/{identifier(id)}/activation", "PUT", {"active": active}
         )
 
-    async def auth(self) -> Any:
-        return await self._site_get("auth")
-
-    async def configure_auth(self, data: Data) -> Any:
-        return await self._site_action("auth", "PUT", data)
-
-    async def connect_clerk(self, data: Data) -> Any:
-        return await self._site_action("auth/clerk", "POST", data)
-
-    async def verify_auth(self, data: Data) -> Any:
-        return await self._site_action("auth/verify", "POST", data)
-
     async def preview(self) -> Any:
         return await self._site_get("preview")
 

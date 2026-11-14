@@ -1,4 +1,5 @@
 import type { ToolDefinition } from 'src/tools/definition.js';
+import { z } from 'zod';
 
 export const agentTools: ToolDefinition[] = [
 	...['list', 'get', 'create', 'update', 'delete', 'tasks', 'cancel-task'].map(
@@ -352,6 +353,45 @@ export const agentTools: ToolDefinition[] = [
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
 		},
+	},
+	{
+		command: 'agent sandbox',
+		description: 'Inspect the stable Agent Sandbox identity, allocation status, and available actions.',
+		toolset: 'core',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			agent: { flag: 'agent', description: 'Agent UUID.', required: true },
+		},
+	},
+	{
+		command: 'agent sandbox operation',
+		description: 'Read a retained Agent Sandbox command receipt, including captured file bytes when available.',
+		toolset: 'core',
+		readOnly: true,
+		destructive: false,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			agent: { flag: 'agent', description: 'Agent UUID.', required: true },
+			operation: { flag: 'operation', description: 'Command operation UUID.', required: true },
+		},
+	},
+	{
+		command: 'agent sandbox action',
+		description: 'Start, stop, reset, or remove the Agent Sandbox with an idempotency key.',
+		toolset: 'core',
+		readOnly: false,
+		destructive: true,
+		options: {
+			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
+			agent: { flag: 'agent', description: 'Agent UUID.', required: true },
+			yes: { flag: 'yes', description: 'Confirm reset or removal when applicable.', kind: 'boolean' },
+		},
+		dataSchema: z.strictObject({
+			operation: z.enum(['start', 'stop', 'reset', 'remove']),
+			idempotencyKey: z.string().min(1),
+		}),
 	},
 	{
 		command: 'agent create',

@@ -577,17 +577,6 @@ const operationalTools: Array<{
 		id: 'schedule',
 		fields: ['active'],
 	},
-	{ command: 'site auth', description: 'Inspect active Site application authentication configuration.' },
-	{
-		command: 'site auth configure',
-		description: 'Save a Site sign-in draft; the next Site release activates it.',
-		fields: ['provider', 'methods', 'expectedConfigRevision'],
-	},
-	{
-		command: 'site auth verify',
-		description: 'Verify a Site visitor session token.',
-		fields: ['sessionToken', 'clerkToken', 'hostname', 'method'],
-	},
 	{ command: 'site lifecycle', description: 'Inspect Site lifecycle and cleanup receipts.' },
 	{ command: 'site start', description: 'Start released Site compute.', fields: [] },
 	{ command: 'site stop', description: 'Stop Site compute.', confirm: true },

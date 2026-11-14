@@ -14,10 +14,17 @@ const sandboxService = z.strictObject({
 const sandboxConfiguration = z
 	.strictObject({
 		expectedVersionId: z.number().int().positive().nullable().optional(),
+		idempotencyKey: z.string().min(1).max(128).optional(),
 		services: z.array(sandboxService).optional(),
 		primaryServiceId: z.number().int().positive().optional(),
-		runtimeUuid: z.uuid().optional(),
-		lifecycleUuid: z.uuid().optional(),
+		resources: z
+			.strictObject({
+				cpu: z.number().positive(),
+				memoryGiB: z.number().positive(),
+				storageGiB: z.number().positive(),
+			})
+			.optional(),
+		network: z.record(z.string(), z.unknown()).nullable().optional(),
 	})
 	.describe(
 		'Version-checked Sandbox configuration. Service environment values and secrets use the private credential flow.',
@@ -250,7 +257,8 @@ export const projectAdministrationTools: ToolDefinition[] = [
 	},
 	{
 		command: 'project sandbox configure',
-		description: 'Configure Sandbox services and primary service using the current expectedVersionId.',
+		description:
+			'Configure Sandbox services, primary service, and numeric resources using the current expectedVersionId. Resource changes need a stable idempotencyKey.',
 		toolset: 'project',
 		readOnly: false,
 		destructive: false,
@@ -267,5 +275,21 @@ export const projectAdministrationTools: ToolDefinition[] = [
 			},
 		},
 		dataSchema: sandboxConfiguration,
+	},
+	{
+		command: 'project sandbox remove',
+		description: 'Remove the Project Sandbox allocation while retaining its stable identity.',
+		toolset: 'project',
+		readOnly: false,
+		destructive: true,
+		options: {
+			project: { flag: 'project', description: 'Project identifier.', required: true },
+			workspace: {
+				flag: 'workspace',
+				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
+				required: true,
+			},
+			yes: { flag: 'yes', description: 'Confirm Sandbox removal.', kind: 'boolean', required: true },
+		},
 	},
 ];

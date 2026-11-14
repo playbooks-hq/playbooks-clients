@@ -46,7 +46,7 @@ export const projectTestTools: ToolDefinition[] = [
 		readOnly: false,
 		destructive: false,
 		options: { ...scope, confirm },
-		dataFields: ['requestKey', 'name', 'instructions', 'branchId', 'intent', 'authMethod'],
+		dataFields: ['requestKey', 'name', 'instructions', 'branchId', 'intent'],
 	},
 	{
 		command: 'project test action',
@@ -75,7 +75,6 @@ export const projectTestTools: ToolDefinition[] = [
 			'attachments',
 			'replacesOperationId',
 			'intent',
-			'authMethod',
 		],
 	},
 ];

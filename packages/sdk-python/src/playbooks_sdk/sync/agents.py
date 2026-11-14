@@ -26,6 +26,26 @@ class AgentReference:
         object.__setattr__(self, "_transport", transport)
         object.__setattr__(self, "_path", f"/agents/{identifier(id)}")
 
+    def sandbox(self) -> Any:
+        return Endpoint(self._transport, self._path)._get(f"{self._path}/sandbox")
+
+    def sandbox_operation(self, operation_id: Identifier) -> Any:
+        return Endpoint(self._transport, self._path)._get(
+            f"{self._path}/sandbox/operations/{identifier(operation_id)}"
+        )
+
+    def sandbox_action(self, operation: str, *, idempotency_key: str) -> Any:
+        if operation not in ("start", "stop", "reset", "remove"):
+            raise PlaybooksError(422, "Choose start, stop, reset, or remove.")
+        response = self._transport.request(
+            f"{self._path}/sandbox/{operation}",
+            "POST",
+            {},
+            read_only=False,
+            extra_headers={"Idempotency-Key": idempotency_key},
+        )
+        return response["data"]
+
     def application_grants(self) -> Any:
         return Endpoint(self._transport, self._path)._get(f"{self._path}/application-grants")
 

@@ -49,8 +49,7 @@ export type SandboxConfigInput = {
 	expectedVersionId?: number | null;
 	services?: SandboxServiceInput[];
 	primaryServiceId?: number;
-	runtimeUuid?: string;
-	lifecycleUuid?: string;
+	resources?: { cpu: number; memoryGiB: number; storageGiB: number };
 	network?: Record<string, unknown>;
 };
 
@@ -195,10 +194,27 @@ export class Project extends Resource<ProjectData> {
 		return {
 			get: () =>
 				get(this.#transport, `${this.#path}/sandbox/${this.executionProfile === 'test' ? 'health' : 'config'}`),
-			configure: (input: SandboxConfigInput) => {
+			configure: (input: SandboxConfigInput, options: { idempotencyKey?: string } = {}) => {
 				if (this.executionProfile === 'test')
 					throw new PlaybooksError(422, 'Test Projects do not support Sandbox service configuration.');
-				return action(this.#transport, `${this.#path}/sandbox/config`, 'PUT', input);
+				return this.#transport
+					.request(
+						`${this.#path}/sandbox/config`,
+						'PUT',
+						input,
+						{},
+						false,
+						false,
+						false,
+						undefined,
+						options.idempotencyKey ? { 'Idempotency-Key': options.idempotencyKey } : {},
+					)
+					.then(response => succeeded(response.data));
+			},
+			remove: () => {
+				if (this.executionProfile === 'test')
+					throw new PlaybooksError(422, 'Test Projects do not support direct Sandbox removal.');
+				return action<Record<string, unknown>>(this.#transport, `${this.#path}/sandbox/remove`, 'POST', {});
 			},
 		};
 	}

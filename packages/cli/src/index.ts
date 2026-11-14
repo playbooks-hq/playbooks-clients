@@ -86,6 +86,30 @@ cli
 	.action(run(agent.getAgent));
 
 cli
+	.command('agent sandbox')
+	.describe('Inspect the Agent Sandbox allocation and available actions.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.action(run(agent.getSandbox));
+
+cli
+	.command('agent sandbox operation')
+	.describe('Inspect a retained Agent Sandbox command receipt and captured output.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--operation', 'Command operation UUID.')
+	.action(run(agent.getSandboxOperation));
+
+cli
+	.command('agent sandbox action')
+	.describe('Start, stop, reset, or remove the Agent Sandbox using a stable idempotency key.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--agent', 'Agent UUID.')
+	.option('--data', 'JSON operation and idempotencyKey, or - for stdin.')
+	.option('--yes', 'Confirm reset or removal.', false)
+	.action(run(agent.sandboxAction));
+
+cli
 	.command('agent create')
 	.describe('Create a Workspace-owned Agent.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
@@ -742,10 +766,6 @@ const siteOperations = [
 	['site job cancel', 'Cancel a pending Site job.', site.cancelJob, 'job', false, true],
 	['site schedules', 'List Site recurring jobs.', site.listSchedules],
 	['site schedule activate', 'Activate or pause a Site schedule.', site.activateSchedule, 'schedule', true],
-	['site auth', 'Inspect Site application authentication.', site.getAuth],
-	['site auth configure', 'Save Site application sign-in draft.', site.configureAuth, null, true],
-	['site auth clerk connect', 'Connect Clerk production keys from stdin.', site.connectClerk, null, true],
-	['site auth verify', 'Verify a Site visitor session.', site.verifyAuth, null, true],
 	['site preview', 'Read deployed page preview metadata.', site.getPreview],
 	['site preview refresh', 'Refresh deployed page preview metadata.', site.refreshPreview],
 	['site lifecycle', 'Inspect Site lifecycle and cleanup receipts.', site.getLifecycle],
@@ -2140,12 +2160,20 @@ cli
 
 cli
 	.command('project sandbox configure')
-	.describe('Configure version-checked Sandbox services, primary service, runtime, lifecycle, or network.')
+	.describe('Configure version-checked Sandbox services, primary service, resources, or network.')
 	.option('--project', 'Project identifier.')
 	.option('--target-agent', 'Agent UUID under this Project.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--data', 'JSON configuration object, or - to read stdin.')
 	.action(run(project.configureSandbox));
+
+cli
+	.command('project sandbox remove')
+	.describe('Remove the Project Sandbox allocation while retaining its logical identity.')
+	.option('--project', 'Project identifier.')
+	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
+	.option('--yes', 'Confirm Sandbox removal.', false)
+	.action(run(project.removeSandbox));
 
 cli
 	.command('project logs')

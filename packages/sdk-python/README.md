@@ -58,6 +58,8 @@ Both clients have matching resource methods. Async I/O methods must be awaited; 
 | Publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
 | Operators | `conversations`, `runs`; verified conversations expose messages, with a selected branch for Project messages |
 
+For an application Project, pass `resources` with numeric `cpu`, `memoryGiB`, and `storageGiB` fields plus the current `expectedVersionId` to `project.sandbox.configure(data, idempotency_key=key)`. The Server reports supported numeric combinations when a selection is unavailable. Save resources separately from services and network; reuse the same key after an uncertain resize response. The platform selects the internal runtime and manages Sandbox lifecycle automatically. Credentials use their private flow. Await both methods in the async client.
+
 `client.templates.list(kind="project", view="discover")` uses anonymous public discovery. `view="following"` requires an API key and `workspace="WORKSPACE_UUID"`; the SDK sends that value as the Workspace header and keeps it out of the query string. The async client uses the same inputs.
 
 Methods and keyword arguments use Python names: `governance`, `page_size`, `expected_revision`, `timeout_ms`, and `on_activity`. `source.import_()` uses a trailing underscore because `import` is a Python keyword. Payload dictionaries, response attributes, snapshots, and page metadata retain Server field names such as `expectedRevision`, `projectId`, and `hasMore`. Arbitrary nested data is never renamed.

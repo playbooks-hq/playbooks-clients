@@ -272,18 +272,6 @@ class Site(Resource):
             f"jobs/schedules/{identifier(id)}/activation", "PUT", {"active": active}
         )
 
-    def auth(self) -> Any:
-        return self._site_get("auth")
-
-    def configure_auth(self, data: Data) -> Any:
-        return self._site_action("auth", "PUT", data)
-
-    def connect_clerk(self, data: Data) -> Any:
-        return self._site_action("auth/clerk", "POST", data)
-
-    def verify_auth(self, data: Data) -> Any:
-        return self._site_action("auth/verify", "POST", data)
-
     def preview(self) -> Any:
         return self._site_get("preview")
 

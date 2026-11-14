@@ -90,6 +90,8 @@ const usage = await test.usage.get();
 
 These objects keep the child execution path for subsequent requests. Unsupported capabilities fail; they never fall back to the parent. General settings updates require the child's current `resourceRevision` as `revision`. Preference updates use the revision returned by `settings.get()`. Parent and Workspace policy and budget ceilings remain authoritative. `sandbox.get()` returns health for Tests; application Projects retain Sandbox configuration reads.
 
+For an application Project, `sandbox.configure({ expectedVersionId, resources: { cpu, memoryGiB, storageGiB } }, { idempotencyKey })` requests an exact supported compute combination. The Server reports supported numeric combinations when a selection is unavailable. Save resources separately from services and network; reuse the same idempotency key after an uncertain resize response. The platform selects the internal runtime and manages Sandbox lifecycle automatically. Service changes retain `expectedVersionId`; credentials use their private flow.
+
 `conversations.create({ branchId })` and `conversations.fork(conversationUuid, { submissionKey, throughMessageId, branchId })` stay in the selected environment. Forking summarizes context and starts no run. `runs.cancel(runId)` requests a stop; inspect its status for acknowledgement. `runs.replace(runId, { text, idempotencyKey })` uses server eligibility checks, retains history, and does not undo prior working-copy changes or external effects. `messages.respond(messageId, { idempotencyKey, parts })` sends the current structured prompt response parts to the dedicated response endpoint. Attachments use authorized `mediaId` references.
 
 Manage Tests from their parent:

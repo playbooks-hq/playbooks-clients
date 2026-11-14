@@ -624,12 +624,10 @@ export interface ProjectTestCreate {
 	instructions?: string;
 	branchId?: number;
 	intent?: 'custom' | 'auth' | 'payments';
-	authMethod?: string;
 }
 export interface ProjectTestActionInput {
 	replacesOperationId?: string;
 	intent?: 'custom' | 'auth' | 'payments';
-	authMethod?: string;
 	requestKey?: string;
 	revision?: string;
 	confirm?: boolean;

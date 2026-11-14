@@ -28,6 +28,20 @@ export const getAgent = async (options: any) => {
 	const context = await workspaceReferenceContext(options);
 	return sdkEnvelope(await context.workspaceReference.agents.get(identifier(options.agent, '--agent')));
 };
+export const getSandbox = async (options: any) => sdkEnvelope(await (await agentContext(options)).agent.sandbox.get());
+export const getSandboxOperation = async (options: any) =>
+	sdkEnvelope(
+		await (await agentContext(options)).agent.sandbox.operation(identifier(options.operation, '--operation')),
+	);
+export const sandboxAction = async (options: any) => {
+	const data = await input(options, ['operation', 'idempotencyKey']);
+	if (!['start', 'stop', 'reset', 'remove'].includes(data.operation))
+		throw new CliError(422, 'Choose start, stop, reset, or remove.');
+	if (typeof data.idempotencyKey !== 'string' || !data.idempotencyKey.trim())
+		throw new CliError(422, 'Provide a nonempty idempotencyKey for safe retries.');
+	if (data.operation === 'reset' || data.operation === 'remove') confirm(options, `Sandbox ${data.operation}`);
+	return sdkEnvelope(await (await agentContext(options)).agent.sandbox.action(data.operation, data.idempotencyKey));
+};
 export const createAgent = async (options: any) => {
 	const { workspaceResource } = await workspaceContext(options);
 	return sdkEnvelope(
