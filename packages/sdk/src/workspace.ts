@@ -281,7 +281,9 @@ export const chats = (transport: Transport) => {
 	return {
 		subagents: (id: Identifier) => new Subagents(transport, `${path}/${identifier(id)}/subagents`),
 		sites: (id: Identifier) => listing<SiteData>(transport, `${path}/${identifier(id)}/sites`),
-		list: (options?: ListOptions & { archived?: boolean }) => listing<ChatData>(transport, path, options),
+		list: (
+			options?: ListOptions & { archived?: boolean; tab?: 'all' | 'owner' | 'collaborator' | 'pinned' | 'archive' },
+		) => listing<ChatData>(transport, path, options),
 		get: (id: Identifier) => get<ChatData>(transport, `${path}/${identifier(id)}`),
 		templateSetup: (id: Identifier) => get<ChatTemplateSetup>(transport, `${path}/${identifier(id)}/template-setup`),
 		templateSetupItem: (id: Identifier, category: ChatTemplateSetupItem['category'], key: string) => {

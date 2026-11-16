@@ -2,7 +2,10 @@ import type { ToolDefinition } from 'src/tools/definition.js';
 import { z } from 'zod';
 
 const sandboxService = z.strictObject({
-	uuid: z.uuid().optional(),
+	uuid: z
+		.string()
+		.regex(/^(?:[a-z][a-z0-9]{11}|[a-z0-9](?:[a-z0-9-]{0,18}[a-z0-9])?-[a-z0-9]{8})$/)
+		.optional(),
 	key: z.string().min(1),
 	status: z.enum(['active', 'disabled']).optional(),
 	commands: z.array(z.string().min(1)),

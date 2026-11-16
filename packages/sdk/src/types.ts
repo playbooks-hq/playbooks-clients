@@ -95,6 +95,7 @@ export interface ProjectListOptions {
 	page?: number;
 	pageSize?: number;
 	query?: string;
+	view?: 'all' | 'owner' | 'collaborator' | 'pinned' | 'archived';
 	sortProp?: 'id' | 'name' | 'createdAt' | 'updatedAt';
 	sortValue?: 'asc' | 'desc';
 }

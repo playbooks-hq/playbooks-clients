@@ -604,7 +604,13 @@ export class Agents {
 		this.#transport = transport;
 		this.#collection = new Collection<AgentData, AgentUpdate, AgentCreate>(transport, '/agents', 'PATCH');
 	}
-	async list(options?: ListOptions & { association?: 'unassociated' | 'project' | 'site'; status?: string }) {
+	async list(
+		options?: ListOptions & {
+			association?: 'unassociated' | 'project' | 'site';
+			status?: string;
+			tab?: 'all' | 'owner' | 'collaborator' | 'pinned' | 'archived';
+		},
+	) {
 		return listing<AgentData>(this.#transport, '/agents', options);
 	}
 	reference(id: Identifier) {

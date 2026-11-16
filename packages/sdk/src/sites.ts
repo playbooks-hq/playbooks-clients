@@ -68,6 +68,11 @@ export interface SiteCreate {
 	source?: SiteSource;
 }
 
+export interface SiteListOptions extends ListOptions {
+	audience?: 'private' | 'workspace' | 'public';
+	view?: 'all' | 'owner' | 'collaborator';
+}
+
 export interface SiteReleaseInput {
 	expectedSource: SiteSource | null;
 	sourceRevision: string;
@@ -327,7 +332,7 @@ export class Site extends Resource<SiteData> {
 		const path = `${this.#path}/visitor-policy`;
 		return {
 			get: () => get(this.#transport, path),
-			update: (input: { mode: 'public' | 'private'; expectedConfigRevision: string }) =>
+			update: (input: { mode: 'public' | 'workspace' | 'private'; expectedConfigRevision: string }) =>
 				action(this.#transport, path, 'PATCH', input),
 		};
 	}
@@ -519,7 +524,7 @@ export class Sites {
 	constructor(transport: Transport) {
 		this.#transport = transport;
 	}
-	async list(options: ListOptions = {}) {
+	async list(options: SiteListOptions = {}) {
 		const response = await listing<SiteData>(this.#transport, '/sites', options);
 		return { ...response, data: response.data.map(item => new Site(this.#transport, item.toJSON())) };
 	}
