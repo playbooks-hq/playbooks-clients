@@ -6,5 +6,5 @@ export const listRuns = async (options: any) => {
 	if (options.message !== undefined) params.messageId = integerOption(options.message, 'message', 1);
 	const context = await workspaceConversationContext(options);
 	params.conversationId = context.conversation.uuid;
-	return sdkList(await context.workspaceResource.runs.list(params));
+	return sdkList(await context.workspaceReference.runs.list(params));
 };

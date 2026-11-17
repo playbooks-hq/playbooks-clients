@@ -10,6 +10,7 @@ from playbooks_sdk.resource import (
     record,
     succeeded,
 )
+from playbooks_sdk.sync.content import Artifacts, ProjectSources
 from playbooks_sdk.sync.core import (
     Collection,
     Endpoint,
@@ -171,6 +172,14 @@ class Schedules(Collection):
 
 class Project(Resource):
     @property
+    def sources(self) -> ProjectSources:
+        return ProjectSources(self._transport, f"{self._path}/sources")
+
+    @property
+    def artifacts(self) -> Artifacts:
+        return Artifacts(self._transport, f"{self._path}/artifacts")
+
+    @property
     def subagents(self) -> Subagents:
         return Subagents(self._transport, f"{self._path}/subagents")
 
@@ -291,7 +300,13 @@ class Project(Resource):
 
     @property
     def conversations(self) -> ProjectConversations:
-        return ProjectConversations(self._transport, self._path, self.id, True)
+        return ProjectConversations(
+            self._transport,
+            self._path,
+            self.id,
+            True,
+            project_plan_path=f"/projects/{identifier(self.uuid)}",
+        )
 
     @property
     def runs(self) -> Runs:

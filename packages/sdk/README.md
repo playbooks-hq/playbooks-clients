@@ -125,11 +125,52 @@ SDK pages start at **0**, matching the Server, CLI, and MCP. Resource lists defa
 
 Chat schedules use `workspace.chatSchedules.list/get/preview/create/update`. Creation requires a stable `idempotencyKey`, a self-contained instruction, and timing; `originConversationId` is optional provenance. Explicit references and attachments travel with the saved instruction. Each occurrence starts a fresh Chat conversation under current authority. Mutations require `expectedRevision`; `action: "run"` also requires a stable `idempotencyKey`. Reuse that key after an uncertain response. Inspect occurrence history for its exact conversation, completion, and actual model.
 
+## Chat and Project content
+
+Load a Chat's conversation by Chat ID when you already know its Workspace. The SDK verifies the Chat and owning Workspace from the Chat response.
+
+```ts
+const scope = client.workspaces.reference('WORKSPACE_UUID');
+const chat = await scope.chats.conversation('CHAT_UUID');
+const history = await chat.messages.list();
+const observedAt = history.meta?.readObservedAt;
+if (typeof observedAt === 'string' && history.meta?.hasMore === false) {
+  const throughMessageId = Math.max(0, ...history.data.map(message => Number(message.id)));
+  await chat.markRead({ throughMessageId, observedAt });
+}
+const currentPlan = await chat.plans.current();
+```
+
+A Project conversation exposes the same Plan reads and edits through `project.conversations.get(conversationId)`. Agent Plans use `agent.conversations.plans(conversationId)`. Use `current()` for the current Plan or `null`, `get(planId, revision?)` for a selected revision, and `source(messageId, partId)` for a Plan presented in a message. Use `create({ title, content })` or `revise(planId, { revision, content })` to make changes. Mark Agent history read with `agent.conversations.markRead(conversationId, { throughMessageId, observedAt })`, using the history response's `meta.readObservedAt` to preserve a later unread action. A cursor of `0` marks an empty history.
+
+Use `scope.chats.sources(chatId)`, `project.sources`, or `agent.sources` to work with Sources. Select an exact version using both `version` and `conversationId`. Source previews and downloads return bytes. To copy a Source, read `copyTarget(sourceId, selection)` and use the returned revision with your destination path in `copyToFileSystem(sourceId, { ...selection, revision, path })`. Project copies also require `expectedBranchId` from the target's `branchId`.
+
+```ts
+const sources = scope.chats.sources('CHAT_UUID');
+const { data } = await sources.list();
+const source = data[0];
+if (source) {
+  const selection = { version: source.versionId, conversationId: source.conversationId };
+  const target = await sources.copyTarget(source.sourceId, selection);
+  await sources.copyToFileSystem(source.sourceId, {
+    ...selection,
+    revision: target.revision,
+    path: target.suggestedPath,
+  });
+}
+```
+
+`scope.chats.artifacts(chatId)` and `project.artifacts` expose `list`, `get`, `versions`, `open`, `preview`, `export`, and `download`. The reads for an individual Artifact accept an optional version, except `versions`, which takes pagination options. `open` returns isolated-preview details and a short-lived grant. `preview` returns JSON with HTML, version ID, and checksum. `export` and `download` return bytes.
+
+For registration or preparation, pass a numeric `origin.conversationId` and the numeric `origin.chatId` or `origin.projectId`. `register` requires an exact editing source or source receipt. `prepare` takes a saved editing source revision, entry point, and dependency paths. Use `update(artifactId, { name, description, activityConversationId })` for metadata. Agent Artifacts continue to use `agent.artifacts` and its Agent source inputs.
+
 ## Template drafts and adoption
 
 Use `workspace.templates.createFromChat/Project/Agent(id)` to create an owned draft, or `draftFromChat/Project/Agent(id)` to read one without creating it. Update listing metadata, including an optional `liveUrl`; Playbooks derives package content from the current authorized source at review and publication. Chat packages include current Chat working files and eligible linked Artifact editing assets. Agent packages include portable configuration and assigned resources without working outputs. Project packages use the latest saved default branch source and direct assigned or local resources. Credentials and private execution history never transfer.
 
 Call `workspace.templates.source(templateId)` to inspect the package summary, then `workspace.templates.publish(templateId, { bump: "minor" })` to publish (optional `patch`, `minor`, or `major`; default `patch`). The SDK reviews and binds current revisions automatically; a changed source returns a conflict rather than silently retrying. For an adopted Chat, `workspace.chats.templateSetup(chatId)` lists safe package resources; `templateSetupItem(chatId, category, key)` reads the exact immutable File, Design, or Skill before import. `workspace.chats.importTemplateResources(chatId, { category, keys, acknowledgment: true, idempotencyKey })` explicitly imports selected items; retry uncertain imports with the same key. Configure Connector and MCP access separately.
+
+Use `workspace.templates.unpublish`, `archive`, `unarchive`, and `delete` with the Template ID. Each action sends an empty request body. Unpublishing, archiving, and unarchiving return the updated listing. Deletion completes without a listing.
 
 ## Resource families
 
@@ -138,14 +179,14 @@ Only operations already supported by CLI are exposed; not every resource has eve
 | Owner | Resources and operations |
 | --- | --- |
 | `client` | `session.get/sharedResources()`, `workspaces.list/get/update/reference()`, `resourceSharing(workspace, kind, id)`, public `templates.list/get()`, `categories`, `collections`, `creators` |
-| `workspace` | `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
+| `workspace` | `chats`, `projects`, `templates`, `members`, `invitations`, `settings`, `designs`, `skills`, `mcps`, `connectors`, `secrets`, `files`, `domains` |
 | Workspace observations | `inbox`, `activity`, `usage`, `budget`, `credits`, `invoices`, `settlements`, `transfers` |
 | `project` | `update`, `move`, `archive`, `restore`, `delete`, `lifecycle`, `collaborators`, `agents`, `settings`, `resources`, `designs`, `skills`, `mcps`, `connectors` |
-| Project development | `files`, `source`, `branches`, `checkpoints`, `schedules`, `sandbox`, `logs` |
+| Project development | `files`, `source`, `sources`, `artifacts`, `branches`, `checkpoints`, `schedules`, `sandbox`, `logs` |
 | Project publication | `publication.get()`, `preflight()`, `publish()`, `releases.list/get/rollback/wait()` |
 | Workspace/Project Operators | `conversations`, `runs`; verified conversations provide messages, with Project messages scoped to a selected branch |
 
-`client.templates.list({ kind: 'project', view: 'discover' })` uses anonymous public discovery. `view: 'following'` requires an API key and `workspace: 'WORKSPACE_UUID'`; the SDK sends that value as the Workspace header and keeps it out of the query string.
+`client.templates.list({ kind: 'project', view: 'discover' })` uses anonymous public discovery. Pass `kind: 'all'` to search across Chat, Agent, and Project Templates. Listing responses report the actual kind and can include `remixable` to indicate whether the published version can be remixed. `view: 'following'` requires an API key and `workspace: 'WORKSPACE_UUID'`; the SDK sends that value as the Workspace header and keeps it out of the query string.
 
 Examples of named actions:
 

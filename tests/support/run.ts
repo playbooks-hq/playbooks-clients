@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 
-import { PlaybooksSDK } from "../../packages/sdk/dist/index.js";
+import { PlaybooksSDK, type Workspace } from "../../packages/sdk/dist/index.js";
 import {
   adminRequest,
   api,
@@ -77,14 +77,7 @@ export async function check() {
   );
   const workspace = await sdk.workspaces.get(user.workspaceUuid);
   assert.equal(workspace.id, user.workspaceId);
-  const budget = await workspace.budget.get();
-  const usage = await workspace.usage.get();
-  assert(
-    Number(usage.toJSON().remainingCredits) -
-      Number(budget.toJSON().outstandingCredits) >=
-      6,
-    "BLOCKED: insufficient funding; run test:setup",
-  );
+  await checkFunding(workspace);
   const readiness = await adminRequest("/admin/inference-models/readiness");
   assert(
     readiness.productionKeyReachable &&
@@ -95,11 +88,16 @@ export async function check() {
   );
   return { workspace };
 }
-export async function cleanup(
-  state: Json,
-  deadline = Date.now() + 5 * 60000,
-  resume = false,
-) {
+export async function checkFunding(workspace: Workspace, minimum = 6) {
+  const budget = await workspace.budget.get();
+  const usage = await workspace.usage.get();
+  const available =
+    Number(usage.toJSON().remainingCredits) -
+    Number(budget.toJSON().outstandingCredits);
+  assert(Number.isFinite(available), "BLOCKED: funding balance is unavailable");
+  assert(available >= minimum, "BLOCKED: insufficient existing test funding");
+}
+export async function cleanup(state: Json, deadline = Date.now() + 5 * 60000) {
   if (!state.projectUuid) {
     if (state.creationDispatched)
       throw Error(
@@ -112,18 +110,17 @@ export async function cleanup(
   const user = identity();
   assert.equal(state.origin, user.origin);
   assert.equal(state.workspaceUuid, user.workspaceUuid);
-  // A normal test-user session can inspect receipts after developer-key
-  // middleware can no longer resolve the deleted Project.
+  assert.equal(state.userId, user.userId);
+  // The direct-deletion receipt survives Project removal and is readable by its requester.
   const observer = await login(user.email, user.password);
   assert.equal(observer.uuid, user.uuid);
   const observerToken = observer.token.rawToken;
-  const path = `/projects/${state.projectUuid}`;
-  let receipt = await api(
-    `${path}/lifecycle`,
-    observerToken,
-    user.workspaceUuid,
-  );
-  if (receipt?.action !== "delete" || (resume && receipt.status === "failed")) {
+  let receipt = state.lifecycleReceipt;
+  if (!receipt) {
+    if (state.deletionDispatched)
+      throw Error(
+        "BLOCKED: Project deletion outcome unresolved; reconcile its exact receipt.",
+      );
     const project = await client()
       .workspaces.get(user.workspaceUuid)
       .then((workspace) => workspace.projects.get(state.projectUuid));
@@ -134,25 +131,55 @@ export async function cleanup(
     state.deletionDispatched = true;
     save(runPath(state.id), state);
     receipt = await project.delete({ confirmation: project.name });
-  }
-  state.lifecycleReceipt = receipt;
-  save(runPath(state.id), state);
-  while (receipt.status !== "completed") {
-    if (receipt.status === "failed")
-      throw Error(
-        "BLOCKED: Project lifecycle cleanup failed; inspect its receipt.",
-      );
-    if (Date.now() >= deadline)
-      throw Error("BLOCKED: Project lifecycle cleanup deadline reached.");
-    await delay(2000);
-    receipt = await api(`${path}/lifecycle`, observerToken, user.workspaceUuid);
     state.lifecycleReceipt = receipt;
     save(runPath(state.id), state);
   }
-  assert.equal(receipt.action, "delete");
-  assert.equal(receipt.progress?.shutdown, true);
-  assert.equal(receipt.progress?.storage, true);
+  const operationId = receipt.operationId;
+  assert.match(operationId, /^[a-f0-9-]{36}$/);
+  function verifyReceipt(current: Json) {
+    assert.equal(current.operationId, operationId);
+    assert.equal(current.resourceType, "project");
+    assert.equal(current.resourceId, state.projectId);
+    assert(
+      [
+        "queued",
+        "quarantining",
+        "retained",
+        "purging",
+        "failed",
+        "canceled",
+        "completed",
+      ].includes(current.status),
+      "Unexpected Project deletion receipt status",
+    );
+    if (current.status === "completed") assert.equal(current.error, null);
+    assert.equal(
+      current.purgeAfter,
+      null,
+      "Project was scheduled for retention",
+    );
+  }
+  verifyReceipt(receipt);
+  while (receipt.status !== "completed") {
+    if (receipt.status === "canceled")
+      throw Error("BLOCKED: Project lifecycle cleanup was canceled.");
+    // The lifecycle worker revisits failed and purging operations.
+    if (Date.now() >= deadline)
+      throw Error(
+        `BLOCKED: Project lifecycle cleanup deadline reached (${receipt.status}).`,
+      );
+    receipt = await api(
+      `/session/project-deletions/${operationId}`,
+      observerToken,
+    );
+    verifyReceipt(receipt);
+    state.lifecycleReceipt = receipt;
+    save(runPath(state.id), state);
+    if (receipt.status !== "completed") await delay(2000);
+  }
+  // The direct-deletion worker completes only after Project lifecycle purge completes.
   state.cleanup = "complete";
+  delete state.cleanupFailure;
   save(runPath(state.id), state);
 }
 export function loadRun(id: string) {

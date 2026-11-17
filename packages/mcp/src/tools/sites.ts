@@ -205,7 +205,7 @@ export const siteTools: ToolDefinition[] = [
 	{
 		command: 'site deploy',
 		description:
-			'Deploy exactly the reviewed component and revisions to this Site. Requires source and destination authority.',
+			'Deploy exactly the reviewed component and revisions to this Site. Returns an accepted release receipt. Use the Site release tool with its UUID to observe progress.',
 		toolset: 'core',
 		readOnly: false,
 		destructive: true,
@@ -224,11 +224,6 @@ export const siteTools: ToolDefinition[] = [
 				flag: 'yes',
 				kind: 'boolean',
 				description: 'Confirm this exact reviewed action when requested by the user.',
-			},
-			wait: {
-				flag: 'wait',
-				kind: 'boolean',
-				description: 'Observe completion for up to five minutes; inspect the same release after timeout.',
 			},
 		},
 		dataFields: [
@@ -243,7 +238,7 @@ export const siteTools: ToolDefinition[] = [
 	{
 		command: 'site redeploy',
 		description:
-			'Redeploy retained Site content using validated current Site configuration. Source access is unnecessary.',
+			'Redeploy retained Site content using validated current Site configuration. Returns an accepted release receipt. Use the Site release tool with its UUID to observe progress.',
 		toolset: 'core',
 		readOnly: false,
 		destructive: true,
@@ -262,18 +257,14 @@ export const siteTools: ToolDefinition[] = [
 				flag: 'yes',
 				kind: 'boolean',
 				description: 'Confirm this exact reviewed action when requested by the user.',
-			},
-			wait: {
-				flag: 'wait',
-				kind: 'boolean',
-				description: 'Observe completion for up to five minutes; inspect the same release after timeout.',
 			},
 		},
 		dataFields: ['retainedReleaseId', 'expectedCurrentReleaseId', 'expectedConfigRevision', 'requestId'],
 	},
 	{
 		command: 'site rollback',
-		description: 'Restore an eligible retained release without rolling back application data.',
+		description:
+			'Restore an eligible retained release and return an accepted release receipt. Use the Site release tool with its UUID to observe progress. Application data is preserved.',
 		toolset: 'core',
 		readOnly: false,
 		destructive: true,
@@ -292,11 +283,6 @@ export const siteTools: ToolDefinition[] = [
 				flag: 'yes',
 				kind: 'boolean',
 				description: 'Confirm this exact reviewed action when requested by the user.',
-			},
-			wait: {
-				flag: 'wait',
-				kind: 'boolean',
-				description: 'Observe completion for up to five minutes; inspect the same release after timeout.',
 			},
 		},
 		dataFields: ['releaseId', 'expectedCurrentReleaseId'],
@@ -487,7 +473,12 @@ const operationalTools: Array<{
 		fields: ['domainId', 'hostname', 'primary'],
 	},
 	{ command: 'site domain unbind', description: 'Remove a Site domain binding.', id: 'binding', confirm: true },
-	{ command: 'site domain recheck', description: 'Check Site domain DNS and TLS readiness.', id: 'binding' },
+	{
+		command: 'site domain recheck',
+		description: 'Recheck and update Site domain DNS and TLS readiness.',
+		id: 'binding',
+		readOnly: false,
+	},
 	{ command: 'site collaborators', description: 'List Site collaborators.' },
 	{
 		command: 'site collaborator put',

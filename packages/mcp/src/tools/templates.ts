@@ -1,6 +1,23 @@
 import type { ToolDefinition } from 'src/tools/definition.js';
+import { z } from 'zod';
 
 export const templatesTools: ToolDefinition[] = [
+	...(['unpublish', 'archive', 'restore', 'delete'] as const).map(
+		(operation): ToolDefinition => ({
+			command: `workspace template ${operation}`,
+			description: `${operation} an owned Template after explicit confirmation.`,
+			toolset: 'templates',
+			readOnly: false,
+			destructive: operation !== 'restore',
+			options: {
+				workspace: { flag: 'workspace', description: 'Owning Workspace UUID.', required: true },
+				template: { flag: 'template', description: 'Owned Template identifier.', required: true },
+				confirm: { flag: 'yes', kind: 'boolean', description: 'Confirm this exact Template action.' },
+			},
+			dataSchema: z.strictObject({}),
+			dataOptional: true,
+		}),
+	),
 	{
 		command: 'workspace chat template create',
 		description: 'Create or return the private draft Template for an authorized Chat. This does not publish a version.',

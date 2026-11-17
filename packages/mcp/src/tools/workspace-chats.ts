@@ -1,4 +1,5 @@
 import type { ToolDefinition } from 'src/tools/definition.js';
+import { z } from 'zod';
 
 export const workspaceChatsTools: ToolDefinition[] = [
 	...['project'].map(
@@ -41,11 +42,10 @@ export const workspaceChatsTools: ToolDefinition[] = [
 				: { dataFields: ['revision', 'files', 'path', 'entryPoint', 'name', 'requestId'], dataOptional: false }),
 		}),
 	),
-	...['get', 'create', 'revise', 'save'].map(
+	...['get', 'create', 'revise'].map(
 		(operation): ToolDefinition => ({
 			command: `workspace plan ${operation}`,
-			description:
-				'Conversation-owned Plan revisions. Reads and edits never grant execution authority; changes invalidate older pending approval. Save snapshots the selected revision independently to the Workspace.',
+			description: 'Read or edit a conversation-owned Plan revision. Changes invalidate older pending approval.',
 			toolset: 'workspace',
 			readOnly: operation === 'get',
 			destructive: false,
@@ -53,12 +53,26 @@ export const workspaceChatsTools: ToolDefinition[] = [
 				workspace: { flag: 'workspace', description: 'Workspace UUID.', required: true },
 				conversation: { flag: 'conversation', description: 'Conversation UUID.', required: true },
 				project: { flag: 'project', description: 'Owning Project UUID where applicable.' },
-				plan: { flag: 'plan', description: 'Plan UUID; omit for current on reads.' },
-				revision: { flag: 'revision', description: 'Exact revision to read.' },
+				chat: { flag: 'chat', description: 'Owning Chat UUID. Required when the key omits Workspace ownership.' },
+				...(operation === 'create'
+					? {}
+					: {
+							plan: {
+								flag: 'plan',
+								description: 'Plan UUID. Omit on get for the current Plan.',
+								required: operation === 'revise',
+							},
+						}),
+				...(operation === 'get' ? { revision: { flag: 'revision', description: 'Exact revision to read.' } } : {}),
 			},
 			...(operation === 'get'
 				? {}
-				: { dataFields: ['title', 'content', 'revision', 'requestId'], dataOptional: false }),
+				: {
+						dataSchema: z.strictObject({
+							content: z.string().min(1),
+							...(operation === 'create' ? { title: z.string().min(1) } : { revision: z.string().min(1) }),
+						}),
+					}),
 		}),
 	),
 

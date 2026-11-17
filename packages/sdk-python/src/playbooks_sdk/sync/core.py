@@ -65,10 +65,16 @@ class ExploreTemplates(Endpoint):
         result: Resource = self._get(f"{self._path}/{identifier(id)}", {"include": include})
         return result
 
+    def versions(self, id: Identifier) -> ApiResponse:
+        return self._list(f"{self._path}/{identifier(id)}/versions", {})
+
+    def version(self, id: Identifier, version_id: Identifier) -> Any:
+        return self._get(f"{self._path}/{identifier(id)}/versions/{identifier(version_id)}")
+
     def list(
         self,
         *,
-        kind: Literal["project", "agent", "chat"] = "project",
+        kind: Literal["project", "agent", "chat", "all"] = "project",
         view: Literal["discover", "popular", "recent", "following"] = "discover",
         category: str | None = None,
         search: str | None = None,

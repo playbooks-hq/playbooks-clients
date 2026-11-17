@@ -1,12 +1,26 @@
 import { CliError } from 'src/services/cli-client';
-import { projectContext, workspaceContext } from 'src/services/command-context';
+import { projectContext, workspaceReferenceContext } from 'src/services/command-context';
 import { identifier, integerOption } from 'src/utils/cli-input';
 import { sdkEnvelope } from 'src/utils/sdk-output';
 
 export const workspaceConversationContext = async (options: any) => {
-	const context = await workspaceContext(options);
-	const conversations = context.workspaceResource.conversations;
-	const conversationResource = await conversations.get(identifier(options.conversation, '--conversation'));
+	const context = await workspaceReferenceContext(options);
+	const id = identifier(options.conversation, '--conversation');
+	const conversationResource =
+		options.chat === undefined
+			? await context.workspaceReference.conversations.get(id).catch(error => {
+					if (!(error instanceof CliError) || error.status !== 403) throw error;
+					throw new CliError(
+						error.status,
+						`${error.message} Provide the owning Chat UUID with --chat to verify the conversation's Workspace.`,
+						error.source,
+						error.debug,
+						error.title,
+					);
+				})
+			: await context.workspaceReference.chats.conversation(identifier(options.chat, '--chat'));
+	if (conversationResource.uuid !== id)
+		throw new CliError(403, 'The conversation does not belong to the selected Chat.');
 	const response = sdkEnvelope(conversationResource);
 	return {
 		...context,

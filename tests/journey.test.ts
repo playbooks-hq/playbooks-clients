@@ -17,8 +17,13 @@ import {
   save,
 } from "./support/environment.js";
 import { cli, MCP } from "./support/processes.js";
-import { check, cleanup, newRun, runPath } from "./support/run.js";
-import { fund } from "./support/setup.js";
+import {
+  check,
+  checkFunding,
+  cleanup,
+  newRun,
+  runPath,
+} from "./support/run.js";
 
 test(
   "SDK, CLI, and MCP share a real local Project",
@@ -57,22 +62,22 @@ test(
       if (failure) throw failure;
     }
     try {
-      identity();
-      await fund();
       const { workspace } = await check();
       const user = identity();
       const discovery = await workspace.projects.list({ page: 0, pageSize: 1 });
       assert(discovery.meta);
       state.creationDispatched = true;
       save(runPath(state.id), state);
-      const project = await workspace.projects.create({
+      const created = await workspace.projects.create({
         name: `Clients ${state.id}`,
       });
-      state.projectUuid = project.uuid;
-      state.projectId = project.id;
+      state.projectUuid = created.uuid;
+      state.projectId = created.id;
       save(runPath(state.id), state);
-      assert.equal(project.workspaceId, user.workspaceId);
-      assert.equal(project.visibility, "workspace");
+      assert.equal(created.workspaceId, user.workspaceId);
+      assert.equal(created.visibility, "workspace");
+      const project = await workspace.projects.get(created.uuid);
+      assert.equal(project.id, created.id);
       assert.equal(project.access.role, "admin");
       await scenario("SDK resource contracts", () =>
         sdkChecks(workspace, project),
@@ -186,7 +191,8 @@ test(
         fundingTimer = setInterval(() => {
           funding = funding
             .then(async () => {
-              if (!signal.aborted) await fund();
+              // Admission has already reserved this run's budget.
+              if (!signal.aborted) await checkFunding(workspace, 0);
             })
             .catch((error) => {
               controller.abort(error);

@@ -5,7 +5,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 		command: 'workspace conversation',
 		description: 'Get an explicitly selected conversation.',
 		toolset: 'workspace',
-		readOnly: false,
+		readOnly: true,
 		destructive: false,
 		options: {
 			select: {
@@ -17,6 +17,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
 				required: true,
 			},
+			chat: { flag: 'chat', description: 'Owning Chat UUID. Required when the key omits Workspace ownership.' },
 			conversation: {
 				flag: 'conversation',
 				description: 'Conversation UUID; required.',
@@ -28,7 +29,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 		command: 'workspace messages',
 		description: 'List recent operator messages.',
 		toolset: 'workspace',
-		readOnly: false,
+		readOnly: true,
 		destructive: false,
 		options: {
 			select: {
@@ -40,6 +41,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
 				required: true,
 			},
+			chat: { flag: 'chat', description: 'Owning Chat UUID. Required when the key omits Workspace ownership.' },
 			conversation: {
 				flag: 'conversation',
 				description: 'Conversation UUID; required.',
@@ -60,7 +62,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 		command: 'workspace message',
 		description: 'Get an operator message and available run references.',
 		toolset: 'workspace',
-		readOnly: false,
+		readOnly: true,
 		destructive: false,
 		options: {
 			select: {
@@ -72,6 +74,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
 				required: true,
 			},
+			chat: { flag: 'chat', description: 'Owning Chat UUID. Required when the key omits Workspace ownership.' },
 			conversation: {
 				flag: 'conversation',
 				description: 'Conversation UUID; required.',
@@ -101,6 +104,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
 				required: true,
 			},
+			chat: { flag: 'chat', description: 'Owning Chat UUID. Required when the key omits Workspace ownership.' },
 			conversation: {
 				flag: 'conversation',
 				description: 'Conversation UUID; required.',
@@ -133,6 +137,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
 				required: true,
 			},
+			chat: { flag: 'chat', description: 'Owning Chat UUID. Required when the key omits Workspace ownership.' },
 			conversation: {
 				flag: 'conversation',
 				description: 'Conversation UUID; required.',
@@ -164,6 +169,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
 				required: true,
 			},
+			chat: { flag: 'chat', description: 'Owning Chat UUID. Required when the key omits Workspace ownership.' },
 			conversation: {
 				flag: 'conversation',
 				description: 'Conversation UUID; required.',
@@ -199,6 +205,7 @@ export const workspaceOperatorTools: ToolDefinition[] = [
 				description: 'Explicit authorized Workspace identifier. Never changes saved CLI context.',
 				required: true,
 			},
+			chat: { flag: 'chat', description: 'Owning Chat UUID. Required when the key omits Workspace ownership.' },
 			conversation: {
 				flag: 'conversation',
 				description: 'Conversation UUID; required.',

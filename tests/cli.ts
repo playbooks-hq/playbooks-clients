@@ -57,14 +57,14 @@ export async function cliChecks(state: Json, config: string) {
   const unsupportedTemplateKind = await cli(config, [
     "templates",
     "--kind",
-    "chat",
+    "unsupported",
   ]);
   assert.notEqual(unsupportedTemplateKind.code, 0);
-  assert.match(
-    JSON.parse(unsupportedTemplateKind.stderr || unsupportedTemplateKind.stdout)
-      .error.message,
-    /project, agent/,
-  );
+  const templateKindError = JSON.parse(
+    unsupportedTemplateKind.stderr || unsupportedTemplateKind.stdout,
+  ).error;
+  assert.equal(templateKindError.status, 422);
+  assert.match(templateKindError.description, /project, agent, chat/);
   const invalid = await cli(
     config,
     ["project", "update", ...scope, "--data", "-"],

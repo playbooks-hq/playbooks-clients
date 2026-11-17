@@ -49,7 +49,7 @@ playbooks project logs --workspace acme --project abc
 
 An explicit `--workspace` overrides the saved workspace for one invocation without changing it. If neither is available, the command fails. Invalid or unauthorized targets never fall back to another workspace.
 
-Sites own production independently of Projects. Use `project sites --project abc` or `sites --workspace WORKSPACE_UUID` to discover destinations. Inspect `site release-options --site SITE_UUID`, select the saved source revision and component, then run `site preflight --site SITE_UUID --data '{"sourceRevision":"SAVED_REVISION","componentKey":"website"}'`. Resolve blockers and pass its exact source, component, current release and configuration revisions to `site deploy --site SITE_UUID --data <reviewed-json> --yes`. Add `--wait` to observe completion for up to five minutes. `site redeploy` deploys retained content with updated Site configuration. These operations can incur charges; interruption does not cancel accepted remote work. Inspect `site releases --site SITE_UUID` to resume observation.
+Sites own production independently of Projects. Use `project sites --project abc` or `sites --workspace WORKSPACE_UUID` to discover destinations. Inspect `site release-options --site SITE_UUID`, select the saved source revision and component, then run `site preflight --site SITE_UUID --data '{"sourceRevision":"SAVED_REVISION","componentKey":"website"}'`. Resolve blockers and pass its exact source, component, current release and configuration revisions to `site deploy --site SITE_UUID --data <reviewed-json> --yes`. Add `--wait` to observe completion for up to five minutes. `site redeploy` deploys retained content with updated Site configuration. These operations can incur charges; interruption does not cancel accepted remote work. Use `site release --site SITE_UUID --release RELEASE_UUID` to resume observing the accepted release, or `site releases --site SITE_UUID` to recover its ID.
 
 ## Operator messages and runs
 
@@ -73,6 +73,20 @@ Project and Workspace streams only observe; opening or reconnecting a stream nev
 
 Streams stop after 1,800 seconds by default; use `--timeout <seconds>` to change this. Connection and inactivity timeouts also apply. Waiting for input or approval is reported separately from completion. Failures and incomplete streams return a nonzero exit code. Streams never reconnect automatically, and Ctrl-C stops observation without canceling remote work. Interactive chat, approval submission, and run retry/cancel commands remain deferred.
 
+## Conversation read state and Agent Plans
+
+Use `workspace messages --chat CHAT_UUID --conversation CONVERSATION_UUID --json` to load a Chat history window. Pass that window's `meta.readObservedAt` and the last reviewed message ID to `workspace chat conversation read --chat CHAT_UUID --conversation CONVERSATION_UUID --observed-at TIMESTAMP --through-message-id MESSAGE_ID`. Use zero for empty history. When a scoped developer key omits Workspace ownership from a conversation response, supply the owning `--chat` to Chat conversation, message, and Plan commands.
+
+For Agents, load history with `agent conversation messages`, then use `agent conversation read --agent AGENT_UUID --conversation CONVERSATION_UUID --observed-at TIMESTAMP --through-message-id MESSAGE_ID` or `agent conversation unread` with the same Agent and conversation IDs. Loading history leaves read state untouched. Workspace Inbox read receipts have separate commands.
+
+Use `agent plan get` with the Agent and conversation UUIDs for the current Plan, or supply `--plan` and optional `--revision` for an exact version. `agent plan source` takes `--message` and `--part` from the conversation. Create with JSON `title` and `content`, or revise a selected Plan with `revision` and `content`.
+
+## Sources and Artifacts
+
+Use the `workspace chat`, `project`, or `agent` prefix with the owning resource UUID. List supplied inputs with `sources`. Use `workspace chat source`, `project source get`, or `agent source` to inspect one. Source inspection, preview, download, and copying require `--source`, `--version`, and `--conversation` from the Source list. Run `source copy-target` before `source copy-to-file-system` and submit the returned revision and a new destination path in `--data`. Project copies also require the returned `branchId` as `expectedBranchId`. Agents additionally support Source rename, duplicate, and delete with the expected current name.
+
+Use `artifacts` and `artifact versions` to find the Artifact and version IDs. Use `--version` on get, export, and supported viewing or download operations for an exact saved version. Chat and Project support opening, preview, download, registration, preparation, and metadata updates. Agent preparation accepts an exact Agent tree or output, and Agent Artifacts support metadata updates and confirmed deletion. Source preview/download and Artifact export/download return `data.contentBase64`. Artifact preview returns HTML data, and open returns viewing information for the isolated preview host.
+
 ## Resource sharing
 
 `playbooks shared resources --type all` lists accepted external Chat, Agent, and Project grants. Use `--type chats|agents|projects`, `--limit`, and the returned `nextCursor` with `--cursor` to page. External access does not make the owning Workspace a switcher destination.
@@ -88,9 +102,9 @@ playbooks templates --kind project --view following --workspace YOUR_WORKSPACE_U
 playbooks project update --project abc --data '{"description":"Customer support app"}'
 ```
 
-Public discovery uses `templates`, `categories`, `collections`, and `creators`. `templates` accepts one category UUID from the returned facets. The Following view uses your developer key and the selected Workspace, or an explicit `--workspace`; other views use anonymous public discovery. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
+Public discovery uses `templates`, `categories`, `collections`, and `creators`. Use `templates --kind all` to include Chat, Agent, and Project listings. `templates` accepts one category UUID from the returned facets. The Following view uses your developer key and the selected Workspace, or an explicit `--workspace`; other views use anonymous public discovery. Creators are public Workspace profiles. Owned Templates are separate: use `workspace templates`.
 
-Template drafts start with `workspace chat|project|agent template create --chat|--project|--agent ID`; the matching `draft` commands read without creating. `workspace template update --template ID --data -` changes listing metadata, including optional `liveUrl`. Playbooks derives package content from the current authorized source. Review `workspace template source --template ID`, then run `workspace template publish --template ID --yes` (optional `--data '{"bump":"minor"}'`); the CLI obtains and binds current revisions automatically. A source change returns a conflict rather than silently retrying.
+Template drafts start with `workspace chat|project|agent template create --chat|--project|--agent ID`; the matching `draft` commands read without creating. `workspace template update --template ID --data -` changes listing metadata, including optional `liveUrl`. Playbooks derives package content from the current authorized source. Review `workspace template source --template ID`, then run `workspace template publish --template ID --yes` (optional `--data '{"bump":"minor"}'`); the CLI obtains and binds current revisions automatically. Review conflicts before retrying. `workspace template unpublish|archive|restore|delete --template ID --yes` uses an empty request body and explicit confirmation.
 
 After a Chat remix, `workspace chat template setup --chat ID` lists importable Files, Designs, and Skills plus connection setup requirements. Read each selected item with `workspace chat template item --chat ID --category files --key PACKAGE_KEY` before `workspace chat template import --chat ID --data '{"category":"files","keys":["PACKAGE_KEY"],"acknowledgment":true,"idempotencyKey":"UUID"}' --yes`. Retry an uncertain import with the same key. Connector and MCP access requires separate setup.
 
@@ -151,7 +165,7 @@ Development and shared release preparation are documented in the [workspace READ
 
 ## SDK and agent integration
 
-CLI flags and JSON output remain the terminal contract. CLI and SDK pages start at 0 and preserve Server metadata. `--json` produces plain API data rather than SDK resource internals. File transfers read/write local paths, downloads refuse overwrites, and mutations retain their confirmation requirements.
+CLI flags and JSON output remain the terminal contract. CLI and SDK pages start at 0 and preserve Server metadata. `--json` produces plain API data rather than SDK resource internals. File transfers with local paths refuse to overwrite existing downloads. Content commands that return Base64 write it to the response. Mutations retain their confirmation requirements.
 
 Use `playbooks mcp install codex` to configure the [MCP package](../mcp/README.md) for an agent client. MCP calls this executable; neither package should be imported as an application API client. Use the SDK for that purpose.
 

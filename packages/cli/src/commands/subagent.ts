@@ -1,20 +1,20 @@
 import { CliError } from 'src/services/cli-client';
-import { workspaceContext } from 'src/services/command-context';
+import { workspaceReferenceContext } from 'src/services/command-context';
 import { identifier, input, integerOption, listParams } from 'src/utils/cli-input';
 import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
 
 export const subagentOperation = (operation: string) => async (options: any) => {
-	const { workspaceResource } = await workspaceContext(options);
+	const { workspaceReference } = await workspaceReferenceContext(options);
 	const owner = identifier(options.owner, '--owner');
 	if (!['chat', 'agent', 'project'].includes(options.kind))
 		throw new CliError(422, 'Provide --kind chat, agent, or project.');
 	const conversationId = integerOption(options.conversation, 'conversation', 1);
 	const collection =
 		options.kind === 'chat'
-			? workspaceResource.chats.subagents(owner)
+			? workspaceReference.chats.subagents(owner)
 			: options.kind === 'agent'
-				? workspaceResource.agents.reference(owner).subagents
-				: (await workspaceResource.projects.get(owner)).subagents;
+				? workspaceReference.agents.reference(owner).subagents
+				: (await workspaceReference.projects.get(owner)).subagents;
 	if (operation === 'list') return sdkList(await collection.list({ ...listParams(options), conversationId }));
 	if (operation === 'create') {
 		const data = await input(options, [

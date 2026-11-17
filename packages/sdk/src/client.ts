@@ -1,6 +1,7 @@
 import { name, version } from 'package.json';
 import { Agents } from 'src/agents.js';
 import { PlaybooksError } from 'src/error.js';
+import { chatConversations, Runs } from 'src/operators.js';
 import { Projects } from 'src/project.js';
 import { get, identifier, listing } from 'src/resource.js';
 import { ResourceSharing } from 'src/resource-sharing.js';
@@ -8,8 +9,7 @@ import { Transport } from 'src/transport.js';
 import type { ApiResponse, SharedResourceListOptions, SharedResourcePage } from 'src/types.js';
 import type { ExploreTemplateListOptions, TemplateData } from 'src/types.js';
 import type { ClientOptions, Identifier, ListOptions, WorkspaceData, WorkspaceUpdate } from 'src/types.js';
-import { chats } from 'src/workspace.js';
-import { updateWorkspace, Workspace } from 'src/workspace.js';
+import { chats, chatTemplates, updateWorkspace, Workspace } from 'src/workspace.js';
 
 export class PlaybooksSDK {
 	#options: ClientOptions;
@@ -45,7 +45,14 @@ export class PlaybooksSDK {
 			reference: (id: Identifier) => {
 				identifier(id);
 				const transport = this.#transport(String(id));
-				return { agents: new Agents(transport), projects: new Projects(transport), chats: chats(transport) };
+				return {
+					agents: new Agents(transport),
+					projects: new Projects(transport),
+					chats: chats(transport),
+					conversations: chatConversations(transport, String(id)),
+					runs: new Runs(transport, '/chats/runs'),
+					templates: chatTemplates(transport),
+				};
 			},
 			list: async (options: ListOptions = {}): Promise<ApiResponse<Workspace[]>> => {
 				const response = await this.#transport().request('/session/workspaces', 'GET', undefined, options);

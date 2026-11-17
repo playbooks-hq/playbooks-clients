@@ -69,10 +69,16 @@ class ExploreTemplates(Endpoint):
         result: Resource = await self._get(f"{self._path}/{identifier(id)}", {"include": include})
         return result
 
+    async def versions(self, id: Identifier) -> ApiResponse:
+        return await self._list(f"{self._path}/{identifier(id)}/versions", {})
+
+    async def version(self, id: Identifier, version_id: Identifier) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}/versions/{identifier(version_id)}")
+
     async def list(
         self,
         *,
-        kind: Literal["project", "agent", "chat"] = "project",
+        kind: Literal["project", "agent", "chat", "all"] = "project",
         view: Literal["discover", "popular", "recent", "following"] = "discover",
         category: str | None = None,
         search: str | None = None,

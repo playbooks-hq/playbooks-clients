@@ -11,6 +11,8 @@ One workspace for three independently installable Node.js packages and a Python 
 
 Dependencies flow from MCP to CLI to SDK. Server remains authoritative for permissions, billing, and execution. The SDK is for backend platform access, not browser managed-service access. Construct `PlaybooksSDK({ apiKey })`, select a Workspace with `client.workspaces.get(uuid)`, and navigate its resources. All CLI platform operations use named SDK methods; local terminal behavior remains in CLI. Both SDKs and the CLI use zero-based pages.
 
+The CLI and MCP expose scoped Chat, Project, and Agent Sources and Artifacts, explicit Chat and Agent conversation reads, and Agent Plan inspection and editing. Owned Templates support confirmed unpublish, archive, restore, and deletion. Site release mutations in MCP return the accepted receipt for separate observation. Consult the CLI and MCP guides for the exact options and permissions.
+
 ## Development
 
 Use Node.js 22.12 or newer, pnpm 10.33.0, and Python 3.11 or newer. Run `pnpm python:setup` once to create the Python SDK virtual environment and install its development dependencies. Root lint and type checks include Python through a private pnpm task package; Python is distributed through its own `pyproject.toml`.
@@ -70,13 +72,13 @@ pnpm test
 pnpm test:cleanup -- --run <run-id>
 ```
 
-Setup retains its generated basic account, private Workspace, and Workspace-scoped developer key under ignored `.runs/identity.json` with owner-only access. Only that exact account is activated by the local fixture; email delivery is not tested. Administrative readiness observations and supported 100-credit funding grants run in a separate helper. Administrative credentials and sessions never reach SDK, CLI, or MCP test processes. Do not commit `.env.test`, `.runs`, credentials, or raw session responses.
+Setup retains its generated basic account, private Workspace, and Workspace-scoped developer key under ignored `.runs/identity.json` with owner-only access. Only that exact account is activated by the local fixture; email delivery is not tested. Administrative readiness observations run in a separate helper. The suite checks existing funding before creating its Project and during the Operator run. Every 100-credit setup grant requires explicit approval. Administrative credentials and sessions never reach SDK, CLI, or MCP test processes. Do not commit `.env.test`, `.runs`, credentials, or raw session responses.
 
 Each run checks resource updates and failed-update snapshots, serialization, the current zero-based SDK/CLI pagination contract, JSON output and errors, MCP discovery/filtering/confirmation, and file round trips with revision protection. One fixed Operator prompt reads the File; SDK and CLI observe its stream and MCP inspects its result. The prompt is capped at 5 credits and 10 minutes, with a 30-minute overall deadline and cleanup reserve. A successful submission alone is not a pass. No automatic prompt retries, publication, payments, or generated application journeys are included.
 
 Runs are sequential and hold a Workspace lease. Manifests persist ownership and mutation intent before dispatch. Cleanup uses exact recorded Project IDs and requires a completed lifecycle receipt confirming shutdown and storage release. Failed cleanup keeps the lease and must be resumed with `test:cleanup`; never remove a lease or guess ownership from names. Setup refuses to replay unresolved registration or key creation. Investigate and reconcile the exact recorded identity before retrying.
 
-Deletion is submitted through the SDK with the scoped developer key. Receipt observation uses the same basic test account's session: current Server developer-key middleware cannot resolve the Project after deletion. This is a cleanup-infrastructure workaround, not verification of post-deletion receipt access with developer keys.
+Deletion is submitted through the SDK with the scoped developer key. The suite records the direct-deletion operation ID and polls its requester-only receipt through the same test account's session. It verifies the receipt's Project ID, resource type, and completion after purge.
 
 The run manifest records individual scenario outcomes, untested areas, elapsed time, observed credits, and cleanup status. Operator submission, run discovery, scoped filters, SDK streaming, CLI streaming, and final inspection each have separate outcomes. Both streams must identify the same completed run, and the assistant response must contain the File marker. Missing configuration or infrastructure is a blocker; API defects and unmet assertions are failures. Cleanup is reported independently. Live elapsed time excludes builds and package verification. The suite never starts/reconfigures services or repairs Server. Keep real-stack integration runs separate from the credential-free package verification in release preparation.
 

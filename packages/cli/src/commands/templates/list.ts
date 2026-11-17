@@ -9,7 +9,7 @@ export const listTemplates = async (options: any) => {
 		...listParams(options),
 		...includeParams(options, ['categories', 'license', 'stats']),
 	};
-	if (options.kind !== undefined) params.kind = templateKindOption(options.kind);
+	if (options.kind !== undefined) params.kind = options.kind === 'all' ? 'all' : templateKindOption(options.kind);
 	if (options.category !== undefined) {
 		const category = textOption(options.category, 'category');
 		if (!/^[a-zA-Z0-9-]+$/.test(category)) throw new CliError(422, 'Provide one category UUID with --category.');

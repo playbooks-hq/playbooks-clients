@@ -1,5 +1,5 @@
 import { CliError } from 'src/services/cli-client';
-import { projectContext, workspaceContext } from 'src/services/command-context';
+import { projectContext, workspaceContext, workspaceReferenceContext } from 'src/services/command-context';
 import { identifier, input, integerOption, listParams, textOption } from 'src/utils/cli-input';
 import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
 
@@ -80,7 +80,9 @@ export const getRelease = async (options: any) =>
 export const projectSites = async (options: any) =>
 	sdkList(await (await projectContext(options)).projectResource.sites.list());
 export const chatSites = async (options: any) =>
-	sdkList(await (await workspaceContext(options)).workspaceResource.chats.sites(identifier(options.chat, '--chat')));
+	sdkList(
+		await (await workspaceReferenceContext(options)).workspaceReference.chats.sites(identifier(options.chat, '--chat')),
+	);
 
 export const releaseOptions = async (options: any) =>
 	sdkEnvelope(await (await siteContext(options)).site.releaseOptions());
@@ -329,17 +331,17 @@ export const listFiles = async (options: any) =>
 		await (await siteContext(options)).site.storageData.files(options.data !== undefined ? await input(options) : {}),
 	);
 export const getFileMetadata = async (options: any) =>
-	sdkEnvelope(await (await siteContext(options)).site.storageData.metadata(identifier(options.path, '--path')));
+	sdkEnvelope(await (await siteContext(options)).site.storageData.metadata(textOption(options.path, 'path')));
 export const getFileContent = async (options: any) =>
 	sdkEnvelope({
 		contentBase64: Buffer.from(
-			await (await siteContext(options)).site.storageData.content(identifier(options.path, '--path')),
+			await (await siteContext(options)).site.storageData.content(textOption(options.path, 'path')),
 		).toString('base64'),
 	});
 export const downloadFile = async (options: any) =>
 	sdkEnvelope({
 		contentBase64: Buffer.from(
-			await (await siteContext(options)).site.storageData.download(identifier(options.path, '--path')),
+			await (await siteContext(options)).site.storageData.download(textOption(options.path, 'path')),
 		).toString('base64'),
 	});
 export const uploadFile = async (options: any) =>

@@ -1,11 +1,13 @@
 import { Channels } from 'src/channels.js';
 import { Collection } from 'src/collection.js';
+import { CustomerArtifacts } from 'src/customer-artifacts.js';
 import { PlaybooksError } from 'src/error.js';
 import { Files } from 'src/files.js';
 import { ProjectConversations, Runs } from 'src/operators.js';
 import { ProjectTests } from 'src/project-tests.js';
 import { action, get, identifier, listing, record, Resource, succeeded } from 'src/resource.js';
 import type { SiteData } from 'src/sites.js';
+import { Sources } from 'src/sources.js';
 import { Subagents } from 'src/subagents.js';
 import type { Transport } from 'src/transport.js';
 import type { ProjectAgentCreate } from 'src/types.js';
@@ -185,7 +187,7 @@ export class Project extends Resource<ProjectData> {
 		return new Channels(this.#transport, `${this.#path}/channels`);
 	}
 	get conversations() {
-		return new ProjectConversations(this.#transport, this.#path, this.id);
+		return new ProjectConversations(this.#transport, this.#path, this.id, `/projects/${identifier(this.uuid)}`);
 	}
 	get runs() {
 		return new Runs(this.#transport, `${this.#path}/operator/runs`);
@@ -223,6 +225,12 @@ export class Project extends Resource<ProjectData> {
 			list: (options: LogOptions = {}): Promise<ApiResponse<LogData[]>> =>
 				this.#transport.request(`${this.#path}/logs`, 'GET', undefined, options),
 		};
+	}
+	get sources() {
+		return new Sources<'project'>(this.#transport, `${this.#path}/sources`);
+	}
+	get artifacts() {
+		return new CustomerArtifacts<'project'>(this.#transport, `${this.#path}/artifacts`);
 	}
 	get source() {
 		return {

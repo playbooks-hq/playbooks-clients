@@ -1,5 +1,6 @@
 import type { ServerOptions } from 'src/options.js';
 import { agentTools } from 'src/tools/agents.js';
+import { contentConversationTools, contentTools } from 'src/tools/content.js';
 import { coreTools } from 'src/tools/core.js';
 import type { ToolDefinition } from 'src/tools/definition.js';
 import { discoveryTools } from 'src/tools/discovery.js';
@@ -66,7 +67,7 @@ export const catalog: ToolDefinition[] = (
 				: {}),
 		},
 	}))
-	.concat(projectTestTools);
+	.concat(projectTestTools, contentTools, contentConversationTools);
 
 export const selectTools = (options: ServerOptions) =>
 	catalog.filter(tool => options.toolsets.includes(tool.toolset) && (!options.readOnly || tool.readOnly));

@@ -3,7 +3,9 @@ from typing import Any, Self
 from urllib.parse import quote
 
 from playbooks_sdk.agent_types import AgentCreateInput
+from playbooks_sdk.asynchronous.content import Sources
 from playbooks_sdk.asynchronous.core import Endpoint, Listing
+from playbooks_sdk.asynchronous.operators import ConversationPlans
 from playbooks_sdk.asynchronous.subagents import Subagents
 from playbooks_sdk.error import PlaybooksError
 from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, identifier
@@ -176,6 +178,32 @@ class AgentReference:
         )
         return result
 
+    async def source_copy_target(
+        self, source_id: Identifier, *, version: str, conversation_id: str
+    ) -> Any:
+        return await Sources(self._transport, f"{self._path}/sources").copy_target(
+            source_id, version=version, conversation_id=conversation_id
+        )
+
+    async def copy_source_to_file_system(
+        self,
+        source_id: Identifier,
+        *,
+        version: str,
+        conversation_id: str,
+        revision: str,
+        path: str,
+        activity_conversation_id: str | None = None,
+    ) -> Any:
+        return await Sources(self._transport, f"{self._path}/sources").copy_to_file_system(
+            source_id,
+            version=version,
+            conversation_id=conversation_id,
+            revision=revision,
+            path=path,
+            activity_conversation_id=activity_conversation_id,
+        )
+
     async def rename_source(self, source_id: Identifier, data: Data) -> Any:
         return await Endpoint(self._transport, self._path)._action(
             f"{self._path}/sources/{identifier(source_id)}/rename", "POST", data
@@ -194,6 +222,11 @@ class AgentReference:
     async def conversations(self, **options: Any) -> ApiResponse:
         return await Endpoint(self._transport, self._path)._list(
             f"{self._path}/conversations", options
+        )
+
+    def conversation_plans(self, conversation_id: Identifier) -> ConversationPlans:
+        return ConversationPlans(
+            self._transport, f"{self._path}/conversations/{identifier(conversation_id)}/plans"
         )
 
     async def conversation_utility(self, conversation_id: Identifier) -> Any:
@@ -310,12 +343,17 @@ class AgentReference:
         )
 
     async def mark_conversation_read(
-        self, conversation_id: Identifier, *, through_message_id: int
+        self,
+        conversation_id: Identifier,
+        *,
+        through_message_id: int,
+        observed_at: str | None = None,
     ) -> Any:
+        data: Data = {"throughMessageId": through_message_id}
+        if observed_at is not None:
+            data["observedAt"] = observed_at
         return await Endpoint(self._transport, self._path)._action(
-            f"{self._path}/conversations/{identifier(conversation_id)}/read",
-            "PUT",
-            {"throughMessageId": through_message_id},
+            f"{self._path}/conversations/{identifier(conversation_id)}/read", "PUT", data
         )
 
     async def mark_conversation_unread(self, conversation_id: Identifier) -> Any:

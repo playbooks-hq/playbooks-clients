@@ -1,14 +1,16 @@
 import { Agents } from 'src/agents.js';
 import { Collection } from 'src/collection.js';
+import { CustomerArtifacts } from 'src/customer-artifacts.js';
 import { PlaybooksError } from 'src/error.js';
 import { ConversationPlans, FileSystem } from 'src/file-system.js';
 import { Files } from 'src/files.js';
 import { Inbox } from 'src/inbox.js';
-import { Conversations, Runs } from 'src/operators.js';
+import { Conversation, Conversations, Runs } from 'src/operators.js';
 import { Projects } from 'src/project.js';
 import { action, get, identifier, listing, record, Resource } from 'src/resource.js';
 import type { SiteData } from 'src/sites.js';
 import { Sites } from 'src/sites.js';
+import { Sources } from 'src/sources.js';
 import { Subagents } from 'src/subagents.js';
 import type { Transport } from 'src/transport.js';
 import type {
@@ -88,7 +90,7 @@ export class Workspace extends Resource<WorkspaceData> {
 	conversationPlans(conversationId: Identifier, projectId?: Identifier) {
 		return new ConversationPlans(
 			this.#transport,
-			`${projectId ? `/projects/${identifier(projectId)}` : ''}/conversations/${identifier(conversationId)}/plans`,
+			`${projectId === undefined ? '' : `/projects/${identifier(projectId)}`}/conversations/${identifier(conversationId)}/plans`,
 		);
 	}
 	get chatSchedules() {
@@ -111,10 +113,7 @@ export class Workspace extends Resource<WorkspaceData> {
 	get templates() {
 		const collection = new Collection<TemplateData, TemplateUpdate>(this.#transport, '/templates', 'PATCH');
 		return {
-			createFromChat: (chatId: Identifier) =>
-				action<TemplateData>(this.#transport, `/chats/${identifier(chatId)}/template`, 'POST', {}),
-			draftFromChat: async (chatId: Identifier): Promise<TemplateData | null> =>
-				(await get<TemplateData>(this.#transport, `/chats/${identifier(chatId)}/template`)) || null,
+			...chatTemplates(this.#transport),
 			createFromProject: (projectId: Identifier) =>
 				action<TemplateData>(this.#transport, `/projects/${identifier(projectId)}/template`, 'POST', {}),
 			draftFromProject: async (projectId: Identifier): Promise<TemplateData | null> =>
@@ -136,6 +135,15 @@ export class Workspace extends Resource<WorkspaceData> {
 					bump: 'patch',
 					...input,
 				});
+			},
+			unpublish: (id: Identifier) =>
+				action<TemplateData>(this.#transport, `/templates/${identifier(id)}/unpublish`, 'POST'),
+			archive: (id: Identifier) =>
+				action<TemplateData>(this.#transport, `/templates/${identifier(id)}/archive`, 'POST'),
+			unarchive: (id: Identifier) =>
+				action<TemplateData>(this.#transport, `/templates/${identifier(id)}/unarchive`, 'POST'),
+			delete: async (id: Identifier): Promise<void> => {
+				await action(this.#transport, `/templates/${identifier(id)}`, 'DELETE');
 			},
 			source: (id: Identifier) => get<TemplateSourceReview>(this.#transport, `/templates/${identifier(id)}/source`),
 			remix: (id: Identifier, input: { versionId: string; idempotencyKey: string; name?: string }) =>
@@ -276,15 +284,38 @@ export const updateWorkspace = async (transport: Transport, id: Identifier, inpu
 	return data;
 };
 
+export const chatTemplates = (transport: Transport) => ({
+	createFromChat: (id: Identifier) => action<TemplateData>(transport, `/chats/${identifier(id)}/template`, 'POST', {}),
+	draftFromChat: async (id: Identifier): Promise<TemplateData | null> =>
+		(await get<TemplateData>(transport, `/chats/${identifier(id)}/template`)) ?? null,
+});
+
 export const chats = (transport: Transport) => {
 	const path = '/chats';
+	const fetchChat = (id: Identifier) => get<ChatData>(transport, `${path}/${identifier(id)}`);
 	return {
 		subagents: (id: Identifier) => new Subagents(transport, `${path}/${identifier(id)}/subagents`),
 		sites: (id: Identifier) => listing<SiteData>(transport, `${path}/${identifier(id)}/sites`),
 		list: (
 			options?: ListOptions & { archived?: boolean; tab?: 'all' | 'owner' | 'collaborator' | 'pinned' | 'archive' },
 		) => listing<ChatData>(transport, path, options),
-		get: (id: Identifier) => get<ChatData>(transport, `${path}/${identifier(id)}`),
+		get: fetchChat,
+		conversation: async (id: Identifier) => {
+			const chat = await fetchChat(id);
+			if (!transport.workspace || chat.workspace?.uuid !== transport.workspace)
+				throw new PlaybooksError(403, 'The Chat does not belong to the requested Workspace.');
+			const conversation = chat.conversation;
+			if (
+				chat.uuid !== String(id) ||
+				!Number.isSafeInteger(chat.id) ||
+				!Number.isSafeInteger(chat.conversationId) ||
+				!conversation?.uuid ||
+				conversation.id !== chat.conversationId ||
+				conversation.chatId !== chat.id
+			)
+				throw new PlaybooksError(502, 'The returned conversation does not match the requested Chat.');
+			return new Conversation(transport, conversation, false);
+		},
 		templateSetup: (id: Identifier) => get<ChatTemplateSetup>(transport, `${path}/${identifier(id)}/template-setup`),
 		templateSetupItem: (id: Identifier, category: ChatTemplateSetupItem['category'], key: string) => {
 			if (!key) throw new PlaybooksError(422, 'Provide a Template package key.');
@@ -298,6 +329,8 @@ export const chats = (transport: Transport) => {
 		create: (input: ChatCreate) => action<ChatData>(transport, path, 'POST', input),
 		update: (id: Identifier, input: ChatUpdate) =>
 			action<ChatData>(transport, `${path}/${identifier(id)}`, input.action === 'delete' ? 'DELETE' : 'PUT', input),
+		sources: (id: Identifier) => new Sources(transport, `${path}/${identifier(id)}/sources`),
+		artifacts: (id: Identifier) => new CustomerArtifacts<'chat'>(transport, `${path}/${identifier(id)}/artifacts`),
 		fileSystem: (id: Identifier) => new FileSystem(transport, `${path}/${identifier(id)}/file-system`),
 	};
 };

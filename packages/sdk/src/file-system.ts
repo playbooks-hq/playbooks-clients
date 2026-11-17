@@ -1,4 +1,5 @@
-import { action, get, identifier } from 'src/resource.js';
+import { PlaybooksError } from 'src/error.js';
+import { action, get, identifier, record } from 'src/resource.js';
 import type { Transport } from 'src/transport.js';
 import type { Identifier } from 'src/types.js';
 
@@ -46,23 +47,30 @@ export class FileSystem {
 }
 
 export class ConversationPlans {
-	constructor(
-		private transport: Transport,
-		private path: string,
-	) {}
-	current() {
-		return get<PlanDocument>(this.transport, `${this.path}/current`);
+	#transport: Transport;
+	#path: string;
+	constructor(transport: Transport, path: string) {
+		this.#transport = transport;
+		this.#path = path;
+	}
+	async current() {
+		const { data }: { data: PlanDocument | null } = await this.#transport.request(`${this.#path}/current`);
+		return data === null ? null : record(data);
+	}
+	source(messageId: Identifier, partId: string) {
+		if (!partId || partId === '.' || partId === '..') throw new PlaybooksError(422, 'Provide a Plan source part.');
+		return get<PlanDocument>(
+			this.#transport,
+			`${this.#path}/source/${identifier(messageId)}/${encodeURIComponent(partId)}`,
+		);
 	}
 	get(id: Identifier, revision?: string) {
-		return get<PlanDocument>(this.transport, `${this.path}/${identifier(id)}`, revision ? { revision } : {});
+		return get<PlanDocument>(this.#transport, `${this.#path}/${identifier(id)}`, revision ? { revision } : {});
 	}
 	create(input: { title: string; content: string }) {
-		return action<PlanDocument>(this.transport, this.path, 'POST', input);
+		return action<PlanDocument>(this.#transport, this.#path, 'POST', input);
 	}
 	revise(id: Identifier, input: { revision: string; content: string }) {
-		return action<PlanDocument>(this.transport, `${this.path}/${identifier(id)}`, 'PUT', input);
-	}
-	save(id: Identifier, input: { revision: string; requestId: string }) {
-		return action(this.transport, `${this.path}/${identifier(id)}/save`, 'POST', input);
+		return action<PlanDocument>(this.#transport, `${this.#path}/${identifier(id)}`, 'PUT', input);
 	}
 }

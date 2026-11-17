@@ -1,8 +1,11 @@
 import { Channels } from 'src/channels.js';
 import { Collection } from 'src/collection.js';
 import { PlaybooksError } from 'src/error.js';
+import { ConversationPlans } from 'src/file-system.js';
 import { action, get, identifier, listing, Resource } from 'src/resource.js';
 import type { SiteData } from 'src/sites.js';
+import type { SourceCopyInput, SourceSelection } from 'src/sources.js';
+import { Sources } from 'src/sources.js';
 import { readEvents } from 'src/sse.js';
 import { Subagents } from 'src/subagents.js';
 import type { Transport } from 'src/transport.js';
@@ -10,16 +13,15 @@ import type {
 	ConversationUtilityListOptions,
 	Identifier,
 	ListOptions,
+	MarkReadInput,
 	MessageInput,
 	MessageOptions,
 	RecordData,
 	StreamOptions,
 } from 'src/types.js';
 
-export interface AgentSourceSelection {
+export interface AgentSourceSelection extends SourceSelection {
 	activityConversationId?: string;
-	version: string;
-	conversationId: string;
 }
 export interface AgentComposerOptions {
 	modelId?: number;
@@ -356,6 +358,7 @@ export class AgentReference {
 	get sources() {
 		const path = `${this.path}/sources`;
 		const transport = this.transport;
+		const sources = new Sources<'agent'>(transport, path);
 		return {
 			list: (options?: { page?: number; search?: string; type?: 'images' | 'documents' | 'data' | 'email' }) =>
 				listing(transport, path, options),
@@ -364,6 +367,8 @@ export class AgentReference {
 				transport.request(`${path}/${identifier(id)}/download`, 'GET', undefined, selection, true, true),
 			preview: (id: Identifier, selection: AgentSourceSelection): Promise<Buffer> =>
 				transport.request(`${path}/${identifier(id)}/preview`, 'GET', undefined, selection, true, true),
+			copyTarget: (id: Identifier, selection: SourceSelection) => sources.copyTarget(id, selection),
+			copyToFileSystem: (id: Identifier, input: SourceCopyInput) => sources.copyToFileSystem(id, input),
 			rename: (id: Identifier, input: AgentSourceSelection & { expectedName: string; name: string }) =>
 				action(transport, `${path}/${identifier(id)}/rename`, 'POST', input),
 			duplicate: (
@@ -378,6 +383,7 @@ export class AgentReference {
 		const path = `${this.path}/conversations`;
 		const transport = this.transport;
 		return {
+			plans: (id: Identifier) => new ConversationPlans(transport, `${path}/${identifier(id)}/plans`),
 			list: (options?: ListOptions) => listing(transport, path, options),
 			create: (input: { title?: string; idempotencyKey: string }) =>
 				transport
@@ -423,8 +429,8 @@ export class AgentReference {
 			restore: (id: Identifier) => action(transport, `${path}/${identifier(id)}/restore`, 'POST'),
 			delete: (id: Identifier, confirmation: string) =>
 				action(transport, `${path}/${identifier(id)}`, 'DELETE', { confirmation }),
-			markRead: (id: Identifier, throughMessageId: number) =>
-				action(transport, `${path}/${identifier(id)}/read`, 'PUT', { throughMessageId }),
+			markRead: (id: Identifier, input: MarkReadInput) =>
+				action(transport, `${path}/${identifier(id)}/read`, 'PUT', input),
 			markUnread: (id: Identifier) => action(transport, `${path}/${identifier(id)}/unread`, 'PUT'),
 			reorderQueue: (id: Identifier, messageIds: number[]) =>
 				action(transport, `${path}/${identifier(id)}/messages/queue`, 'PUT', { messageIds }),

@@ -10,6 +10,7 @@ export type {
 	AgentCreate,
 	AgentUpdate,
 	AgentArtifactPrepare,
+	AgentSourceSelection,
 	AgentMentionTarget,
 	AgentComposerOptions,
 	AgentScheduleCreate,
@@ -60,3 +61,8 @@ export { Subagents } from 'src/subagents.js';
 export type { SubagentConfiguration, SubagentCreate, SubagentUpdate } from 'src/subagents.js';
 
 export { ResourceSharing } from 'src/resource-sharing.js';
+
+export { CustomerArtifacts } from 'src/customer-artifacts.js';
+export type * from 'src/customer-artifacts.js';
+export { Sources } from 'src/sources.js';
+export type * from 'src/sources.js';

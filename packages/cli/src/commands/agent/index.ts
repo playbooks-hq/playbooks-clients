@@ -6,7 +6,7 @@ import { identifier, input, integerOption, listParams, shellArgument, textOption
 import { redact } from 'src/utils/cli-output';
 import { sdkEnvelope, sdkList } from 'src/utils/sdk-output';
 
-const agentContext = async (options: any) => {
+export const agentContext = async (options: any) => {
 	const context = await workspaceReferenceContext(options);
 	return { ...context, agent: context.workspaceReference.agents.reference(identifier(options.agent, '--agent')) };
 };
@@ -455,3 +455,36 @@ export const updateFileSystem = async (options: any) =>
 export const listResults = async (options: any) => sdkList(await (await agentContext(options)).agent.results.list());
 export const getResult = async (options: any) =>
 	sdkEnvelope(await (await agentContext(options)).agent.results.get(identifier(options.result, '--result')));
+
+export const readConversation = async (options: any, operation: 'read' | 'unread') => {
+	const id = identifier(options.conversation, '--conversation');
+	const { agent } = await agentContext(options);
+	if (operation === 'unread') return sdkEnvelope(await agent.conversations.markUnread(id));
+	return sdkEnvelope(
+		await agent.conversations.markRead(id, {
+			throughMessageId: integerOption(options['through-message-id'], 'through-message-id', 0),
+			observedAt: textOption(options['observed-at'], 'observed-at'),
+		}),
+	);
+};
+
+export const conversationPlan = (operation: string) => async (options: any) => {
+	const { agent } = await agentContext(options);
+	const plans = agent.conversations.plans(identifier(options.conversation, '--conversation'));
+	if (operation === 'get') {
+		if (options.plan === undefined) {
+			if (options.revision !== undefined) throw new CliError(422, '--revision requires --plan.');
+			return sdkEnvelope(await plans.current());
+		}
+		const revision = options.revision === undefined ? undefined : textOption(options.revision, 'revision');
+		return sdkEnvelope(await plans.get(identifier(options.plan, '--plan'), revision));
+	}
+	if (operation === 'source')
+		return sdkEnvelope(
+			await plans.source(integerOption(options.message, 'message', 1), textOption(options.part, 'part')),
+		);
+	if (operation === 'create') return sdkEnvelope(await plans.create(await input(options, ['title', 'content'])));
+	return sdkEnvelope(
+		await plans.revise(identifier(options.plan, '--plan'), await input(options, ['revision', 'content'])),
+	);
+};

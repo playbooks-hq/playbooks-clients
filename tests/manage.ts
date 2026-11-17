@@ -13,7 +13,7 @@ try {
   } else if (action === "cleanup" && args[0] === "--run" && args[1]) {
     const state = loadRun(args[1]);
     const release = lease(state.id);
-    await cleanup(state, Date.now() + 5 * 60000, true);
+    await cleanup(state, Date.now() + 5 * 60000);
     release();
     console.log(`Cleanup completed: ${state.id}`);
   } else throw Error("BLOCKED: use setup, check, or cleanup --run <id>");

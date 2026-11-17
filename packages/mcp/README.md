@@ -50,6 +50,18 @@ Private tools require an explicit `workspace`. Tools targeting an existing Proje
 
 The `templates` toolset creates or reads Chat, Project, and Agent drafts, updates listing metadata, reviews the package derived from current authorized source material, and requests human-confirmed publication. Chat packages include current working files and eligible linked Artifact editing assets; Agent packages include portable configuration and assigned resources without working outputs; Project packages use the latest saved default branch and directly assigned or local resources. The CLI obtains and binds review revisions automatically. Publication may choose `patch`, `minor`, or `major` through the optional `bump` field; default is `patch`. An adopted Chat's `playbooks_workspace_chat_template_setup` lists safe import options. Use `playbooks_workspace_chat_template_item` to inspect immutable content before `playbooks_workspace_chat_template_import`, which requires package keys, an idempotency key, acknowledgment, and `confirm: true`. Connector and MCP setup remains separate.
 
+Owned Template lifecycle tools `playbooks_workspace_template_unpublish`, `playbooks_workspace_template_archive`, `playbooks_workspace_template_restore`, and `playbooks_workspace_template_delete` require `confirm: true` and take an optional empty `data` object. Public discovery accepts `kind: "all"` to include Chat, Agent, and Project templates.
+
+## Content and conversation state
+
+The `workspace` toolset covers Chat Sources and Artifacts, `project` covers Project Sources and Artifacts, and `core` covers Agent Sources and Artifacts. Source workflows list, get, preview, download, review copy targets, and copy exact versions into the File system. Copying requires a reviewed destination revision and path. Project copies also require `expectedBranchId` from the target. Use `playbooks_project_source_get` for a supplied Source and `playbooks_project_source` for Git source control. Agent Source mutations also support rename, duplicate, and confirmed deletion.
+
+Artifact workflows list and inspect retained versions, export selected versions, prepare from saved content, and update metadata. Chat and Project additionally support open, preview, download, and registration. Agent Artifact deletion requires confirmation and the exact Artifact name. Byte operations return Base64. Use the SDK or direct CLI for larger files. MCP caps CLI output at 8 MiB, which allows roughly 6 MiB of raw bytes. Preview HTML and viewing information refer to the isolated Artifact host and are returned as data.
+
+Use `playbooks_workspace_messages` with `chat` and `conversation` to load Chat history. Pass the same targets, `meta.readObservedAt`, and the last reviewed message ID to `playbooks_workspace_chat_conversation_read` as `observedAt` and `throughMessageId`. Use zero for empty history. The `core` toolset includes Agent conversation read and unread tools and Agent Plan get, source, create, and revise. History reads preserve read state. Workspace Inbox receipts use their own tools.
+
+Site deploy, redeploy, and rollback return an accepted release receipt. Inspect its UUID with `playbooks_site_release` to observe progress.
+
 ## Resource sharing
 
 `playbooks_shared_resources` lists accepted external Chat, Agent, and Project grants with `type`, `limit`, and `cursor`. Resource access tools in the `workspace` toolset use an explicit owning `workspace`, `kind`, and `resource`. They list direct members and invitations, change Workspace/private visibility with an exact revision, manage direct Viewer/Editor/Admin grants, and invite, resend, or revoke external invitations. Chat and Agent members use User UUIDs; Project grant creation uses a numeric User ID, while updates and revocation use returned collaborator IDs. Mutating tools require `confirm: true`; Server permissions remain authoritative.
@@ -131,7 +143,7 @@ Development and shared release preparation are documented in the [workspace READ
 
 ## Execution model
 
-Tool calls flow through **MCP → CLI → SDK → Server**. MCP retains its existing tool names, schemas, explicit Workspace/Project targets, toolset filtering, confirmations, and cancellation behavior. The CLI now uses resource-oriented SDK methods underneath; agents do not need to construct SDK objects or change tool calls.
+Tool calls flow through **MCP → CLI → SDK → Server**. MCP declares tool schemas, explicit Workspace and resource targets, toolset filtering, confirmations, and cancellation behavior. The CLI uses resource-oriented SDK methods underneath. Use `playbooks_help` to inspect the current schema for any enabled tool.
 
 Authenticate through the CLI or `PLAYBOOKS_TOKEN`, never through tool arguments. A mutation may start remote work before observation ends. Inspect its returned identifiers and status; a canceled tool call does not imply that accepted work was canceled. A read-only toolset limits exposed tools but does not replace Server authorization.
 

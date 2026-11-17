@@ -44,6 +44,38 @@ Both clients expose `workspace.templates.create_from_chat/project/agent(id)` and
 
 Call `workspace.templates.source(template_id)` to inspect the package summary, then `publish(template_id, bump="minor")` to publish (optional `patch`, `minor`, or `major`; default `patch`). Sync and async SDKs obtain and bind current revisions automatically; a changed source returns a conflict. Adopted Chats expose `workspace.chats.template_setup(chat_id)` and `template_setup_item(chat_id, category, key)` to review the exact immutable File, Design, or Skill before `import_template_resources(chat_id, data)`. Import data requires `category`, package `keys`, `acknowledgment: true`, and a stable `idempotencyKey`; reuse the key after an uncertain response. Connector and MCP setup remains separate.
 
+Use `client.templates.versions(template_id)` and `client.templates.version(template_id, version_id)` to read published versions anonymously. Workspace listing managers can call `workspace.templates.unpublish(template_id)`, `archive(template_id)`, `unarchive(template_id)`, and `delete(template_id)`.
+
+## Sources and Artifacts
+
+Chat and Project Source and Artifact routes are pending public API publication and operational acceptance.
+
+Use `workspace.chats.sources(chat_id)` or `project.sources` to list Sources. Use the Source's version and originating conversation to call `get`, `preview`, or `download`. Preview and download return bytes. To copy a Source to the working File system, fetch a copy target first.
+
+```python
+selection = {"version": version_id, "conversation_id": conversation_id}
+target = project.sources.copy_target(source_id, **selection)
+project.sources.copy_to_file_system(
+    source_id,
+    **selection,
+    revision=target.revision,
+    expected_branch_id=target.branchId,
+    path=target.suggestedPath,
+)
+```
+
+Chat and Agent copies use the same selection, revision, and path. Agent callers use `agent.source_copy_target(...)` and `agent.copy_source_to_file_system(...)` with a User API key and Agent collaborator access. Add `activity_conversation_id` when the copy should appear in an authorized destination conversation.
+
+Use `workspace.chats.artifacts(chat_id)` or `project.artifacts` to list retained Artifacts and inspect their versions. `open(artifact_id, version=version_id)` and `preview(artifact_id, version=version_id)` return JSON-derived records. `export` and `download` return bytes. For `register(data)` and `prepare(data)`, pass Server field names. The `origin` dictionary uses a numeric `conversationId` and the numeric `chatId` or `projectId`. Preparation takes an `editingSource` with the saved revision and entry point, plus the selected `paths`. `update(artifact_id, data)` accepts `name`, `description`, and `activityConversationId`.
+
+## Conversation Plans
+
+Use `conversation.plans` on a loaded Chat or Project conversation, or `agent.conversation_plans(conversation_id)` on an Agent. `current()` returns `None` when no Plan exists. Read a specific Plan or message part with `get(plan_id, revision=revision_id)` or `source(message_id, part_id)`. Create with `create({"title": title, "content": markdown})` and revise with `revise(plan_id, {"revision": revision_id, "content": markdown})`.
+
+To acknowledge Agent conversation history, load it with `agent.messages(conversation_id)` and pass that response's `meta["readObservedAt"]` as `observed_at` in `agent.mark_conversation_read(conversation_id, through_message_id=message_id, observed_at=observed_at)`. Reuse the timestamp from that history response so a later mark-unread action is preserved. Use `0` for an empty conversation.
+
+For a Chat, use `workspace.chats.conversation(chat_id)` or `client.workspaces.reference(workspace_id).chats.conversation(chat_id)`. Load history with `conversation.messages.list()` and call `conversation.mark_read(through_message_id=message_id, observed_at=history["meta"]["readObservedAt"])`.
+
 ## Resources and inputs
 
 Both clients have matching resource methods. Async I/O methods must be awaited; resource properties and `domains.records(id)` are immediate. Streams have their own context managers.
@@ -60,7 +92,7 @@ Both clients have matching resource methods. Async I/O methods must be awaited; 
 
 For an application Project, pass `resources` with numeric `cpu`, `memoryGiB`, and `storageGiB` fields plus the current `expectedVersionId` to `project.sandbox.configure(data, idempotency_key=key)`. The Server validates each field and reports its limits when a value is unsupported. Save resources separately from services and network; reuse the same key after an uncertain resize response. The platform applies the resources and manages Sandbox lifecycle automatically. Credentials use their private flow. Await both methods in the async client.
 
-`client.templates.list(kind="project", view="discover")` uses anonymous public discovery. `view="following"` requires an API key and `workspace="WORKSPACE_UUID"`; the SDK sends that value as the Workspace header and keeps it out of the query string. The async client uses the same inputs.
+`client.templates.list(kind="all", view="discover")` uses anonymous public discovery across Chat, Agent, and Project templates. The default kind is `"project"`. `view="following"` requires an API key and `workspace="WORKSPACE_UUID"`; the SDK sends that value as the Workspace header and keeps it out of the query string. The async client uses the same inputs.
 
 Methods and keyword arguments use Python names: `governance`, `page_size`, `expected_revision`, `timeout_ms`, and `on_activity`. `source.import_()` uses a trailing underscore because `import` is a Python keyword. Payload dictionaries, response attributes, snapshots, and page metadata retain Server field names such as `expectedRevision`, `projectId`, and `hasMore`. Arbitrary nested data is never renamed.
 

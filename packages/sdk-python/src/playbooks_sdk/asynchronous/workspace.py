@@ -2,6 +2,7 @@ from typing import Any, Literal, Self, cast
 from urllib.parse import quote
 
 from playbooks_sdk.asynchronous.agents import Agents
+from playbooks_sdk.asynchronous.content import Artifacts, Sources
 from playbooks_sdk.asynchronous.core import (
     EditableCollection,
     Endpoint,
@@ -12,7 +13,13 @@ from playbooks_sdk.asynchronous.core import (
 )
 from playbooks_sdk.asynchronous.files import Files
 from playbooks_sdk.asynchronous.inbox import Inbox
-from playbooks_sdk.asynchronous.operators import Conversations, Runs
+from playbooks_sdk.asynchronous.operators import (
+    ChatConversations,
+    Conversation,
+    ConversationPlans,
+    Conversations,
+    Runs,
+)
 from playbooks_sdk.asynchronous.project import Projects
 from playbooks_sdk.asynchronous.resource_sharing import ResourceSharing
 from playbooks_sdk.asynchronous.sites import Sites
@@ -22,24 +29,33 @@ from playbooks_sdk.resource import ApiResponse, Data, Identifier, Resource, iden
 from playbooks_sdk.transport import AsyncTransport as Transport
 
 
-class ConversationPlans(Endpoint):
-    async def current(self) -> Any:
-        return await self._get(f"{self._path}/current")
-
-    async def get(self, id: Identifier, revision: str | None = None) -> Any:
-        return await self._get(f"{self._path}/{identifier(id)}", {"revision": revision})
-
-    async def create(self, data: Data) -> Any:
-        return await self._action(self._path, "POST", data)
-
-    async def revise(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}", "PUT", data)
-
-    async def save(self, id: Identifier, data: Data) -> Any:
-        return await self._action(f"{self._path}/{identifier(id)}/save", "POST", data)
-
-
 class Chats(Listing):
+    async def conversation(self, id: Identifier) -> Conversation:
+        chat: Data = (await self.get(id)).to_dict()
+        workspace = self._transport.config.workspace
+        owner = chat.get("workspace")
+        conversation = chat.get("conversation")
+        if (
+            not workspace
+            or chat.get("uuid") != str(id)
+            or not isinstance(owner, dict)
+            or owner.get("uuid") != workspace
+            or type(chat.get("id")) is not int
+            or not isinstance(conversation, dict)
+            or conversation.get("chatId") != chat.get("id")
+            or type(conversation.get("id")) is not int
+            or conversation.get("id") != chat.get("conversationId")
+            or not isinstance(conversation.get("uuid"), str)
+        ):
+            raise PlaybooksError(403, "The conversation does not belong to the requested Chat.")
+        return Conversation(self._transport, conversation, False)
+
+    def sources(self, id: Identifier) -> Sources:
+        return Sources(self._transport, f"{self._path}/{identifier(id)}/sources")
+
+    def artifacts(self, id: Identifier) -> Artifacts:
+        return Artifacts(self._transport, f"{self._path}/{identifier(id)}/artifacts")
+
     async def template_setup(self, id: Identifier) -> Any:
         return await self._get(f"{self._path}/{identifier(id)}/template-setup")
 
@@ -148,6 +164,18 @@ class Templates(EditableCollection):
         if notes is not None:
             data["notes"] = notes
         return await self._action(f"{path}/publish", "POST", data)
+
+    async def unpublish(self, id: Identifier) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/unpublish", "POST", {})
+
+    async def archive(self, id: Identifier) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/archive", "POST", {})
+
+    async def unarchive(self, id: Identifier) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}/unarchive", "POST", {})
+
+    async def delete(self, id: Identifier) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}", "DELETE", {})
 
     async def remix(self, id: Identifier, data: Data) -> Any:
         return await self._action(f"/explore/templates/{identifier(id)}/remix", "POST", data)
@@ -408,6 +436,10 @@ class WorkspaceReference:
     @property
     def chats(self) -> Chats:
         return Chats(self._transport, "/chats")
+
+    @property
+    def conversations(self) -> ChatConversations:
+        return ChatConversations(self._transport, "/conversations")
 
     def resource_sharing(self, kind: str, id: Identifier) -> ResourceSharing:
         return ResourceSharing(self._transport, kind, id)  # type: ignore[arg-type]

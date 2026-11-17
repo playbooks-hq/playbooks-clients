@@ -16,8 +16,11 @@ import {
 	templates,
 	workspace,
 } from 'src/commands';
+import { artifactOperation, contentOwners, sourceOperation } from 'src/commands/content';
 import { resourceAccess, sharedResources } from 'src/commands/resource-access';
 import { subagentOperation } from 'src/commands/subagent';
+import { readChatConversation } from 'src/commands/workspace/chats';
+import { templateLifecycle } from 'src/commands/workspace/templates/lifecycle';
 import { CliError } from 'src/services/cli-client';
 import { run } from 'src/utils/cli-command';
 import { reportError } from 'src/utils/cli-output';
@@ -64,6 +67,163 @@ for (const [name, description, operation] of [
 		command.option('--data', 'JSON object or - for stdin.');
 	if (!['members', 'invitations'].includes(operation)) command.option('--yes', 'Confirm this change.', false);
 	command.action(run(resourceAccess(operation)));
+}
+
+for (const { owner, command: prefix } of contentOwners) {
+	const sourceOperations = [
+		['list', 'List supplied Sources.'],
+		['get', 'Get one exact Source version.'],
+		['preview', 'Return preview bytes as Base64.'],
+		['download', 'Return exact Source bytes as Base64.'],
+		['copy-target', 'Review the current File system destination and revision.'],
+		['copy-to-file-system', 'Copy the exact Source version to a new path in the reviewed File system.'],
+		...(owner === 'agent'
+			? [
+					['rename', 'Rename an Agent Source using its expected current name.'],
+					['duplicate', 'Duplicate an Agent Source using a stable request ID.'],
+					['delete', 'Delete an Agent Source using its expected current name.'],
+				]
+			: []),
+	] as const;
+	for (const [operation, description] of sourceOperations) {
+		const name =
+			operation === 'list'
+				? `${prefix} sources`
+				: operation === 'get' && owner !== 'project'
+					? `${prefix} source`
+					: `${prefix} source ${operation}`;
+		const command = cli
+			.command(name)
+			.describe(description)
+			.option('--workspace', 'Owning Workspace UUID; defaults to saved workspace.')
+			.option(`--${owner}`, 'Owning resource UUID.');
+		if (operation === 'list')
+			command
+				.option('--page', 'Zero-based page.')
+				.option('--query', 'Search Source names.')
+				.option('--type', 'Source type: images, documents, data, or email.');
+		else
+			command
+				.option('--source', 'Source ID.')
+				.option('--version', 'Exact Source version.')
+				.option('--conversation', 'Source conversation UUID.');
+		if (operation === 'copy-to-file-system') {
+			const branch = owner === 'project' ? ', expectedBranchId from copy-target' : '';
+			command.option('--data', `JSON revision, path${branch}, and optional activityConversationId, or - for stdin.`);
+		} else if (['rename', 'duplicate', 'delete'].includes(operation))
+			command.option(
+				'--data',
+				'JSON expectedName and optional activityConversationId. Rename and duplicate also use name, and duplicate uses requestId.',
+			);
+		if (operation === 'delete') command.option('--yes', 'Confirm Source deletion.', false);
+		command.action(run(sourceOperation(owner, operation)));
+	}
+
+	const artifactOperations = [
+		['list', 'List retained Artifacts.'],
+		['get', 'Inspect an Artifact and its selected version.'],
+		['versions', 'List retained Artifact versions.'],
+		['export', 'Return saved Artifact bytes as Base64.'],
+		['prepare', 'Prepare an Artifact from explicitly selected saved content.'],
+		['update', 'Update supported Artifact metadata.'],
+		...(owner === 'agent'
+			? [['delete', 'Delete a retained Agent Artifact.']]
+			: [
+					['open', 'Request access to the selected Artifact version.'],
+					['preview', 'Return preview HTML for the selected Artifact version.'],
+					['download', 'Return saved Artifact bytes as Base64.'],
+					['register', 'Register an Artifact from a reviewed origin and exact editing source or Source receipt.'],
+				]),
+	] as const;
+	for (const [operation, description] of artifactOperations) {
+		const name =
+			operation === 'list'
+				? `${prefix} artifacts`
+				: operation === 'get'
+					? `${prefix} artifact`
+					: `${prefix} artifact ${operation}`;
+		const command = cli
+			.command(name)
+			.describe(description)
+			.option('--workspace', 'Owning Workspace UUID; defaults to saved workspace.')
+			.option(`--${owner}`, 'Owning resource UUID.');
+		if (['list', 'versions'].includes(operation)) command.option('--page', 'Zero-based page.');
+		if (operation === 'list') command.option('--query', 'Search Artifact names.');
+		if (!['list', 'register', 'prepare'].includes(operation)) command.option('--artifact', 'Artifact ID.');
+		if (['get', 'open', 'preview', 'export', 'download'].includes(operation))
+			command.option('--version', 'Exact Artifact version ID; defaults to current.');
+		if (['register', 'prepare', 'update', 'delete'].includes(operation))
+			command.option('--data', 'Reviewed JSON for this Artifact operation, or - for stdin.');
+		if (operation === 'delete') command.option('--yes', 'Confirm Artifact deletion.', false);
+		command.action(run(artifactOperation(owner, operation)));
+	}
+}
+
+for (const operation of ['read', 'unread'] as const) {
+	const command = cli
+		.command(`agent conversation ${operation}`)
+		.describe(`Mark the selected Agent conversation ${operation}.`)
+		.option('--workspace', 'Owning Workspace UUID; defaults to saved workspace.')
+		.option('--agent', 'Agent UUID.')
+		.option('--conversation', 'Conversation UUID.');
+	if (operation === 'read')
+		command
+			.option('--through-message-id', 'Last reviewed message ID; use zero for empty history.')
+			.option('--observed-at', 'readObservedAt from the loaded conversation history.');
+	command.action(run(options => agent.readConversation(options, operation)));
+}
+
+cli
+	.command('workspace chat conversation')
+	.describe('Chat conversation commands: workspace chat conversation read.')
+	.action(() => cli.help('workspace chat conversation'));
+
+cli
+	.command('workspace chat conversation read')
+	.describe('Mark the selected Chat conversation read through the reviewed message.')
+	.option('--workspace', 'Owning Workspace UUID; defaults to saved workspace.')
+	.option('--chat', 'Chat UUID.')
+	.option('--conversation', 'Conversation UUID from the reviewed Chat history.')
+	.option('--through-message-id', 'Last reviewed message ID; use zero for empty history.')
+	.option('--observed-at', 'readObservedAt from the loaded conversation history.')
+	.action(run(readChatConversation));
+
+cli
+	.command('agent plan')
+	.describe('Agent Plan commands: get, source, create, or revise.')
+	.action(() => cli.help('agent plan'));
+
+for (const [operation, description] of [
+	['get', 'Read a conversation-owned Agent Plan.'],
+	['source', 'Read Plan source from a conversation message part.'],
+	['create', 'Create an Agent conversation Plan.'],
+	['revise', 'Revise an Agent conversation Plan using its expected revision.'],
+] as const) {
+	const command = cli
+		.command(`agent plan ${operation}`)
+		.describe(description)
+		.option('--workspace', 'Owning Workspace UUID; defaults to saved workspace.')
+		.option('--agent', 'Agent UUID.')
+		.option('--conversation', 'Conversation UUID.');
+	if (operation === 'get' || operation === 'revise')
+		command.option('--plan', 'Plan UUID; omit on get for the current Plan.');
+	if (operation === 'get') command.option('--revision', 'Exact Plan revision ID.');
+	if (operation === 'source')
+		command.option('--message', 'Source message ID.').option('--part', 'Exact message part ID.');
+	if (operation === 'create') command.option('--data', 'JSON title and content, or - for stdin.');
+	if (operation === 'revise') command.option('--data', 'JSON expected revision and content, or - for stdin.');
+	command.action(run(agent.conversationPlan(operation)));
+}
+
+for (const operation of ['unpublish', 'archive', 'restore', 'delete'] as const) {
+	cli
+		.command(`workspace template ${operation}`)
+		.describe(`${operation} an owned Template.`)
+		.option('--template', 'Template identifier.')
+		.option('--workspace', 'Owning Workspace UUID; defaults to saved workspace.')
+		.option('--yes', 'Confirm the Template action.', false)
+		.option('--data', 'Optional empty JSON object or - for stdin.')
+		.action(run(templateLifecycle(operation)));
 }
 
 // Managed Agents
@@ -887,7 +1047,7 @@ cli
 	.option('--workspace', 'Workspace UUID for Following; defaults to the selected Workspace.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'One active category UUID from the returned facets.')
-	.option('--kind', 'Template kind: project, agent, or chat.')
+	.option('--kind', 'Template kind: all, project, agent, or chat.')
 	.example('templates --kind project --view discover')
 	.example('templates --kind agent')
 	.example('templates --kind chat')
@@ -1069,17 +1229,20 @@ for (const operation of ['get', 'download', 'replace', 'preview', 'save'])
 		.option('--output', 'Destination ZIP path for download; existing files are never overwritten.')
 		.option('--data', 'JSON revision and operation input or - for stdin; saves require a stable requestId.')
 		.action(run(options => workspace.fileSystem(options, operation)));
-for (const operation of ['get', 'create', 'revise', 'save'])
-	cli
+for (const operation of ['get', 'create', 'revise'] as const) {
+	const command = cli
 		.command(`workspace plan ${operation}`)
-		.describe('Read or edit a conversation Plan; never grants execution approval.')
+		.describe('Read or edit a conversation Plan.')
 		.option('--workspace', 'Explicit Workspace UUID.')
 		.option('--project', 'Owning Project UUID when applicable.')
-		.option('--conversation', 'Conversation UUID.')
-		.option('--plan', 'Plan UUID; omit to read the current Plan.')
-		.option('--revision', 'Exact revision to read.')
-		.option('--data', 'JSON content, revision or save requestId, or - for stdin.')
-		.action(run(options => workspace.conversationPlans(options, operation)));
+		.option('--chat', 'Owning Chat UUID when applicable.')
+		.option('--conversation', 'Conversation UUID.');
+	if (operation !== 'create') command.option('--plan', 'Plan UUID; omit on get for the current Plan.');
+	if (operation === 'get') command.option('--revision', 'Exact revision to read.');
+	if (operation === 'create') command.option('--data', 'JSON title and content, or - for stdin.');
+	if (operation === 'revise') command.option('--data', 'JSON expected revision and content, or - for stdin.');
+	command.action(run(options => workspace.conversationPlans(options, operation)));
+}
 
 cli
 	.command('workspace chat-schedules')
@@ -2318,6 +2481,7 @@ cli
 	.describe('Get an explicitly selected conversation.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--conversation', 'Conversation UUID; required.')
+	.option('--chat', 'Owning Chat UUID; required when the key omits Workspace ownership.')
 	.action(run(workspace.getConversation));
 
 cli
@@ -2325,6 +2489,7 @@ cli
 	.describe('List recent operator messages.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--conversation', 'Conversation UUID; required.')
+	.option('--chat', 'Owning Chat UUID; required when the key omits Workspace ownership.')
 	.option('--cursor', 'Continuation cursor from meta.nextCursor.')
 	.option('--page-size', 'Input messages per window, 1-100; output messages are included.')
 	.action(run(workspace.listMessages, outputMessages));
@@ -2334,6 +2499,7 @@ cli
 	.describe('Get an operator message and available run references.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--conversation', 'Conversation UUID; required.')
+	.option('--chat', 'Owning Chat UUID; required when the key omits Workspace ownership.')
 	.option('--message', 'Numeric message identifier.')
 	.action(run(workspace.getMessage));
 
@@ -2342,6 +2508,7 @@ cli
 	.describe('Edit a pending queued message before execution begins.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--conversation', 'Conversation UUID; required.')
+	.option('--chat', 'Owning Chat UUID; required when the key omits Workspace ownership.')
 	.option('--message', 'Numeric message identifier.')
 	.option('--data', 'JSON object or - for stdin: text, queuedMode, queuedModelId.')
 	.action(run(workspace.updateMessage));
@@ -2351,6 +2518,7 @@ cli
 	.describe('Submit a message; may start or steer execution and incur usage.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--conversation', 'Conversation UUID; required.')
+	.option('--chat', 'Owning Chat UUID; required when the key omits Workspace ownership.')
 	.option('--data', 'JSON object or - for stdin; reuse idempotencyKey when retrying identical input.')
 	.option('--yes', 'Confirm this operation.', false)
 	.example('workspace message create --data \'{"text":"Review the current setup","mode":"plan"}\' --yes')
@@ -2361,6 +2529,7 @@ cli
 	.describe('Cancel a queued message; retains message history.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--conversation', 'Conversation UUID; required.')
+	.option('--chat', 'Owning Chat UUID; required when the key omits Workspace ownership.')
 	.option('--message', 'Numeric message identifier.')
 	.option('--yes', 'Confirm this operation.', false)
 	.action(run(workspace.deleteMessage));
@@ -2370,6 +2539,7 @@ cli
 	.describe('List operator runs and attempts.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
 	.option('--conversation', 'Conversation UUID; required.')
+	.option('--chat', 'Owning Chat UUID; required when the key omits Workspace ownership.')
 	.option('--message', 'Filter by numeric input message identifier.')
 	.option('--page', 'Zero-based page.')
 	.option('--page-size', 'Records per page, 1-100.')

@@ -17,20 +17,31 @@ export const agentTools: ToolDefinition[] = [
 				...(!['list', 'create'].includes(operation)
 					? { subagent: { flag: 'subagent', description: 'Sub-agent UUID.', required: true } }
 					: {}),
-				...(['create', 'update', 'delete'].includes(operation)
-					? {
-							data: {
-								flag: 'data',
-								description: 'Reviewed JSON input including revision for updates or deletion.',
-								required: true,
-							},
-						}
-					: {}),
 				...(operation === 'cancel-task'
 					? { task: { flag: 'task', description: 'Task identifier from the task list.', required: true } }
 					: {}),
-				...(operation === 'delete' ? { yes: { flag: 'yes', description: 'Confirm reviewed deletion.' } } : {}),
+				...(operation === 'delete'
+					? { confirm: { flag: 'yes', kind: 'boolean', description: 'Confirm reviewed deletion.' } }
+					: {}),
 			},
+			...(operation === 'delete'
+				? { dataFields: ['revision'] }
+				: ['create', 'update'].includes(operation)
+					? {
+							dataFields: [
+								...(operation === 'create' ? ['idempotencyKey'] : ['revision', 'action']),
+								'name',
+								'description',
+								'instructions',
+								'modelId',
+								'deliveryMode',
+								'skillIds',
+								'resourceSelection',
+								'agentScope',
+								...(operation === 'create' ? ['conversationId'] : []),
+							],
+						}
+					: {}),
 		}),
 	),
 	{
@@ -481,7 +492,7 @@ export const agentTools: ToolDefinition[] = [
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
-			confirm: { flag: 'yes', description: 'Confirm the consequential action.' },
+			confirm: { flag: 'yes', kind: 'boolean', description: 'Confirm the consequential action.' },
 		},
 		dataFields: ['revision'],
 	},
@@ -532,7 +543,7 @@ export const agentTools: ToolDefinition[] = [
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
-			confirm: { flag: 'yes', description: 'Confirm the consequential action.' },
+			confirm: { flag: 'yes', kind: 'boolean', description: 'Confirm the consequential action.' },
 		},
 		dataFields: ['instruction', 'idempotencyKey'],
 	},
@@ -750,7 +761,7 @@ export const agentTools: ToolDefinition[] = [
 		options: {
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
-			confirm: { flag: 'yes', description: 'Confirm the capability change.' },
+			confirm: { flag: 'yes', kind: 'boolean', description: 'Confirm the capability change.' },
 		},
 		dataFields: ['name', 'capabilities'],
 	},
@@ -764,7 +775,7 @@ export const agentTools: ToolDefinition[] = [
 			workspace: { flag: 'workspace', description: 'Explicit authorized Workspace UUID.', required: true },
 			agent: { flag: 'agent', description: 'Agent identifier.', required: true },
 			credential: { flag: 'credential', description: 'Credential identifier.', required: true },
-			confirm: { flag: 'yes', description: 'Confirm the capability change.' },
+			confirm: { flag: 'yes', kind: 'boolean', description: 'Confirm the capability change.' },
 		},
 	},
 	{

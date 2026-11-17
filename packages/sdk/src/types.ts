@@ -342,6 +342,7 @@ export interface TemplateVersionData extends RecordData {
 
 export interface TemplateData extends RecordData {
 	kind?: TemplateKind;
+	remixable?: boolean;
 	description?: string | null;
 	tagline?: string | null;
 	liveUrl?: string | null;
@@ -388,6 +389,7 @@ export interface ChatComposerOverrides {
 export interface ChatData extends RecordData {
 	id: number;
 	uuid: string;
+	workspace?: { uuid: string; name: string } | null;
 	ownerUserId: number;
 	creator?: { id: number; uuid: string; name: string } | null;
 	revision: number;
@@ -415,7 +417,13 @@ export interface ScheduleData extends Omit<RecordData, keyof ScheduleInput>, Sch
 	configurationIssue?: string | null;
 	nextOccurrenceAt?: string | null;
 }
+export interface MarkReadInput {
+	throughMessageId: number;
+	observedAt?: string;
+}
 export interface ConversationData extends RecordData {
+	chatId?: number | null;
+	source?: { uuid?: string };
 	workspaceId?: number;
 	projectId?: number | null;
 	latestBranchId?: number | null;
@@ -457,7 +465,7 @@ export interface ExploreTemplateListOptions {
 	search?: string;
 	query?: string;
 	include?: string;
-	kind?: TemplateKind;
+	kind?: TemplateKind | 'all';
 	view?: 'discover' | 'popular' | 'recent' | 'following';
 	category?: string;
 	/** Required for Following; sent as the Workspace header, never a query parameter. */

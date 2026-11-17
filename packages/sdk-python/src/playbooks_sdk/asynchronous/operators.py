@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
@@ -110,15 +111,41 @@ class ConversationBranches(Endpoint):
         )
 
 
+class ConversationPlans(Endpoint):
+    async def current(self) -> Resource | None:
+        result: Resource | None = await self._get(f"{self._path}/current")
+        return result
+
+    async def get(self, id: Identifier, revision: str | None = None) -> Any:
+        return await self._get(f"{self._path}/{identifier(id)}", {"revision": revision})
+
+    async def create(self, data: Data) -> Any:
+        return await self._action(self._path, "POST", data)
+
+    async def revise(self, id: Identifier, data: Data) -> Any:
+        return await self._action(f"{self._path}/{identifier(id)}", "PUT", data)
+
+    async def source(self, message_id: Identifier, part_id: str) -> Any:
+        if part_id in ("", ".", ".."):
+            raise PlaybooksError(422, "Provide a valid message part identifier.")
+        return await self._get(
+            f"{self._path}/source/{identifier(message_id)}/{quote(part_id, safe='')}"
+        )
+
+
 class Conversation(Resource):
     _sandbox: bool
     _transport: Transport
     _path: str
+    _project_plan_path: str | None
 
-    def __init__(self, transport: Transport, data: Data, sandbox: bool) -> None:
+    def __init__(
+        self, transport: Transport, data: Data, sandbox: bool, project_plan_path: str | None = None
+    ) -> None:
         super().__init__(data)
         object.__setattr__(self, "_transport", transport)
         object.__setattr__(self, "_sandbox", sandbox)
+        object.__setattr__(self, "_project_plan_path", project_plan_path)
         object.__setattr__(self, "_path", f"/conversations/{identifier(data['uuid'])}")
 
     async def utility(self) -> Any:
@@ -138,19 +165,67 @@ class Conversation(Resource):
         return Messages(self._transport, f"{self._path}/messages", self.id, False)
 
     @property
+    def plans(self) -> ConversationPlans:
+        if self._sandbox and not self._project_plan_path:
+            raise PlaybooksError(422, "Use the Project scope to access this conversation Plan.")
+        root = self._project_plan_path or ""
+        return ConversationPlans(self._transport, f"{root}{self._path}/plans")
+
+    async def mark_read(self, *, through_message_id: int, observed_at: str | None = None) -> Any:
+        if self._sandbox:
+            raise PlaybooksError(422, "This operation requires a Chat conversation.")
+        if type(through_message_id) is not int or not 0 <= through_message_id <= 9007199254740991:
+            raise PlaybooksError(422, "Provide a nonnegative message ID.")
+        data: Data = {"action": "read", "messageId": through_message_id}
+        if observed_at is not None:
+            data["observedAt"] = observed_at
+        return await Endpoint(self._transport, self._path)._action(self._path, "PUT", data)
+
+    @property
     def branches(self) -> ConversationBranches:
         return ConversationBranches(
             self._transport, f"{self._path}/branches", self.id, self._sandbox
         )
 
 
+class ChatConversations(Endpoint):
+    async def get(self, id: Identifier) -> Conversation:
+        data: Data = (
+            await self._transport.request(f"{self._path}/{identifier(id)}", read_only=False)
+        )["data"]
+        source = data.get("source")
+        workspace = self._transport.config.workspace
+        if (
+            not workspace
+            or data.get("uuid") != str(id)
+            or data.get("projectId")
+            or not isinstance(source, dict)
+            or source.get("uuid") != workspace
+        ):
+            raise PlaybooksError(
+                403,
+                "The conversation could not be verified for this Workspace. "
+                "Use chats.conversation() with its Chat ID.",
+            )
+        return Conversation(self._transport, data, False)
+
+
 class Conversations(Endpoint):
     def __init__(
-        self, transport: Transport, path: str, owner_id: Identifier, project: bool
+        self,
+        transport: Transport,
+        path: str,
+        owner_id: Identifier,
+        project: bool,
+        project_plan_path: str | None = None,
     ) -> None:
         super().__init__(transport, path)
         self._owner_id = owner_id
         self._project = project
+        self._project_plan_path = project_plan_path
+
+    def _wrap(self, data: Data) -> Conversation:
+        return Conversation(self._transport, data, self._project, self._project_plan_path)
 
     async def _fetch(self, path: str, selected: Identifier | None = None) -> Conversation:
         data = (await self._transport.request(path, read_only=False))["data"]
@@ -163,7 +238,7 @@ class Conversations(Endpoint):
             raise PlaybooksError(403, "The conversation does not belong to the requested Operator.")
         if selected is not None and data.get("uuid") != str(selected):
             raise PlaybooksError(403, "The conversation does not match the requested identifier.")
-        return Conversation(self._transport, data, self._project)
+        return self._wrap(data)
 
     async def get(self, id: Identifier) -> Conversation:
         return await self._fetch(f"/conversations/{identifier(id)}", id)
@@ -172,13 +247,13 @@ class Conversations(Endpoint):
 class ProjectConversations(Conversations):
     async def create(self, data: Data) -> Conversation:
         result = await self._action(f"{self._path}/conversations", "POST", data)
-        return Conversation(self._transport, result, True)
+        return self._wrap(result)
 
     async def fork(self, id: Identifier, data: Data) -> Conversation:
         result = await self._action(
             f"{self._path}/conversations/{identifier(id)}/fork", "POST", data
         )
-        return Conversation(self._transport, result, True)
+        return self._wrap(result)
 
     async def list(self) -> ApiResponse:
         response: ApiResponse = await self._transport.request(
@@ -186,7 +261,7 @@ class ProjectConversations(Conversations):
         )
         return {
             **response,
-            "data": [Conversation(self._transport, data, True) for data in response["data"]],
+            "data": [self._wrap(data) for data in response["data"]],
         }
 
 
