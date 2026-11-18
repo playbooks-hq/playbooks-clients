@@ -66,3 +66,6 @@ export { CustomerArtifacts } from 'src/customer-artifacts.js';
 export type * from 'src/customer-artifacts.js';
 export { Sources } from 'src/sources.js';
 export type * from 'src/sources.js';
+
+export { Workflows } from 'src/workflows.js';
+export type * from 'src/workflows.js';

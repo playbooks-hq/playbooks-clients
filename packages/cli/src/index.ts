@@ -21,6 +21,7 @@ import { resourceAccess, sharedResources } from 'src/commands/resource-access';
 import { subagentOperation } from 'src/commands/subagent';
 import { readChatConversation } from 'src/commands/workspace/chats';
 import { templateLifecycle } from 'src/commands/workspace/templates/lifecycle';
+import { createWorkflowDraft, getWorkflow, listWorkflows, updateWorkflowDraft } from 'src/commands/workspace/workflows';
 import { CliError } from 'src/services/cli-client';
 import { run } from 'src/utils/cli-command';
 import { reportError } from 'src/utils/cli-output';
@@ -1242,6 +1243,22 @@ for (const operation of ['get', 'create', 'revise'] as const) {
 	if (operation === 'create') command.option('--data', 'JSON title and content, or - for stdin.');
 	if (operation === 'revise') command.option('--data', 'JSON expected revision and content, or - for stdin.');
 	command.action(run(options => workspace.conversationPlans(options, operation)));
+}
+
+for (const [name, description, handler] of [
+	['workflows', 'List accessible Workflow drafts.', listWorkflows],
+	['workflow', 'Read a Workflow draft and revision.', getWorkflow],
+	['workflow create', 'Save a private Workflow draft for canvas review.', createWorkflowDraft],
+	['workflow update', 'Edit a private inactive Workflow using its reviewed revision.', updateWorkflowDraft],
+] as const) {
+	const command = cli
+		.command(`workspace ${name}`)
+		.describe(description)
+		.option('--workspace', 'Owning Workspace UUID; defaults to saved workspace.');
+	if (handler === getWorkflow || handler === updateWorkflowDraft) command.option('--workflow', 'Workflow UUID.');
+	if (handler === createWorkflowDraft || handler === updateWorkflowDraft)
+		command.option('--data', 'Reviewed JSON draft, or - for stdin.');
+	command.action(run(handler));
 }
 
 cli

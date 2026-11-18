@@ -9,6 +9,7 @@ import { Transport } from 'src/transport.js';
 import type { ApiResponse, SharedResourceListOptions, SharedResourcePage } from 'src/types.js';
 import type { ExploreTemplateListOptions, TemplateData } from 'src/types.js';
 import type { ClientOptions, Identifier, ListOptions, WorkspaceData, WorkspaceUpdate } from 'src/types.js';
+import { Workflows } from 'src/workflows.js';
 import { chats, chatTemplates, updateWorkspace, Workspace } from 'src/workspace.js';
 
 export class PlaybooksSDK {
@@ -48,6 +49,7 @@ export class PlaybooksSDK {
 				return {
 					agents: new Agents(transport),
 					projects: new Projects(transport),
+					workflows: new Workflows(transport),
 					chats: chats(transport),
 					conversations: chatConversations(transport, String(id)),
 					runs: new Runs(transport, '/chats/runs'),

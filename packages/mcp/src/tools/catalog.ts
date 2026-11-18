@@ -23,6 +23,7 @@ import { workspaceInboxTools } from 'src/tools/workspace-inbox.js';
 import { workspaceMembersTools } from 'src/tools/workspace-members.js';
 import { workspaceOperatorTools } from 'src/tools/workspace-operator.js';
 import { workspaceSchedulesTools } from 'src/tools/workspace-schedules.js';
+import { workspaceWorkflowTools } from 'src/tools/workspace-workflows.js';
 
 export const catalog: ToolDefinition[] = (
 	[
@@ -33,6 +34,7 @@ export const catalog: ToolDefinition[] = (
 		...discoveryTools,
 		...workspaceConfigurationTools,
 		...workspaceSchedulesTools,
+		...workspaceWorkflowTools,
 		...workspaceChatsTools,
 		...localTools,
 		...templatesTools,

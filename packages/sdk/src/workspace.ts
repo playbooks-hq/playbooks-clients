@@ -46,6 +46,7 @@ import type {
 	WorkspaceData,
 	WorkspaceUpdate,
 } from 'src/types.js';
+import { Workflows } from 'src/workflows.js';
 
 export interface Workspace extends Readonly<WorkspaceData> {
 	readonly uuid: string;
@@ -73,6 +74,9 @@ export class Workspace extends Resource<WorkspaceData> {
 	}
 	get projects() {
 		return new Projects(this.#transport);
+	}
+	get workflows() {
+		return new Workflows(this.#transport);
 	}
 	get sites() {
 		return new Sites(this.#transport);
