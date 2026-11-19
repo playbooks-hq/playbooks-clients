@@ -23,7 +23,10 @@
     "lint:fix": "turbo run lint:fix",
     "format:fix": "turbo run format:fix",
     "clean": "pnpm lint:fix",
-    "commit": "scripts/commit.sh"
+    "commit": "scripts/commit.sh",
+    "deploy": "bash scripts/deploy.sh staging",
+    "deploy:staging": "bash scripts/deploy.sh staging",
+    "deploy:production": "bash scripts/deploy.sh production"
   },
   "devDependencies": {
     "turbo": "2.9.3",

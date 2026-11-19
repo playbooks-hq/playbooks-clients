@@ -9,7 +9,12 @@ const step = z.strictObject({
 	id: namedResult,
 	title: z.string().min(1).max(120).optional(),
 	position: z.strictObject({ x: z.number(), y: z.number() }).optional(),
-	dependsOn: z.array(namedResult).max(49).describe('Required predecessor IDs.'),
+	dependsOn: z
+		.array(namedResult)
+		.max(49)
+		.describe(
+			'Required predecessor IDs. Direct Chat, Agent, or Project task predecessors can supply saved text to an authorized destination.',
+		),
 	branches: z
 		.record(namedResult, z.boolean())
 		.describe('Map Condition predecessor IDs in dependsOn to the outcome required to take this branch.')
@@ -74,6 +79,15 @@ const definition = z.strictObject({
 				}),
 				operator.extend({
 					type: z.literal('chat'),
+					modelId: z
+						.string()
+						.min(1)
+						.max(150)
+						.describe('Optional public Responses model ID for the task Chat.')
+						.optional(),
+					artifactOutput: namedResult
+						.describe('Result key in outputs for the one exact Artifact checkpoint saved by the task.')
+						.optional(),
 					creditBudget: z
 						.number()
 						.min(0)
@@ -117,7 +131,11 @@ const definition = z.strictObject({
 						.describe('Compare a saved result to a typed value.')
 						.optional(),
 				}),
-				targetedOperator.extend({ type: z.literal('agent') }),
+				operator.extend({
+					type: z.literal('agent'),
+					targetId,
+					inputs: step.shape.inputs.describe('Explicit bindings to upstream Chat Artifact results only.'),
+				}),
 				targetedOperator.extend({ type: z.literal('project') }),
 				step.extend({ type: z.literal('approval'), instructions }),
 				step.extend({ type: z.literal('join') }),
@@ -126,6 +144,11 @@ const definition = z.strictObject({
 		)
 		.min(1)
 		.max(50),
+	manualInputs: z
+		.array(z.strictObject({ name: namedResult, label: z.string().min(1).max(120) }))
+		.max(10)
+		.describe('Required text fields for a manual run. A trigger result is available for each field.')
+		.optional(),
 	notes: z
 		.array(
 			z.strictObject({

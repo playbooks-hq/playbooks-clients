@@ -49,15 +49,24 @@ export type WorkflowStep = {
 	id: string;
 	title?: string;
 	position?: { x: number; y: number };
+	/** Direct Chat, Agent, or Project predecessors can supply saved task text to an authorized destination. */
 	dependsOn: string[];
 	branches?: Record<string, boolean>;
 	outputs?: string[];
 } & (
 	| { type: 'trigger'; schedule?: WorkflowSchedule }
-	| ({ type: 'chat'; sources?: WorkflowSource[]; creditBudget?: number } & WorkflowOperator & WorkflowInputs)
+	| ({
+			type: 'chat';
+			sources?: WorkflowSource[];
+			creditBudget?: number;
+			artifactOutput?: string;
+			modelId?: string;
+	  } & WorkflowOperator &
+			WorkflowInputs)
 	| ({ type: 'llm'; instructions?: string; systemInstructions?: string; modelId?: string } & WorkflowInputs)
 	| ({ type: 'condition'; condition?: WorkflowCondition } & WorkflowInputs)
-	| ({ type: 'agent' | 'project'; targetId?: string } & WorkflowOperator)
+	| ({ type: 'agent'; targetId?: string } & WorkflowOperator & WorkflowInputs)
+	| ({ type: 'project'; targetId?: string } & WorkflowOperator)
 	| ({ type: 'approval' | 'output'; instructions?: string } & WorkflowInputs)
 	| ({ type: 'join' } & WorkflowInputs)
 );
@@ -71,6 +80,7 @@ export type WorkflowNote = {
 /** Definition for credential-scoped, private, inactive drafts. Workflow owners configure disclosure in the app. */
 export type WorkflowDefinition = {
 	steps: WorkflowStep[];
+	manualInputs?: { name: string; label: string }[];
 	notes?: WorkflowNote[];
 	limits: { maxParallelSteps: number; maxDurationMs: number };
 };
