@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
 				formats: ['es', 'cjs'],
 			},
 			rollupOptions: {
-				external: [/^@playbooks\//],
+				external: [/^@playbooks\//, 'fs-native-extensions'],
 				output: { banner: '#!/usr/bin/env node' },
 			},
 		},

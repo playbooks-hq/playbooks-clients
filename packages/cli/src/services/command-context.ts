@@ -5,11 +5,12 @@ import { sdkEnvelope } from 'src/utils/sdk-output';
 
 export const authenticated = async (options: any) => {
 	const store = new CliContext(options.config);
-	const token = await store.token();
-	if (!token) throw new CliError(401, 'Sign in with playbooks login or set PLAYBOOKS_TOKEN.');
+	const credential = await store.credential();
+	if (!credential?.token) throw new CliError(401, 'Sign in with playbooks login or set PLAYBOOKS_TOKEN.');
+	const { token, source: credentialSource } = credential;
 	if (/^pb_(sand|prod)_/.test(token))
 		throw new CliError(401, 'Application keys cannot authenticate the CLI. Use a developer API key.');
-	return { store, token, client: new CliClient(token) };
+	return { store, token, credentialSource, client: new CliClient(token) };
 };
 
 /** Select an explicit tenant for operation handles without requiring Workspace metadata access. */

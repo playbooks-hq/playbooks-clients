@@ -9,7 +9,7 @@ Use Playbooks Workspaces, Projects, Templates, and Operators from an MCP client.
 
 - Node.js 22.12 or newer.
 - A compatible `@playbooks/cli` from the same coordinated Clients release. Startup verifies the required CLI capabilities.
-- A scoped developer API key, configured through the CLI or supplied as `PLAYBOOKS_TOKEN` by your secret manager. Application API keys are not supported.
+- A Playbooks browser session saved by the CLI, or a scoped developer API key supplied through the CLI or as `PLAYBOOKS_TOKEN`. Application API keys are not supported.
 
 Authenticate outside the agent conversation:
 
@@ -19,7 +19,7 @@ playbooks status
 playbooks mcp install codex
 ```
 
-The installer also accepts `claude`, `cursor`, and `vscode`. Never put credentials in tool arguments or project references.
+Complete sign-in in your browser before starting MCP. The installer also accepts `claude`, `cursor`, and `vscode`. Never put credentials in tool arguments or project references.
 
 ## Configuration
 

@@ -46,14 +46,14 @@ The commit helper stops on any failure and does not switch branches. This reposi
 
 ## Local environment
 
-Copy `.env.example` to `.env` and set `PLAYBOOKS_TOKEN` to a developer API key for `PLAYBOOKS_API_URL`. Load it explicitly from the repository root:
+Copy `.env.example` to `.env` and configure the API origin. Use browser sign-in or set `PLAYBOOKS_TOKEN` to a scoped developer API key for that origin. Load the environment explicitly from the repository root.
 
 ```sh
 node --env-file=.env packages/cli/dist/index.cjs --help
 node --env-file=.env packages/mcp/dist/index.cjs
 ```
 
-CLI and MCP do not automatically load dotenv files. MCP passes its environment to the installed CLI; it needs no separate credential file. An empty token falls back to existing CLI login credentials, which must match the API origin. The SDK reads no environment files: pass `apiKey` and `baseUrl` explicitly in application code.
+CLI and MCP do not automatically load dotenv files. MCP passes its environment to the installed CLI; it needs no separate credential file. An empty token falls back to existing CLI credentials, which must match the API origin. Browser sign-in also requires the corresponding issuer. Set `PLAYBOOKS_AUTH_URL` for a custom issuer. The SDK reads no environment files: pass `apiKey` and `baseUrl` explicitly in application code.
 
 CLI build defaults live in `packages/cli/.env` and `packages/cli/.env.production`; use `packages/cli/.env.example` as the template. Vite production builds prefer the production file. Only public endpoint settings belong in `VITE_*` variables. Runtime `PLAYBOOKS_API_URL` overrides the compiled API endpoint. The compiled web domain controls browser-opening commands. Unused legacy `VITE_PORT` and `VITE_CLI_DOMAIN` settings are not needed.
 

@@ -15,7 +15,7 @@ npm install --global @playbooks/cli
 
 ## Connect
 
-Create a scoped developer API key in Playbooks Account settings, then enter it at the hidden prompt:
+Run `playbooks login` from an interactive terminal and sign in to Playbooks in a browser on the same computer.
 
 ```sh
 playbooks login
@@ -23,9 +23,9 @@ playbooks workspace use
 playbooks projects
 ```
 
-Browser sign-in is awaiting a dedicated Server/App CLI handoff. Application API keys cannot authenticate this CLI.
+Browser sign-in saves an automatically renewed CLI session in a credentials file beside the CLI config with owner-only permissions on Unix. `playbooks logout` revokes that session and clears the saved Workspace. `playbooks status` shows whether the CLI is using your browser session, a stored developer key, or an environment key.
 
-For automation, provide `PLAYBOOKS_TOKEN` through your secret manager. Alternatively, pipe a key to `login --token-stdin` to store it locally. Never put keys in command arguments or project references.
+For automation, provide `PLAYBOOKS_TOKEN` through your secret manager. Alternatively, pipe a key to `login --token-stdin` to store it locally. Use a scoped developer API key from Playbooks Account settings. Application API keys cannot authenticate the CLI. Never put keys in command arguments or project references.
 
 `workspace current` shows the saved workspace. `workspace clear` clears local selection without leaving membership or signing out. Commands never silently switch tenants.
 
@@ -157,7 +157,7 @@ pnpm typecheck
 pnpm build
 ```
 
-`PLAYBOOKS_API_URL` selects an API origin for local development; use an isolated config. HTTPS is required outside loopback. Stored credentials are bound to their API origin. Platform journeys live in `playbooks-auto`; the root Clients integration suite exercises SDK, CLI, and MCP together against a dedicated local Workspace. See the [local integration instructions](../../README.md#local-integration-tests).
+`PLAYBOOKS_API_URL` selects an API origin for local development; use an isolated config. HTTPS is required outside loopback. Browser credentials are bound to both the API origin and the sign-in issuer. Set `PLAYBOOKS_AUTH_URL` when using a custom issuer. Platform journeys live in `playbooks-auto`; the root Clients integration suite exercises SDK, CLI, and MCP together against a dedicated local Workspace. See the [local integration instructions](../../README.md#local-integration-tests).
 
 Support: support@playbooks.ai
 

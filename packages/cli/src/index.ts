@@ -1029,7 +1029,7 @@ for (const [name, description, handler, extra, hasData, needsConfirmation] of si
 // Auth
 cli
 	.command('login')
-	.describe('Sign in using a developer API key.')
+	.describe('Sign in in your browser or use a developer API key.')
 	.option('--token-stdin', 'Read and store a key from stdin.', false)
 	.action(run(auth.login));
 
@@ -2889,13 +2889,21 @@ try {
 		if (args[index] === '--data' && args[index + 1] === '-') args.splice(index, 2, '--data=-');
 	}
 	if (args.length === 2) cli.help();
-	else
-		cli.parse(args, {
+	else {
+		const command = cli.parse(args, {
+			lazy: true,
 			string: ['data', 'query', 'sort', 'include', 'category', 'type', 'owner', 'cursor'],
 			unknown: flag => {
 				throw new CliError(422, `Unknown option: ${flag}`);
 			},
 		});
+		if (command) {
+			const options = command.args.at(-1);
+			if (typeof options === 'object' && options)
+				Object.defineProperty(options, 'commandTitle', { value: command.name });
+			command.handler(...command.args);
+		}
+	}
 } catch (error) {
 	reportError(error);
 }
