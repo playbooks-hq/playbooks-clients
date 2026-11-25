@@ -1143,6 +1143,11 @@ cli
 	.action(run(workspace.updateWorkspaceChat));
 
 cli
+	.command('workspace chat template')
+	.describe('Manage Chat Template drafts: create, draft, setup, item, or import.')
+	.action(run(async () => cli.help('workspace chat template')));
+
+cli
 	.command('workspace chat template create')
 	.describe('Create or return a private draft Template for an authorized Chat.')
 	.option('--workspace', 'Workspace identifier; defaults to saved workspace.')
