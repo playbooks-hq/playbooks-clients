@@ -21,6 +21,7 @@ export type {
 	AgentSandboxResizeData,
 	AgentSandboxOperationData,
 } from 'src/agents.js';
+export type { WorkspaceReference } from 'src/client.js';
 export { PlaybooksSDK } from 'src/client.js';
 export { PlaybooksError } from 'src/error.js';
 export { Resource, EditableResource } from 'src/resource.js';

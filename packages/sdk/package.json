@@ -1,6 +1,6 @@
 {
   "name": "@playbooks/sdk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Typed server-side client for the Playbooks platform API.",
   "type": "module",
   "license": "MIT",
@@ -59,7 +59,9 @@
     "tslib": "2.8.1",
     "typescript": "5.9.3",
     "vite": "8.0.0",
-    "@types/node": "24.0.14",
     "tsc-alias": "1.8.16"
+  },
+  "dependencies": {
+    "@types/node": "24.0.14"
   }
 }

@@ -12,6 +12,16 @@ import type { ClientOptions, Identifier, ListOptions, WorkspaceData, WorkspaceUp
 import { Workflows } from 'src/workflows.js';
 import { chats, chatTemplates, updateWorkspace, Workspace } from 'src/workspace.js';
 
+export interface WorkspaceReference {
+	agents: Agents;
+	projects: Projects;
+	workflows: Workflows;
+	chats: ReturnType<typeof chats>;
+	conversations: ReturnType<typeof chatConversations>;
+	runs: Runs;
+	templates: ReturnType<typeof chatTemplates>;
+}
+
 export class PlaybooksSDK {
 	#options: ClientOptions;
 	constructor(options: ClientOptions = {}) {
@@ -43,7 +53,7 @@ export class PlaybooksSDK {
 	get workspaces() {
 		return {
 			/** Scope operations to a known Workspace without fetching its metadata. */
-			reference: (id: Identifier) => {
+			reference: (id: Identifier): WorkspaceReference => {
 				identifier(id);
 				const transport = this.#transport(String(id));
 				return {

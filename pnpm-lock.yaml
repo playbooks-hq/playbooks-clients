@@ -168,13 +168,14 @@ importers:
         version: 8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@types/node@24.12.0)
 
   packages/sdk:
+    dependencies:
+      '@types/node':
+        specifier: 24.0.14
+        version: 24.0.14
     devDependencies:
       '@eslint/js':
         specifier: 9.39.4
         version: 9.39.4
-      '@types/node':
-        specifier: 24.0.14
-        version: 24.0.14
       '@typescript-eslint/eslint-plugin':
         specifier: 8.57.0
         version: 8.57.0(@typescript-eslint/parser@8.57.0(eslint@9.39.4)(typescript@5.9.3))(eslint@9.39.4)(typescript@5.9.3)

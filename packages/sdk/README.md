@@ -82,10 +82,10 @@ Using ordinary authorized user API credentials, `project.agentAccess` and `site.
 Select a child using its parent Project UUID and exactly one relationship UUID:
 
 ```ts
-const agent = await workspace.projects.get('PARENT_UUID', { agentId: 'AGENT_UUID' });
+const projectAgent = await workspace.projects.get('PARENT_UUID', { agentId: 'AGENT_UUID' });
 const test = await workspace.projects.get('PARENT_UUID', { testId: 'TEST_ENVIRONMENT_UUID' });
 const preferences = await test.settings.get();
-const runs = await test.runs.list();
+const testRuns = await test.runs.list();
 const control = await test.runs.control(123);
 const usage = await test.usage.get();
 ```
@@ -203,7 +203,7 @@ await workspace.resourceRetention.update(true);
 await workspace.retainedResources.restore('artifact', 'ARTIFACT_UUID');
 
 const records = await workspace.domains.records('DOMAIN_UUID').list();
-const source = await project.source.status();
+const sourceStatus = await project.source.status();
 const schedules = await project.schedules.list();
 ```
 
@@ -293,6 +293,7 @@ const release = await site.releases.create({
   expectedCurrentReleaseId: preflight.expectedCurrentReleaseId,
   expectedConfigRevision: preflight.configRevision,
 });
+if (!release.uuid) throw new Error('Inspect the release receipt for the release identifier.');
 const completed = await site.releases.wait(release.uuid, { timeoutMs: 300_000 });
 ```
 
