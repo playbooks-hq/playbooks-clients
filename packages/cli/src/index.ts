@@ -28,6 +28,7 @@ import { reportError } from 'src/utils/cli-output';
 import { outputMessages } from 'src/utils/message-output';
 
 const cli = sade('playbooks').version(version);
+const checkpointCommands = new Set<string>();
 cli.describe('Manage Playbooks from your terminal.');
 cli.option('--config', 'Isolated context file.', path.join(os.homedir(), '.config', 'playbooks', 'config.json'));
 cli.option('--json', 'Print JSON; streams use newline-delimited JSON.', false);
@@ -108,6 +109,7 @@ for (const { owner, command: prefix } of contentOwners) {
 				.option('--source', 'Source ID.')
 				.option('--version', 'Exact Source version.')
 				.option('--conversation', 'Source conversation UUID.');
+		if (operation !== 'list') checkpointCommands.add(name);
 		if (operation === 'copy-to-file-system') {
 			const branch = owner === 'project' ? ', expectedBranchId from copy-target' : '';
 			command.option('--data', `JSON revision, path${branch}, and optional activityConversationId, or - for stdin.`);
@@ -151,8 +153,10 @@ for (const { owner, command: prefix } of contentOwners) {
 		if (['list', 'versions'].includes(operation)) command.option('--page', 'Zero-based page.');
 		if (operation === 'list') command.option('--query', 'Search Artifact names.');
 		if (!['list', 'register', 'prepare'].includes(operation)) command.option('--artifact', 'Artifact ID.');
-		if (['get', 'open', 'preview', 'export', 'download'].includes(operation))
+		if (['get', 'open', 'preview', 'export', 'download'].includes(operation)) {
 			command.option('--version', 'Exact Artifact version ID; defaults to current.');
+			checkpointCommands.add(name);
+		}
 		if (['register', 'prepare', 'update', 'delete'].includes(operation))
 			command.option('--data', 'Reviewed JSON for this Artifact operation, or - for stdin.');
 		if (operation === 'delete') command.option('--yes', 'Confirm Artifact deletion.', false);
@@ -2888,6 +2892,28 @@ cli
 
 try {
 	const args = process.argv.slice();
+	// Sade treats every truthy --version as a request for the CLI version before it parses command options.
+	// The launcher can append --config even when the only requested action is to print the CLI version.
+	const argsWithoutConfig = args
+		.slice(2)
+		.filter(
+			(arg, index, flags) => arg !== '--config' && !arg.startsWith('--config=') && flags[index - 1] !== '--config',
+		);
+	let checkpoint: string | undefined;
+	if (!(argsWithoutConfig.length === 1 && argsWithoutConfig[0] === '--version')) {
+		for (let index = 2; index < args.length; index++) {
+			const arg = args[index];
+			if (arg === '--') break;
+			if (arg !== '--version' && !arg.startsWith('--version=')) continue;
+			if (checkpoint !== undefined) throw new CliError(422, 'Provide --version only once.');
+			const value = arg === '--version' ? args[index + 1] : arg.slice('--version='.length);
+			if (!value?.trim() || value.startsWith('-')) throw new CliError(422, 'Provide a value for --version.');
+			checkpoint = value;
+			args.splice(index, arg === '--version' ? 2 : 1);
+			index--;
+		}
+	}
+	if (checkpoint !== undefined && args.length === 2) throw new CliError(422, 'Specify a command for --version.');
 	// Sade's parser drops a standalone dash; preserve the stdin marker as a flag value.
 	for (let index = 2; index < args.length - 1; index++) {
 		if (args[index] === '--') break;
@@ -2904,6 +2930,10 @@ try {
 		});
 		if (command) {
 			const options = command.args.at(-1);
+			if (checkpoint !== undefined) {
+				if (!checkpointCommands.has(command.name)) throw new CliError(422, 'Unknown option: --version');
+				Object.defineProperty(options, 'version', { value: checkpoint, enumerable: true });
+			}
 			if (typeof options === 'object' && options)
 				Object.defineProperty(options, 'commandTitle', { value: command.name });
 			command.handler(...command.args);
