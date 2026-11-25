@@ -143,6 +143,14 @@ class Templates(EditableCollection):
     async def draft_from_agent(self, agent_id: Identifier) -> Any:
         return await self._get(f"/agents/{identifier(agent_id)}/template")
 
+    async def create_from_workspace(self) -> Any:
+        """Requires the Workspace owner's authenticated human session."""
+        return await self._action("/workspace/template", "POST", {})
+
+    async def draft_from_workspace(self) -> Any:
+        """Requires the Workspace owner's authenticated human session."""
+        return await self._get("/workspace/template")
+
     async def source(self, id: Identifier) -> Any:
         return await self._get(f"{self._path}/{identifier(id)}/source")
 

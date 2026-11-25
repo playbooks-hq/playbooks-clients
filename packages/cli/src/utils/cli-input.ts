@@ -50,9 +50,9 @@ export const textOption = (value: any, flag: string) => {
 };
 
 export const templateKindOption = (value: any) => {
-	if (value !== 'project' && value !== 'agent' && value !== 'chat')
-		throw new CliError(422, 'Allowed --kind values: project, agent, chat.');
-	return value;
+	const kind = (['project', 'agent', 'chat', 'workflow', 'workspace'] as const).find(kind => kind === value);
+	if (!kind) throw new CliError(422, 'Allowed --kind values: project, agent, chat, workflow, workspace.');
+	return kind;
 };
 
 export const includeParams = (options: any, relations: string[]): Record<string, any> => {

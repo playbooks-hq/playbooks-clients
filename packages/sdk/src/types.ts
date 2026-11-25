@@ -271,9 +271,10 @@ export interface ActionReceipt extends RecordData {
 	status?: string;
 }
 
-export type TemplateKind = 'agent' | 'chat' | 'project';
+export type TemplateKind = 'agent' | 'chat' | 'project' | 'workflow' | 'workspace';
 
 export interface TemplateSetupRequirement {
+	targetKey?: string;
 	kind?: 'connector' | 'mcp' | 'browser' | 'channel' | (string & {});
 	key?: string;
 	name?: string;
@@ -302,7 +303,16 @@ export interface TemplatePackageItem {
 export interface TemplatePackageSummary {
 	format?: number;
 	kind?: TemplateKind;
-	files?: number;
+	files?: number | Array<{ targetKey: string; path: string; checksum: string }>;
+	materials?: Array<{ key: string; kind: string; name: string }>;
+	dependencies?: Array<{ targetKey: string; dependencyKey: string }>;
+	targets?: Array<{
+		key: string;
+		kind: Exclude<TemplateKind, 'workspace'>;
+		name: string;
+		sourceFiles: number;
+		checksum?: string;
+	}>;
 	fileInventory?: TemplatePackageItem[];
 	artifactInventory?: TemplatePackageItem[];
 	services?: TemplatePackageItem[];
@@ -315,6 +325,9 @@ export interface TemplatePackageSummary {
 	subagentInventory?: TemplatePackageItem[];
 	setupRequirements?: TemplateSetupRequirement[];
 	agents?: number;
+	chats?: number;
+	projects?: number;
+	workflows?: number;
 	subagents?: number;
 	schedules?: number;
 	conversations?: number;

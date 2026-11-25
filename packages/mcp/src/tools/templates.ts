@@ -139,7 +139,7 @@ export const templatesTools: ToolDefinition[] = [
 	{
 		command: 'workspace template remix',
 		description:
-			'Create an independent Chat, Project, or Agent from one exact published Template version in the selected Workspace. Supply versionId and a stable idempotencyKey; recipient connections require separate setup.',
+			'Create an independent Chat, Project, or Agent from one exact published Template version in the selected Workspace. Supply versionId and a stable idempotencyKey. Remix Workspace templates through Explore in the app.',
 		toolset: 'templates',
 		readOnly: false,
 		destructive: true,
@@ -251,7 +251,7 @@ export const templatesTools: ToolDefinition[] = [
 				flag: 'category',
 				description: 'Category identifier from categories.',
 			},
-			kind: { flag: 'kind', description: 'Template kind: project, agent, or chat.' },
+			kind: { flag: 'kind', description: 'Template kind: project, agent, chat, workflow, or workspace.' },
 		},
 	},
 	{

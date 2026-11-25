@@ -39,7 +39,7 @@ export const discoveryTools: ToolDefinition[] = [
 				flag: 'category',
 				description: 'One active category UUID from the returned facets.',
 			},
-			kind: { flag: 'kind', description: 'Template kind: all, project, agent, or chat.' },
+			kind: { flag: 'kind', description: 'Template kind: all, project, agent, chat, workflow, or workspace.' },
 		},
 	},
 	{

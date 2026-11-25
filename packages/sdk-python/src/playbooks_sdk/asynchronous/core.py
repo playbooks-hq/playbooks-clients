@@ -78,7 +78,7 @@ class ExploreTemplates(Endpoint):
     async def list(
         self,
         *,
-        kind: Literal["project", "agent", "chat", "all"] = "project",
+        kind: Literal["project", "agent", "chat", "workflow", "workspace", "all"] = "project",
         view: Literal["discover", "popular", "recent", "following"] = "discover",
         category: str | None = None,
         search: str | None = None,

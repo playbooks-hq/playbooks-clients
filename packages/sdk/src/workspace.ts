@@ -126,6 +126,11 @@ export class Workspace extends Resource<WorkspaceData> {
 				action<TemplateData>(this.#transport, `/agents/${identifier(agentId)}/template`, 'POST', {}),
 			draftFromAgent: async (agentId: Identifier): Promise<TemplateData | null> =>
 				(await get<TemplateData>(this.#transport, `/agents/${identifier(agentId)}/template`)) || null,
+			/** Requires the Workspace owner's authenticated human session. */
+			createFromWorkspace: () => action<TemplateData>(this.#transport, '/workspace/template', 'POST', {}),
+			/** Requires the Workspace owner's authenticated human session. */
+			draftFromWorkspace: async (): Promise<TemplateData | null> =>
+				(await get<TemplateData>(this.#transport, '/workspace/template')) || null,
 			list: (options?: TemplateListOptions) => collection.list(options),
 			get: (id: Identifier, options: { include?: string } = {}) => collection.get(id, options),
 			update: (id: Identifier, input: TemplateUpdate) => collection.update(id, input),

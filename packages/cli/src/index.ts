@@ -1048,7 +1048,7 @@ cli
 	.option('--workspace', 'Workspace UUID for Following; defaults to the selected Workspace.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'One active category UUID from the returned facets.')
-	.option('--kind', 'Template kind: all, project, agent, or chat.')
+	.option('--kind', 'Template kind: all, project, agent, chat, workflow, or workspace.')
 	.example('templates --kind project --view discover')
 	.example('templates --kind agent')
 	.example('templates --kind chat')
@@ -1341,7 +1341,9 @@ cli
 
 cli
 	.command('workspace template remix')
-	.describe('Create an independent resource from one exact published template version.')
+	.describe(
+		'Remix a published resource into the selected Workspace. Remix Workspace templates through Explore in the app.',
+	)
 	.option('--data', 'JSON object or - for stdin; include versionId and idempotencyKey.')
 	.option('--yes', 'Confirm this operation.', false)
 	.option('--template', 'Template identifier.')
@@ -1358,7 +1360,7 @@ cli
 	.option('--sort', 'Sort field:asc|desc; fields: id, name, createdAt, updatedAt.')
 	.option('--include', 'Comma-separated relations: categories, license, stats.')
 	.option('--category', 'Category identifier from categories.')
-	.option('--kind', 'Template kind: project, agent, or chat.')
+	.option('--kind', 'Template kind: project, agent, chat, workflow, or workspace.')
 	.example('workspace templates --category business --kind project')
 	.example('workspace templates --kind agent')
 	.example('workspace templates --kind chat')
